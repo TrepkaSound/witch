@@ -182,6 +182,13 @@ export interface Tuning {
    *  length decrease gradually as the pack gets larger"; rules/combat/teams.ts roundScale): its round time and attack window times
    *  (reference / size) ^ strength, at least `floor`; at or under `reference`, as before. */
   teamRounds?: { reference: number; strength: number; floor: number; /** how many rounds ahead a team past `reference` picks its attackers, so they close in in time (0: off; Ed, 2026-11-03: "can we decide the roles in advance and have them move in sooner, in time for their attack?") */ ahead?: number; /** how many share one waiting ring before the rest wait in rings further out (Ed, 2026-11-04: "Resolve the attack rate limit for 128"; 0: one ring, as before) */ ring?: number; /** the least share of its 3 s attack window a big team's round keeps (1: the window never shortened; the round time and rest still are) */ window?: number };
+  /** The hare's stamp (Ed, 2026-11-13: "Stamp, then sit 0.8 s"): after each of its own stamps it sits still for `sit` seconds, no
+   *  hopping or dodging, so her 💌s and party animals can land (rules/combat.ts; 0: no sit). */
+  hareStamp?: { sit: number };
+  /** The badger's shoulder-barge at her (Ed, 2026-11-13: "20m"; "let's start with big numbers and dial it down, at least we can then
+   *  perceive the effects!"): its lunge's blow throws her `throw` metres (past witch.knock.max, which holds every other throw) and
+   *  staggers her `stagger` seconds, about the throw's own length, so she has her feet as she lands (rules/combat/hits.ts, rules/knock.ts). */
+  badgerBarge?: { throw: number; stagger: number };
   /** How attacks feel on screen (render/attackFeel.ts): the wind-up's crouch, the lunge's stretch, a hit's squash and bounce, a knock-back's tumble. */
   /** The effects shown on her (render/herEffects.ts; Ed, 2026-11-13: "Mark + tint + sound"): on; tint, how far her sprite goes toward the attacker's element's colour while slowed, confused or thrown; size, the marks' size; slow, its circling stars and her steps' drag marks (one every dragEvery metres, fading over dragLife seconds); thrown, the least throw that leaves a dust skid (metres) and its puffs (one every dustEvery metres, each dustLife seconds); calm, the tint's share with Reduce flashing. */
   effectMarks: { on: boolean; tint: { slow: number; confuse: number; thrown: number }; size: number; slow: { stars: number; dragEvery: number; dragLife: number }; thrown: { minMetres: number; dustEvery: number; dustLife: number }; calm: number };
