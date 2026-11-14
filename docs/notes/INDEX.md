@@ -178,6 +178,8 @@ glossary; these are the prototype's), by note.
 - Combat
 - Long lunges
 - Attack grammar
+- Hare's stamp and sit
+- Badger's barge
 - Ranged aim
 - Siege
 - Wild watch / chase
@@ -495,6 +497,7 @@ glossary; these are the prototype's), by note.
 - Party objects
 - Attack effects
 - Attack look
+- Telegraph colours and the effects on her
 - Spell glow
 - Her magic's glow
 - Colour temperatures

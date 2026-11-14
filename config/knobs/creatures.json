@@ -40,6 +40,40 @@
         }
       ]
     },
+    "hareStamp": {
+      "what": "After each of its stamps the hare sits still for `sit` seconds: it doesn't hop, dodge or strike, so her 💌s and party animals can land.",
+      "notes": "The hare's attack is its own stamp (config/species-attacks.json hare: a 4 m ring round itself, 0.6 s wind-up), not the pack's moon-dust bolt (taken out of config/creature-actions.json). On its turn it bounds to land beside her, stamps, then sits (rules/combat.ts; its sitting pose, art/mesh/species/hare.js). 0: no sit. Measure with node tools/balance/attackaudit.mjs --kinds hare. Before (the audit, docs/plans/attack-legibility-audit.md): every blow was the generic bolt, its stamp seen twice in all the runs, 20.6 s to stun one against about 4 s for other kinds.",
+      "decisions": [
+        {
+          "by": "Ed",
+          "date": "2026-11-13",
+          "quote": "Stamp, then sit 0.8 s",
+          "rest": "its own stamp attack, then a shown sit you can punish; its speed and hop-and-pause kept otherwise"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-13",
+          "quote": "let's start with big numbers and dial it down, at least we can then perceive the effects!"
+        }
+      ]
+    },
+    "badgerBarge": {
+      "what": "The badger's shoulder-barge throws her `throw` metres and staggers her `stagger` seconds.",
+      "notes": "Only its own lunge's blow at her (config/species-attacks.json badger); its dug-in bite and its stone shard throw her as any blow does (witch.knock). The throw is not held to witch.knock.max, which caps every other throw at 14 m. It eases off as every throw does (witch.knock.ease: nine tenths of it in a quarter of a second); she is kept on the island and ashore of lakes, passes through scenery and the treehouse like any throw (Ed, 2026-11-13: \"There's nothing to collide with apart from lakes\"), and is left wherever it ends but on a lake (rules/knock.ts). stagger 0.5 is about the throw's own length, so she can move again as she lands; it was 0.52 s with the old 6.4 m throw. Measure with node tools/balance/attackaudit.mjs --kinds badger (median throw m).",
+      "decisions": [
+        {
+          "by": "Ed",
+          "date": "2026-11-13",
+          "quote": "20m",
+          "rest": "the barge throws her about 20 m; it was 6.4 m against every blow's 2.5 m, barely felt (the audit)"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-13",
+          "quote": "let's start with big numbers and dial it down, at least we can then perceive the effects!"
+        }
+      ]
+    },
     "difficulty": {
       "what": "How hard the creatures are: faster in a fight, further with their ranged attacks, and adults stronger.",
       "decisions": [
@@ -240,6 +274,45 @@
         "config/fx/native.json"
       ],
       "notes": "What glows: the party start's analyser ring at her decks (each bar's tip a core in the bar's colour with its halo and a pool on the floor, and one light over the decks); her blink (where she left, where she lands, and a streak of light with its pool along the way); the ley line's spark (core, halo, pool, light); the soundsystem spell's eruption, vortex and dome and a cleared challenge's; and pools on the ground under her flight trail (in the trail's colour, smaller and fainter the higher she flies), under party witches' swoops, placed sigils and the ring's dots (config/fx/native.json glow: no core where one would cover her or a sigil's glyph). core: how bright the glowing cores are (0 none). halo: the dithered halo round them (0 none). pool: the pools on the ground (0 none). light: her magic's real lights' strength (1 as before; 0 none). Lights: her magic shares the effects' six slots with the creatures' spells; her cast magic (the blink, the party start, the ley line's spark) takes the first two when both want slots, the creatures' spells keep at least four (attackFx.glow.lights caps them at five), and every light still eases in and out with the world's farthest lights making room, so none pops. Reduce flashing (the Settings page) halves core, halo, pool and light; nothing in the glow flickers."
+    },
+    "attackFx.telegraph": {
+      "what": "How bright each attack's warning shape on the ground is drawn in its attacker's element colour (gain 1: the colour as config/attack-look.json gives it; ?telegraphs=red draws them all red as before 13 November, to compare).",
+      "decisions": [
+        {
+          "by": "Ed",
+          "date": "2026-11-13",
+          "quote": [
+            "Element coloured warning shape on the ground",
+            "Let's try element colours and see."
+          ],
+          "rest": "a trial, in place of his 2026-11-02 \"the telegraph should be red\" and 2026-11-03 \"red telegraphs are right; red does mean warning\"; the shapes and timings kept; each element's colour is its telegraph in config/attack-look.json, checked to be bright (danger.bright) and apart from every other's (danger.apart)"
+        }
+      ],
+      "links": [
+        "render/leash/attackLook.ts",
+        "config/attack-look.json"
+      ]
+    },
+    "effectMarks": {
+      "what": "What shows on her while an effect is on her: slowed, stars circle her head and her steps leave drag marks; confused, a spiral turns over her head; thrown hard, she leaves a dust skid; her sprite is tinted with the attacker's element colour, and each has a sound (sfx.effects).",
+      "decisions": [
+        {
+          "by": "Ed",
+          "date": "2026-11-13",
+          "quote": [
+            "Mark + tint + sound",
+            "Chain effect for slow might be confusing because we already have chains",
+            "I think stun and slow are very similar, and stun is less fun than slow, so how about stun is replaced with slow and we use circling stars?"
+          ],
+          "rest": "after the attack legibility audit (#2069: the snail's slow was invisible on her); tint slow 0.35, confuse 0.3, thrown 0.25; 3 stars; a skid from a 4 m throw up (an ordinary blow's 2.5 m leaves none); a creature's stun on her is a slow now (witch.stunAsSlow) and wears the same stars; a blow's own short stagger has no mark of its own; nothing burns or poisons her, so neither is drawn; Reduce flashing: steady tint at calm of its strength, slow marks, no twinkle; ?effectmarks=0 none of it, to compare"
+        }
+      ],
+      "links": [
+        "render/herEffects.ts",
+        "render/leash/combat.ts",
+        "render/leash/attackLook.ts",
+        "render/herTint.ts"
+      ]
     },
     "combat": {
       "what": "How creatures fight: who goes for whom, how fast they run and chase, and how much a soundsystem and home's speakers can take.",

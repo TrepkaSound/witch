@@ -1313,8 +1313,11 @@ Speeds per mode, and how long rising and descending take. The witch is lit by th
 - **`witch.knock`**: A blow knocks her back and staggers her, harder for big attacks and charges.
   1. Ed, 2026-10-05: "add a knockback and stun on the witch; make it large on chasing/ramming creatures" (rules/knock.ts)
   2. Ed: "don't make it stop at scenery"
-  The witch knocked back and staggered by a blow [1]: thrown straight away from the blow, base metres for any blow (bites, swipes, shots) plus scale times the attack's own knockback (combat.json; so a maul, quake or slam sits in between), at least charge metres when it rams her (a charge, or a leap landing on her), at most max; eased off at ease a second (like a creature's knockback), straight through scenery [2], nudged to the nearest clear spot at the end if she'd rest inside a trunk, rock, speaker, soundsystem or the treehouse (the blink's clearances). Staggered (no moving, blinking or 💌s, a wobble and stars) stunBase seconds plus stunScale a metre thrown past base, at most stunMax; then not staggered again for immune seconds (the blows still count), so a pack can't stun-lock her. A blink dodges it all; the blow that knocks her out throws nothing. on false, or ?knock=0, turns it off.
+  The witch knocked back and staggered by a blow [1]: thrown straight away from the blow, base metres for any blow (bites, swipes, shots) plus scale times the attack's own knockback (combat.json; so a maul, quake or slam sits in between), at least charge metres when it rams her (a charge, or a leap landing on her), at most max; eased off at ease a second (like a creature's knockback), straight through scenery [2], left wherever it ends but on a lake (Ed, 2026-11-13: "There's nothing to collide with apart from lakes"; "Drop all of them": no nudging clear of trunks, rocks, speakers, soundsystems or the treehouse). Staggered (no moving, blinking or 💌s, a wobble and stars) stunBase seconds plus stunScale a metre thrown past base, at most stunMax; then not staggered again for immune seconds (the blows still count), so a pack can't stun-lock her. A blink dodges it all; the blow that knocks her out throws nothing. on false, or ?knock=0, turns it off.
   Code: `rules/knock.ts`
+- **`witch.stunAsSlow`**: A creature's stun on her slows her instead: she keeps speed of her speed, for time times as long as the stun would have held her (on false: stunned as before).
+  1. Ed, 2026-11-13: "I think stun and slow are very similar, and stun is less fun than slow, so how about stun is replaced with slow and we use circling stars?" … "Big: 40% speed, 3× as long" … "let's start with big numbers and dial it down" (only the stuns creatures put on her (the lynx's pounce 0.3 s, the ram's headbutt 0.25 s, the lion's roar 0.3 s, the sphinx's gaze 0.2 s: now slows to 40% for 0.9, 0.75, 0.9 and 0.6 s); her 💌s' and her party's stuns on creatures unchanged; every blow's own short stagger (witch.knock stunBase) unchanged; shown as the slow's circling stars (effectMarks); ?stun=old stuns her as before, to compare)
+  Code: `rules/game.ts`, `rules/attacks/combatWorld.ts`
 - **`witch.bedGlow`**: In her bed (asleep, the alarm, a snooze, the stretch), the share of her own glow and its lift on her kept, so her white nightie keeps its shading.
   1. Ed, 2026-11-07: "fix the glow in #1908 first" (her nightie clipped to white in bed under her own glow and its lift)
   Only her own sprite and only in bed: 1 keeps all of it (as anywhere else), 0 none. Taken off at once as she's put in bed; given back over the stretch (half of what's off) and the second after she's up beside the bed, so nothing pops. Her glow's pool on the world round her is unchanged.
@@ -1336,6 +1339,9 @@ Speeds per mode, and how long rising and descending take. The witch is lit by th
 | `witch.knock.stunScale` | number | 0 to … |
 | `witch.knock.stunMax` | number | 0 to … |
 | `witch.knock.immune` | number | 0 to … |
+| `witch.stunAsSlow.on` | boolean |  |
+| `witch.stunAsSlow.speed` | number | 0 to … |
+| `witch.stunAsSlow.time` | number | 0 to … |
 | `witch.lightFloor` | number | 0 to … |
 | `witch.lightTint` | number | 0 to … |
 | `witch.lightRim` | number | 0 to … |
@@ -1442,7 +1448,7 @@ The dash: on the ground she blinks a short way in the direction she's moving and
 
 1. Ed, 2026-10-04: 2026-10-05; right click, gamepad A, touch 'dash'
 2. Ed, 2026-10-11: her steering, on the pad and on keyboard and mouse alike, not the way she's aiming; standing still, the way she's facing
-The dash, a blink [1]: on the ground only, she vanishes and reappears distance metres the way she's moving [2] in one step, then cooldown seconds before the next. For gone seconds (a few frames) she isn't drawn and can't be hit; otherwise she's as hittable as ever: it's for slipping out of a shot's path. She lands clear of trees, rocks and ruins, soundsystems, the dancefloor's speakers and the treehouse by clear's metres each, the blink shortened to the furthest clear spot.
+The dash, a blink [1]: on the ground only, she vanishes and reappears distance metres the way she's moving [2] in one step, then cooldown seconds before the next. For gone seconds (a few frames) she isn't drawn and can't be hit; otherwise she's as hittable as ever: it's for slipping out of a shot's path. She lands wherever the blink takes her, through trees, rocks, soundsystems, speakers and the treehouse alike; only a lake on foot (or the zoo's fence) shortens it (Ed, 2026-11-13: "Drop all of them"). clear's metres are now only for the party witches round the floor (rules/game.ts clearOfScenery).
 
 - **`dash.buffer`**: a press up to this many seconds before she can blink (still recharging, landing, staggered) waits and blinks the moment she can.
 - **`dash.toCursor`**: on, she blinks toward the ground under the cursor (or the way the right stick points), the way she faces when the cursor is within aimDead metres of her, and with nothing to aim by (touch) the way she's steering; off, always the way she's steering.
@@ -2183,6 +2189,31 @@ The round's scale is (reference / size) ^ strength, at least floor, and 1 at or 
 | `teamRounds.ring` | number | 0 to 128 |
 | `teamRounds.window` | number | 0.1 to 1 |
 
+### `hareStamp`
+
+After each of its stamps the hare sits still for `sit` seconds: it doesn't hop, dodge or strike, so her 💌s and party animals can land.
+
+1. Ed, 2026-11-13: "Stamp, then sit 0.8 s" (its own stamp attack, then a shown sit you can punish; its speed and hop-and-pause kept otherwise)
+2. Ed, 2026-11-13: "let's start with big numbers and dial it down, at least we can then perceive the effects!"
+The hare's attack is its own stamp (config/species-attacks.json hare: a 4 m ring round itself, 0.6 s wind-up), not the pack's moon-dust bolt (taken out of config/creature-actions.json). On its turn it bounds to land beside her, stamps, then sits (rules/combat.ts; its sitting pose, art/mesh/species/hare.js). 0: no sit. Measure with node tools/balance/attackaudit.mjs --kinds hare. Before (the audit, docs/plans/attack-legibility-audit.md): every blow was the generic bolt, its stamp seen twice in all the runs, 20.6 s to stun one against about 4 s for other kinds.
+
+| knob | type | range |
+|---|---|---|
+| `hareStamp.sit` | number | 0 to 5 |
+
+### `badgerBarge`
+
+The badger's shoulder-barge throws her `throw` metres and staggers her `stagger` seconds.
+
+1. Ed, 2026-11-13: "20m" (the barge throws her about 20 m; it was 6.4 m against every blow's 2.5 m, barely felt (the audit))
+2. Ed, 2026-11-13: "let's start with big numbers and dial it down, at least we can then perceive the effects!"
+Only its own lunge's blow at her (config/species-attacks.json badger); its dug-in bite and its stone shard throw her as any blow does (witch.knock). The throw is not held to witch.knock.max, which caps every other throw at 14 m. It eases off as every throw does (witch.knock.ease: nine tenths of it in a quarter of a second); she is kept on the island and ashore of lakes, passes through scenery and the treehouse like any throw (Ed, 2026-11-13: "There's nothing to collide with apart from lakes"), and is left wherever it ends but on a lake (rules/knock.ts). stagger 0.5 is about the throw's own length, so she can move again as she lands; it was 0.52 s with the old 6.4 m throw. Measure with node tools/balance/attackaudit.mjs --kinds badger (median throw m).
+
+| knob | type | range |
+|---|---|---|
+| `badgerBarge.throw` | number | 0 to 60 |
+| `badgerBarge.stagger` | number | 0 to 3 |
+
 ### `creatureMomentum`
 
 Creatures chasing her carry momentum on their run-in and wind-up, so she can dodge past them.
@@ -2238,6 +2269,9 @@ Code: `render/attackFeel.ts`
   1. Ed, 2026-11-13: "extend" (asked whether to extend the creatures' glow (2026-11-09: "The animal magic effects need to glow.") to her own magic, which #1928 had left with its own look; core 1, halo 1, pool 1, light 1; the look is still the magic brief's (Ed, 2026-10-28: "Pixel cores and dithered pixel halos, with a small smooth bloom over the top"))
   What glows: the party start's analyser ring at her decks (each bar's tip a core in the bar's colour with its halo and a pool on the floor, and one light over the decks); her blink (where she left, where she lands, and a streak of light with its pool along the way); the ley line's spark (core, halo, pool, light); the soundsystem spell's eruption, vortex and dome and a cleared challenge's; and pools on the ground under her flight trail (in the trail's colour, smaller and fainter the higher she flies), under party witches' swoops, placed sigils and the ring's dots (config/fx/native.json glow: no core where one would cover her or a sigil's glyph). core: how bright the glowing cores are (0 none). halo: the dithered halo round them (0 none). pool: the pools on the ground (0 none). light: her magic's real lights' strength (1 as before; 0 none). Lights: her magic shares the effects' six slots with the creatures' spells; her cast magic (the blink, the party start, the ley line's spark) takes the first two when both want slots, the creatures' spells keep at least four (attackFx.glow.lights caps them at five), and every light still eases in and out with the world's farthest lights making room, so none pops. Reduce flashing (the Settings page) halves core, halo, pool and light; nothing in the glow flickers.
   Code: `render/fx/spellGlow.ts`, `render/fx/batch.ts`, `render/fx/system.ts`, `render/leash/decksRing.ts`, `render/view/frame.ts`, `config/fx/native.json`
+- **`attackFx.telegraph`**: How bright each attack's warning shape on the ground is drawn in its attacker's element colour (gain 1: the colour as config/attack-look.json gives it; ?telegraphs=red draws them all red as before 13 November, to compare).
+  1. Ed, 2026-11-13: "Element coloured warning shape on the ground" … "Let's try element colours and see." (a trial, in place of his 2026-11-02 "the telegraph should be red" and 2026-11-03 "red telegraphs are right; red does mean warning"; the shapes and timings kept; each element's colour is its telegraph in config/attack-look.json, checked to be bright (danger.bright) and apart from every other's (danger.apart))
+  Code: `render/leash/attackLook.ts`, `config/attack-look.json`
 
 | knob | type | range |
 |---|---|---|
@@ -2267,6 +2301,29 @@ Code: `render/attackFeel.ts`
 | `attackFx.magicGlow.halo` | number | 0 to 4 |
 | `attackFx.magicGlow.pool` | number | 0 to 4 |
 | `attackFx.magicGlow.light` | number | 0 to 4 |
+| `attackFx.telegraph.gain` | number | 0 to … |
+
+### `effectMarks`
+
+What shows on her while an effect is on her: slowed, stars circle her head and her steps leave drag marks; confused, a spiral turns over her head; thrown hard, she leaves a dust skid; her sprite is tinted with the attacker's element colour, and each has a sound (sfx.effects).
+
+1. Ed, 2026-11-13: "Mark + tint + sound" … "Chain effect for slow might be confusing because we already have chains" … "I think stun and slow are very similar, and stun is less fun than slow, so how about stun is replaced with slow and we use circling stars?" (after the attack legibility audit (#2069: the snail's slow was invisible on her); tint slow 0.35, confuse 0.3, thrown 0.25; 3 stars; a skid from a 4 m throw up (an ordinary blow's 2.5 m leaves none); a creature's stun on her is a slow now (witch.stunAsSlow) and wears the same stars; a blow's own short stagger has no mark of its own; nothing burns or poisons her, so neither is drawn; Reduce flashing: steady tint at calm of its strength, slow marks, no twinkle; ?effectmarks=0 none of it, to compare)
+Code: `render/herEffects.ts`, `render/leash/combat.ts`, `render/leash/attackLook.ts`, `render/herTint.ts`
+
+| knob | type | range |
+|---|---|---|
+| `effectMarks.on` | boolean |  |
+| `effectMarks.tint.slow` | number | 0 to … |
+| `effectMarks.tint.confuse` | number | 0 to … |
+| `effectMarks.tint.thrown` | number | 0 to … |
+| `effectMarks.size` | number | 0 to … |
+| `effectMarks.slow.stars` | number | 0 to … |
+| `effectMarks.slow.dragEvery` | number | 0 to … |
+| `effectMarks.slow.dragLife` | number | 0 to … |
+| `effectMarks.thrown.minMetres` | number | 0 to … |
+| `effectMarks.thrown.dustEvery` | number | 0 to … |
+| `effectMarks.thrown.dustLife` | number | 0 to … |
+| `effectMarks.calm` | number | 0 to … |
 
 ### `combat`
 
@@ -3299,6 +3356,9 @@ The sound effects, all synthesised in the music's key [1]: volume over the music
 - **`sfx.rattle`**: A refused take-off's chains rattling: a short metallic jangle, louder for more chains (platform/audio/chimes.ts rattle).
   1. Ed, 2026-11-03: "When you try and take off but you're weighed down by creatures, the chains rattle."
   Code: `platform/audio/chimes.ts`
+- **`sfx.effects`**: The sounds of the effects on her, under the music: a low sagging note while she's slowed, a thin wobbling tone while she's confused, a scrape of grit when she's thrown hard; volume for all three, each one's own share, and every, the seconds between a lasting effect's repeats.
+  1. Ed, 2026-11-13: "Mark + tint + sound" (volume 0.5, each share 1, every 0.55 s; through the sound effects' bus and voice budget; none with ?effectmarks=0)
+  Code: `platform/audio/herEffects.ts`, `platform/audio/sfxCues.ts`, `render/herEffects.ts`
 
 | knob | type | range |
 |---|---|---|
@@ -3443,6 +3503,11 @@ The sound effects, all synthesised in the music's key [1]: volume over the music
 | `sfx.knock.whoosh` | number | 0 to … |
 | `sfx.knock.twinkle` | number | 0 to … |
 | `sfx.knock.twinkleEvery` | number | 0 to … |
+| `sfx.effects.volume` | number | 0 to … |
+| `sfx.effects.slow` | number | 0 to … |
+| `sfx.effects.confuse` | number | 0 to … |
+| `sfx.effects.skid` | number | 0 to … |
+| `sfx.effects.every` | number | 0 to … |
 | `sfx.charge.volume` | number | 0 to … |
 | `sfx.charge.bellow` | number | 0 to … |
 | `sfx.charge.hooves` | number | 0 to … |

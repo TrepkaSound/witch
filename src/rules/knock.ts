@@ -1,8 +1,8 @@
 // The witch knocked back and stunned (Ed, 2026-10-05: "add a knockback and stun on the witch; make it
 // large on chasing/ramming creatures"). A blow that lands on her throws her straight away from where
 // it came from, easing off like a creature's knockback (combat.ts stepKnock), straight through
-// scenery (Ed), nudged clear at the end if she'd rest inside a trunk, rock, speaker or the treehouse
-// (the blink's clearances); and staggers her for a
+// scenery (Ed), and left wherever it ends but on a lake (Ed, 2026-11-13: "There's nothing to collide with apart from lakes";
+// "Drop all of them": no nudging clear of trunks, rocks, speakers or the treehouse); and staggers her for a
 // moment: no moving, blinking or throwing 💌s. Ordinary blows (bites, swipes, shots) are small; a
 // blow with the knockback modifier is bigger by its own knockback value; a charge (or a leap landing
 // on her) is big. Fair: a blink still dodges everything (hitWitch never gets here), she can't be
@@ -30,7 +30,9 @@ export const stunned = (k: Knock | undefined, time: number) => !!k && time < k.s
 
 /** What threw her: where the blow came from, the attack's knockback (0 if it has none), and whether
  *  it rams (a charge, or a leap landing on her). */
-export interface Blow { x: number; z: number; knockback: number; rams: boolean; /** thrown exactly this far (a pack's knockback ram, its pull), under witch.knock.max */ metres?: number }
+export interface Blow { x: number; z: number; knockback: number; rams: boolean; /** thrown exactly this far (a pack's knockback ram, its pull), under witch.knock.max */ metres?: number;
+  /** a far throw (the badger's barge, tuning badgerBarge; Ed, 2026-11-13: "20m"): its `metres` not held to witch.knock.max */ far?: boolean;
+  /** staggered this long instead of by how far she's thrown (the badger's barge: about its throw's own length, so she has her feet as she lands) */ stagger?: number }
 
 /** How far a blow throws her (metres) and how long it staggers her (seconds). */
 export function knockOf(b: Blow, t: Tuning): { metres: number; stun: number } {
@@ -38,8 +40,8 @@ export function knockOf(b: Blow, t: Tuning): { metres: number; stun: number } {
   if (!K || !K.on) return { metres: 0, stun: 0 };
   let metres = b.metres ?? K.base + (b.knockback > 0 ? K.scale * b.knockback : 0);
   if (b.rams && b.metres === undefined) metres = Math.max(metres, K.charge);
-  metres = Math.min(K.max, metres);
-  const stun = Math.min(K.stunMax, K.stunBase + K.stunScale * Math.max(0, metres - K.base));
+  if (!(b.far && b.metres !== undefined)) metres = Math.min(K.max, metres);
+  const stun = b.stagger ?? Math.min(K.stunMax, K.stunBase + K.stunScale * Math.max(0, metres - K.base));
   return { metres, stun };
 }
 
@@ -58,8 +60,8 @@ export function knockWitch(k: Knock, body: { x: number; z: number }, b: Blow, ti
 
 /** One step of her knockback: she moves with it, easing off, straight through scenery (Ed,
  *  2026-10-05: "don't make it stop at scenery", as 💌s pass through it); when it has run out, if she'd
- *  rest inside something solid (`clear` false: a trunk, a rock, a speaker, the treehouse, a
- *  soundsystem), she's nudged to the nearest clear spot. Kept inside the map. */
+ *  rest where `clear` says she can't (rules/game.ts blinkClear: since Ed, 2026-11-13, only a lake on foot or over the zoo's fence),
+ *  she's nudged to the nearest clear spot. Kept inside the map. */
 export function stepWitchKnock(k: Knock, body: WitchState, dt: number, t: Tuning, bounds: Bounds, clear: (x: number, z: number) => boolean): WitchState {
   if (!k.kx && !k.kz) return body;
   // (the exact distance an easing velocity covers in dt, so the whole throw is its metres, whatever the step)

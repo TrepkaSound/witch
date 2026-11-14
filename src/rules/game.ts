@@ -463,6 +463,19 @@ export const affectionOf = (g: Game, W: Witch = g.witches[0], acceptedGuestHit =
 export const meterHits = (t: Tuning): number[] => [...t.invites.hits.slice(0, 3), t.legends.partyHits];
 
 
+/** A creature's stun on her, the one place it lands (an attack's stun effect: rules/attacks/combatWorld.ts): a slow instead, to
+ *  witch.stunAsSlow.speed of her speed for .time times the stun's length. Ed, 2026-11-13: "I think stun and slow are very similar,
+ *  and stun is less fun than slow, so how about stun is replaced with slow and we use circling stars?"; "Big: 40% speed, 3× as
+ *  long"; "let's start with big numbers and dial it down". Her 💌s' and her party's stuns on creatures are untouched, and so is
+ *  every blow's own short stagger (rules/knock.ts). stunAsSlow.on false (?stun=old): staggered for the stun's length, as before.
+ *  A blink dodges it either way, as a blow. until: on the game's clock. */
+export function stunWitch(g: Game, id: number, until: number): void {
+  const W = g.witches[id]; if (!W || W.ko || potionPhase(g, W) || dashing(W.dash, witchTime(g, W)) || g.partyOver) return;
+  const A = g.tuning.witch.stunAsSlow, secs = until - g.clock.time;
+  if (A?.on) { const to = g.clock.time + secs * A.time; W.slowUntil = Math.max(W.slowUntil ?? 0, to); W.slowMult = Math.min(A.speed, W.slowUntil > to ? W.slowMult ?? 1 : 1); return; }
+  const k = (W.knock ??= newKnock()); k.stunUntil = Math.max(k.stunUntil, witchTime(g, W) + secs);
+}
+
 export function hitWitch(g: Game, id: number, worldAt: number, t: Tuning = g.tuning, blow?: Blow): void {
   // (her health, blinks, knocks and hat run on her clock, rules/slowTime.ts: the world's moment `worldAt` on hers, by how far it is from now)
   const w = g.witches[id];
@@ -504,9 +517,19 @@ export function hitWitch(g: Game, id: number, worldAt: number, t: Tuning = g.tun
   if (blow) knockWitch((w.knock ??= newKnock()), w.body, blow, at, t);
 }
 
-/** Where a blink may land: not in a tree's trunk, a rock or ruin, a soundsystem, a dancefloor
- *  speaker or the treehouse's tree (tuning dash.clear: each one's clearance in metres). */
+/** Where her blink, ley jump or a throw may leave her: anywhere but a lake on foot (rules/lakes.ts) or over the zoo's fence. Nothing
+ *  else stops her or nudges her (Ed, 2026-11-13: "There's nothing to collide with apart from lakes"; of trunks and rocks, "We can do
+ *  without them"; then "Drop all of them": trees, rocks, soundsystems, speakers and the treehouse). */
 export function blinkClear(g: Game, x: number, z: number, body: WitchState = g.witch): boolean {
+  if (body.mode !== "ground") return true;
+  if (onLake(g.map.bounds, x, z, lakeKnobs(g.tuning).pad)) return false; // (on foot, never onto a lake)
+  return !g.map.bounds.fence?.stop(body.x, body.z, x, z); // (on foot, never over the zoo's fence)
+}
+
+/** Clear of scenery: not in a tree's trunk, a rock or ruin, a soundsystem, a dancefloor speaker or the treehouse's tree (tuning
+ *  dash.clear: each one's clearance in metres). The party witches round the floor keep to it (Ed, 2026-10-06); she no longer does
+ *  (blinkClear). */
+export function clearOfScenery(g: Game, x: number, z: number, body: WitchState = g.witch): boolean {
   const C = g.tuning.dash.clear, near = (px: number, pz: number, r: number) => (px - x) ** 2 + (pz - z) ** 2 < r * r;
   if (g.forest.treesNear(x, z, C.tree).some(p => near(p.x, p.z, C.tree))) return false;
   if (g.forest.decorNear(x, z, C.decor).some(p => near(p.x, p.z, C.decor))) return false;
@@ -889,7 +912,7 @@ function stepSpacing(g: Game, dt: number): void {
   }
   // (one walking home to bed in the afterparty, rules/partyOver.ts, keeps its line too: the sleepers hold their ground, so one whose
   // bed lay in a sleeper's room was eased back as fast as it walked, awake for good, walking on the spot while she watched)
-  spaceOut(list, dt, c => guardsHome(c) || !!c.partyLegend || dormant(g, c) || !!c.asleep || !!c.bed || (c.stunUntil !== undefined && g.clock.time < c.stunUntil), MOVEMENT,
+  spaceOut(list, dt, c => guardsHome(c) || !!c.partyLegend || dormant(g, c) || !!c.asleep || !!c.bed || (c.stunUntil !== undefined && g.clock.time < c.stunUntil) || (c.sitUntil !== undefined && g.clock.time < c.sitUntil), MOVEMENT,
     spacingOn(g.tuning) && list.some(c => c.level >= 1 && c.level <= 2 && c.fight?.target)
       ? { radius: c => spaceRadius(c), steered: c => c.level >= 1 && c.level <= 2 && !!c.fight?.target } : undefined);
   list.length = 0; // (let them go)
@@ -1031,7 +1054,7 @@ function stepFights(g: Game, t: Tuning, dt: number, busy: (id: number) => boolea
       slowUntil: W.slowUntil ?? 0, slowMult: W.slowMult ?? 1, x: W.body.x, z: W.body.z, kx: W.knock?.kx ?? 0, kz: W.knock?.kz ?? 0 } : null; },
     // (an attack in the grammar's effects on her, without a hit: a blink dodges them, as a blow; rules/attacks/combatWorld.ts)
     throwWitch: (id, x, z, metres) => { const W = g.witches[id], at = W ? witchTime(g, W) : g.herTime; if (!W || W.ko || potionPhase(g, W) || dashing(W.dash, at) || g.partyOver) return; knockWitch((W.knock ??= newKnock()), W.body, { x, z, knockback: 0, rams: false, metres }, at, t); },
-    stunWitch: (id, until) => { const W = g.witches[id]; if (!W || W.ko || potionPhase(g, W) || dashing(W.dash, witchTime(g, W)) || g.partyOver) return; const k = (W.knock ??= newKnock()); k.stunUntil = Math.max(k.stunUntil, witchTime(g, W) + (until - g.clock.time)); },
+    stunWitch: (id, until) => stunWitch(g, id, until),
     nudgeWitch: (id, dx, dz) => { const W = g.witches[id]; if (!W || W.ko || potionPhase(g, W) || dashing(W.dash, witchTime(g, W)) || g.partyOver || W.body.mode !== "ground") return; W.body = { ...W.body, x: W.body.x + dx, z: W.body.z + dz }; },
     loseParty: id => {
       for (const w of g.witches) { w.leash.stack = w.leash.stack.filter(i => i !== id); w.leash.placed = w.leash.placed.filter(p => p.id !== id); }
@@ -1127,7 +1150,7 @@ function stepWitchParty(g: Game, controls: readonly Controls[], dt: number): voi
     return { x: w.x, z: w.z, onFoot: w.mode === "ground" && !w.seated && !w.perch && !potionPhase(g, W), moving, treetop: w.mode === "treetop" };
   });
   // Round the floor they keep clear of trees, rocks, the speakers and the treehouse and its clearing (Ed, 2026-10-06).
-  const th = g.map.treehouse, clear = (x: number, z: number) => blinkClear(g, x, z) && Math.hypot(x - th.x, z - th.z) > t.treehouse.clear;
+  const th = g.map.treehouse, clear = (x: number, z: number) => clearOfScenery(g, x, z) && Math.hypot(x - th.x, z - th.z) > t.treehouse.clear;
   // Her soundsystem ruined, or the party over, she lies down to stargaze out past the speakers (Ed, 2026-10-11). Up in the treehouse
   // (perched: its rooms, rules/houseRooms.ts) she's not by the floor, so never idles into the party from there.
   stepPartyWitches(g.partyWitches, areas, { x: d.x, z: d.z, radius: d.radius, clear, ring: speakerRadius(t) + t.dancefloor.speakers.footprint }, players, g.clock.time, dt, t,
