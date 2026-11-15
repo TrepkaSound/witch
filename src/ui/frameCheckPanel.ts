@@ -11,6 +11,8 @@ export interface FrameCheckPanelHost {
   rung(): string;
   /** Whether her game is still paused: resumed under the check (the pad's back button reaches her page), the check stops. */
   paused(): boolean;
+  /** Her page's own loop held while the check runs (and let go after): it draws nothing and logs no stalls of its own meanwhile. */
+  hold(on: boolean): void;
   /** This browser's storage (null where refused) and the key the results are kept under. */
   store(): Storage | null;
   key: string;
@@ -76,11 +78,12 @@ export function frameCheckPanel(host: FrameCheckPanelHost): HTMLElement {
       else if (m.kind === "error") end(`failed: ${m.text}`);
     };
     const watch = setInterval(() => { if (!host.paused()) end("stopped: the game was resumed"); }, 250);
-    const end = (text: string) => { clearInterval(watch); window.removeEventListener("message", onMessage); box.remove(); running = null; status.textContent = `Frame check ${text}`; paint(); };
+    const end = (text: string) => { clearInterval(watch); window.removeEventListener("message", onMessage); box.remove(); running = null; host.hold(false); status.textContent = `Frame check ${text}`; paint(); };
     running = () => end("stopped");
     window.addEventListener("message", onMessage);
     frame.addEventListener("load", () => frame.contentWindow?.focus()); // (its keys are the check's: Esc there stops it, never resumes her game)
     document.body.append(box);
+    host.hold(true);
     status.textContent = "Frame check running…";
   };
   const start = button("Frame check", e => run(e.shiftKey), { class: "copyall", title: "Measure frame time on this machine: about 40 s of fixed scenes in a throwaway game (your own stays paused, untouched), then the milliseconds here to copy to the coordinator. Close other heavy tabs first. Shift-click: a half-second run of each scene" });
