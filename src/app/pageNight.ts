@@ -57,6 +57,8 @@ export function hostCollections(pageHost: PageHost, game: Game) {
 }
 
 
+/** A sail's or the bed's next morning read ahead from the moment she sails or sleeps (`morningAhead`: her nightie, rules/wakeUp.ts
+ *  morningAfter), its whole set asked at once (showLook); off (`on` false) as its wake-up starts, or if there's to be none. */
 export function aheadMorning(pageHost: PageHost, on: boolean): void {
   if (!on && !pageHost.morningAhead) return;
   pageHost.morningAhead = on ? morningAfter() : null;
@@ -91,6 +93,8 @@ export function bedFirstNow(pageHost: PageHost, n: Night): void {
   else { pageHost.dreamAfterDive = null; aheadMorning(pageHost, false); } // (no morning in bed after all: her look as it is)
 }
 
+/** It's landed: in her bed, she wakes as after the bed (the one wake-up, every morning: Ed, 2026-10-26, in place of his decision 10's shorter one), dreaming
+ *  first of a find on loan; at her decks (?opening=old), the night starts, the party spell cast, as the bedroom's scroll would. */
 export function arrived(pageHost: PageHost): void {
   pageHost.mutate("house: arrival", () => arrivedNow(pageHost));
 }
@@ -153,6 +157,9 @@ export function dressCreator(pageHost: PageHost): void {
   pageHost.creator.addButton("Zoo", () => { const u = new URL(location.href); u.searchParams.set("zoo", "1"); location.href = u.toString(); });
 }
 
+/** The sea chart over the night (the map table's): choosing the island she's on never starts a new night (Ed,
+ *  2026-10-21: "choosing the same island after a night has ended shouldn't start a new night - going to bed does that"): the chart
+ *  closes as Close does, nothing recorded, and the night (or its afterparty) goes on as it was; another sails. */
 export function chartOverNight(pageHost: PageHost, table?: string): void {
   const n = pageHost.N(), island = chartIsland(n.tuning.map?.island);
   const here = island ? { island, world: n.tuning.map?.world ?? 0, label: stayLabel(n.game.partyOver ? "over" : n.game.win?.phase === "won" ? "won" : "on") } : undefined;
@@ -396,6 +403,12 @@ export function armGesture(pageHost: PageHost): void {
   for (const ev of ["keydown", "pointerdown"]) addEventListener(ev, () => { pageHost.gestured = true; }, { capture: true });
 }
 
+/** The party spell (Ed, 2026-10-06): cast by the creator's scroll (ui/spellScroll.ts), its burst starting play; without the
+ *  creator (?creator=0&spell=wait), Enter (once play has begun, so the start screen's Enter isn't it) or her spell key casts it
+ *  on the next step. */
+// Wanted until it's cast (Ed's v3668, stuck at the decks: a press dropped on a frame too short for a step, or a start that found the
+// game frozen, left her held with no spell): pressed on every frame the clock runs, till the rules have it.
+// (the night's flags.castWanted)
 // (a night woken in her bedroom: E at her decks casts it, rules/wakeUp.ts)
 export function queueCast(pageHost: PageHost): void { const n = pageHost.N(); if (awaitingSpell(n.game.party) && !n.game.wake) n.flags.castWanted = true; }
 

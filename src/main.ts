@@ -521,12 +521,7 @@ startEl.style.display = "none";
 // The controls list as bound now (ui/controlsText.ts; Ed, 2026-10-28: a remap shows everywhere), again on a change (the list moves into
 // the creator's and the pause page's tabs: the element itself kept).
 { const keysEl = startEl.querySelector<HTMLElement>(".keys"); if (keysEl) { fillControls(keysEl); bindings.onChange(() => fillControls(keysEl)); } }
-/** The party spell (Ed, 2026-10-06): cast by the creator's scroll (ui/spellScroll.ts), its burst starting play; without the
- *  creator (?creator=0&spell=wait), Enter (once play has begun, so the start screen's Enter isn't it) or her spell key casts it
- *  on the next step. */
-// Wanted until it's cast (Ed's v3668, stuck at the decks: a press dropped on a frame too short for a step, or a start that found the
-// game frozen, left her held with no spell): pressed on every frame the clock runs, till the rules have it.
-// (the night's flags.castWanted)
+// (the party spell: app/pageNight.ts queueCast)
 window.addEventListener("keydown", e => { if (e.code === "Enter" && N().game.clock.time > 0.3 && !creator.open && !chartOpen() && !phone.open) queueCast(pageHost); }); // (Enter on the chart sails)
 // (the clock, its pops and the debug overlay: the night's HUD, app/hud.ts)
 
@@ -619,10 +614,6 @@ let gestured = false;
 let gestureArmed = false;
 if (bootArrival) armGesture(pageHost);
 if (bootArrival) bootArrival.onReveal = () => revealArt(pageHost);
-/** A sail's or the bed's next morning read ahead from the moment she sails or sleeps (`morningAhead`: her nightie, rules/wakeUp.ts
- *  morningAfter), its whole set asked at once (showLook); off (`on` false) as its wake-up starts, or if there's to be none. */
-/** It's landed: in her bed, she wakes as after the bed (the one wake-up, every morning: Ed, 2026-10-26, in place of his decision 10's shorter one), dreaming
- *  first of a find on loan; at her decks (?opening=old), the night starts, the party spell cast, as the bedroom's scroll would. */
 
 // The character creator (Ed, 2026-10-05; "dressing up" to the player, the house's Bedroom being the room with the bed): mid-night from
 // the treehouse's stations (below), and at a load only where it neither wakes in her bedroom (the default since Ed, 2026-10-23), arrives
@@ -894,9 +885,6 @@ const SLOW_AUDIO = 150; let slowAudioLogged = 0; // (ms: a frame's audio work wo
  *  window.witch.frame steps and draws one frame of a fixed length instead. */
 const loop = { manual: false, get bot() { return bot; }, get botTag() { return botTag; }, get ready() { return N().flags.ready; } };
 const spellButton = document.getElementById("spell");
-/** The sea chart over the night (the map table's): choosing the island she's on never starts a new night (Ed,
- *  2026-10-21: "choosing the same island after a night has ended shouldn't start a new night - going to bed does that"): the chart
- *  closes as Close does, nothing recorded, and the night (or its afterparty) goes on as it was; another sails. */
 /** The map table's chart (Ed, 2026-10-23: "Map menu slides in from the bottom when you go near it, like the clothes stations"; since
  *  his playtest of 2026-10-26, E at it: rules/stations.ts tableOf, ui/chartOverlay.ts `table`): up from the bottom, the night held
  *  behind it; she moves and it slides away. The table it's up at. */
@@ -921,10 +909,10 @@ let backArmed = false;
 /** ?debug=sail's test of the fallback: window.witch.sail(island, seed, { fail: true }). */
 let sailFail = false;
 let frameHouseEvents: HouseEvents | null = null;
-/** Controls with nothing pressed or held (the aim left where it is). */
-/** The house object E was pressed at in the last step (the rules' "house" event: rules/sigilButton.ts), or null; never in a bot's game. */
 view.onUse = down => { if (down) input.touch.sigil = true; input.touch.sigilHeld = down; }; // (a tap on a use prompt: the touch sigil button's press)
+/** The house object E was pressed at in the last step (the rules' "house" event: rules/sigilButton.ts), or null; never in a bot's game. */
 const usedAt = (g: Game): string | null => (bot ? null : (frameHouseEvents?.leash ?? g.leashEvents).find(e => e.kind === "house" && e.obj && e.obj !== "slept" && localHouseAction(e, phone.active ? phone.visiting ? 1 : 0 : null))?.obj ?? null);
+/** Controls with nothing pressed or held (the aim left where it is). */
 const stillControls = <T extends object>(c: T): T => Object.fromEntries(Object.entries(c).map(([k, v]) => [k, typeof v === "boolean" ? false : typeof v === "number" ? 0 : v])) as T;
 /** The station panels' closes, the last few (window.witch.stationShuts): why, her clock, and whether paused. */
 const stationShuts: { why: string; at: number; frozen: boolean; station: string | null }[] = [];
