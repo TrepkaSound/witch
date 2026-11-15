@@ -86,7 +86,7 @@ import { usesEdLayout } from "./app/houseLayout";
 
 
 import { FIND_KINDS, type FindKindId } from "./rules/finds";
-import { fitBroom, loadBroom, migrateBroom } from "./app/broomSave";
+import { fitBroom, migrateBroom } from "./app/broomSave";
 import { bareBroom } from "./rules/broomParts";
 import { loadOwned } from "./app/owned";
 import { ownedToChoose, unlockAll } from "./app/debugUnlock";
@@ -154,13 +154,12 @@ import { pageMutation, pageFocus, recordedStep } from "./app/recordingHooks";
 import { nightSaveNotice } from "./ui/resumeNight";
 import { restoreSettingsBase } from "./app/playerSettings";
 
-import { openPotionLab as a4_openPotionLab, pauseControls as a4_pauseControls, updatePauseMenus as a4_updatePauseMenus, openMusicLab as a4_openMusicLab, installPause1 as a4_installPause1, installPause2 as a4_installPause2, installPause3 as a4_installPause3, installPause4 as a4_installPause4, installPause5 as a4_installPause5, installPause6 as a4_installPause6, installPause7 as a4_installPause7, installPause8 as a4_installPause8, installPause9 as a4_installPause9 } from "./app/pagePause";
-import { reconcilePickers as a4_reconcilePickers, shutStation as a4_shutStation, findsCtx as a4_findsCtx, workshopNow as a4_workshopNow, useHouse as a4_useHouse, installStations1 as a4_installStations1, installStations2 as a4_installStations2, installStations3 as a4_installStations3, installStations4 as a4_installStations4, installStations5 as a4_installStations5, installStations6 as a4_installStations6, installStations7 as a4_installStations7, installStations8 as a4_installStations8, installStations9 as a4_installStations9, installStations10 as a4_installStations10, installStations11 as a4_installStations11, installStations12 as a4_installStations12, installStations13 as a4_installStations13, installStations14 as a4_installStations14, installStations15 as a4_installStations15, installStations16 as a4_installStations16, installStations17 as a4_installStations17, installStations18 as a4_installStations18 } from "./app/pageStations";
+import { openPotionLab as a4_openPotionLab, pauseControls as a4_pauseControls, updatePauseMenus as a4_updatePauseMenus, openMusicLab as a4_openMusicLab, installFreezeHooks, watchAudio } from "./app/pagePause";
+import { reconcilePickers as a4_reconcilePickers, shutStation as a4_shutStation, findsCtx as a4_findsCtx, workshopNow as a4_workshopNow, useHouse as a4_useHouse, wireCreator, wireStations, wireDjBooth, wireTelescope } from "./app/pageStations";
 import { keepNightie as a4_keepNightie, personalKit as a4_personalKit, hostCollections as a4_hostCollections, traceVisit as a4_traceVisit, aheadMorning as a4_aheadMorning, revealArt as a4_revealArt, bedFirst as a4_bedFirst, bedFirstNow as a4_bedFirstNow, arrived as a4_arrived, arrivedNow as a4_arrivedNow, wakeArrival as a4_wakeArrival, wakeArrivalNow as a4_wakeArrivalNow, start as a4_start, startDirect as a4_startDirect, dressCreator as a4_dressCreator, chartOverNight as a4_chartOverNight, chartWorldArg as a4_chartWorldArg, sailFromChart as a4_sailFromChart, recordSail as a4_recordSail, departFromChart as a4_departFromChart, wakeFirst as a4_wakeFirst, wakeFirstNow as a4_wakeFirstNow, sailInPlace as a4_sailInPlace, makeSailNight as a4_makeSailNight, newNight as a4_newNight, nightInPlace as a4_nightInPlace, leaveBot as a4_leaveBot, chartWorld as a4_chartWorld, soundNote as a4_soundNote, armGesture as a4_armGesture, queueCast as a4_queueCast, armBack as a4_armBack, wokenBefore as a4_wokenBefore, woke as a4_woke, mirrored as a4_mirrored, sawMirror as a4_sawMirror } from "./app/pageNight";
 import { lendFind as a4_lendFind, settleLoan as a4_settleLoan, settleLoanNow as a4_settleLoanNow, startDream as a4_startDream, herHead as a4_herHead, stepGuide as a4_stepGuide, partsNow as a4_partsNow } from "./app/pageFinds";
-import { botGame as a4_botGame, saveComment as a4_saveComment, restoreComment as a4_restoreComment, spawnHere as a4_spawnHere, spawnHereNow as a4_spawnHereNow, decidePanel as a4_decidePanel, keyNow as a4_keyNow, installDebug1 as a4_installDebug1, installDebug2 as a4_installDebug2, installDebug3 as a4_installDebug3, installDebug4 as a4_installDebug4, installDebug5 as a4_installDebug5, installDebug6 as a4_installDebug6, installDebug7 as a4_installDebug7, installDebug8 as a4_installDebug8, installDebug9 as a4_installDebug9, installDebug10 as a4_installDebug10, installDebug11 as a4_installDebug11, installDebug12 as a4_installDebug12, installDebug13 as a4_installDebug13, installDebug14 as a4_installDebug14, installDebug15 as a4_installDebug15, installDebug16 as a4_installDebug16, installDebug17 as a4_installDebug17, installDebug18 as a4_installDebug18, installDebug19 as a4_installDebug19, installDebug20 as a4_installDebug20, installDebug21 as a4_installDebug21, installDebug22 as a4_installDebug22, installDebug23 as a4_installDebug23, installDebug24 as a4_installDebug24, installDebug25 as a4_installDebug25, installDebug26 as a4_installDebug26, installDebug27 as a4_installDebug27, installDebug28 as a4_installDebug28, installDebug29 as a4_installDebug29, installDebug30 as a4_installDebug30, installDebug31 as a4_installDebug31, installDebug32 as a4_installDebug32, installDebug33 as a4_installDebug33 } from "./app/pageDebug";
+import { botGame as a4_botGame, saveComment as a4_saveComment, restoreComment as a4_restoreComment, spawnHere as a4_spawnHere, spawnHereNow as a4_spawnHereNow, decidePanel as a4_decidePanel, keyNow as a4_keyNow, installErrorBreadcrumbs, installDebugButtons, installPlaytestLog, installConsoleHooks } from "./app/pageDebug";
 import { updateChartWarm as a4_updateChartWarm, drawFrame as a4_drawFrame, frame as a4_frame, frameBody as a4_frameBody, overlayHead as a4_overlayHead } from "./app/pageFrame";
-import { createBuildNotice as a4_createBuildNotice, installBuildNotice1 as a4_installBuildNotice1 } from "./app/pageBuildNotice";
 
 const pageHost = {
   get ATTACK_DEBUG(): typeof ATTACK_DEBUG { return ATTACK_DEBUG; },
@@ -664,10 +663,9 @@ const sound = page.sound = new Sound(bootTuning, N().musicStyle, N().seed);
 sound.leyLink = () => view.ley.currentLink(); // (the pulse's fizz heard where the line is drawn)
 // The freeze (Esc, gamepad Start, the ❚❚ button): a true still for screenshots, . steps (platform/freeze.ts).
 const freeze = page.freeze = new Freeze(N().game, N().seed, BUILD);
-a4_installPause1(pageHost);
-a4_installPause2(pageHost);
-a4_installPause3(pageHost); // (in the bedroom too: Ed, 2026-10-14, "Can we pause from the bedroom?")
-a4_installPause4(pageHost); // (the Settings page's Esc is its own: it closes, the pause page stays) // (the bot game's Esc is its way back to the start screen: ui/botGame.ts)
+// Its hooks: pausing in the bedroom too (Ed, 2026-10-14, "Can we pause from the bedroom?"); the Settings page's Esc is its own (it
+// closes, the pause page stays), and the bot game's Esc is its way back to the start screen (ui/botGame.ts).
+installFreezeHooks(pageHost);
 const callArrival = guestArrival({ room: "bedroom2", equipment: game => {
   const witch = newWitchPlayer(1, 0, 0, game.tuning); setParts(witch.spells, bareBroom()); witch.spells.hat = "none"; return witch;
 } });
@@ -820,8 +818,9 @@ const creator = new Creator(style, savedLook, bootTuning.pixelSize);
 creator.version = typeof __BUILD__ === "string" ? __BUILD__.split(" ")[0] : "dev"; // (its version, top left: Ed, 2026-10-13)
 (window as unknown as { __creator: Creator }).__creator = creator; // (the creator's smoke scripts read her place in the room)
 // Her hat's spell (rules/spells.ts, app/loadout.ts): the creator's Hat box chooses it from the hats she owns, kept on this browser.
-a4_installStations1(pageHost); a4_installStations2(pageHost); // (the pause page's Unlock everything: every hat, app/debugUnlock.ts)
-a4_installStations3(pageHost); // A loaned hat is never saved; online choices wait for host approval.
+// (the pause page's Unlock everything: every hat, app/debugUnlock.ts; a loaned hat is never saved; online choices wait for host
+// approval; the scroll's burst: play, and the spell cast)
+wireCreator(pageHost);
 // Her room mid-night from the treehouse's rooms (rules/houseRooms.ts; Ed, 2026-10-19): E at a dressing station, the bags or the broom
 // stand opens it at only that station's choices (config/house/), the world running on at the house's tenth; its way out brings
 // her back where she stood, in her new look and broom: any hat lying about staying where it lies (Ed, 2026-10-12). They are the only
@@ -834,8 +833,7 @@ a4_installStations3(pageHost); // A loaned hat is never saved; online choices wa
 // still to find as silhouettes; each change goes on her a beat later and she turns to show it; choosing, the camera eases in on her
 // (camera.station), and out as she moves.
 const stations = new StationPanel(style, bootTuning.pixelSize);
-// (the bags' list: each bag firing, Juliet's BagPreview running the 💌 rules with its stats; Ed, 2026-10-29)
-a4_installStations4(pageHost);
+wireStations(pageHost);
 /** Something of the house's open at the end of the last frame (a station, the chart, the telescope, an instrument): a use press now
  *  closes it, nothing else (the frame below). */
 let openPrev = false;
@@ -850,28 +848,12 @@ let owned: Set<string> | null = null, stillAt = 0, liftUp = false;
 const findsCtx = (): FindsCtx => a4_findsCtx(pageHost);
 const menuWardrobe = () => phone.active ? new Set(phone.catalogue?.wardrobe ?? []) : ownedToChoose(findsCtx().owned());
 const menuRecords = () => phone.active ? phone.catalogue?.records ?? [] : ownedRecords();
-a4_installStations5(pageHost);
-a4_installStations6(pageHost); // (menu.back, E by default: platform/bindings.ts; the pad's, circle, comes through padControls)
 // Her DJ booth at the decks (Ed, 2026-10-29; ui/djBooth.ts): E there opens it (the wake-up's "booth" event); "Get this party started"
 // closes it and starts the party at the record's bpm (rules/wakeUp.ts startParty), the record remembered for next time.
 const booth = new DjBooth();
-a4_installStations7(pageHost);
-a4_installStations8(pageHost);
-a4_installStations9(pageHost);
-// The basin's Teeth button (Ed, 2026-11-07: "a 'brush your teeth' button that plays a short brushing animation with a little sparkle
-// and a sound, flavour only, no gameplay effect"): her brush frames facing us (render/view/witch.ts), scrubs and a glint
-// (platform/audio/chimes.ts brushTeeth) and a few sparkles at her face as it ends (ui/brushSparkle.ts). Nothing in the rules changes.
-a4_installStations10(pageHost);
+wireDjBooth(pageHost);
+// (the Teeth button's sparkles: app/pageStations.ts wireStations)
 const sparkle = new BrushSparkle(() => herHead());
-a4_installStations11(pageHost); // (Ed, 2026-10-26: she twirls while her new look draws)
-// The Workshop's modding stations (Ed, 2026-10-23, one bay then; three since 2026-11-07; docs/backlog/workshop.md): a part chosen goes on her broom at once, mid-night too (its stats
-// and its set's spell with it: rules/spells.ts setParts), and is kept on this browser for the nights after (app/broomSave.ts).
-a4_installStations12(pageHost); // Solo keeps fitted parts without any loan; online choices wait for host approval.
-// Her trail's colours (Ed, 2026-11-03: "set the colour set of your trail in the broom station and there are a few presets"; the Broom
-// station's Trail row, render/trailColours.ts): drawn at once and kept with her broom (app/broomSave.ts); cosmetic, her own view only
-// (the other player's trail isn't drawn online), so nothing waits on the host; a borrowed game's isn't kept.
-{ const t = loadBroom().trail ?? null; view.trailPreset = t; stations.setTrail(t); }
-a4_installStations13(pageHost);
 /** What the Workshop's stations show (ui/stationPanel.ts): the parts found, her broom, tonight's part to find, her tuning. */
 const workshopNow = (): WorkshopCtx => a4_workshopNow(pageHost);
 function reconcilePickers(): void { return a4_reconcilePickers(pageHost); }
@@ -913,13 +895,8 @@ const studio = new StudioPlayer(N().musicStyle, () => sound.audio, () => N().tun
 let keysTaken = "";
 const telescope = new TelescopeView(document.body, bootTuning.telescope?.vignette ?? 0.6);
 let scopeAt: string | null = null; // (the telescope it's open at)
-a4_installStations14(pageHost);
+wireTelescope(pageHost);
 const useHouse = (obj: string): void => a4_useHouse(pageHost, obj);
-a4_installStations15(pageHost); // (a new night in place: not till it's made)
-// (its room's ambience plays while it's open: overnight, 2026-10-06)
-a4_installStations16(pageHost);
-a4_installStations17(pageHost); // (the scroll's burst: play, and the spell cast)
-a4_installStations18(pageHost);
 // The bot game (Ed, 2026-10-06: "start the game and watch the skilled bot play"; ?bot=skilled|crude; the start
 // card's Bot game button is hidden with the card since Ed, 2026-10-30): rules/bot.ts plays in place of her controls, a seeded witch, no character creation. The bot's code loads
 // only for a bot game (overnight phase 2: out of the game's bundle); it starts as soon as both it and the forest are ready.
@@ -945,7 +922,7 @@ function start(): boolean { return a4_start(pageHost); }
 function startDirect(): void { return a4_startDirect(pageHost); }
 input.onAny = () => (N().arrival && !N().flags.landed ? true : start()); // (arriving: a key does nothing to the flight; the landing starts it)
 // The audio watchdog (app/sound.ts).
-a4_installPause5(pageHost);
+watchAudio(pageHost);
 // The pause page's test sliders (Ed, 2026-10-12; ui/decide.ts PauseSliders): down the left while frozen, the freeze quiet (no card
 // of its own: nothing else over the game), its stamp at their foot. Their code loads on the first freeze.
 let potionLab: import("./ui/potionLab").PotionLab | null = null;
@@ -955,11 +932,9 @@ let pauseSliders: import("./ui/decide").PauseSliders | null = null, pauseLoading
 // it down the right edge; Esc resumes with it up, so changes are heard in play; ✕ closes it. Its code loads on the first open.
 let musicLabPanel: import("./ui/musicLabPanel").MusicLabPanel | null = null, musicLabLoading = false;
 const openMusicLab = (): void => a4_openMusicLab(pageHost);
-a4_installPause6(pageHost);
-a4_installPause7(pageHost);
 // "A newer version is out" (Ed, 2026-10-14; app/newBuild.ts): read version.json on load, on pausing and every few minutes; shown in the
 // bedroom and on the pause page, and when a menu's code has been replaced under it.
-const newBuild: NewBuildNotice = a4_createBuildNotice(pageHost);
+const newBuild = new NewBuildNotice(BUILD, document.getElementById("new-build"));
 let menuGone = false;
 /** Controls and Options on the pause page (the opening, Ed's decision 3: "Controls are taught in the bedroom and kept in
  *  the pause menu"; Ed, 2026-10-23, the chart's corner gone with the chart-first start): where the creator's tabs were never set up,
@@ -971,7 +946,6 @@ function pauseControls(on: boolean): void { return a4_pauseControls(pageHost, on
 /** The house's drawing as it stood the moment the pause page opened (for the Report: Ed, 2026-11-03, a floor missing on a fresh
  *  link's first morning came back after a pause and unpause, so the Report's own reading, taken paused, could be after the cure). */
 let houseAtPause: Record<string, unknown> | null = null;
-a4_installPause8(pageHost);
 // Screen shake when she's hit, and the camera's sub-pixel glide (app/shake.ts).
 const shake = page.shake = new ScreenShake(N().game, bootTuning, view, canvas, params), shakeEl = shake.option;
 // Ed, 2026-10-30: the retired card is hidden on every route. Controls and Options remain available in existing menus;
@@ -988,7 +962,7 @@ let decide: DecidePanel | null = null, decideLoading = false;
 const decidePanel = (open: boolean): void => a4_decidePanel(pageHost, open);
 if (params.has("decide")) decidePanel(true);
 window.addEventListener("keydown", e => { if (e.code !== "F2") return; e.preventDefault(); if (decide) decide.toggle(); else decidePanel(true); });
-a4_installBuildNotice1(pageHost);
+document.addEventListener("visibilitychange", () => { if (document.hidden) { N().flags.last = 0; chartWarmer.pause(); } }); // (before the autosave's own, below)
 addEventListener('pagehide', () => chartWarmer.pause());
 
 const endedNights = new WeakSet<Game>();
@@ -1004,7 +978,7 @@ void currentJournal()?.ready.then(({ unexpected, persistent }) => {
   dismiss.textContent = "Dismiss"; dismiss.onclick = () => notice.remove();
   notice.append(download, dismiss); document.body.append(notice);
 });
-a4_installDebug1(pageHost);
+installErrorBreadcrumbs(pageHost);
 let lastRecordedInput = "", lastInputAt = -Infinity;
 function saveComment(text: string): Promise<string> { return a4_saveComment(pageHost, text); }
 function restoreComment(file: File): Promise<void> { return a4_restoreComment(pageHost, file); }
@@ -1135,8 +1109,6 @@ const stallLog = new StallLog(summary => {
   journalEntry("slowframe", summary);
   notable("warning", `Slow frames: ${summary.count}; worst gap ${summary.maxGap} ms, work ${summary.maxWork} ms`, { loading: summary.loadingCount, parts: summary.worst.parts });
 });
-// (the playtest log's hooks read the night on now, so they carry to the next night's run as they are: app/night.ts)
-a4_installDebug2(pageHost);
 const frameGpu = frameGpuCounts(() => view.renderer.info.programs, () => view.renderer.info.memory.textures); // (each frame's programs and textures made, for the stall log)
 const shotProgramCounts = params.has("shot") ? renderProgramCounts(() => view.renderer.info.programs, view.renderer.extensions.has("KHR_parallel_shader_compile")) : null;
 // What a builder needs from a screenshot of the overlay (Ed, 2026-10-14; app/repro.ts): the link that rebuilds what she saw, the
@@ -1176,17 +1148,11 @@ findsPanel.mutate = action => { if (!phone.active) mutate("debug: finds changes"
 // (for a look at it; under ?shot= it's drawn only when asked, window.__dream.draw(seconds): tools/loan/shots.cjs).
 { const [v, k, ...r] = (params.get("dream") ?? "").split(":"), id = r.join(":");
   if ((v === "won" || v === "lost") && FIND_KINDS.some(q => q.id === k && q.items.includes(id))) startDream({ loan: lend(k as FindKindId, id, { look: null, hat: "none", parts: N().game.witches[0].spells.parts }), won: v === "won" }, true); }
-a4_installDebug3(pageHost);
+installDebugButtons(pageHost);
 const devFinds = new URLSearchParams(location.search).get("dev") === "finds";
 if (devFinds) findsPanel.toggle(true);
 // ?spawnfind=kind:item (or tonight): spawned once, as soon as she first stands on open ground (the treehouse isn't), for shots.
 let spawnWanted = new URLSearchParams(location.search).get("spawnfind");
-a4_installDebug4(pageHost);
-a4_installDebug5(pageHost);
-a4_installDebug6(pageHost);
-a4_installDebug7(pageHost);
-a4_installDebug8(pageHost);
-a4_installDebug9(pageHost);
 // The pause page's Report (ui/visualReport.ts): the frame drawn with each neutral pair, where they differ, the GPU, her place, the
 // camera and the repro link. window.__neutralCheck: the same pairs' numbers for the smoke test (tools/smoke/smoke.cjs "neutral").
 const reportHost = () => {
@@ -1198,12 +1164,9 @@ const reportHost = () => {
   };
 };
 (window as unknown as { __neutralCheck: () => Promise<unknown> }).__neutralCheck = () => import("./ui/visualReport").then(({ neutralCheck }) => neutralCheck(reportHost()));
-a4_installDebug10(pageHost);
 // The comparability key (app/compareKey.ts; Ed, 2026-10-26: "only compare like with like"): with the playtest log's run and its
 // samples' scenes, and for the browser tools (window.witch.compareKey(spot): tools/bench/comparable.cjs pageKey).
 const keyNow = (spot?: string): ReturnType<typeof compareKey> => a4_keyNow(pageHost, spot);
-a4_installDebug11(pageHost);
-a4_installDebug12(pageHost);
 // The measured output (Ed, round 16: "Is there a way for the game to know if anything is being sent to the speakers or not?";
 // platform/audio/outputMeter.ts): what leaves the game for the speakers, read a few times a second; silence while the music
 // should be heard goes in the playtest log (the pause page's Download log) with where she was and the nearest stall. ?micCheck=1 (debug only) also
@@ -1230,11 +1193,7 @@ meter.onSilence = e => {
 // trouble kept in the log. A lost GL context can't be mended in place (the atlases let their pixels go once uploaded, and the
 // ground's tiles live only on the GPU), so once it's back the night is loaded anew from the repro link: the island, the waves
 // brought on, her place and the zoom (DECISION FOR ED: the fights in between aren't replayed).
-a4_installDebug13(pageHost);
-a4_installPause9(pageHost);
-a4_installDebug14(pageHost);
-a4_installDebug15(pageHost);
-a4_installDebug16(pageHost);
+installPlaytestLog(pageHost);
 const micWanted = params.get("micCheck") === "1";
 let chartHeld = false, chartWasPaused = false; // (the sea chart open: the night held behind it)
 let lastShedS = -1; // (the sound's safety valve, checked once a second: platform/audio/shed.ts)
@@ -1334,9 +1293,6 @@ function overlayHead(): string[] { return a4_overlayHead(pageHost); }
 requestAnimationFrame(frame);
 
 
-// For the smoke test, the tools and for poking at in the console (app/hooks.ts).
-a4_installDebug17(pageHost);
-a4_installDebug18(pageHost);
 const telephoneBatchProof = (batch: typeof view.witchBatch | null) => {
   if (!batch) return null;
   const material = batch.mesh.material as { depthTest?: boolean; transparent?: boolean };
@@ -1351,47 +1307,8 @@ const telephoneBatchProof = (batch: typeof view.witchBatch | null) => {
         centre: view.screenOf(p.x + up.x * height / 2, p.y + up.y * height / 2, p.z + up.z * height / 2, true) };
     }) };
 };
-a4_installDebug19(pageHost);
-// witch.take(kind, item): tonight's find taken where she stands, as E at it takes it (the kind's claim, the hats' floor, the loan):
-// for the tools (tools/loan/shots.cjs) to look at a night with a find on loan without walking to it.
-a4_installDebug20(pageHost);
-a4_installDebug21(pageHost);
-// witch.dream("won" | "lost", kind, item): her dream of such a loan over the night, its own dark under it (as ?dream=); under ?shot=
-// drawn only when asked, window.__dream.draw(seconds) (tools/loan/shots.cjs).
-// window.witch.guide: her guidance pin's state, what's kept of it (what's new, the islands seen) the pickups' hooks, and a step of it (window.witch.frame's manual frames don't run the page's loop: shots).
-// window.witch.wakeUp(yesterday): a wake-up in her bed as the game starts one (rules/wakeUp.ts startWake), with or without a night
-// played before it (the shots of the first morning's hat on the hats' floor, and of last night's pile).
-a4_installDebug22(pageHost);
-// window.witch.stationShuts: the station panels' last closes, why, when, and whether paused (the pause check's broom bay, closed
-// under the pause on the slow runner now and then: tools/smoke/pause-on-top.cjs prints them when a row fails).
-a4_installDebug23(pageHost);
-a4_installDebug24(pageHost);
-a4_installDebug25(pageHost);
-// ?debug=sail (docs/plans/sail-without-reload.md, PR 4b): another night in place, made as a sail will make one (app/night.ts
-// startNight, the view taking it: View.setGame), its start's art made and play started as the start screen's would; for
-// tools/sail/swap.cjs.
-a4_installDebug26(pageHost);
-// window.witch.sail(island, seed, { end, fail }): a sail as the map table's chart sails (sailFromChart, the same path: its record
-// on the chart, the way by sail.inPlace or ?sail=, in place the fallback), for tools/sail/leak.cjs and swap.cjs; `end` the
-// chart's flight end (a plain one out at sea south of the island if not given: its still a dark screen; null, none), `fail`
-// (?debug=sail only) the sail in place made to throw, to see the fallback. Resolves once the night's start is ready.
-// window.witch.land(): the tools' own way past a sail's dive (the smoke run, tools/sail/leak.cjs), straight to her bed as a dive whose
-// shader grace ran out lands; no player can (Ed, 2026-11-06: "they shouldn't be skippable because loading must happen"). False if
-// there's no dive under way.
-a4_installDebug27(pageHost);
-// window.witch.chart(): the sea chart over the night, as the map table opens it (tools/smoke/quick.cjs: choosing her own island);
-// window.witch.chart("mapTable"), as the table's own, sailing on a hold (tools/sail/hold.cjs).
-a4_installDebug28(pageHost);
-// The bestiary book's zoo over the night, for the tools (tools/zoo/perf.cjs): open and close it as the book and its × do.
-a4_installDebug29(pageHost);
-// The Studio's instruments for the tools (tools/studio/check.cjs): where she's at and what it plays (its meter).
-a4_installDebug30(pageHost);
-// The telescope for the tools (tools/telescope/shots.cjs, tools/stars/shots.cjs): look through it pointed at a bearing and zoom (0
-// wide, 1 close) and an elevation (degrees up; its lowest if not given), or stop.
-a4_installDebug31(pageHost);
-a4_installDebug32(pageHost);
-// Known synchronous console mutations use declared boundaries too. Arbitrary direct writes to witch.game remain detectable replay failures.
-a4_installDebug33(pageHost);
+// For the smoke test, the tools and for poking at in the console (app/hooks.ts, app/pageDebug.ts installConsoleHooks).
+installConsoleHooks(pageHost);
 // The frame check's run (app/frameCheckRun.ts): the loop stood still, play begun with no key and no sound, the scenes driven and timed.
 {
   const frames = frameCheckFrames(params);

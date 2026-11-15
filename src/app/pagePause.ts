@@ -62,60 +62,41 @@ export function openMusicLab(pageHost: PageHost): void {
   }, () => { pageHost.musicLabLoading = false; window.alert("The Music Lab's code couldn't load (a newer build may be up: reload the page)."); });
 }
 
-export function installPause1(pageHost: PageHost): void {
-pageHost.freeze.mutate = pageHost.mutate;
+/** The freeze's hooks (platform/freeze.ts): what a frozen step records, when Esc is its, and what pausing opens and closes (the pause page's sliders, its corner buttons, the Report's house reading). */
+export function installFreezeHooks(pageHost: PageHost): void {
+  pageHost.freeze.mutate = pageHost.mutate;
+  pageHost.freeze.advance = (game, controls, dt) => { if (!pageHost.phone.active && !pageHost.N().spec.borrowed) recordedStep(game, controls, dt, pageHost.BUILD, pageHost.captureRecording); };
+  pageHost.freeze.started = () => (pageHost.startEl.style.display === "none" || pageHost.creator.open) && !pageHost.studio.at;
+  pageHost.freeze.ownsEsc = () => !pageHost.bot && !document.querySelector("#settings-page.open, #potion-lab.open");
+  pageHost.freeze.quiet = true;
+  pageHost.freeze.onStamp = text => pageHost.pauseSliders?.setStamp(text);
+  pageHost.freeze.onToggle = on => {
+    if (on) pageHost.houseAtPause = pageHost.view.houseRooms ? { at: Math.round(performance.now()), ...pageHost.view.houseRooms.reportState(pageHost.view) } : null;
+    notable("screen", on ? "Paused" : "Resumed");
+    pageHost.input.release(); // Held keys and pending presses belong to the old input owner, never to the resumed game.
+    pageHost.settingsPage.gate(); // (suspended while paused, and muted in the background if so set: app/settingsPage.ts)
+    if (!on) { pageHost.settingsPage.close(); pageHost.potionLab?.close(); }
+    pageHost.pauseControls(on);
+    pageHost.musicLabPanel?.frozen(on);
+    pageHost.creator.frozen = on; // (paused in her room: its keys and clicks wait, Esc resumes; the sliders backed over its panel)
+    if (on) void pageHost.newBuild.check().then(() => pageHost.pauseSliders?.paintNewBuild()); // (the pause panel's "Load latest version": playtest 31 Oct item 11)
+    if (pageHost.pauseSliders) { pageHost.pauseSliders.show(on, pageHost.creator.open); return; }
+    if (!on || pageHost.pauseLoading) return;
+    pageHost.pauseLoading = true;
+    void Promise.all([import("../ui/decide"), import("../ui/frameCheckPanel")]).then(([{ PauseSliders }, { frameCheckPanel }]) => {
+      const report = () => import("../ui/visualReport").then(({ report }) => report(pageHost.reportHost()));
+      pageHost.pauseSliders = new PauseSliders({ resetAll: { run: () => pageHost.deleteSaves(null), shown: () => !pageHost.savesLocked() }, newBuild: { latest: () => pageHost.newBuild.latest, load: () => location.reload() }, mutate: pageHost.tuningMutation, saveComment: pageHost.saveComment, restoreComment: pageHost.restoreComment, downloadReadableLog: () => { void pageHost.N().playtest.download("text"); }, settings: () => pageHost.settingsPage.show(), get tuning() { return pageHost.phone.preferences(pageHost.N().game); }, get seed() { return pageHost.N().game.seed; }, version: pageHost.BUILD, live: pageHost.knobLive, report, potionLab: () => { void pageHost.openPotionLab(); }, frameCheck: () => frameCheckPanel({ rung: () => (pageHost.ladder.state.mode === "off" ? "off" : String(pageHost.ladder.state.rung)), paused: () => pageHost.freeze.frozen, hold: on => { pageHost.loop.manual = on; }, store: localStore, key: FRAME_CHECK_KEY }), musicLab: pageHost.openMusicLab, audioTest: () => { window.open("audio-test/", "_blank", "noopener"); }, downloadLog: () => pageHost.N().playtest.download(), unlockAll: { get: () => unlockAll(), set: on => { if (pageHost.phone.active) return; pageHost.mutate("debug: unlock all", () => { setUnlockAll(on); if (on) stockMushroomBaskets(pageHost.N().game); for (const W of pageHost.N().game.witches) syncHatUnlock(W, on, pageHost.params); pageHost.creator.hats = pageHost.N().game.spells.hats; }); } }, defaults: { text: () => defaultsText(lookWithoutLoan((pageHost.page.look() ?? pageHost.creator.genome()) as Record<string, unknown> | null, pageHost.loan), partsWithoutLoan(pageHost.N().game.witches[0].spells.parts, pageHost.loan)), tryIt: () => { window.open(newWitchLink(location.href), "_blank", "noopener"); }, shown: () => pageHost.N().hud.debugOn || unlockAll() }, fightArena: () => { window.open(fightLink(newFightSeed()), "_blank", "noopener"); }, finds: () => pageHost.findsPanel.toggle(true), findsShown: () => pageHost.N().hud.debugOn || pageHost.devFinds, quality: { lines: () => pageHost.ladder.lines(), options: () => pageHost.ladder.options(), current: () => pageHost.ladder.current(), choose: v => { pageHost.ladder.choose(v); pageHost.ladder.apply(pageHost.phone.preferences(pageHost.N().game)); pageHost.viewRevision++; } } });
+      requestAnimationFrame(() => pageHost.pauseSliders!.show(pageHost.freeze.frozen, pageHost.creator.open)); // (a frame shut first, so it slides in)
+    }, () => { // (its files replaced under it: Ed, 2026-10-14, "the menu does not appear")
+      pageHost.pauseLoading = false;
+      void pageHost.newBuild.check().then(() => { if (pageHost.newBuild.latest) pageHost.menuGone = true; else window.alert("A newer build of the game is up, so the pause page can't load: reload the page (Shift+Reload)."); });
+    });
+
+  };
+  pageHost.freeze.extra = () => [gpuLine(pageHost.view)];
 }
 
-export function installPause2(pageHost: PageHost): void {
-pageHost.freeze.advance = (game, controls, dt) => { if (!pageHost.phone.active && !pageHost.N().spec.borrowed) recordedStep(game, controls, dt, pageHost.BUILD, pageHost.captureRecording); };
-}
-
-export function installPause3(pageHost: PageHost): void {
-pageHost.freeze.started = () => (pageHost.startEl.style.display === "none" || pageHost.creator.open) && !pageHost.studio.at;
-}
-
-export function installPause4(pageHost: PageHost): void {
-pageHost.freeze.ownsEsc = () => !pageHost.bot && !document.querySelector("#settings-page.open, #potion-lab.open");
-}
-
-export function installPause5(pageHost: PageHost): void {
-pageHost.sound.watch(() => !pageHost.N().game.clock.paused && !pageHost.freeze.frozen && !document.hidden && !mutedAway(), () => pageHost.N().game.speakerBoot.some(t => t !== null), () => pageHost.N().playtest);
-}
-
-export function installPause6(pageHost: PageHost): void {
-pageHost.freeze.quiet = true;
-}
-
-export function installPause7(pageHost: PageHost): void {
-pageHost.freeze.onStamp = text => pageHost.pauseSliders?.setStamp(text);
-}
-
-export function installPause8(pageHost: PageHost): void {
-pageHost.freeze.onToggle = on => {
-  if (on) pageHost.houseAtPause = pageHost.view.houseRooms ? { at: Math.round(performance.now()), ...pageHost.view.houseRooms.reportState(pageHost.view) } : null;
-  notable("screen", on ? "Paused" : "Resumed");
-  pageHost.input.release(); // Held keys and pending presses belong to the old input owner, never to the resumed game.
-  pageHost.settingsPage.gate(); // (suspended while paused, and muted in the background if so set: app/settingsPage.ts)
-  if (!on) { pageHost.settingsPage.close(); pageHost.potionLab?.close(); }
-  pageHost.pauseControls(on);
-  pageHost.musicLabPanel?.frozen(on);
-  pageHost.creator.frozen = on; // (paused in her room: its keys and clicks wait, Esc resumes; the sliders backed over its panel)
-  if (on) void pageHost.newBuild.check().then(() => pageHost.pauseSliders?.paintNewBuild()); // (the pause panel's "Load latest version": playtest 31 Oct item 11)
-  if (pageHost.pauseSliders) { pageHost.pauseSliders.show(on, pageHost.creator.open); return; }
-  if (!on || pageHost.pauseLoading) return;
-  pageHost.pauseLoading = true;
-  void Promise.all([import("../ui/decide"), import("../ui/frameCheckPanel")]).then(([{ PauseSliders }, { frameCheckPanel }]) => {
-    const report = () => import("../ui/visualReport").then(({ report }) => report(pageHost.reportHost()));
-    pageHost.pauseSliders = new PauseSliders({ resetAll: { run: () => pageHost.deleteSaves(null), shown: () => !pageHost.savesLocked() }, newBuild: { latest: () => pageHost.newBuild.latest, load: () => location.reload() }, mutate: pageHost.tuningMutation, saveComment: pageHost.saveComment, restoreComment: pageHost.restoreComment, downloadReadableLog: () => { void pageHost.N().playtest.download("text"); }, settings: () => pageHost.settingsPage.show(), get tuning() { return pageHost.phone.preferences(pageHost.N().game); }, get seed() { return pageHost.N().game.seed; }, version: pageHost.BUILD, live: pageHost.knobLive, report, potionLab: () => { void pageHost.openPotionLab(); }, frameCheck: () => frameCheckPanel({ rung: () => (pageHost.ladder.state.mode === "off" ? "off" : String(pageHost.ladder.state.rung)), paused: () => pageHost.freeze.frozen, hold: on => { pageHost.loop.manual = on; }, store: localStore, key: FRAME_CHECK_KEY }), musicLab: pageHost.openMusicLab, audioTest: () => { window.open("audio-test/", "_blank", "noopener"); }, downloadLog: () => pageHost.N().playtest.download(), unlockAll: { get: () => unlockAll(), set: on => { if (pageHost.phone.active) return; pageHost.mutate("debug: unlock all", () => { setUnlockAll(on); if (on) stockMushroomBaskets(pageHost.N().game); for (const W of pageHost.N().game.witches) syncHatUnlock(W, on, pageHost.params); pageHost.creator.hats = pageHost.N().game.spells.hats; }); } }, defaults: { text: () => defaultsText(lookWithoutLoan((pageHost.page.look() ?? pageHost.creator.genome()) as Record<string, unknown> | null, pageHost.loan), partsWithoutLoan(pageHost.N().game.witches[0].spells.parts, pageHost.loan)), tryIt: () => { window.open(newWitchLink(location.href), "_blank", "noopener"); }, shown: () => pageHost.N().hud.debugOn || unlockAll() }, fightArena: () => { window.open(fightLink(newFightSeed()), "_blank", "noopener"); }, finds: () => pageHost.findsPanel.toggle(true), findsShown: () => pageHost.N().hud.debugOn || pageHost.devFinds, quality: { lines: () => pageHost.ladder.lines(), options: () => pageHost.ladder.options(), current: () => pageHost.ladder.current(), choose: v => { pageHost.ladder.choose(v); pageHost.ladder.apply(pageHost.phone.preferences(pageHost.N().game)); pageHost.viewRevision++; } } });
-    requestAnimationFrame(() => pageHost.pauseSliders!.show(pageHost.freeze.frozen, pageHost.creator.open)); // (a frame shut first, so it slides in)
-  }, () => { // (its files replaced under it: Ed, 2026-10-14, "the menu does not appear")
-    pageHost.pauseLoading = false;
-    void pageHost.newBuild.check().then(() => { if (pageHost.newBuild.latest) pageHost.menuGone = true; else window.alert("A newer build of the game is up, so the pause page can't load: reload the page (Shift+Reload)."); });
-  });
-
-};
-}
-
-export function installPause9(pageHost: PageHost): void {
-pageHost.freeze.extra = () => [gpuLine(pageHost.view)];
+/** The audio watchdog (app/sound.ts): mends the sound when it should be heard and isn't. */
+export function watchAudio(pageHost: PageHost): void {
+  pageHost.sound.watch(() => !pageHost.N().game.clock.paused && !pageHost.freeze.frozen && !document.hidden && !mutedAway(), () => pageHost.N().game.speakerBoot.some(t => t !== null), () => pageHost.N().playtest);
 }
