@@ -14,6 +14,9 @@ date of Ed's ruling. They were checked line by line against the code on 2026-11-
 | [leash.md](leash.md) | The leash, chains and sigils: the stack, placing, the cast, what grounds her. |
 | [movement.md](movement.md) | Her movement: flying, the blink, throws, collisions (only lakes since 2026-11-13). |
 
+`docs/HOW-THE-GAME-WORKS.md` is the long walk-through of the whole game. It is older and was not rechecked line by line; where it and
+a page here disagree, the page is the newer check (the stale-ruling check reads it too).
+
 ## Keeping them true
 
 1. **The code wins.** If a page and the code disagree, the code is what the game does: fix the page in the same piece of work, and

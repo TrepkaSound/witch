@@ -93,11 +93,7 @@ No clear contradiction found. Three places where the code does something Ed's ne
 
 ## Stale comments or notes seen
 
-1. `src/rules/dash.ts#She never lands in a trunk, a rock or a soundsystem`: the file's header still says the blink is shortened to clear scenery. Since 2026-11-13 only a lake on foot or the zoo's fence shortens it.
 2. `src/rules/dash.ts#toward the cursor`: the comment on startDash describes blinking toward the cursor first. `dash.toCursor` is false, so she blinks the way she steers.
-3. `src/rules/game.ts#One adult stops you taking off. Three young do.`: the comment over the grounding check quotes the 2026-10-18 weight rule ("by weight", `leash.grounded`). The code uses the 2026-11-03 rule: any adult or legend, never youths.
-4. `docs/HOW-THE-GAME-WORKS.md#She never lands inside a tree, rock, soundsystem, speaker or the treehouse.`: no longer true (2026-11-13).
-5. `docs/HOW-THE-GAME-WORKS.md#She's untouchable only for the blink's 0.05 s`: the live time is 0.2 s (`dodge.a.gone`, used because `dodge.a.on` is true). The dash note in `config/knobs/witch.json#knobs.dash` says the same ("For gone seconds (a few frames)").
 6. `docs/HOW-THE-GAME-WORKS.md#Nothing pulls her out of the sky.`: since the taut chain (2026-11-12) pulling past a chain's end in the treetops brings her down. The same file's "never faster than its own top speed" for a dragged creature is also no longer true on foot.
 7. `docs/HOW-THE-GAME-WORKS.md#at least 12 m from a charge, at most 14 m`: omits the badger's 20 m barge, and the section does not say a creature's stun is now a slow.
 8. `config/knobs/witch.json#knobs.dash`: its note says "then cooldown seconds before the next", one blink with its own cooldown. She has two, on the shared counter.

@@ -91,9 +91,8 @@ None found.
 3. `config/knobs/creatures.json#combat.daze` (its "what") says it lies stunned "before it runs off home". Same.
 4. `docs/notes/gameplay.md#**Dazed**: a knocked-down wild creature` says "lying still a while (still invitable) before it runs off". Same.
 5. `src/rules/creatures.ts#Wild legends are rare, late threats` (the file header) says a legend is "asleep until the party reaches it". Waves do not wake a legend: it turns restless only when none of its kind is in its area.
-6. `src/rules/creatures.ts#its area's wave → waking (wildLegends.wake seconds, untouchable)` (the `legendState` field's comment) lists states asleep, waking, awake, beaten, slept. The live list is asleep, restless, angry, happy (`LEGEND_STATES`).
-7. `src/rules/inviteWakes.ts#leaving it, they lose interest as before` says hunters lose interest when she leaves their area. Since 2026-10-31 they follow her on foot and give up only when she is in the air outside it.
-8. `config/knobs/creatures.json#hunt` (its "what") says they hunt her "while she's in it", and its undated decision says "they should lose interest and go home if you leave their area, as they did before". Same as line 7 (the knob's own notes have the newer rule).
-9. `src/rules/combat/targeting.ts#One already after her keeps her out to the band` says a pursuer keeps her only out to the chase band. `valid` follows her anywhere on the ground.
-10. `src/rules/clear.ts#transforms its runestone at once` (the file header) and `src/rules/game.ts#function stepClear` (its comment) describe automatic clearing. With the cast on (the live setting) `stepClear` is not run: a stone converts only by her spell or its wave.
-11. `docs/HOW-THE-GAME-WORKS.md#so only while you're in the area` says a woken area hunts her only while she is in it. Same as line 7.
+6. `src/rules/inviteWakes.ts#leaving it, they lose` (the file header) says hunters lose interest when she leaves their area. Since 2026-10-31 they follow her on foot and give up only when she is in the air outside it.
+7. `config/knobs/creatures.json#hunt` (its "what") says they hunt her "while she's in it", and its undated decision says "they should lose interest and go home if you leave their area, as they did before". Same as line 6 (the knob's own notes have the newer rule).
+8. `src/rules/combat/targeting.ts#One already after her keeps her out to the band` says a pursuer keeps her only out to the chase band. `valid` follows her anywhere on the ground.
+9. `src/rules/clear.ts#transforms its runestone at once` (the file header) and `src/rules/game.ts#function stepClear` (its comment) describe automatic clearing. With the cast on (the live setting) `stepClear` is not run: a stone converts only by her spell or its wave.
+10. `docs/HOW-THE-GAME-WORKS.md#so only while you're in the area` says a woken area hunts her only while she is in it. Same as line 6.

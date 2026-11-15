@@ -134,7 +134,7 @@
       "ruling": "Ed, 2026-11-13: \"Drop all of them\" (her collisions)",
       "now": "a blink is shortened only by a lake on foot or the zoo's fence (src/rules/game.ts blinkClear): docs/rules/movement.md",
       "stale": [
-        "never lands in a trunk",
+        "never lands (?:in|inside) a (?:trunk|tree)",
         "blink[^.;]{0,50}shortened[^.;]{0,40}\\b(?:trunk|rock|stone|soundsystem)"
       ],
       "unless": "\\b(was|used to|old|until|before|no longer)\\b"

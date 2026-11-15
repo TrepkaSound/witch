@@ -106,12 +106,7 @@ None found. Two things are close to it and worth knowing:
 
 ## Stale comments or notes seen
 
-1. `src/rules/knockout.ts#candleCount`: the comment says "one for every knockout.candleStep seconds of the wait (1: 6 for the first knockdown's 6 s, up to 12 for 12; 0.5: 12 to 24)". The wait is a flat 6 s now (respawn step 0, max 6), so it is always 6 candles, none red.
-2. `src/rules/knockout.ts#knockout.respawn: short, longer for`: the file header says the wait is "short, longer for knockdowns close together, back to base after a cooldown", and `backAt`'s comment says "a step more for each knockdown within cooldown of the last, to max". The step is 0.
 3. `src/rules/hat.ts#DECISION FOR ED`: an open question left in a header as if it were the rule ("the old one stays where it lies and nothing new drops (DECISION FOR ED)"). The code does that, but no ruling is recorded.
-4. `src/render/leash/attackLook.ts#red = warning`: the file header says the danger frame is "red = warning (Ed, 2026-11-02: "the telegraph should be red")" and "its element shows only at the hit". Since 2026-11-13 a wild creature's telegraph is drawn in its element's colour.
 5. `docs/notes/gameplay.md#Red is the warnings'`: says "the telegraphs' pure red ... and a wild area's rising aggro tint ... are unchanged". The telegraphs are element coloured now (the trial is written up in docs/notes/world-art.md, not here).
-6. `docs/notes/gameplay.md#moving front of red dots`: the first paragraph says a lunge's "trumpet warning shows a moving front of red dots". The dots take the creature's element colour now.
 7. `src/rules/attacks/combatWorld.ts#her thrown, slowed, staggered, rooted`: the comment on `effects` says an effect leaves her "staggered". A creature's stun on her is a slow now (stunWitch); only `?stun=old` staggers.
-8. `src/rules/dash.ts#She never lands in a trunk, a rock or a soundsystem`: the header says "the blink is shortened to the furthest clear spot along its line" for trunks, rocks and soundsystems. Since Ed, 2026-11-13 ("Drop all of them") only a lake on foot or the zoo's fence does that (`src/rules/game.ts#blinkClear`).
 9. `src/rules/game.ts#the BPM goes up by 1 each time you die`: the comment quotes Ed's "by 1" beside `knockdownTempo`; the live step is 5 (knockout.bpmStep). Not checked whether a later ruling set 5.

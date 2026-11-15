@@ -8,6 +8,7 @@
 //   number     a tuning knob named with a number or on/off that is not its value in config/tuning.json
 //   date       one quote of Ed's given two different dates
 //   ref        a docs/rules page's `path#name` that no longer resolves (the file gone; the name, or the JSON's key path, not in it)
+//   fixed      a line under a rules page's "Stale comments or notes seen" whose stale words are gone: delete the line
 //   older      (only with --all: noisy) a passage giving an older ruling on a topic that has a later one worded as a change
 // A warning looked at and found right is silenced in tools/docs/rulings-ok.json (its key, and why).
 //   node tools/docs/rulings.mjs                  the warnings (exit 0)
@@ -38,7 +39,7 @@ export function files(root = ROOT) {
     }
   };
   for (const [dir, want] of TREES) if (fs.existsSync(path.join(root, dir))) walk(dir, want);
-  for (const f of ["CLAUDE.md"]) if (fs.existsSync(path.join(root, f))) out.push(f);
+  for (const f of ["CLAUDE.md", "docs/HOW-THE-GAME-WORKS.md"]) if (fs.existsSync(path.join(root, f))) out.push(f);
   return out.sort();
 }
 
@@ -124,6 +125,11 @@ export function wrongNumbers(text, tuning) {
     if (typeof said === "number" && Number(live.toFixed((m[2].split(".")[1] ?? "").length)) === said) continue;
     if (said !== live) out.push({ knob: m[1], said, live });
   }
+  // "**0.55 s** (`invites.cooldown`)": a bold value with its one knob after it (docs/HOW-THE-GAME-WORKS.md's form)
+  for (const m of text.matchAll(/\*\*(-?\d+(?:\.\d+)?)(?: ?(?:m|s|ms|m\/s|px|bpm|%|°|×|x))?\*\* \(`([A-Za-z_]\w*(?:\.\w+)+)`(?=\)|[,;:] (?!`))/g)) {
+    const live = get(tuning, m[2]), said = Number(m[1]);
+    if (typeof live === "number" && live !== said && Number(live.toFixed((m[1].split(".")[1] ?? "").length)) !== said) out.push({ knob: m[2], said, live });
+  }
   return out;
 }
 
@@ -172,13 +178,16 @@ export function check(root = ROOT) {
       }
     }
     // ref: a rules page's `path#name` must resolve
+    let seenStale = false; // (under a page's "Stale comments or notes seen", a reference that is gone means the comment was fixed)
     if (file.startsWith("docs/rules/") && file.endsWith(".md")) text.split("\n").forEach((l, i) => {
+      if (l.startsWith("## ")) seenStale = /^## Stale/.test(l);
+      const kind = seenStale ? "fixed" : "ref";
       for (const m of l.matchAll(/`([\w./-]+\.(?:ts|js|mjs|cjs|json|md))#([^`]+)`/g)) {
         const target = path.join(root, m[1]);
-        if (!fs.existsSync(target)) { warn("ref", file, i + 1, m[0], `${m[1]} is gone`); continue; }
+        if (!fs.existsSync(target)) { warn(kind, file, i + 1, m[0], `${m[1]} is gone${seenStale ? ": delete this line" : ""}`); continue; }
         const body = fs.readFileSync(target, "utf8");
         const found = m[1].endsWith(".json") ? (() => { try { return get(JSON.parse(body), m[2]) !== undefined; } catch { return false; } })() || body.includes(m[2]) : body.includes(m[2]);
-        if (!found) warn("ref", file, i + 1, m[0], `${m[1]} has no "${m[2]}"`);
+        if (!found) warn(kind, file, i + 1, m[0], seenStale ? `${m[1]} no longer says "${m[2]}": the stale words are fixed, delete this line` : `${m[1]} has no "${m[2]}"`);
       }
     });
   }
@@ -208,7 +217,7 @@ export function check(root = ROOT) {
       older.push({ kind: "older", file: r.file, line: r.line, id: `older ${r.file} ${name}`, message: `${name}: cites Ed, ${here}; newer: Ed, ${newest.date}: "${newest.quote.slice(0, 90)}" (${newest.file}:${newest.line})` });
     }
   }
-  const order = { replaced: 0, number: 1, date: 2, ref: 3 };
+  const order = { replaced: 0, number: 1, date: 2, ref: 3, fixed: 4 };
   warnings.sort((a, b) => order[a.kind] - order[b.kind] || a.file.localeCompare(b.file) || a.line - b.line);
   return { rulings, topics, warnings, older, unusedOk: Object.keys(ok).filter(k => !usedOk.has(k)) };
 }
@@ -237,7 +246,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     if (has("--all")) print(r.older);
     for (const k of r.unusedOk) console.log(`unused   tools/docs/rulings-ok.json: "${k}" matches nothing now; delete it`);
     const n = k => r.warnings.filter(w => w.kind === k).length;
-    console.log(`\nrulings: ${r.rulings.length} citations of Ed's read; ${r.warnings.length} warning${r.warnings.length === 1 ? "" : "s"} (replaced ${n("replaced")}, number ${n("number")}, date ${n("date")}, ref ${n("ref")})${has("--all") ? `; older ${r.older.length}` : `; ${r.older.length} more under --all (noisy)`}.`);
+    console.log(`\nrulings: ${r.rulings.length} citations of Ed's read; ${r.warnings.length} warning${r.warnings.length === 1 ? "" : "s"} (replaced ${n("replaced")}, number ${n("number")}, date ${n("date")}, ref ${n("ref")}, fixed ${n("fixed")})${has("--all") ? `; older ${r.older.length}` : `; ${r.older.length} more under --all (noisy)`}.`);
     if (r.warnings.length) console.log("Each is a comment or note to read against the code: fix the words, or, if they are right, add the key to tools/docs/rulings-ok.json with why.");
     if (has("--strict") && (r.warnings.length || r.unusedOk.length)) process.exitCode = 1;
   }

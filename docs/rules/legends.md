@@ -87,8 +87,6 @@ None found for certain. Two points to watch:
 
 ## Stale comments or notes seen
 
-1. `src/rules/creatures.ts#boss`: says "every area has one, sleeping". Wrong: legends are dealt 1 in 5 areas (or `legends.share` 0.2), and never at home.
-2. `src/rules/creatures.ts#legendState`: describes "its area's wave → waking (wildLegends.wake seconds, untouchable) → awake (angry, guarding its area) → beaten → slept (asleep for good)" and "(later: mollified) → happy". Wrong: the states are asleep, restless, angry, happy; no wave wakes a legend.
 3. `src/rules/combat/legend.ts#stepLegendAttack`: its comment says "each hit attack.damage times its level's power for interval seconds". The code passes plain `A.damage` (10).
 4. `src/rules/combat/targeting.ts#wornReach`: says "an enraged one goes for a happy legend within legends.attack.wornReach: it wears it down". `targetable` now refuses every happy legend, so this never happens.
 5. `src/rules/game.ts#stepLegends`: says angry and happy ones, "worn down, they go back to sleep". Only an angry one can be targeted now.
