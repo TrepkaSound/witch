@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -47,24 +47,43 @@ describe("affected art checks", () => {
     expect(() => taskDispatcher(source.replace('fetch("/config/combat.json")', 'fetch(path)'))).toThrow("Unknown art check fetch");
     expect(() => taskDispatcher(source.replace('fetch("/config/combat.json")', 'fetch("/elsewhere/combat.json")'))).toThrow("Unknown art check fetch");
   });
+  // One copy of the tree and one plan of it as it stands for the five tests below (each made its own: five copies and five first
+  // plans, most of this file's time): a test's edits are put back after it, its caches removed, so each starts from the same tree.
+  type Keys = Record<string, string>;
+  let shared: { root: string; plan: typeof import("../tools/art-check/affected.mjs").plan; pristine: Keys } | undefined;
+  const edited = new Map<string, Buffer>(), SCRATCH = ["cache", "v1cache", "v1only"];
+  afterEach(() => {
+    if (!shared) return;
+    for (const [f, was] of edited) writeFileSync(join(shared.root, f), was);
+    edited.clear();
+    for (const d of SCRATCH) rmSync(join(shared.root, d), { recursive: true, force: true });
+  });
+  afterAll(() => { if (shared) rmSync(shared.root, { recursive: true, force: true }); shared = undefined; });
   const fixture = async () => {
-    const root = temp(), { cpSync } = await import("node:fs");
-    for (const f of ["art/headless.mjs", "art/headless-blank.html", "tools/artDependencies.ts", "tools/artJobFingerprints.ts", "tools/artHash.ts", "package.json", "package-lock.json", ".github/workflows/art-check.yml"]) {
-      mkdirSync(join(root, f, ".."), { recursive: true }); writeFileSync(join(root, f), readFileSync(f));
-    }
-    for (const dir of ["art", "src", "config", "tools/art-cache", "tools/art-check", "tools/art-check-legacy", "tools/art-lab", "tools/overrides"]) cpSync(dir, join(root, dir), { recursive: true, filter: s => !/(node_modules|art\/out|art-lab\/dist)/.test(s) });
     const { plan } = await import("../tools/art-check/affected.mjs");
-    const keys = async () => Object.fromEntries((await plan(root, join(root, "cache"), {})).tasks.map((t: { id: string; key: string }) => [t.id, t.key]));
-    const edit = (f: string, change: (text: string) => string) => { const text = readFileSync(join(root, f), "utf8"), next = change(text); expect(next).not.toBe(text); writeFileSync(join(root, f), next); };
-    return { root, plan, keys, edit, changed: (a: Record<string, string>, b: Record<string, string>) => Object.keys(a).filter(id => a[id] !== b[id]).sort() };
+    const keysOf = async (root: string): Promise<Keys> => Object.fromEntries((await plan(root, join(root, "cache"), {})).tasks.map((t: { id: string; key: string }) => [t.id, t.key]));
+    if (!shared) {
+      const root = mkdtempSync(join(tmpdir(), "witch-art-check-")), { cpSync } = await import("node:fs");
+      for (const f of ["art/headless.mjs", "art/headless-blank.html", "tools/artDependencies.ts", "tools/artJobFingerprints.ts", "tools/artHash.ts", "package.json", "package-lock.json", ".github/workflows/art-check.yml"]) {
+        mkdirSync(join(root, f, ".."), { recursive: true }); writeFileSync(join(root, f), readFileSync(f));
+      }
+      for (const dir of ["art", "src", "config", "tools/art-cache", "tools/art-check", "tools/art-check-legacy", "tools/art-lab", "tools/overrides"]) cpSync(dir, join(root, dir), { recursive: true, filter: s => !/(node_modules|art\/out|art-lab\/dist)/.test(s) });
+      shared = { root, plan, pristine: await keysOf(root) };
+      rmSync(join(root, "cache"), { recursive: true, force: true });
+    }
+    const root = shared.root, pristine = shared.pristine;
+    const keys = () => keysOf(root);
+    const edit = (f: string, change: (text: string) => string) => { const was = readFileSync(join(root, f)), text = was.toString("utf8"), next = change(text); expect(next).not.toBe(text); if (!edited.has(f)) edited.set(f, was); writeFileSync(join(root, f), next); };
+    const keep = (f: string) => { if (!edited.has(f)) edited.set(f, readFileSync(join(root, f))); }; // (a file a test overwrites itself: put back even if it fails part-way)
+    return { root, plan, keys, pristine, edit, keep, changed: (a: Keys, b: Keys) => Object.keys(a).filter(id => a[id] !== b[id]).sort() };
   };
   it("re-keys only the tasks that fetch a changed config file", async () => {
-    const { keys, edit, changed } = await fixture(), before = await keys();
+    const { keys, edit, changed, pristine: before } = await fixture(); // (the tree as it stands, planned once for these tests)
     edit("config/tuning.json", t => t + "\n");
     expect(changed(before, await keys())).toEqual(["sleeping-legends"]);
   }, 120_000);
   it("re-keys one edited task (and the auxiliary unit), but every task for a shared helper or scaffolding edit", async () => {
-    const { keys, edit, changed } = await fixture(), before = await keys();
+    const { keys, edit, changed, pristine: before } = await fixture(); // (the tree as it stands, planned once for these tests)
     edit("art/check.mjs", t => t.replace('task("bushes", async () => {', 'task("bushes", async () => { void 0;'));
     const one = await keys();
     expect(changed(before, one)).toEqual(["auxiliary-and-labs", "bushes"]);
@@ -75,13 +94,14 @@ describe("affected art checks", () => {
     expect(changed(helper, await keys())).toEqual(Object.keys(one).sort());
   }, 180_000);
   it("keeps every result through planner and workflow edits that only choose what runs", async () => {
-    const { keys, edit, changed } = await fixture(), before = await keys();
+    const { keys, edit, changed, pristine: before } = await fixture(); // (the tree as it stands, planned once for these tests)
     edit("tools/art-check/affected.mjs", t => t + "\n// selection-only edit\n");
     edit(".github/workflows/art-check.yml", t => t + "\n# workflow edit\n");
     expect(changed(before, await keys())).toEqual([]);
   }, 180_000);
   it("bridges exact v1 results once, never across a changed art input", async () => {
-    const { root, plan, edit } = await fixture(), cache = join(root, "v1cache"), current = readFileSync(join(root, "tools/art-check/affected.mjs"));
+    const { root, plan, edit, keep } = await fixture(), cache = join(root, "v1cache"), current = readFileSync(join(root, "tools/art-check/affected.mjs"));
+    keep("tools/art-check/affected.mjs"); keep("tools/art-check/checked-tree.mjs");
     // The v1 planner, run as it ran in CI: its own bytes at its own path.
     const currentImport = readFileSync(join(root, "tools/art-check/checked-tree.mjs"));
     writeFileSync(join(root, "tools/art-check/affected.mjs"), readFileSync("tools/art-check-legacy/affected-v1.mjs.txt"));
@@ -105,7 +125,7 @@ describe("affected art checks", () => {
     expect(rerun.length).toBeLessThan(after.tasks.length);
   }, 240_000);
   it("ignores npm script edits in package.json but keys every task on its dependencies", async () => {
-    const { keys, edit, changed } = await fixture(), before = await keys();
+    const { keys, edit, changed, pristine: before } = await fixture(); // (the tree as it stands, planned once for these tests)
     edit("package.json", t => t.replace('"scripts": {', '"scripts": {\n    "probe": "node -e 0",'));
     const scripts = await keys();
     expect(changed(before, scripts)).toEqual([]);
