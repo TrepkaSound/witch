@@ -1,6 +1,6 @@
 # Save slots (brief)
 
-COMPLETED in PR #1494, shipped with input-stack integration and included in v6478 (2026-10-31). Current storage, migration and format guards are described in [save-slots notes](../notes/save-slots.md). “Today” and build-number rejection below describe the pre-change problem, not current behavior; rename/delete remain outside the shipped scope.
+COMPLETED in PR #1494, shipped with input-stack integration and included in v6478 (2026-10-31). Current storage, migration and format guards are described in [save-slots notes](../../notes/save-slots.md). “Today” and build-number rejection below describe the pre-change problem, not current behavior; rename/delete remain outside the shipped scope.
 
 Ed, 2026-10-30 14:45 UTC: "We should have save slots that hold progress and settings. By default open the previous one, but you should be able to select a different slot or a new slot from a tab in the settings screen, which restarts the night."
 

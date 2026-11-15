@@ -10,6 +10,8 @@ This file keeps only what every builder needs every time (housekeeping, Ed 2026-
 
 **Read an area's note before working on it; add to the note, not to this file.**
 
+What lives where in `docs/` is [`docs/README.md`](docs/README.md): finished plans and one-off reports go to `docs/archive/`, and machine-written data (measurements, audits, study results) goes to `data/`, never `docs/` ([`data/README.md`](data/README.md)).
+
 ## Deploys
 
 **Merging to `main` deploys** the game to https://edsaperia.github.io/witch/; only the coordinator does that. Every pull request from this repository gets a preview at `/pr-<number>/`, linked on the PR (none for a documents-only one). How it works, and when a release counts as live (the public `version.json`): [`docs/notes/deploys.md`](docs/notes/deploys.md).

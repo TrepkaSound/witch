@@ -42,5 +42,5 @@ over). Foreground remains untested: tools/refraction/foreground.cjs stages the
 next real-witch crossing for the canonical runner. Source/destination guards use
 the base/refraction coordinates before potion wobble. Default-OFF preview is registered;
 review cases and the coordinator-owned capture helper are in
-`docs/plans/heat-refraction-review.md`. No builder browser run, foreground or GPU
+`docs/archive/plans/heat-refraction-review.md`. No builder browser run, foreground or GPU
 acceptance is claimed. Prototype v6618 (7190f350) normal-merged for this follow-up.

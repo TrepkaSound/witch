@@ -11,3 +11,11 @@ under `docs/notes/` are). Their numbers were measured in the cloud's software re
 | `BASELINE-2026-10-07.md` | 2026-10-07 | The overnight performance baseline at #400's merge, on the old radius map. |
 | `QA-LOG.md` | 2026-10-07 to 09 | QA's record of the overnight programme, round by round. |
 | `perf-housekeeping-review.md` | 2026-10-13 | Juliet's performance and housekeeping review at #772's merge. |
+| `robustness-audit.md` | 2026-10-30 | The robustness source audit behind the crash log and layer check. |
+| `robustness-plan.md` | 2026-10-30 | Crash log, layer check and start-screen retirement: completed in #1493 (v6478). |
+| `house-first-show-plan.md` | 2026-10-31 | The house's first-show cost: completed in #1507 (v6478). |
+| `house-parity-followup.md` | 2026-10-31 | The house shot parity follow-up to #1507. |
+| `refraction-depth-diagnostic.md` | 2026-11-01 | Hardware readback and depth-coverage review for the refraction preview. |
+| `patterned-lighting-review.md` | 2026-11-05 | The patterned lighting first-slice review; Ed chose live testing with a slider instead. |
+| `rare-screens/` | 2026-10-31 | The stopped rare-screen proposal and its measurements. |
+| `plans/` | 2026-10 to 11 | Finished plans and builder briefs, moved out of `docs/plans/` on 2026-11-15: see its `README.md`. |

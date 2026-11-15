@@ -1,6 +1,6 @@
 # Per-art-kind cache fingerprints — plan
 
-COMPLETED in PR #1487 and follow-ups #1500, included in v6478 (2026-10-31). The plan-only/currently wording below records the starting state. The shipped dependency map and replay evidence live in [art-cache-fingerprints](../../data/art-cache-fingerprints/README.md); uncertain dependencies still broaden invalidation.
+COMPLETED in PR #1487 and follow-ups #1500, included in v6478 (2026-10-31). The plan-only/currently wording below records the starting state. The shipped dependency map and replay evidence live in [art-cache-fingerprints](../../../data/art-cache-fingerprints/README.md); uncertain dependencies still broaden invalidation.
 
 Branch: `codex/art-hash`, based on `909f00aeed24a72654b1a48c04faad4ac558e865`
 (`origin/claude/prototype`). Coordinator brief: PR1477/comment6522208139,
@@ -232,7 +232,7 @@ The corrected replay completed all 1,456 reachable / 304 first-parent transition
 with zero unsupported cases, bound to 395a07f91. Its engine digest still matches
 delivery source after the cache-consumer guard. The final matched counts, shared
 input sizes and limitations are in
-[the result notes](../../data/art-cache-fingerprints/README.md), alongside the
+[the result notes](../../../data/art-cache-fingerprints/README.md), alongside the
 current dependency map and complete historical rows. House savings are modest;
 these source counts establish neither storage hit rates nor loading-time gains.
 The three follow-ups in COORDINATOR6525574257 start after this milestone lands.
