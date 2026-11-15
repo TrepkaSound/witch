@@ -12,7 +12,7 @@ const reg = loadRegistry(), scan = scanLinkSwitches();
 
 describe("the link switches (config/link-switches/)", () => {
   it("finds the reads it should (the scan itself)", () => {
-    for (const name of ["seed", "island", "zoo", "shot", "fight", "chart", "arrive", "look"]) expect(scan.has(name), name).toBe(true);
+    for (const name of ["seed", "island", "zoo", "shot", "fight", "chart", "arrive", "lookdemo"]) expect(scan.has(name), name).toBe(true);
     expect(scan.get("chart")).toContain("index.html"); // (the root's pages too)
     expect(scan.has("pull")).toBe(false); // (a Map's get isn't a switch: rules/broomParts.ts)
   });
