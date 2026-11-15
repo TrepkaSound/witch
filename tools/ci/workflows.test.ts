@@ -138,7 +138,10 @@ describe("shared CI game build", () => {
     for (const prerequisite of ["build", "unit", "check-work", "deploy"])
       expect(jobs.check.steps[0].if).toContain(`needs.${prerequisite}.result != 'success'`);
     expect(jobs.unit.steps.find((s: any) => s.uses === "actions/checkout@v4").with["fetch-depth"]).toBe(2);
-    expect(jobs["check-work"].steps.find((s: any) => s.uses === "actions/checkout@v4").with?.["fetch-depth"] ?? 1).toBe(1);
+    // the merge commit and its base: the guardrails compare the two (docs/notes/guardrails.md; Ed's go, 2026-11-15)
+    expect(jobs["check-work"].steps.find((s: any) => s.uses === "actions/checkout@v4").with?.["fetch-depth"]).toBe(2);
+    for (const run of ["npm run lint", "node tools/checks/loops.mjs", "node tools/checks/size.mjs"])
+      expect(jobs["check-work"].steps.some((s: any) => s.run?.startsWith(run)), run).toBe(true);
   });
   it("skips the unused playable preview for release-check and publish PRs", () => {
     expect(jobs.preview.if).toContain("!startsWith(github.event.pull_request.head.ref, 'claude/release-')");

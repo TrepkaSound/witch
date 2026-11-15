@@ -19,7 +19,7 @@ ESLint 10 with typescript-eslint, `eslint.config.js`. About 75 s locally over `s
 
 ## No new import loops (`node tools/checks/loops.mjs`)
 
-Reads the value imports between `src/` files (static `import`/`export ... from`, not `import type`, not an import whose names are all `type`, not dynamic `import()`, not `import("...").T` type expressions), finds the loops (strongly connected groups), and compares with the merge base (`--base <ref>`, default `origin/claude/prototype`; CI uses the PR's base).
+Reads the value imports between `src/` files (static `import`/`export ... from`, not `import type`, not an import whose names are all `type`, not dynamic `import()`, not `import("...").T` type expressions), finds the loops (strongly connected groups), and compares with the merge base (`--base <ref>`, default `origin/claude/prototype`; CI checks out the PR merged onto its base and compares with `HEAD^1`, the base, from a two-commit clone deepened by the PR's own commits for their trailers: a full clone cost 1m40s).
 
 - **Fails** if the change adds an import edge inside a loop that the base didn't have: a new loop, or a new edge inside an existing loop (a worse tangle). It prints the new edge, the shortest loop it closes and the group.
 - Passes: today's loops; any new import outside a loop; removing imports. Renamed files keep their edges (git's rename detection).
