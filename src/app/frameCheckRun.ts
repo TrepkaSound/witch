@@ -64,7 +64,7 @@ export async function runFrameCheck(w: FrameCheckHooks, o: { build: string; fram
   }
   if (!fs.timesGpu) notes.push("this browser doesn't time the GPU (no EXT_disjoint_timer_query_webgl2): frame and cpu only");
   const c = w.view.renderer.domElement, rung = L?.state.mode === "off" ? 0 : L?.state.rung ?? 0, name = glRendererName(w.view.renderer.getContext());
-  return { v: 1, build: o.build, date: new Date().toISOString(), gpu: typeof name === "string" ? name : "", canvas: `${c.width}x${c.height} canvas, pixel ratio ${Math.round(devicePixelRatio * 100) / 100}`,
+  return { v: 1, build: o.build, date: new Date().toISOString(), gpu: typeof name === "string" ? name : "", canvas: `${innerWidth}x${innerHeight} window, ${c.width}x${c.height} canvas, pixel ratio ${Math.round(devicePixelRatio * 100) / 100}`,
     rung, quality: `${RUNGS[rung]?.label ?? "?"}${L ? `, ladder ${L.current()}` : ""}`, frames: o.frames, scenes, notes };
 }
 
