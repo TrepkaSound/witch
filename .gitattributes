@@ -1,3 +1,9 @@
 # Preserve Ed's supplied layout evidence byte-for-byte, including original line endings.
 docs/evidence/treehouse-layout-ed-2026-10-31.v1.json -text whitespace=cr-at-eol
 docs/evidence/treehouse-layout-ed-2026-11-01.v2.json -text whitespace=cr-at-eol
+
+# Files that only grow by whole lines, where two pull requests' additions should both be kept (Ed, 2026-11-15, "Do 1-7", item 1:
+# shared files that don't clash). git's union merge keeps both sides' lines instead of marking a conflict (local merges; GitHub's
+# own merge button doesn't use it). Only for files where a line stands alone and order doesn't matter.
+docs/backlog/cauldron.md merge=union
+art/mesh/species/index.js merge=union

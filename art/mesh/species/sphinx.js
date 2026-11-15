@@ -63,4 +63,4 @@ const sphinx = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs sphinx`: Ed, 2026-11-12, "keep the sizes";
  *  its legend's is to the top of its raised wings, as today's is); plans, each level's build. */
-export const MESH = { id: "sphinx", heights: [63, 98, 181, 484], plans: sphinx };
+export const MESH = { id: "sphinx", heights: [63, 98, 181, 484], gait: "trot", plans: sphinx };

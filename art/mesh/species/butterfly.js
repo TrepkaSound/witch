@@ -45,4 +45,4 @@ const butterfly = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette as its plan draws it, wings out, turned towards us: today's drawn heights, Ed,
  *  2026-11-12, "keep the sizes"); plans, each level's build. */
-export const MESH = { id: "butterfly", heights: [30, 45, 68, 214], plans: butterfly };
+export const MESH = { id: "butterfly", heights: [30, 45, 68, 214], gait: "fly", plans: butterfly };

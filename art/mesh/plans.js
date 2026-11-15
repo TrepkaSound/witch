@@ -2,7 +2,7 @@
 // MESH_HEIGHTS[species][level] how tall it stands. A kind's own file holds both, and how it sleeps (art/mesh/species/<id>.js; the
 // list of them, species/index.js, is made from the folder by tools/creature-mesh/index.mjs), so kinds are added side by side
 // without touching a shared table (docs/plans/creature-mesh-rollout.md, step 0).
-import { MESH_SPECIES } from "./species/index.js";
+import * as MESH_SPECIES from "./species/index.js"; // (every kind by name; a module's names come sorted, whatever the file's order)
 
 export const MESH_LEVELS = ["baby", "young", "adult", "legend"];
 /** A kind's four plans, baby to legend. One that curls up to sleep its own way says so with `curl` (art/mesh/gear.js `napping` reads

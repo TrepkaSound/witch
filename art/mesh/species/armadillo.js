@@ -51,4 +51,4 @@ const armadillo = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build; curl, how it curls up to sleep (art/mesh/gear.js `napping` reads gait.curl): tight, its nose to its tail's root. */
-export const MESH = { id: "armadillo", heights: [44, 68, 104, 265], curl: { turn: 4.3 }, plans: armadillo };
+export const MESH = { id: "armadillo", heights: [44, 68, 104, 265], gait: "trot", curl: { turn: 4.3 }, plans: armadillo };

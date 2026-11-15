@@ -53,4 +53,4 @@ const hedgehog = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. */
-export const MESH = { id: "hedgehog", heights: [47, 74, 103, 347], plans: hedgehog };
+export const MESH = { id: "hedgehog", heights: [47, 74, 103, 347], gait: "trot", plans: hedgehog };
