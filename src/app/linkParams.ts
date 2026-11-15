@@ -64,7 +64,7 @@ export function tuningFromLink(params: URLSearchParams) {
   // is carried on purpose carries: app/settings.ts carryKnobs; docs/plans/sail-without-reload.md).
   const tuning = structuredClone(TUNING); // (styleFromLink's partyObjects.generated among them: the chart's landing bake and its map's worker each make one, app/mapPrep.ts)
   // ?px=3|4|5: the art pixel (screen pixels per art pixel; the tuning's pixelSize), per load, to compare the pixel-art
-  // styles in play (docs/ART-GUIDE.md section 0: Ed picks between bold and ref at 4 or 5 in playtesting).
+  // styles in play (docs/ART-GUIDE.md section 0: Ed settled on bold at 3, 2026-10-31; these stay to compare).
   { const px = Number(params.get("px")); if ([2, 3, 4, 5, 6].includes(px)) tuning.pixelSize = px; }
   if (params.get("shadows") === "off") tuning.shadows.on = false;
   if (params.get("canopy") === "off") tuning.canopyShadow.on = false;

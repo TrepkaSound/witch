@@ -23,7 +23,7 @@ describe("which checks a change needs", () => {
 
   it("asks a builder for typecheck, the related tests and the art check when the art changes; the rest is the coordinator's", () => {
     const picked = select(["art/creatures/fox/genome.js"]);
-    expect(ids(picked, "builder")).toEqual(["typecheck", "related-tests", "art-check"]);
+    expect(ids(picked, "builder")).toEqual(["typecheck", "related-tests", "stale-rulings", "art-check"]);
     expect(picked.builder.find((c: Check) => c.id === "art-check").command).toBe("node art/check.mjs --only fox --no-lab");
     expect(picked.builder.find((c: Check) => c.id === "related-tests").command).toContain("art/creatures/fox/genome.js");
     expect(ids(picked, "coordinator")).toEqual(["unit-full", "build", "smoke-quick", "smoke-full"]);
@@ -39,7 +39,7 @@ describe("which checks a change needs", () => {
 
   it("asks only typecheck and the docs' freshness of a docs change, and no build or smoke of the coordinator", () => {
     const picked = select(["docs/notes/run.md"]);
-    expect(ids(picked, "builder")).toEqual(["typecheck", "config-docs"]);
+    expect(ids(picked, "builder")).toEqual(["typecheck", "config-docs", "stale-rulings"]);
     expect(ids(picked, "coordinator")).toEqual(["unit-full"]);
   });
 

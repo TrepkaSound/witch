@@ -1,0 +1,13 @@
+{
+  "_": "Warnings of node tools/docs/rulings.mjs that were read and found right: the warning's key, and why. The tool says when a key matches nothing any more.",
+  "ok": {
+    "number config/knobs/army.json arena.band 55": "55 m is arena.radius + arena.band, the sum the sentence gives.",
+    "number config/knobs/party.json invites.range 33": "The note tells the history: 33 to start, then 42.",
+    "number docs/notes/performance.md treeCap.keep 0.35": "The quality ladder's rung sets it to 0.35; 1 is the default.",
+    "number docs/notes/world-art.md relics.minGap 150": "config/legends.json's relics.minGap (150), not the tuning's knob of the same name.",
+    "number tools/bench/neutral-hunt.cjs occlusion.fadeOpacity 1": "The setting the bench tries, not the default.",
+    "number tools/leash/arc-shots.cjs bond.threadArcSlack 0.4": "The old numbers the tool shoots beside the new.",
+    "replaced src/render/sprites.ts weight-system render load ts": "Inside the shader's string: changing it changes the code (PR #2049 left it for the same reason). The lean and bow uniforms stay; render/load.ts never existed.",
+    "replaced src/render/sprites.ts weight-system broom bowing under a load render load": "As above: a comment inside the shader's string."
+  }
+}

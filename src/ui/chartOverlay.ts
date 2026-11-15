@@ -1,7 +1,7 @@
 // The sea chart over the game (Ed, 2026-10-11: "The world map is in the centre" of the treehouse deck; rules/treehouse.ts): E at
 // the deck's map table opens the chart's own view (app/chartView.ts mountChart, in sail mode) over the game, to sail from at any
-// time (Ed: "Sail anytime"): its sail asks `onSail` (the game records the night, unwon if it's still on, then sails). Esc, the
-// pad's B or Close shuts it; while it's open the game's own controls are held still (main.ts, chartOpen). At the Atrium's map table
+// time (Ed: "Sail anytime"): its sail asks `onSail` (the game records the night, unwon if it's still on, then sails). E, the
+// pad's B or Close shuts it (Esc pauses over it: platform/freeze.ts); while it's open the game's own controls are held still (main.ts, chartOpen). At the Atrium's map table
 // (Ed, 2026-10-23: "'Tables' slide in from the bottom and have a soft edge (they're more diegetic)", "It can fill the screen once
 // risen"): `table`, it comes on E there (Ed's playtest, 2026-10-26; rules/stations.ts tableOf, main.ts), slides up from the bottom (ui/slideIn.ts) to fill
 // the screen, no frame, its edges fading to the night held behind it; she moves and it slides away (app/chartView.ts `table`).

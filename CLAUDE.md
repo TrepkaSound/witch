@@ -11,6 +11,7 @@ This file keeps only what every builder needs every time (housekeeping, Ed 2026-
 **Read an area's note before working on it; add to the note, not to this file.**
 
 What lives where in `docs/` is [`docs/README.md`](docs/README.md): finished plans and one-off reports go to `docs/archive/`, and machine-written data (measurements, audits, study results) goes to `data/`, never `docs/` ([`data/README.md`](data/README.md)).
+**The rules as they are now** (Ed, 2026-11-15): before you brief or build on creatures and babies, invites, legends, combat, sieges and soundsystems, the leash, or her movement, read its short page under [`docs/rules/`](docs/rules/README.md): each line is checked against the code and dated. Comments and older notes can be stale; `node tools/docs/rulings.mjs` warns about the ones it can catch, and `--topic <word>` lists Ed's rulings on something, newest first.
 
 ## Deploys
 
