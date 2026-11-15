@@ -24,7 +24,6 @@ describe("biome forests", () => {
     }
   });
   it("blends two biomes by share", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const L = (k: string) => biomeLook(k) as any, a = L("jungle"), b = L("mangrove swamp"), mid = L("jungle|mangrove swamp|0.50");
     expect(mid.sat).toBeCloseTo((a.sat + b.sat) / 2, 5);
     expect(mid.crown.vines.share).toBeCloseTo((BIOME_LOOKS.jungle as { crown: { vines: { share: number } } }).crown.vines.share / 2, 5);
@@ -73,7 +72,6 @@ describe("biome forests", () => {
     expect(new Set(cold.map(c => c.key)).size).toBe(3);
   });
   it("mixes the look toward temperate by 1 - strength, and keeps two neighbours' blend", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const L = (k: string) => biomeLook(k) as any, full = L("cold"), half = L("cold|cold|1.00|0.50"), none = L("cold|cold|1.00|0.00");
     expect(half.sat).toBeCloseTo((full.sat + 1) / 2, 5); // (temperate's saturation is 1)
     expect(half.snow).toBeCloseTo(full.snow / 2, 5);

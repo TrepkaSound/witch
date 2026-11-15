@@ -363,6 +363,8 @@ jobs:
       - uses: actions/checkout@v4
         id: source
         if: needs.build.outputs.reuse != 'true'
+        with:
+          fetch-depth: 2 # (a PR's merge commit and its first parent, the base: the guardrails compare the two)
       - uses: actions/setup-node@v4
         if: needs.build.outputs.reuse != 'true'
         with:
@@ -378,6 +380,25 @@ jobs:
         run: npm --prefix server ci && npm --prefix server test
       - run: npm run typecheck
         if: needs.build.outputs.reuse != 'true'
+      # The guardrails (Ed's go, 2026-11-15; docs/notes/guardrails.md): no new import edge inside an import loop, and nothing
+      # over the size limits grows, both against the PR's base (no baseline file); then ESLint over src/ and tools/.
+      # (the checkout is the PR merged onto its base, so HEAD^1 is the base; the PR's own commits are fetched for their
+      # Size-ok/Loops-ok trailers: a full clone cost 1m40s)
+      - name: Fetch the PR's commits (their trailers)
+        if: needs.build.outputs.reuse != 'true' && github.event_name == 'pull_request'
+        env:
+          COMMITS: ${{ github.event.pull_request.commits }}
+        run: |
+          git fetch -q --no-tags --deepen="$COMMITS" origin "$GITHUB_SHA" || echo "could not deepen; only the PR head's trailers are read"
+      - name: No new import loops
+        if: needs.build.outputs.reuse != 'true' && github.event_name == 'pull_request'
+        run: node tools/checks/loops.mjs --base HEAD^1
+      - name: Size ratchet
+        if: needs.build.outputs.reuse != 'true' && github.event_name == 'pull_request'
+        run: node tools/checks/size.mjs --base HEAD^1
+      - name: Lint
+        if: needs.build.outputs.reuse != 'true'
+        run: npm run lint
       # A report, never a failure (Ed, 2026-11-15, on keeping the notes honest automatically): comments and notes that
       # state a rule a later ruling replaced, or a knob's number the tuning no longer has. docs/rules/README.md.
       - name: Stale rulings (warnings only)

@@ -71,7 +71,7 @@ V=""
 for _ in $(seq 1 120); do
   r=$(job_state "$MS" deploy)
   case $r in
-    success) V=$(gh api "$R/actions/runs?head_sha=$MS" --jq '[.workflow_runs[]|select(.name=="CI")][0].run_number'); say "DEPLOYED v$V to gh-pages $(date -u +%H:%M)"; break ;;
+    success) V=$(ci_build "$MS") || die 2 "deployed, but main ${MS:0:9}'s build number wasn't found: check the public version.json by hand"; say "DEPLOYED v$V to gh-pages $(date -u +%H:%M)"; break ;;
     failed:*) die 2 "deploy: $r" ;;
   esac
   sleep 20

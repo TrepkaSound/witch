@@ -35,6 +35,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
   console.log(`${id}'s island came at ${rose} s on the chart's clock`);
   if (!(rose >= 0)) { console.error("its rise wasn't found (rose undefined)"); process.exit(1); }
   // the camera brought over it and closer (a chart opened on home looks at home: the island may be off the screen's top)
+  // eslint-disable-next-line no-self-assign -- kept as written (a page-side poke)
   await page.evaluate(id => { const c = window.chart.chart, i = c.isles.get(id); c.focus.set(i.x, 0, i.z); c.aim.copy(c.focus); c.dist = c.distTo = c.distTo * 0.45; window.__at = window.__at; }, id);
   await wait(800);
   const frames = [];
