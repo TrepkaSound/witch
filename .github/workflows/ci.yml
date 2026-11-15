@@ -378,6 +378,12 @@ jobs:
         run: npm --prefix server ci && npm --prefix server test
       - run: npm run typecheck
         if: needs.build.outputs.reuse != 'true'
+      # A report, never a failure (Ed, 2026-11-15, on keeping the notes honest automatically): comments and notes that
+      # state a rule a later ruling replaced, or a knob's number the tuning no longer has. docs/rules/README.md.
+      - name: Stale rulings (warnings only)
+        if: needs.build.outputs.reuse != 'true'
+        continue-on-error: true
+        run: node tools/docs/rulings.mjs
       - name: Failure annotation totals
         if: always() && needs.build.outputs.reuse != 'true' && steps.source.outcome == 'success'
         run: node tools/ci/annotations.cjs --summary

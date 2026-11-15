@@ -14,7 +14,8 @@
 //   two ways (genre, key, lead, bass, voice, density). The tempo is never the set's: it's the gameplay's (Ed, 2026-10-11:
 //   "tempo is set by the gameplay": rules/beat.ts), so each family sounds right at any of its tempos (a half-time feel where
 //   the genre wants a slower pulse: dub, witch house, phonk).
-// - The first home night (10 waves) is hand-picked (the style's `curated`).
+// - A 10-wave home night is hand-picked (the style's `curated`): the first home night's till Ed, 2026-11-04 (home starts at 5
+//   areas, so its first night's set is made like any other).
 // Deterministic: the same seed, island and waves give the same set. Numbers only: the conductor (musicPlan.ts) plays the
 // night's arc as it played the style's.
 import styleJson from "../../config/music-style.json";
@@ -159,7 +160,7 @@ const pickOther = <T>(xs: readonly T[], not: T | undefined, r: number): T => {
   return from[Math.min(from.length - 1, Math.floor(r * from.length))];
 };
 
-/** Whether this is the first home night (the style's curated set). */
+/** Whether this night gets the style's curated set: a 10-wave home night (the first home night's till Ed, 2026-11-04). */
 export const isCurated = (style: MusicStyle, o: Pick<NightOptions, "island" | "waves">): boolean =>
   !!style.curated && o.island === style.curated.island && o.waves === style.curated.waves && style.curated.steps.length === o.waves + 1;
 

@@ -10,6 +10,8 @@ This file keeps only what every builder needs every time (housekeeping, Ed 2026-
 
 **Read an area's note before working on it; add to the note, not to this file.**
 
+**The rules as they are now** (Ed, 2026-11-15): before you brief or build on creatures and babies, invites, legends, combat, sieges and soundsystems, the leash, or her movement, read its short page under [`docs/rules/`](docs/rules/README.md): each line is checked against the code and dated. Comments and older notes can be stale; `node tools/docs/rulings.mjs` warns about the ones it can catch, and `--topic <word>` lists Ed's rulings on something, newest first.
+
 ## Deploys
 
 **Merging to `main` deploys** the game to https://edsaperia.github.io/witch/; only the coordinator does that. Every pull request from this repository gets a preview at `/pr-<number>/`, linked on the PR (none for a documents-only one). How it works, and when a release counts as live (the public `version.json`): [`docs/notes/deploys.md`](docs/notes/deploys.md).

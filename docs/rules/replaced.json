@@ -1,0 +1,88 @@
+{
+  "_": "Rules of Ed's that a later ruling replaced, and the words that would still state the old rule (Ed, 2026-11-15, on keeping the notes honest automatically: \"Do 1-7\"). node tools/docs/rulings.mjs warns wherever a comment or note matches one. Add an entry in the same piece of work whenever Ed reverses or removes a rule. Fields: id; ruling, his words and date; now, the rule as it stands, and where; stale, patterns (regular expressions, case ignored, tried on each comment block, note line and knob note) that state the old rule; unless, a pattern that clears a match (the passage is telling the history); except, paths not read (docs/rules is never read). The first ten are the comments pass's most important fixes (PR #2049, 2026-11-13).",
+  "replaced": [
+    {
+      "id": "babies-invitable",
+      "ruling": "Ed, 2026-10-31: \"No, no baby is invitable\"",
+      "now": "no baby can be invited, the circle baby included: docs/rules/invites.md",
+      "stale": ["bab(?:y|ies)\\b[^.;]{0,40}\\b(?:stays?|is|are|remains?|still)\\s+invitable", "invit(?:e|es|ing) (?:a|the|wild) bab(?:y|ies)\\b(?! (?:does|do) nothing)"],
+      "unless": "\\b(no|not|never|cannot|can't|nothing|refus|until|before)\\b"
+    },
+    {
+      "id": "growth-every-wave",
+      "ruling": "Ed, 2026-10-28: \"during a night, no creatures are created and none are destroyed\"",
+      "now": "growth is off (population.growth.on false); every creature is made at the night's start: docs/rules/creatures.md",
+      "stale": ["grows? a creature (?:a|every|each|per) wave", "(?:a|one) (?:new )?creature (?:every|each|per) wave"],
+      "unless": "\\b(off|no longer|was|used to|old|balance model|growth\\.on)\\b"
+    },
+    {
+      "id": "relic-wakes-legend",
+      "ruling": "Ed, 2026-10-18 (docs/notes/gameplay.md, the legends' quests)",
+      "now": "a legend is made happy by its quest; a relic flask is drunk on the sigil; no wave wakes a legend: docs/rules/legends.md",
+      "stale": ["relic[^.;]{0,40}\\bwakes?\\b[^.;]{0,30}\\blegend", "legend[^.;]{0,40}\\bwoken by (?:its|the|a) (?:wave|relic)"],
+      "unless": "\\b(no longer|not|never|was|used to|old|until|before|no wave)\\b"
+    },
+    {
+      "id": "soundsystem-loss-countdown",
+      "ruling": "Ed, 2026-10-08: \"Losing a soundsystem no longer touches the wave countdown\"",
+      "now": "losing a soundsystem takes nothing off the countdown: docs/rules/sieges.md",
+      "stale": ["brings? the next wave (?:sooner|closer|forward)", "soundsystem[^.;]{0,60}\\b(?:cuts?|shortens?)\\b[^.;]{0,30}\\bcountdown"],
+      "unless": "\\b(no longer|not|never|was|used to|old|until|before)\\b"
+    },
+    {
+      "id": "weight-system",
+      "ruling": "Ed, 2026-11-03: \"the weight system goes\"",
+      "now": "no weight: an adult or a legend on her leash grounds her (src/rules/leashWeight.ts): docs/rules/leash.md",
+      "stale": ["render/load\\.ts", "broom[^.;]{0,40}\\b(?:strain|bow|sag)s?(?:ing)?\\b[^.;]{0,30}\\b(?:weight|load)", "sigils'? weight"],
+      "unless": "\\b(gone|goes|no longer|was|used to|old|until|before|removed|never existed)\\b"
+    },
+    {
+      "id": "hunters-give-up-at-edge",
+      "ruling": "Ed, 2026-10-31 (src/rules/hunt.ts)",
+      "now": "a wild hunter follows her on the ground anywhere until she takes off or shelters; only besiegers and her party animals use the edge band: docs/rules/combat.md",
+      "stale": ["(?:drops?|gives? up on|loses?) her\\b[^.;]{0,40}\\b(?:leaves?|past|outside)\\b[^.;]{0,20}\\b(?:its|their|the) (?:own )?area"],
+      "unless": "\\b(no longer|not|never|was|used to|old|until|before|besieg|party)\\b"
+    },
+    {
+      "id": "attacks-from-combat-json",
+      "ruling": "tuning attacks.species true (src/rules/combat.ts)",
+      "now": "each kind's own grammar attack is the default; config/combat.json's only against soundsystems or with ?attacks=old: docs/rules/combat.md",
+      "stale": ["no species has (?:one|an attack) until Ed", "every attack comes from config/combat\\.json"]
+    },
+    {
+      "id": "opening-on-chart",
+      "ruling": "Ed, 2026-10-23: \"the first screen should be the witch waking up in her bedroom on the home island instead of the map\"",
+      "now": "a plain load wakes her in her bedroom; the creator and the seat shot only under ?opening=old (src/app/opening.ts)",
+      "stale": ["(?:game|load|page) opens? (?:on|with) the (?:sea )?(?:chart|map|start screen|creator)", "opens close in on the witch in her seat"],
+      "unless": "\\b(no longer|not|was|used to|old|until|before|opening=old)\\b"
+    },
+    {
+      "id": "mesh-creatures-off",
+      "ruling": "Ed, 2026-11-12 (src/render/creatureArt.ts: on by default)",
+      "now": "mesh creatures are on by default; ?meshCreatures=0 turns them off",
+      "stale": ["(?:behind|only with|under) `?\\?meshCreatures=1", "mesh creatures?[^.;]{0,30}off by default"],
+      "unless": "\\b(was|were|used to|old|until|before|first|at first|then)\\b"
+    },
+    {
+      "id": "stacks-off",
+      "ruling": "tuning cast.on true since #1378",
+      "now": "stone stacks and the cast are on by default: docs/rules/leash.md",
+      "stale": ["(?:stacks?|the cast)[^.;]{0,40}off by default", "\\?cast=1`? turns them on"],
+      "unless": "\\b(was|were|used to|old|until #|before)\\b"
+    },
+    {
+      "id": "her-collisions",
+      "ruling": "Ed, 2026-11-13 (her collisions: only lakes)",
+      "now": "only lakes stop her: docs/rules/movement.md",
+      "stale": ["(?:witch|she) (?:bumps?|collides?|is stopped by|can't (?:walk|fly) through)[^.;]{0,30}\\b(?:trees?|trunks?|stones?|rocks?|boulders?)"],
+      "unless": "\\b(no longer|not|never|was|used to|old|until|before|only lakes)\\b"
+    },
+    {
+      "id": "stun-on-her",
+      "ruling": "release 56 (#2073): stun on her becomes slow (stars)",
+      "now": "an attack's stun slows her; it does not freeze her: docs/rules/combat.md",
+      "stale": ["(?:stuns?|freezes?) (?:her|the witch)\\b[^.;]{0,30}\\b(?:can't|cannot|unable to) move"],
+      "unless": "\\b(no longer|was|used to|old|until|before|slow)\\b"
+    }
+  ]
+}

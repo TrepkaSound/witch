@@ -88,7 +88,7 @@ node tools/inventory.mjs [--check]
 - [`creature-bake/`](creature-bake/README.md): 2 scripts — bake.mjs, page.js
 - [`creature-mesh/`](creature-mesh/README.md): 13 scripts — clip.mjs, draw.mjs, frames.mjs, index.mjs, lengths.mjs, make.mjs, page.js, quadruped.js, sheet.mjs, sizes.mjs, slip.mjs, slither.mjs, strike.mjs
 - [`dj/`](dj/README.md): 5 scripts — booth-sheet.mjs, booth.cjs, candles-sheet.mjs, respawn.cjs, strip.mjs
-- [`docs/`](docs/README.md): 2 scripts — glossary.mjs, tables.mjs
+- [`docs/`](docs/README.md): 3 scripts — glossary.mjs, rulings.mjs, tables.mjs
 - [`feel/`](feel/README.md): 1 script — trace.cjs
 - [`flora/`](flora/README.md): 5 scripts — bush-sheet.mjs, leaf-jitter-shots.cjs, species-sheet.mjs, tuft-sheet.mjs, vignette.mjs
 - [`forest/`](forest/README.md): 3 scripts — border-map.mjs, border-stats.mjs, border.cjs

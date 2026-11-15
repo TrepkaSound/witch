@@ -209,7 +209,8 @@ export interface Creature {
   healedAt?: number;
   /** That heal was a little of a slow mend (healBy), not to whole: the view pops one small "+". */
   healedSmall?: boolean;
-  /** An area's legend (Ed, 2026-10-04: every area has one, sleeping): a mini-boss once awake. */
+  /** An area's legend: a mini-boss once angry. Not every area has one (one area in five, never home's: docs/rules/legends.md;
+   *  Ed's 2026-10-04 "every area has one, sleeping" was replaced). */
   boss?: boolean;
   /** The island-kind friendly home defender, never a dealt/quest/party legend (Ed, 2026-10-31). */
   homeGuard?: boolean;
@@ -225,10 +226,10 @@ export interface Creature {
   /** A wild baby keeping out of a fight (rules/wildBabies.ts; Ed, 2026-11-13: as her leashed ones scatter): where the fight is
    *  (followed as it moves), the spot of its own area it runs to, and when it's calm again; pickAt: when it picks its spot (again). */
   shy?: { x: number; z: number; tx: number; tz: number; until: number; pickAt?: number };
-  /** A legend's state (DESIGN.md, "Sleeping legends"): asleep (sunk in the ground, scenery) →
-   *  its area's wave → waking (wildLegends.wake seconds, untouchable) → awake (angry, guarding its
-   *  area) → beaten → slept (asleep for good). Asleep or awake → (later: mollified) → happy (at
-   *  home in its area). And when it last changed. */
+  /** A legend's state (DESIGN.md, "Sleeping legends"): one of LEGEND_STATES: asleep (sunk in the
+   *  ground, scenery), restless, angry or happy. No wave wakes it, and happy comes by its quest (docs/rules/legends.md has the
+   *  rules as they are; the older chain here, waking by its wave, beaten, slept, "later: mollified", was out of date). And
+   *  when it last changed. */
   legendState?: LegendState;
   stateAt?: number;
   /** A legend's quest (rules/quest.ts): the creature it dreams of, and whether it was brought. */
