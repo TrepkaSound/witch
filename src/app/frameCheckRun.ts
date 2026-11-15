@@ -12,13 +12,15 @@ import { RUNGS } from "../rules/ladder";
 import { glRendererName } from "../platform/glRenderer";
 import { FRAME_CHECK_KEY, localStore } from "../platform/storageScope";
 import { SAIL_ANY } from "./chartView";
+import { takeBroom } from "../rules/kit";
+import type { Game } from "../rules/game";
 import { closeChart } from "../ui/chartOverlay";
 import { FRAME_CHECK_DT, FRAME_CHECK_FRAMES, FRAME_CHECK_SAIL, FRAME_CHECK_SAIL_PARTS, FRAME_CHECK_SCENES, frameCheckHistory, frameCheckKeys, frameCheckText, keepFrameCheck, median, pressFrameCheckKey, spread, type FrameCheckMessage, type FrameCheckResult, type FrameCheckScene, type FrameCheckSceneResult } from "./frameCheck";
 
 /** The hooks it drives (window.witch: app/hooks.ts). */
 export interface FrameCheckHooks {
   readonly tuning: Tuning;
-  readonly game: { seed: number; witch: { mode: string }; wake?: { open: boolean } | null };
+  readonly game: Game;
   /** The sea chart over the night, as the map table opens it (window.witch.chart). */
   chart(table?: string): void;
   view: {
@@ -90,7 +92,7 @@ export async function runFrameCheck(w: FrameCheckHooks, o: RunOptions): Promise<
 
 /** The chart over the night, as ui/chartOverlay.ts leaves it on the window for the tools. */
 interface ChartHook {
-  chart: { readonly flying: boolean; renderer: { info: { render: { calls: number; triangles: number } } } };
+  chart: { readonly flying: boolean; renderer: { info: { autoReset: boolean; reset(): void; render: { calls: number; triangles: number } } } };
   choose(id: string): void;
   islands(): { id: string; outline?: unknown; sail?: unknown }[];
 }
@@ -101,12 +103,26 @@ const marked = (name: string, since: number): boolean => performance.getEntriesB
  *  loop in real time: the map table's chart opened over the night, FRAME_CHECK_SAIL's island chosen (its night's seed fixed: the
  *  chart draws it with Math.random, held for that one draw, as tools/stall/sail-takeoff.cjs holds it) and sailed to by Enter held;
  *  the chart's flight (the night made under it), the dive to her bed, D to get up, the house and forest waited for, then Space: the
- *  take-off to the treetops. Each part a row: every refresh timed, the draw calls and triangles the chart's own renderer's while it's
+ *  take-off to the treetops (the default keys: the check's page doesn't read her bindings). Each part a row: every refresh timed, the draw calls and triangles the chart's own renderer's while it's
  *  up. A part that never ends (a short run's wait 40 min, for the cloud's software renderer; else 2 min) is noted and the rest left
  *  out. Its rows; null if cancelled. */
 async function runSail(w: FrameCheckHooks, o: RunOptions, notes: string[], say: (text: string) => void): Promise<Row[] | null> {
+  let uncount = (): void => undefined;
+  try { return await sail(); } finally { uncount(); }
+  async function sail(): Promise<Row[] | null> {
   const fs = w.frameStats, S = FRAME_CHECK_SAIL, P = FRAME_CHECK_SAIL_PARTS, rows: Row[] = [], cap = o.frames < FRAME_CHECK_FRAMES ? 2400000 : 120000;
-  const stats = () => { const c = chartHook()?.chart.renderer.info.render; return c ? { draws: c.calls, triangles: c.triangles } : { draws: w.view.stats.drawCalls, triangles: w.view.renderer.info.render.triangles }; };
+  // (the chart draws a frame in several passes, its renderer's count starting again at each: counted over the whole frame while the
+  // check has it, `counting`, and given back as it was)
+  let counting: ChartHook["chart"]["renderer"]["info"] | null = null;
+  const stats = () => {
+    const info = chartHook()?.chart.renderer.info;
+    if (!info) return { draws: w.view.stats.drawCalls, triangles: w.view.renderer.info.render.triangles };
+    if (counting !== info) { counting = info; info.autoReset = false; info.reset(); return { draws: 0, triangles: 0 }; }
+    const d = { draws: info.render.calls, triangles: info.render.triangles };
+    info.reset();
+    return d;
+  };
+  uncount = () => { if (counting) { counting.autoReset = true; counting = null; } };
   /** A part timed: a row; `until` asked after each refresh once `min` are in (true: done; "fail": given up); `ok` false on a give-up or the cap. */
   const timed = async (part: typeof P[number], min: number, until: (frames: number, ms: number) => boolean | "fail"): Promise<{ ok: boolean } | null> => {
     say(part.label);
@@ -117,7 +133,7 @@ async function runSail(w: FrameCheckHooks, o: RunOptions, notes: string[], say: 
       const now = await raf();
       if (o.cancelled()) { fs.onGpu = null; return null; }
       frame.push(now - last); last = now;
-      const d = stats(); draws.push(d.draws); tris.push(d.triangles);
+      const d = stats(); if (d.draws) { draws.push(d.draws); tris.push(d.triangles); } // (a refresh the chart or the game drew nothing in isn't a frame's count)
       const u = frame.length >= min ? until(frame.length, performance.now() - t0) : false;
       if (u === true) break;
       if (u === "fail" || performance.now() - t0 > cap) { ok = false; break; }
@@ -175,16 +191,21 @@ async function runSail(w: FrameCheckHooks, o: RunOptions, notes: string[], say: 
   if (!up) { notes.push("sail: she never got up from her bed; the take-off left out"); return rows; }
   if (!r.ok) notes.push("sail: took off before the house, forest and tufts were all built");
   // 5. Space: the take-off, to the treetops and a moment more
-  let top = 0;
-  key("keydown", "Space", " ");
-  r = await timed(P[4], 2, n => {
-    if (n === 2) key("keyup", "Space", " ");
+  // (her broom in hand first, as E at the rack gives it: without one she can't rise from the house's rooms, rules/treehouse.ts noRiseAt)
+  takeBroom(w.game, w.game.witches[0]);
+  // (pressed again each half second while she's still on the ground: a first press after the wake-up can be taken by the page, not her)
+  let top = 0, held = false; pressed = -Infinity;
+  r = await timed(P[4], 1, (n, ms) => {
+    if (held) { key("keyup", "Space", " "); held = false; }
+    else if (!top && w.game.witch.mode === "ground" && ms - pressed >= 500) { key("keydown", "Space", " "); held = true; pressed = ms; }
     if (!top && w.game.witch.mode === "treetop") top = n;
     return !!top && n - top >= Math.ceil(o.frames / 10);
   });
+  if (held) key("keyup", "Space", " ");
   if (!r) return null;
   if (!r.ok) notes.push(`sail: she never reached the treetops (${w.game.witch.mode})`);
   return rows;
+  }
 }
 
 /** The page's own part under ?framecheck=: the game begun without a key press (`begin`: play starts, no sound), Esc stopping it

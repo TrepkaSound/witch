@@ -56,10 +56,10 @@ export class MemoryStorage {
 
 /** The frame check's stores (Ed, 2026-11-15: a pause-page button that measures frame time on his machine; app/frameCheck.ts): a
  *  throwaway game that must not touch his saved one, yet runs at his real settings. So it reads only his settings from the browser
- *  (FRAME_CHECK_READS: display, controls, the quality ladder's remembered rung) and keeps every write in this page's memory, but for
+ *  (FRAME_CHECK_READS: display, the quality ladder's remembered rung) and keeps every write in this page's memory, but for
  *  its own results (FRAME_CHECK_KEY), which are the real browser's so the last few can be compared. */
 export const FRAME_CHECK_KEY = "witch.framecheck";
-export const FRAME_CHECK_READS = ["witch.settings", "witch.player", "witch.shake", "witch.bindings", "witch.volume", "witch.ladder"] as const;
+export const FRAME_CHECK_READS = ["witch.settings", "witch.player", "witch.shake", "witch.volume", "witch.ladder"] as const; // (not her key bindings: the sail presses the default keys)
 /** The link's frame check switch (?framecheck=1, or =quick; not =0). */
 export const frameCheckLink = (search: string): boolean => { const v = new URLSearchParams(search).get("framecheck"); return v !== null && v !== "0"; };
 /** A Storage over `real` that reads through for the keys under `reads` and writes through only for `writes`; all else in memory. */
