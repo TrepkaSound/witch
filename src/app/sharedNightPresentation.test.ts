@@ -25,12 +25,12 @@ it("rebinds the actual host rollover callback's remote body, room, hat and broom
   await art.look(1, WITCH_GENOME); await art.start(previous, 0);
   expect(drawing === previous).toBe(true);
   // Exercise the actual page seam; an unconnected helper cannot make this test green.
-  const main = readFileSync("src/main.ts", "utf8").replace(/\r\n/g, "\n"), from = main.indexOf("  continuedHost: ") + "  continuedHost: ".length;
-  const until = main.indexOf(",\n  prepareGuest:", from), callback = main.slice(from, until).trim();
+  const source = readFileSync("src/app/pageVisit.ts", "utf8").replace(/\r\n/g, "\n"), from = source.indexOf("    continuedHost: ") + "    continuedHost: ".length;
+  const until = source.indexOf(",\n    prepareGuest:", from), callback = source.slice(from, until).trim();
   expect(from).toBeGreaterThan(20); expect(until).toBeGreaterThan(from);
   const continued = vi.fn(), failure = vi.fn();
-  const rollover = Function("callArrival", "remoteArt", "logCaughtError", "phone", `return (${callback});`)
-    ({ continued }, art, failure, { hangUp: failure }) as (previous: Game, next: Game) => void;
+  const rollover = Function("pageHost", "logCaughtError", `return (${callback});`)
+    ({ callArrival: { continued }, remoteArt: art, phone: { hangUp: failure } }, failure) as (previous: Game, next: Game) => void;
   rollover(previous, next); await art.refresh();
   expect(continued).toHaveBeenCalledWith(previous, next);
   expect(drawing === next).toBe(true);

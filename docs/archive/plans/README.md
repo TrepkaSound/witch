@@ -7,7 +7,7 @@ Plans and builder briefs whose work is finished, moved out of `docs/plans/` on 2
 | `art-cache-fingerprints.md`, `art-cache-followups.md` | Marked COMPLETED: #1487 and #1500, v6478. The data is in `data/art-cache-fingerprints/`. |
 | `save-slots.md` | Marked COMPLETED: #1494, v6478. |
 | `sleep-cell-fix.md` | Marked COMPLETED: #1516, v6478. |
-| `a4-split-dry-run.md` | The A4 split shipped in v7731 (#1917, #1918). The manifests are in `data/refactor/`. |
+| `a4-split-dry-run.md` | The A4 split shipped in v7731 (#1917, #1918). Its tool and manifests (`tools/refactor/`, `data/refactor/`) were deleted once the split was finished (#2085); they are in git history. |
 | `brooms-split.md` | The broom art split is in the code (`art/brooms/`, `src/render/broomsSplit.test.ts`). |
 | `behaviour-reports.md`, `behaviour-fixture-hookup.md`, `creatures-behaviour-report.md`, `invites-behaviour-report.md`, `world-behaviour-reports.md`, `world-shared-rules-behaviour.md` | The nightly behaviour report runs (`.github/workflows/behaviour-report.yml`); each split's result is in `docs/reports/`. |
 | `combat-spacing-builder.md`, `combat-spacing-test-changes.md`, `combat-waiting-range.md`, `combat-waiting-range-implementation.md` | Shipped: the What's new entries of 2026-11-01 (combat spacing) and 2026-11-02 (waiting space), and `combat-spacing-proof.yml`. |

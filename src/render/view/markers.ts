@@ -1,4 +1,4 @@
-// A4 mechanical extraction from src/render/view.ts; body identity is checked by tools/refactor/a4-split.mjs.
+// Part of View (src/render/view.ts), split out by layer (the A4 split): View's methods call these with its internals.
 import type { View, ViewInternals, ViewShared } from "../view";
 import type { Game } from "../../rules/game";
 import { FALLBACK_LOOK, floorLook } from "../legendFloor";
