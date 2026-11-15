@@ -1,6 +1,6 @@
 // Combat's legends (split from rules/combat.ts, no change in behaviour): an angry or happy area legend's long-range
 // throw or beam and its long charge, and a wild legend's pattern of big moves.
-import { guardsHome, LEGEND, type Creature } from "../creatures";
+import { guardsHome, homePost, LEGEND, type Creature } from "../creatures";
 import { foes, stateOf, type State } from "../creatureStates";
 import { LEGENDS } from "../legends";
 import { bodyRadius } from "../spacing";
@@ -19,6 +19,7 @@ import { frontMetres, TIP_PACE } from "../leypulse";
 import { linkLine } from "../pulseRoute";
 import { ashore, lakeDepth, lakeKnobs, shoreDetours } from "../lakes";
 import type { Bounds } from "../mapShape";
+import { likeHomeLegend } from "../homeLegends";
 
 const attacksWitch = (c: Creature, id: number) => c.hunting === id || (c.fight?.target?.kind === "witch" && c.fight.target.id === id);
 const friendlyEnemy = (c: Creature) => stateOf(c) === "enraged" || (stateOf(c) === "wild" && (c.hunting !== undefined || c.fight?.target?.kind === "witch"));
@@ -66,7 +67,7 @@ function dryMetres(dry: { line: readonly RoutePoint[]; source: readonly number[]
 const routeLines = new WeakMap<Game, { key: number; line: readonly RoutePoint[]; source: readonly number[] }>();
 /** The same curved links and drawing-front metres used by the ley line, not its slower wave pulse; kept round the lakes (dryRoute:
  *  the ley line itself may cross one), its front mapped onto the way round. */
-export function friendlyLegendRoute(g: Game): { line: readonly RoutePoint[]; tip: number } {
+export function friendlyLegendRoute(g: Game): { line: readonly RoutePoint[]; tip: number; post: (c: Creature) => { x: number; z: number } } {
   const key = leyKey(g.party);
   let cached = routeLines.get(g);
   if (!cached || cached.key !== key) {
@@ -78,7 +79,7 @@ export function friendlyLegendRoute(g: Game): { line: readonly RoutePoint[]; tip
     cached = { key, ...dryRoute(g.map.bounds, line, lakeKnobs(g.tuning).shore + 4, 4) }; routeLines.set(g, cached);
   }
   const tip = frontMetres(g.party, g.map, g.clock.time, g.tuning.leyLines.reveal ?? TIP_PACE);
-  return { line: cached.line, tip: dryMetres(cached, tip) };
+  return { line: cached.line, tip: dryMetres(cached, tip), post: c => homePost(g.map, g.creatures, c) }; // (post: where one back home stands, rules/creatures.ts homePost)
 }
 const friendRoutes = new WeakMap<Creature, { line: readonly RoutePoint[]; at: number; x: number; z: number }>();
 /** Join the nearest point on tonight's route, then walk along its curves towards `tip` metres along it (clamped to the route:
@@ -131,8 +132,9 @@ export function walkFriendlyRoute(c: Creature, line: readonly RoutePoint[], tip:
   return state.at === end && Math.hypot(goal[0] - c.x, goal[1] - c.z) < 1e-6;
 }
 
-/** Where returned route legends stand guard (Ed, 2026-11-13): rings round the home area's middle, the first `ring` metres out
- *  (past the dancefloor's speakers), each `step` further; no post within `gap` metres of another guard's. */
+/** Where returned route legends stood guard till 2026-11-15, and still do with ?homelegends=old (since then: where the home
+ *  legend stands, rules/creatures.ts homePost): rings round the home area's middle, the first `ring` metres out (past the
+ *  dancefloor's speakers), each `step` further; no post within `gap` metres of another guard's. */
 export const GUARD_POSTS = { ring: 36, step: 12, gap: 18, rings: 6 };
 /** A free post in the home area for a legend back from the route: the nearest slot to where it came in, on the first ring with
  *  one inside home and `gap` clear of the home legend and of every other returned legend's post. (No home known, or none free: where it stands.) */
@@ -159,14 +161,16 @@ export function guardPost(w: Pick<CombatWorld, "home" | "creatures">, c: Creatur
 /** A friendly route legend with nothing to fight (Ed, 2026-11-13: "once it gets to the end of the route, it should turn around
  *  and walk back. Once it gets back to the dancefloor, it starts guarding the home area like the home legend"; "I mean the very
  *  end of the route, not where the pulse is"): out along tonight's whole route to its far end, drawn that far or not; back
- *  along it to its start at home; then to a post in the home area (guardPost), where it stays. Its stage is c.journey, so a
- *  fight in between picks up where it left off. */
+ *  along it to its start at home; then to its post in the home area, and from there it is a home legend (Ed, 2026-11-15:
+ *  "Exactly like the home legend"; rules/homeLegends.ts: the post is rules/creatures.ts homePost, and once on it this idle is no longer called,
+ *  so like the home legend it stands where a fight leaves it). Its stage is c.journey, so a fight in between picks up where
+ *  it left off. With ?homelegends=old (legends.homeAlike off): a ring post (guardPost), which it walks back to after every fight. */
 function friendlyIdle(w: CombatWorld, c: Creature): void {
   const j = c.journey, speed = w.t.combat.legendRun;
   if (j?.stage === "guard") {
     const px = j.x ?? c.x, pz = j.z ?? c.z, d = Math.hypot(px - c.x, pz - c.z);
-    if (d < 0.05) return;
-    // (back to its post after a charge or a shove, round any lake in the way)
+    if (d < 0.05) { if (j.home) j.posted = true; return; } // (on its post: a home legend from here)
+    // (to its post; with ?homelegends=old, back to its post after a charge or a shove, round any lake in the way)
     const via = (d > 1 ? w.round?.(c.x, c.z, px, pz) : null) ?? { x: px, z: pz }, dx = via.x - c.x, dz = via.z - c.z, dv = Math.hypot(dx, dz) || 1, step = Math.min(dv, speed * FIGHT.speed * w.dt);
     if (step >= dv) { c.x = via.x; c.z = via.z; } else { c.x += (dx / dv) * step; c.z += (dz / dv) * step; } // (onto it exactly)
     c.vx = (dx / dv) * speed; c.vz = (dz / dv) * speed;
@@ -175,7 +179,8 @@ function friendlyIdle(w: CombatWorld, c: Creature): void {
   }
   if (!w.friendlyRoute) return;
   if (!walkFriendlyRoute(c, w.friendlyRoute().line, j ? 0 : Infinity, w.dt, speed, w.round)) return;
-  c.journey = j ? { stage: "guard", ...guardPost(w, c) } : { stage: "back" };
+  if (!j) c.journey = { stage: "back" };
+  else c.journey = w.t.legends.homeAlike !== false ? { stage: "guard", home: true, ...(w.friendlyRoute().post?.(c) ?? { x: c.x, z: c.z }) } : { stage: "guard", ...guardPost(w, c) };
 }
 
 /** An angry or happy legend's turn (Ed, 2026-10-05; #87; config/legends.json attack): an angry one never
@@ -186,8 +191,7 @@ function friendlyIdle(w: CombatWorld, c: Creature): void {
  *  witch in reach the nearest standing soundsystem first: bombarding, below; happy: what's attacking a witch in its range first,
  *  else the enraged and the wild going for her), winds up for windup seconds, then casts its kind's own attack, exaggerated
  *  (rules/attacks/species.ts legendAttack; Ed, 2026-10-27); the old lob (a bomb landing after
- *  lobFlight seconds) or beam (by its species) only at a soundsystem, or with ?attacks=old, each hit attack.damage times its level's power for
- *  interval seconds. (Its shots are the wild's when angry, the happy's when happy: foes() does the rest.) */
+ *  lobFlight seconds) or beam (by its species) only at a soundsystem, or with ?attacks=old, each hit plain attack.damage. (Its shots are the wild's when angry, the happy's when happy: foes() does the rest.) */
 export function stepLegendAttack(w: CombatWorld, s: CombatState, c: Creature, data: CombatData, grid: Grid): void {
   // Its attacks share the posse's allegiance so blows can land on wild witch-attackers as well as the enraged.
   const A = LEGENDS.attack, time = w.time, S = FIGHT.scale, angry = c.legendState !== "happy", R = (angry ? A.range : w.t.legends.friendRange) * S, side: State = angry ? "wild" : "leashed";
@@ -223,8 +227,9 @@ export function stepLegendAttack(w: CombatWorld, s: CombatState, c: Creature, da
     if (d <= R) found.push({ d, x: o.x, z: o.z, target: { kind: "creature", id: o.id } });
   }
   found.sort((a, b) => a.d - b.d);
-  if (!angry && !c.homeGuard) {
-    // Defend a witch in range before engaging other enemies. Attackers may be beyond the range themselves.
+  if (!angry && !likeHomeLegend(c)) {
+    // Defend a witch in range before engaging other enemies. Attackers may be beyond the range themselves. (Not a home legend, nor
+    // since Ed, 2026-11-15, a route legend back home, "Exactly like the home legend": those take only what is within their own reach.)
     const defended = w.witches.filter(v => !v.down && Math.hypot(v.x - c.x, v.z - c.z) <= R);
     const attackers = w.creatures.filter(o => o !== c && targetable(o) && !truce(c, o) && !w.asleep(o) && friendlyEnemy(o) && defended.some(v => attacksWitch(o, v.id)) && !(guard && charger && !w.home?.inside(o.x, o.z)))
       .map(o => ({ d: Math.hypot(o.x - c.x, o.z - c.z), x: o.x, z: o.z, target: { kind: "creature" as const, id: o.id } })).sort((a, b) => a.d - b.d);
@@ -241,7 +246,7 @@ export function stepLegendAttack(w: CombatWorld, s: CombatState, c: Creature, da
   }
   if (!found.length) {
     f.target = null; f.readyAt = time + A.recheck;
-    if (!angry && !c.homeGuard) friendlyIdle(w, c);
+    if (!angry && !c.homeGuard && !c.journey?.posted) friendlyIdle(w, c); // (a home legend stands where it is; so does a returned one once on its post)
     return;
   }
   if (time < f.readyAt) return;

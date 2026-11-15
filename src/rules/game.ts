@@ -434,7 +434,7 @@ const napper = (c: Creature): boolean => !!c.asleep && c.napUntil !== undefined;
 
 export const affectionOf = (g: Game, W: Witch = g.witches[0], acceptedGuestHit = false): Affection => {
   const t = g.tuning, s = W.invites, E = t.legends;
-  const data = { ...STATES, partyEgg: E.partyEgg, affection: { ...STATES.affection, hits: meterHits(t), drain: t.invites.drain ?? STATES.affection.drain, gap: 0, legendDrain: E.partyDrain } };
+  const data = { ...STATES, partyEgg: E.partyEgg, homeEgg: E.homeAlike, affection: { ...STATES.affection, hits: meterHits(t), drain: t.invites.drain ?? STATES.affection.drain, gap: 0, legendDrain: E.partyDrain } };
   return {
     acceptsHit: automatic => !(W.id === 1 && guestEffectsEnabled(g) && !acceptedGuestHit && !automatic),
     // A napper takes them (Ed, 2026-10-11: "Letters wake them"): the 💌 rouses it, wherever she is, and lands as any other (hit,
@@ -896,7 +896,7 @@ function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonl
   for (const id of legends) {
     const c = g.creatures[id];
     if (!guardsHome(c) || H.inside(c.x, c.z)) continue;
-    if (c.homeGuard) { c.x = c.lairX ?? c.homeX; c.z = c.lairZ ?? c.homeZ; } else { c.x = c.journey?.x ?? H.x; c.z = c.journey?.z ?? H.z; } // (a returned route legend: its post) c.run = undefined; c.moving = false; c.vx = 0; c.vz = 0;
+    if (c.homeGuard) { c.x = c.lairX ?? c.homeX; c.z = c.lairZ ?? c.homeZ; } else { c.x = c.journey?.x ?? H.x; c.z = c.journey?.z ?? H.z; } c.run = undefined; c.moving = false; c.vx = 0; c.vz = 0; // (the home legend's lair, a returned route legend's post; and put back, it stops: Ed, 2026-11-15, "Fix it", the reset had sat behind this comment)
   }
 }
 
