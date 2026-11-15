@@ -80,7 +80,7 @@ export function behindLength(p: PartyState, map: ForestMap): number {
   return L;
 }
 
-/** Seconds the next wave's pulse takes along its stretch at `speed` m/s (a balance simulator's gap: rules/balance.ts, states.ts). */
+/** Seconds the next wave's pulse takes along its stretch at `speed` m/s (tools/balance/pulsegaps.mjs). */
 export function stretchSeconds(p: PartyState, map: ForestMap, speed: number): number {
   const lens = stretchLengths(p, map);
   let L = 0;

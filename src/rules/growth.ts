@@ -10,7 +10,7 @@ import { foundShare } from "./rosters";
 import { hash2 } from "./random";
 
 /** The level of an area's `n`th creature grown at `wave`, by the weights (baby, young, adult): the
- *  same for the same seed, area and wave (the balance simulator reads it too). */
+ *  same for the same seed, area and wave. */
 export function growthLevel(seed: number, cell: readonly [number, number], wave: number, n: number, weights: readonly number[]): Level {
   const total = weights.reduce((a, b) => a + Math.max(0, b), 0);
   if (!(total > 0)) return 0;

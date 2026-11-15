@@ -39,7 +39,7 @@ export const speakerIndex = (key: string): number => (key.startsWith("home:") ? 
 /** A speaker's state by its health: destroyed at none, damaged at half or less. */
 export const speakerStateOf = (hp: number, max: number): SpeakerState => (hp <= 0 ? "destroyed" : hp <= max / 2 ? "damaged" : "playing");
 
-/** The balance simulators' home, one soundsystem at the floor's centre: the ring's health together, reached at its speakers. */
+/** Home as one soundsystem at the floor's centre (the power meter's and the tools'): the ring's health together, reached at its speakers. */
 export const homeHealth = (t: Tuning): number => t.dancefloor.speakers.count * t.combat.speakerHealth;
 export const homeReach = (t: Tuning): number => speakerRadius(t) + t.combat.speakerRadius;
 

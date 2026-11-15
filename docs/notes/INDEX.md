@@ -8,7 +8,7 @@ that; `tools/docs/glossary.test.ts` fails while this is out of date. Read an are
 
 - [Art checks](art-checks.md): The art generator's check, the style bible, the genome compare, the lab and export commands.
 - [Balance baselines — v5655 rules](balance-baselines.md): The matched-seed, matched-bag tables from the real-rules report (v5655; one seed, no tuning).
-- [Real-rules reports and legacy coverage](balance-report-coverage.md): The report tool, how to rerun it, and what the old balance sims still cover.
+- [Real-rules reports and legacy coverage](balance-report-coverage.md): The report tool, how to rerun it, and what the deleted balance sims measured that nothing does yet.
 - [Balance study follow-up](balance-study.md): The follow-up on the real rules after the report tool (#1475): the matched-tempo preflight and the study's limits.
 - [Wide, shallow balance survey — design v1](balance-survey-design.md): The frozen five-study cloud design, first-wave limits and expert feedback gates.
 - [Balance](balance.md): The balance simulators and bots, fighting value, populations and costs, the playtest log.
@@ -52,7 +52,7 @@ glossary; these are the prototype's), by note.
 
 ### [Real-rules reports and legacy coverage](balance-report-coverage.md)
 
-(no entries: its tools and checks only)
+- The copied models were deleted on 2026-11-15
 
 ### [Balance study follow-up](balance-study.md)
 
@@ -70,7 +70,7 @@ glossary; these are the prototype's), by note.
 - Log recovery
 - Input recording
 - Paused playtest comments
-- Legacy models retained (2026-10-29, #1459, coordinator decision).
+- Legacy models deleted (2026-11-15; Ed: "Do 1-7", the software-quality list's dead code).
 - Fighting value (F)
 - Population growth
 - Strength
