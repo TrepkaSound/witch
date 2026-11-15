@@ -12,7 +12,7 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 
 ## How many, and where they are made
 
-1. Every creature is made once, when the night's map is made. None is made or removed during a night: growth is off, and the game never calls the growth code. Code: `src/rules/creatures.ts#spawnCreatures`, `config/tuning.json#population.growth.on`, `src/rules/growth.ts#growWave`. Ruling: Ed, 2026-10-28: "during a night, no creatures are created and none are destroyed".
+1. Every creature is made once, when the night's map is made. None is made or removed during a night: growth is off, and the growth code is gone. Code: `src/rules/creatures.ts#spawnCreatures`, `config/tuning.json#population.growth.on`. Ruling: Ed, 2026-10-28: "during a night, no creatures are created and none are destroyed".
 2. The home area has no wild creatures and no area legend. Code: `src/rules/creatures.ts#if (home) continue;`. Ruling: Ed, 2026-10-05: "Home area shouldn't have a legend".
 3. Every other area starts with 2 babies (the cap is also 2) and at least 1 youth or adult. Code: `src/rules/growth.ts#routePopulation`, `config/tuning.json#population.byRoute.babies`, `config/tuning.json#population.byRoute.babyCap`, `config/tuning.json#population.byRoute.minHostile`. Ruling: Ed, 2026-10-07: "every wild area has at least one hostile wild creature".
 4. The number of youths and adults in an area comes from its place on the waves' route: later areas hold more and older ones. Code: `src/rules/growth.ts#routePopulation`, `src/rules/growth.ts#islandReach`, `config/tuning.json#population.swarm`. Ruling: Ed, 2026-10-07: "pre-populate every area by its route position".

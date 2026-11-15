@@ -43,7 +43,7 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 
 ## Chains and what grounds her
 
-1. The weight system is gone. Carried sigils do not slow her, drift her, slow her rise or pull her down. `loadOf` always returns no load. Code: `src/rules/leashWeight.ts#NO_LOAD`, `src/rules/leashWeight.ts#loadOf`. Ruling: Ed, 2026-11-03: "the weight system goes".
+1. The weight system is gone. Carried sigils do not slow her, drift her, slow her rise or pull her down, and the load code is gone. Code: `src/rules/leashWeight.ts#groundedBy`. Ruling: Ed, 2026-11-03: "the weight system goes".
 2. She cannot take off from the ground while an adult or a legend (a party legend too) is in her stack. Youths, babies and parked creatures never ground her, and species strength does not matter. Code: `src/rules/leashWeight.ts#groundedBy`, `src/rules/chains.ts#holdsDown`. Ruling: Ed, 2026-11-03: "I think leashed youths shouldn't stop you from taking off, only adults and legends do".
 3. The refused take-off spends no cooldown and raises the "grounded" event. If she is already up when a youth grows up, she stays up; it only stops her next take-off. Nothing grounds her in the zoo. The check reads her real stack, so it also holds on the treehouse floor, where her followers otherwise count as parked at home. Code: `src/rules/game.ts#kind: "grounded"`, `src/rules/game.ts#!g.map.bounds.fence && groundedBy`. Ruling: Ed, 2026-10-26 (in the zoo flying is the only way over its fences; no words quoted).
 4. Every youth, adult and legend in her stack is on a chain 80 m long (`leash.chain.length`). Babies and a party legend have none. Inside 80 m a chain does nothing. Code: `src/rules/chains.ts#chained`, `src/rules/chains.ts#chainLength`, `config/tuning.json#leash.chain.length`. Ruling: Ed, 2026-11-03: "about the size of a fight (80m?)".
@@ -74,7 +74,7 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 
 1. A flask is never carried. E while she stands on its sigil (within 5.625 m; the sigil lies 6 m south of the bottle) drinks it on the spot. Code: `src/rules/sigilButton.ts#flaskUnder(relicsOut(g)`, `src/rules/legends.ts#flaskUnder`, `config/legends.json#relics.sigilOffset`. Ruling: Ed, 2026-10-18: "All flasks give growth spurt (all creatures following you become adults)".
 2. Drinking it turns every baby and youth on her stack into an adult at once. Parked creatures and legends are not touched. With nobody to grow, the flask stays and the press only fizzles. The new adults ground her (see "Chains and what grounds her"). Code: `src/rules/berries.ts#growthSpurt`, `src/rules/sigilButton.ts#flaskDrunk`. Ruling: Ed, 2026-10-18: "all creatures following you become adults".
-3. There are no flasks before the party spell is cast, and a legend is no longer made happy by one. The code that carries a relic's sigil in the stack is still there, but the game never calls it, so `leash.relics` stays empty. Code: `src/rules/partyOver.ts#relicsOut`, `src/rules/leash.ts#carryRelic`. Ruling: Ed, 2026-10-26: "Relics, like finds, only appear once the party starts".
+3. There are no flasks before the party spell is cast, and a legend is no longer made happy by one. The code that carried a relic's sigil in the stack is gone; `leash.relics` stays as an always-empty field for saved nights. Code: `src/rules/partyOver.ts#relicsOut`. Ruling: Ed, 2026-10-26: "Relics, like finds, only appear once the party starts".
 
 ## Where code and the latest ruling disagree
 
@@ -86,9 +86,6 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 1. `src/rules/game.ts#rules/leashWeight.ts groundedBy, leash.grounded`: the take-off comment in stepWitchLocomotion now gives the 2026-11-03 rule, but still names `leash.grounded`, a knob the tuning no longer has.
 2. `src/rules/leash.ts#a take-off pulled back down: her followers too heavy`: the "grounded" event's comment still speaks of weight.
 3. `src/rules/game.ts#The pull of the sigils witch`: a leftover doc comment (no function under it) describing the sigil weight, "what drags beyond the free allowance". The weight is gone.
-4. `src/rules/game.ts#her sigils' pull: rules/leashWeight.ts`: the comment beside `loadOf` in the step; `loadOf` is always no load.
-5. `src/rules/sigilButton.ts#The sigil button by a lying relic picks it up; carrying one, by a sleeping legend, puts it down there`: flasks are drunk where they lie since Ed, 2026-10-18; none is carried or given to a legend.
-6. `docs/notes/gameplay.md#Sigil stack`: says a flask is "picked up, it goes on at the bottom" and is "given to a sleeping legend in its clearing". Not since Ed, 2026-10-18.
-7. `docs/notes/gameplay.md#Wild / happy / leashed / enraged`: says a happy creature has "its **sigil rune** at its feet". Not in an area whose stone still stands: there its sigil is in the stone's stack.
-8. `src/rules/zooControls.ts#happy, its runes`: the header says "happy, its runes at their feet to be picked up" and "then pick up its sigil (E)". True for the block bar's happy mood. A creature she invites with letters in the zoo gets no rune: its sigil goes to its block's stone stack until that stone is cast (read from the code, not run).
-9. `docs/notes/gameplay.md#Chain drag`: says `loadOf` and `NO_LOAD` remain "till #1609 lands"; `src/rules/leashWeight.ts#NO_LOAD` says #1609 has merged and both can go.
+4. `docs/notes/gameplay.md#Sigil stack`: says a flask is "picked up, it goes on at the bottom" and is "given to a sleeping legend in its clearing". Not since Ed, 2026-10-18.
+5. `docs/notes/gameplay.md#Wild / happy / leashed / enraged`: says a happy creature has "its **sigil rune** at its feet". Not in an area whose stone still stands: there its sigil is in the stone's stack.
+6. `src/rules/zooControls.ts#happy, its runes`: the header says "happy, its runes at their feet to be picked up" and "then pick up its sigil (E)". True for the block bar's happy mood. A creature she invites with letters in the zoo gets no rune: its sigil goes to its block's stone stack until that stone is cast (read from the code, not run).
