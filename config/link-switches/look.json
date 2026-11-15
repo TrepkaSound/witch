@@ -1,9 +1,0 @@
-{
- "name": "look",
- "values": [
-  "old"
- ],
- "does": "Fights drawn with the old attack look, not the attack looks and elements.",
- "group": "compare",
- "since": "2026-10-27"
-}
