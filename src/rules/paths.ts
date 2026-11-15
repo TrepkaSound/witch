@@ -6,7 +6,8 @@
 // corridors with bushes along their edges. Seeded, so they never change; no drawing here.
 import { ashore, lakeKnobs, onLake, shoreDetours } from "./lakes";
 import { clamp, hash2, rng, vnoise } from "./random";
-import { AREA_TYPES, type ForestMap } from "./map";
+import { AREA_TYPES } from "./map/areaTypes";
+import type { ForestMap } from "./map";
 import { floorClearing } from "./speakers";
 import { beachOf } from "./mapShape";
 import { zooPathLines } from "./zoo";
