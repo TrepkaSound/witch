@@ -15,9 +15,6 @@ import { comfort } from "./comfort";
 
 const CRYSTAL = [new THREE.Vector3(0.25, 0.85, 1), new THREE.Vector3(0.7, 0.4, 1), new THREE.Vector3(1, 0.65, 0.2)];
 
-/** A playing soundsystem (listed for its laser show, which its sky sigil replaced: render/hologram.ts, Ed 2026-10-08): where its
- *  top is, its seed, when it finished rising; and when it went full party (a wave celebrated it), if it has. */
-export interface Playing { x: number; y: number; z: number; seed: number; ready: number; full?: number; /** Its projector's top (a generated soundsystem: render/soundsystemGen.ts), where the sky hologram rises from; else none. */ projector?: { x: number; y: number; z: number }; /** Its damage stage: 0 playing, 1 to 3 damaged, 4 destroyed (the hologram glitching more with each). */ stage?: number }
 export type { Projector } from "./hologram";
 import type { Projector } from "./hologram";
 
@@ -39,7 +36,7 @@ export class PartyView {
     // (the party's over, render/partyOver.ts: one still standing switches off as the front passes it, still and its glow out;
     // its lights, lasers and hologram go with the rest in the view)
     const off = (x: number, z: number) => !!offAt && offAt(x, z) >= 0.5;
-    const t = g.tuning.party, items: SpriteInstance[] = [], lights: ForestLight[] = [], playing: Playing[] = [], projectors: Projector[] = [];
+    const t = g.tuning.party, items: SpriteInstance[] = [], lights: ForestLight[] = [], projectors: Projector[] = [];
     const M = moodOf(g.tuning), warm = M?.partyWarm.length ? this.warmOf(M.partyWarm) : null;
     // Home has no soundsystem of its own: the dancefloor's ring of speakers carries its music (Ed,
     // v183), and each of them has a single laser (lasers.ts speakerLasers; none from the disco ball, Ed).
@@ -76,13 +73,12 @@ export class PartyView {
         const hp = g.combat.sounds.get(s.key), at = I?.projector ?? { x: s.x, y: h, z: s.z };
         projectors.push({ key: s.key, x: at.x, y: at.y, z: at.z, type: s.type, ready: s.at + t.transition, damage: hp && hp.max > 0 ? 1 - Math.max(0, hp.hp) / hp.max : 0, stage: I?.stage, rgb: I ? I.rgb : undefined });
       }
-      if (p >= 1) playing.push({ x: s.x, y: I?.projector ? I.projector.y : h * 0.85, z: s.z, seed: Math.floor(Math.abs(s.x * 7.3 + s.z * 13.1)) % 100000, ready: s.at + t.transition, full: s.full, projector: I?.projector ?? undefined, stage: I?.stage });
       const beat = 0.85 + 0.15 * Math.sin(time * 8);
       // Spooky (render/mood.ts): the party is the warm light in a cold wood, its pools wider and warmer.
       const rgb = warm ? warm[s.variant % 3] : I ? this.rgbOf(I.rgb) : CRYSTAL[s.variant % 3];
       // (and the trees, props and scenery round it cast shadows from it, as from a campfire: render/trunkShadows.ts; Ed, 2026-10-13)
       if (rise > 0) lights.push({ x: s.x, y: 3, z: s.z, reach: t.lightReach * (M?.partyReach ?? 1), rgb, strength: t.lightStrength * (M?.partyStrength ?? 1) * beat * rise * (1 + (1 - p) * 2), shadow: { x: s.x, y: 3, z: s.z, k: rise }, pattern: speakerPattern(g.beat, time, PATTERN_LOOK, comfort.reduceFlashing, g.tuning.patternLight?.beatsPerTurn) });
     });
-    return { items, lights, playing, projectors };
+    return { items, lights, projectors };
   }
 }

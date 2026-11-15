@@ -39,10 +39,6 @@ export function detachGuest(game: Game, _guestRoom?: string): void {
     c.loose = true;
   }
   host.leash.placed.push(...guest.leash.placed);
-  for (const id of guest.leash.relics) {
-    const relic = game.relics[id];
-    if (relic) { relic.sx = guest.body.x; relic.sz = guest.body.z; relic.state = "dropped"; }
-  }
   if (guest.leash.tether) {
     const id = guest.leash.tether.id;
     game.loose.push({ id, x: guest.body.x, z: guest.body.z, at: game.clock.time, legend: true });

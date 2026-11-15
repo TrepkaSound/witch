@@ -42,7 +42,7 @@ export function relicKinds(R: LegendsData["relics"]): { kind: string; look: stri
 
 /** A relic: a giant half-buried party object (its kind: the art's party relic id), a flask lying at (x, z)
  *  until she drinks it on its sigil, then used (Ed, 2026-10-18; it was carried and put down by a legend till then). */
-export interface Relic { id: number; kind: string; x: number; z: number; cell: [number, number]; state: "lying" | "carried" | "used" | /** only its sigil lies there, at (sx, sz), no bottle: the zoo's and the challenge's flasks (and one she'd put down, while they were carried: Ed, 2026-10-08) */ "dropped"; legend?: number;
+export interface Relic { id: number; kind: string; x: number; z: number; cell: [number, number]; state: "lying" | "used" | /** only its sigil lies there, at (sx, sz), no bottle: the zoo's and the challenge's flasks (none is carried or put down since Ed, 2026-10-18) */ "dropped"; legend?: number;
   /** Its relic sigil on the ground, sigilOffset metres south of it (Ed, 2026-10-06): she drinks the flask standing on this (flaskUnder). */
   sx: number; sz: number }
 

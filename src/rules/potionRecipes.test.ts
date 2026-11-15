@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { MUSHROOM_COLOURS } from './mushrooms';
 import { effectEnvelope, POTION_RECIPES, potionRecipe } from './potionRecipes';
 describe('the developer potion recipe book', () => {
-  it('covers all 165 combinations exactly once, independent of ingredient order', () => {
-    expect(POTION_RECIPES).toHaveLength(165);
-    expect(new Set(POTION_RECIPES.map(r => r.id)).size).toBe(165);
+  it('covers every combination of three colours exactly once, independent of ingredient order', () => {
+    const n = MUSHROOM_COLOURS.length, all = n * (n + 1) * (n + 2) / 6; // (three from n, repeats allowed, order ignored: 165 of 9 colours)
+    expect(POTION_RECIPES).toHaveLength(all);
+    expect(new Set(POTION_RECIPES.map(r => r.id)).size).toBe(all);
     expect(POTION_RECIPES.every(r => Number.isInteger(r.id) && r.id > 0)).toBe(true);
-    expect(new Set(POTION_RECIPES.map(r => r.key)).size).toBe(165);
+    expect(new Set(POTION_RECIPES.map(r => r.key)).size).toBe(all);
     for (const a of MUSHROOM_COLOURS) for (const b of MUSHROOM_COLOURS) for (const c of MUSHROOM_COLOURS) {
       const recipe = potionRecipe([a, b, c]);
       expect(recipe, `${a}+${b}+${c}`).toBeDefined();

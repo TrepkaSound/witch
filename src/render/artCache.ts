@@ -17,9 +17,6 @@ export interface CacheHint { cacheKey?: string | null; /** Only if it's kept: a 
  *  revealArt). (Kept in the rules, rules/stumps.ts: the stumps' deal is the rules' too.) */
 export { islandArtSeed } from "../rules/stumps";
 
-declare const __ART_HASH__: string;
-/** Legacy diagnostic only; never a prefix on the per-kind cache keys. */
-export const ART_HASH = typeof __ART_HASH__ === "string" ? __ART_HASH__ : "dev";
 declare const __ART_KIND_HASHES__: Record<string, string>;
 export const ART_KIND_HASHES: Readonly<Record<string, string>> = typeof __ART_KIND_HASHES__ === "object" ? __ART_KIND_HASHES__ : {};
 

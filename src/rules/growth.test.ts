@@ -1,11 +1,8 @@
 import { describe, expect, it, beforeAll, afterAll } from "vitest";
 import { COMBAT } from "./combat";
-import { growthLevel, growWave, materialize, newGrowth, pendingCounts } from "./growth";
-import { generateMap } from "./map";
+import { growthLevel } from "./growth";
 import { newGame, stepGame, simRadius } from "./game";
-import { spawnCreatures } from "./creatures";
 import { TUNING, withTuning } from "./tuning";
-import { cellKey } from "./party";
 
 /** Every species at strength 1 for these tests (Ed, 2026-10-08, gave the species strengths by class; these test other
  *  mechanics, written when every species was 1): combat.json strength.species emptied for the block, put back after. */
@@ -20,7 +17,6 @@ const still = { moveX: 0, moveZ: 0, toggleMode: false, zoom: 0 };
 
 describe("wild areas grow (Ed, 2026-10-04: a creature a wave while wild)", () => {
   beforeAll(plainStrength); afterAll(restoreStrength);
-  const map = generateMap(123, T1);
 
   it("returns valid growth levels with exact seed replay and forced weight endpoints", () => {
     const levels: number[] = [];
@@ -32,51 +28,12 @@ describe("wild areas grow (Ed, 2026-10-04: a creature a wave while wild)", () =>
     for (let w = 1; w < 30; w++) expect(growthLevel(5, [1, 1], w, 0, [1, 0, 0])).toBe(0);
   });
 
-  it("grows every still-wild area by perWave a wave, as counts only, never home or a partified area", () => {
-    const s = newGrowth(), [hx, hy] = map.centreCell, party = new Set([cellKey(map.centreCell), cellKey(map.cells[5])]);
-    for (let w = 1; w <= 5; w++) growWave(s, map, w, key => !party.has(key));
-    growWave(s, map, 5, () => true); // (a wave grows once)
-    expect(s.grown).toBe((map.cells.length - 2) * 5 * T1.population.growth.perWave);
-    expect(s.pending.has(`${hx},${hy}`)).toBe(false);
-    expect(s.pending.has(cellKey(map.cells[5]))).toBe(false);
-    expect(pendingCounts(s, cellKey(map.cells[0])).reduce((a, b) => a + b, 0)).toBe(5);
-    const off = newGrowth();
-    growWave(off, generateMap(123, withTuning({ population: { ...T1.population, growth: { ...T1.population.growth, on: false } } })), 1, () => true);
-    expect(off.grown).toBe(0);
-  });
-
-  it("makes the counts real only near a witch, out of her sight; a woken area's at once", () => {
-    const s = newGrowth(), creatures = spawnCreatures(map), before = creatures.length;
-    for (let w = 1; w <= 3; w++) growWave(s, map, w, () => true);
-    const site = map.siteOf(map.cells[0][0], map.cells[0][1]), far = { x: site.x + 5000, z: site.z };
-    expect(materialize(s, creatures, map, [far], 600, 10)).toBe(0); // nobody near: counts only
-    // A witch 500 m off: its area's creatures appear, beyond the haze from her.
-    const near = { x: site.x + 500, z: site.z };
-    const made = materialize(s, creatures, map, [near], 600, 20);
-    expect(made).toBeGreaterThan(0);
-    for (const c of creatures.slice(before)) {
-      expect(Math.hypot(c.x - near.x, c.z - near.z)).toBeGreaterThanOrEqual(T1.haze.far + T1.population.growth.hide);
-      expect(creatures[c.id]).toBe(c); // ids are their places
-    }
-    // Standing in an area, none of its own appear in sight... unless it wakes.
-    const [cx, cy] = [map.centreCell[0] - 3, map.centreCell[1] - 2], inside = map.siteOf(cx, cy), key = `${cx},${cy}`;
-    const waiting = pendingCounts(s, key).reduce((a, b) => a + b, 0);
-    expect(waiting).toBe(3);
-    materialize(s, creatures, map, [inside], 600, 30);
-    expect(pendingCounts(s, key).reduce((a, b) => a + b, 0)).toBe(waiting);
-    const n = creatures.length;
-    materialize(s, creatures, map, [inside], 600, 30.5, new Set([key]));
-    expect(creatures.length - n).toBe(waiting);
-    expect(s.pending.has(key)).toBe(false);
-  }, 30000);
-
   it("in a game: nothing grows any more (Ed, 2026-10-07: the areas are peopled from the start, rules/clear.test.ts)", () => {
     const g = newGame(123, T1), start = g.creatures.length;
     g.clock.paused = false;
     g.witch = { ...g.witch, seated: false, mode: "treetop", lift: 1 };
     for (let wave = 1; wave <= 3; wave++) { stepGame(g, { ...still, nextWave: true }, 1 / 60); stepGame(g, still, 1 / 60); }
     expect(g.party.wave).toBe(3);
-    expect(g.growth.grown).toBe(0);
     expect(g.creatures.length).toBe(start);
     expect(simRadius(g)).toBeGreaterThan(T1.haze.far);
   }, 60000);

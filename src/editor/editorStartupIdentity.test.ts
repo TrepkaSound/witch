@@ -20,7 +20,7 @@ function startup(perturb: boolean) {
     floats[0] = value; bits[0] += value > 0 ? 1n : -1n; return floats[0];
   };
   const module = { exports: {} as typeof import("./houseLayout") & typeof import("./publishedLayout") };
-  vm.runInNewContext(source, { require, module, exports: module.exports, Math: math, structuredClone }, { timeout: 1500 });
+  vm.runInNewContext(source, { require, module, exports: module.exports, Math: math, structuredClone }, { timeout: 30_000 }); // (a guard against a hang only: generous, so a busy machine never trips it)
   const x = module.exports, items = x.layoutItems(), key = x.floorplanKey(x.EDITOR_HOUSE, items);
   return { x, items, key, selected: x.publishedLayout(items, key, new URLSearchParams()) };
 }

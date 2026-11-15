@@ -62,13 +62,11 @@ describe("legend relics on the map", () => {
     at(r.sx, r.sz);
     stepGame(g, { ...C, place: true }, 1 / 60); stepGame(g, C, 1 / 60);
     expect(r.state).toBe("lying");
-    expect(g.leash.relics).toEqual([]);
     // Now with three following her and one parked: drunk, the young ones adults at once (the next step), the parked one not.
     g.leash.stack.push(baby.id, young.id, adult.id);
     g.leash.placed.push({ id: parked.id, x: r.sx + 30, z: r.sz, at: g.clock.time });
     stepGame(g, { ...C, place: true }, 1 / 60); stepGame(g, C, 1 / 60);
     expect(r.state).toBe("used");
-    expect(g.leash.relics).toEqual([]);
     expect([baby.level, young.level, adult.level, parked.level]).toEqual([2, 2, 2, 1]);
   }, 60000);
 

@@ -121,5 +121,5 @@ describe("the ring and the way out are one path (Ed, 2026-10-06: \"it doesn't co
       expect(maxTurn(route.slice(0, onRing + 12))).toBeLessThan(35);
     }
     expect(maxTurn(P.path.slice(0, 30))).toBeLessThan(35); // (the boot ring's way on, the same curve)
-  }, 30000);
+  });
 });

@@ -70,14 +70,6 @@ npm run build && node tools/smoke/dreams.cjs [out dir] [seed]
 
 Executed in the page: require a complete forest and a nonblank drawn canvas, not elapsed wall time.
 
-## `flask-stack.cjs`
-
-The flask in her sigil stack: the built game at 1280×720 on a seed; three creatures leashed to her and the first relic carried, on the ground at home; a crop of her stack before, after one cycle and after another.
-
-```
-npm run build && node tools/smoke/flask-stack.cjs [out dir] [seed]
-```
-
 ## `house-bed-start.cjs`
 
 Resolve smoke sleep and overlay interaction points from the game's selected layout and shared geometry, without constructing a game or art.

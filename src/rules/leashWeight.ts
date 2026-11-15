@@ -7,13 +7,6 @@ import type { Creature } from "./creatures";
 import type { Tuning } from "./tuning";
 import { holdsDown } from "./chains";
 
-/** The old sigil weight's load, retired: always none. Kept, with loadOf, only because the step's call site (rules/game.ts
- *  stepWitchLocomotion) still hands stepWitch one; #1609, which was moving it, has merged, so both can go. */
-export interface LeashLoad { readonly total: 0; readonly over: 0 }
-export const NO_LOAD: LeashLoad = { total: 0, over: 0 };
-/** (retired: no load, whatever its arguments; see NO_LOAD) */
-export const loadOf = (..._args: unknown[]): LeashLoad => NO_LOAD;
-
 /** Who grounds her (Ed, 2026-11-03, replacing the weight rule of 2026-10-18, "One adult stops you taking off. Three young do."): "I
  *  think leashed youths shouldn't stop you from taking off, only adults and legends do." A leashed adult or legend, its sigil in her
  *  stack (a party legend too), stops her taking off from the ground, whatever its species' strength; youths, babies and parked ones

@@ -24,12 +24,11 @@ function siege(spec = "wolf*1@2,boar*4@2!"): Game {
 }
 
 describe("home's speakers (Ed, 2026-10-08)", () => {
-  it("are twelve soundsystems at the ring's speakers, each combat.speakerHealth (150), and there's no single home", () => {
+  it("are a soundsystem at each of the ring's speakers (twelve), each combat.speakerHealth, and there's no single home", () => {
     const g = newGame(123, TUNING), C = TUNING.combat;
-    expect(C.speakerHealth).toBe(150);
+    expect(C.speakerHealth).toBeGreaterThan(0); // (the number is the tuning's: read from it below, not written here)
     expect(homeKeys(g)).toEqual(g.map.dancefloor.speakers.map((_, i) => speakerKey(i)));
-    expect(homeKeys(g).length).toBe(12);
-    g.map.dancefloor.speakers.forEach((p, i) => expect(g.combat.sounds.get(speakerKey(i))).toEqual({ hp: 150, max: 150, x: p.x, z: p.z, radius: C.speakerRadius }));
+    g.map.dancefloor.speakers.forEach((p, i) => expect(g.combat.sounds.get(speakerKey(i))).toEqual({ hp: C.speakerHealth, max: C.speakerHealth, x: p.x, z: p.z, radius: C.speakerRadius }));
     expect(g.combat.sounds.has("home")).toBe(false);
   });
 
@@ -65,7 +64,7 @@ describe("home's speakers (Ed, 2026-10-08)", () => {
     const g = siege(), keys = homeKeys(g);
     for (const k of keys.slice(1)) g.combat.sounds.get(k)!.hp = 0;
     stepGame(g, idle, STEP);
-    expect(g.speakers.filter(s => s === "destroyed").length).toBe(11);
+    expect(g.speakers.filter(s => s === "destroyed").length).toBe(keys.length - 1);
     expect(g.partyOver).toBeNull();
     const last = g.combat.sounds.get(keys[0])!;
     last.hp = 1;

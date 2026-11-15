@@ -12,7 +12,7 @@ import * as THREE from "three";
 import { Dirty } from "./dirty";
 import { HEIGHT_UNIFORMS, HEIGHT_VERT_GLSL } from "./height";
 import { PIXEL_SNAP_GLSL } from "./shaders";
-import type { LeyTip } from "./leyHead";
+import type { LeyTip } from "./leylines";
 
 /** Sparks in the pool (each a streak of TRAIL art pixels). */
 const SPARKS = 192, TRAIL = 6;

@@ -55,7 +55,8 @@ export const ZOO_EDGE_PUSH = 0.5;
 import { keepInBedroom, stepWake, wakeOf, startWakeInLastBed, WAKE_DEFAULT, type WakeState } from "./wakeUp";
 import { wearPiece } from "./clothesPile";
 import { hatLetters, hatsDown, onHatPicked, onHatPut, stepHatSpells } from "./hatSpells";
-import { loadOf, groundedBy } from "./leashWeight";
+import { groundedBy } from "./leashWeight";
+import { newGrowth, type GrowthState } from "./growth";
 import { pinWitch, type Pinned } from "./partyLegend";
 import { beginChains, chainLength, dragWitch } from "./chains";
 import { pullsOf, stepPop, stepTug, tautKnobs, yankFrom, type PopMeter } from "./tautChain";
@@ -78,7 +79,6 @@ import { batter, canPound, groundPound, hiddenWitch, leyJump, leyJumpTarget } fr
 import type { HouseState } from "./houseRooms";
 import { newPartyWitches, stepPartyWitches, type PartyWitches } from "./partyWitches";
 import { newBeachWitches, stepBeachWitches, type BeachWitches } from "./beach";
-import { newGrowth, type GrowthState } from "./growth";
 import type { Tuning } from "./tuning";
 import { newWitch, seaward, stepWitch, witchHeight, type Intent, type WitchState } from "./witch";
 import { deckOf, landsOn, onTreehouse } from "./treehouse";
@@ -175,7 +175,7 @@ export interface Game {
   readonly forest: Forest;
   /** Every creature made so far (ids are their places here): a night's all at its start (no growth: Ed, 2026-10-28); the zoo's bar adds more. */
   readonly creatures: Creature[];
-  /** The old wave-by-wave growth's counts (rules/growth.ts): never filled, growth is off (Ed, 2026-10-07, 2026-10-28). */
+  /** The old wave-by-wave growth's counts: never filled (no growth: Ed, 2026-10-07, 2026-10-28); only the saved night's format keeps it (rules/growth.ts GrowthState). */
   growth: GrowthState;
   readonly clock: Clock;
   /** Every player's witch; the first is this machine's (the camera follows her). */
@@ -691,7 +691,7 @@ export function stepWitchLocomotion(g: Game, W: Witch, input: Controls, hdt: num
     if (effects && !(W.id === 1 && guestEffectsEnabled(g)) && W.spells.broom === "battering") batter(g, W.dash.fromX, W.dash.fromZ, W.dash.toX, W.dash.toZ, t); // (Battering: what's in her path is stunned)
   }
   const deck = guestDeck(deckOf(g.map, t), g, W), fallsOff = deck?.house && !hasBroom(W) ? { ...deck, house: { ...deck.house, fall: { ...deck.house.fall, on: true } } } : deck; // Movement-only guest floor; no broom still falls off the Terrace.
-  if (!potionPhase(g, W)) W.body = applyDash(W.dash, stepWitch(was, c, hdt, boost === 1 ? tw : { ...tw, groundSpeed: tw.groundSpeed * boost, treetopSpeed: tw.treetopSpeed * boost }, g.map.bounds, loadOf(W.leash.stack, g.creatures, was, t, pullOf(W.spells), !!W.leash.scatter), fallsOff)); // (her sigils' pull: rules/leashWeight.ts; the treehouse deck: rules/treehouse.ts)
+  if (!potionPhase(g, W)) W.body = applyDash(W.dash, stepWitch(was, c, hdt, boost === 1 ? tw : { ...tw, groundSpeed: tw.groundSpeed * boost, treetopSpeed: tw.treetopSpeed * boost }, g.map.bounds, fallsOff)); // (the treehouse deck: rules/treehouse.ts)
   // (the zoo: flying or walking on out against its edge, over the waterfall, takes her out of it, Ed 2026-10-26: "If you fly off the
   // edge of the map in the zoo you exit as well"): pushing on outward where the edge's soft hold has her (its last map.push metres,
   // as the beach's stargazing reckons it: rules/witch.ts), for ZOO_EDGE_PUSH seconds, on foot or flying
@@ -844,7 +844,7 @@ function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonl
     if (was.falling !== undefined && W.body.falling === undefined) W.leash.events.push({ kind: "fell", id: W.id, x: W.body.x, z: W.body.z, at: ht }); // (off the balcony with no broom: back at the circle)
     // Her hat's spell on putting it down or picking it up (rules/hatSpells.ts: Harvest, Dowsing, Gathering).
     // Stealth (rules/brooms.ts): throwing 💌s, or putting down or picking up anything, gives her away for a moment.
-    if (firing || W.leash.events.some(e => e.at === ht && (e.kind === "placed" || e.kind === "picked" || e.kind === "hatPut" || e.kind === "hatPicked" || e.kind === "relicPicked" || e.kind === "flaskDrunk" || e.kind === "relicPlaced" || e.kind === "relicDropped"))) revealed(W.spells, ht, t);
+    if (firing || W.leash.events.some(e => e.at === ht && (e.kind === "placed" || e.kind === "picked" || e.kind === "hatPut" || e.kind === "hatPicked" || e.kind === "relicPicked" || e.kind === "flaskDrunk" || e.kind === "relicPlaced"))) revealed(W.spells, ht, t);
     for (const e of W.leash.events.slice()) if (e.at === ht && e.id === W.id) {
       if (e.kind === "hatPut" && W.hat.down) onHatPut(g, W, W.hat.down.x, W.hat.down.z, ht, t);
       else if (e.kind === "hatPicked") { onHatPicked(g, W, e.x, e.z, ht, t); const waking = wakeOf(g, W); if (waking) wearPiece(waking, "hat"); } // (a hat on her head: out of last night's pile, so she's drawn in it; rules/clothesPile.ts)

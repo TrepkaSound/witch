@@ -28,6 +28,6 @@ describe("snow leopard subpixel whisker attachment",()=>{
   });
   it.each([0,1])("passes the unchanged paired guard in all adult facings for frame %s",frame=>{
     const selected=context();for(const facing of ["towards","away","top"]){const comparison=connectivityRegression(draw(current,frame,facing),draw(selected,frame,facing));expect(comparison.good,`${facing}: ${JSON.stringify(comparison)}`).toBe(true);}
-  },20000);
+  });
   it("rejects invalid pixel floors",()=>{expect(()=>draw(context(-1),0,"towards")).toThrow(/whiskerMinPx/);});
 });

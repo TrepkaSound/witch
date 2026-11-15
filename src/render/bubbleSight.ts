@@ -11,8 +11,6 @@
 /** What of her decides it: her mode, how far she's risen, and whether she's up in the treehouse. */
 export interface Sighter { x: number; z: number; mode: string; lift: number; perch?: boolean }
 
-/** The knobs (the tuning's `bubbles`): `near` metres (whole within near less fade), `fade` metres, `ease` seconds. */
-export interface SightTuning { near: number; fade: number; ease: number }
 
 /** Whether she sees bubbles on the ground at all: on foot or on her broom low, not rising, not in the treehouse. */
 export const seesGround = (w: Sighter): boolean => w.mode === "ground" && w.lift <= 0.5 && !w.perch;

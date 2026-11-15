@@ -1,6 +1,6 @@
 # Real-rules reports and legacy coverage
 
-<!-- summary: The report tool, how to rerun it, and what the old balance sims still cover. -->
+<!-- summary: The report tool, how to rerun it, and what the deleted balance sims measured that nothing does yet. -->
 
 Ed, 2026-10-29: "improving the real-rules balance reporting, then establishing matched-seed/loadout baselines"; no tuning. PR #1463 keeps `src/rules` read-only.
 
@@ -35,9 +35,9 @@ Ed, 2026-11-02 (#1654): the seeded bot-night win/recruitment aggregates formerly
 Ed, 2026-11-02, T6: replay equality and phase accounting remain assertions in the original replay test, with unchanged interleaving, seeds, loadouts and horizons. Fixture identity stays an assertion on the same stun executor. Four scenario predicates now belong to the separate fixture-sanity command: the first run being censored, the fox becoming stunned, the fox receiving hits, and the active boar retaliating. JSON reports observed values, their historical references and matchesReference; a changed outcome does not fail the command, while execution failures or malformed observations still fail. The active boar's30s-only sanity run moved out of replay. This is a diagnostic, not a simulation model or acceptance threshold. Default Vitest/CI does not currently discover the original MJS replay file; its explicit Node command still fails on integrity errors. No CI time saving is demonstrated. Shared nightly workflow integration is owned by1632's separate report-pattern PR.
 
 
-Do not retire the copied models until every needed row below has an explicit replacement or the coordinator rules that the experiment is obsolete. Current coverage is partial. Their numbers are historical hypotheses, not calibrated measurements of current pack/orbit combat.
+**The copied models were deleted on 2026-11-15** (Ed: "Do 1-7", the software-quality list's dead code; the builder's decision, as the coordinator's brief asked): `src/rules/balance.ts`, `src/rules/states.ts`, their tests, and `tools/balance/sim.mjs`, `logistics.mjs`, `states.mjs`, `waves.mjs`, `endgame.mjs`. Why, though the rows below are only partly replaced: every remaining gap is either a counterfactual the game does not have (attrition, the director, constant F a minute, the invite policies, rush policies) or a measurement the old models could only give for the 5 October rules (babies invited, relic-woken legends, growth by the wave, 500-health soundsystems, no pack or orbit combat), so keeping them answered none of the open rows for the game as it is. The table stays as the list of what the real-rules report still does not measure; the old code is in git history.
 
-| Old measurement | Existing entry point | Real-rules replacement / remaining gap |
+| Old measurement | Entry point (deleted 2026-11-15) | Real-rules replacement / remaining gap |
 |---|---|---|
 | Idle loss and time to party end | `balance.ts` / `sim.mjs` | `runs --bots idle`, explicit lost/censored outcome and overAt |
 | Enemy value, population and siege strength by wave | `balance.ts` / `sim.mjs --per-wave` | Wave arrivals observed; per-wave strength/population snapshots not yet covered |
@@ -52,4 +52,4 @@ Do not retire the copied models until every needed row below has an explicit rep
 | Faster/ramped waves | `states.ts` / `waves.mjs` | Actual record bpm 100/120/160/200 covered; simulator-only rush policies not covered |
 | Current invitation stuns per bag/species/rank | Neither copied model | `stuns`, observed landed letters, time and explicit timeout |
 
-Retirement is therefore deferred until the missing measurements are implemented or explicitly ruled obsolete on PR #1463; the files and their callers/tests remain intact. No square-law result is reused in the new report.
+No square-law result is reused in the new report.

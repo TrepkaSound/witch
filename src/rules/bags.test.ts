@@ -18,7 +18,7 @@ const starter = itemById("satchel")!, quick = itemById("bumbag")!, far = itemByI
 describe("the starting bags", () => {
   it("are the satchel (the starter, at the top), the Bumbag and the Purse: all hers from the start, no None", () => {
     expect(SHELVES.bag.items.map(i => i.id)).toEqual(["satchel", "bumbag", "purse", "tote", "duffel", "briefcase", "clutch", "messenger", "backpack"]); // (the starter, the other starting bags, then the found ones: Ed, 2026-10-29)
-    expect(BAGS.length).toBe(9);
+    expect(BAGS.map(b => b.id).sort()).toEqual(SHELVES.bag.items.map(i => i.id.replace(/^bag-/, "")).sort());
     expect(itemById("bag-none")).toBeUndefined();
     const own = ownedOf([], null);
     for (const b of BAGS) expect(own.has(b.id), b.id).toBe(!!b.start);
