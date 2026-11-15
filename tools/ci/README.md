@@ -125,6 +125,7 @@ Inventory real world-constructor calls and explicit small-fixture reasons; comme
 - `proofs.json`
 - `proofs.test.cjs`
 - `prune-merged-branches.test.ts`
+- `release-check.test.ts`
 - `release-reuse.test.ts`
 - `reporting.test.cjs`
 - `run-unit.test.ts`

@@ -4,42 +4,146 @@
 
 Capturing possible mushroom trips (moved from CLAUDE.md as it stood, 2026-11-12; CLAUDE.md keeps one line, since it applies to every area):
 
-Ed, 2026-10-31: every potion must have an audio effect, even a simple one. It must alter existing sounds throughout the trip; a recurring added sound alone is insufficient. Design and implement sound alongside visuals, use the trip's game-clock envelope and final two-minute fade, and preserve any bespoke sound requirements. The shared trip filter is a fallback, not a replacement for agreed Night Vision/Heat Vision audio.
+Ed, 2026-10-31: every potion must have an audio effect, even a simple one.
+It must alter existing sounds throughout the trip; a recurring added sound alone is insufficient.
+Design and implement sound alongside visuals, use the trip's game-clock envelope and final two-minute fade, and preserve any bespoke sound requirements.
+The shared trip filter is a fallback, not a replacement for agreed Night Vision/Heat Vision audio.
 
-Ed, 2026-10-30: whenever development reveals an interesting possible effect (an unusual test/debug state, a visual bug, a new drawing system, an extreme parameter or a useful signal crossing), add it as a **suggestion** to `docs/backlog/cauldron.md`. Do this in the same piece of work; do not wait for a dedicated mushroom task. Check for an existing equivalent first and extend it rather than duplicate it. Record what she experiences, the existing signal/drawing hook, any genuinely new machinery needed, and whether it is a variant of another trip. Keep suggestions distinct from Ed-approved effects and implemented features. The catalogue is expandable; 56 is not a cap. Capturing an idea does not authorise implementing it or changing recipe assignments.
+Ed, 2026-10-30: whenever development reveals an interesting possible effect (an unusual test/debug state, a visual bug, a new drawing system, an extreme parameter or a useful signal crossing), add it as a **suggestion** to `docs/backlog/cauldron.md`.
+Do this in the same piece of work; do not wait for a dedicated mushroom task.
+Check for an existing equivalent first and extend it rather than duplicate it.
+Record what she experiences, the existing signal/drawing hook, any genuinely new machinery needed, and whether it is a variant of another trip.
+Keep suggestions distinct from Ed-approved effects and implemented features.
+The catalogue is expandable; 56 is not a cap.
+Capturing an idea does not authorise implementing it or changing recipe assignments.
 
-Kitchen texture lifecycle (#1664, 2026-11-02): resizing a brewing panel releases its old texture storage before changing the canvas dimensions; repainting marks that same texture for re-upload. Steady-size updates do not dispose it. This guards a possible warm-draw-before-first-update ordering risk; the reported invisible kitchen was not reproduced in the coordinator's SwiftShader inspection, and this is not claimed as its diagnosed fix. Authored Dining placement and the large pot's recorded10×7×6m footprint are retained; the editor and game use the same painter. No scale/placement/colour/interaction change. Actual browser/GPU/save/entry-path evidence remains separate.
+Kitchen texture lifecycle (#1664, 2026-11-02): resizing a brewing panel releases its old texture storage before changing the canvas dimensions; repainting marks that same texture for re-upload.
+Steady-size updates do not dispose it.
+This guards a possible warm-draw-before-first-update ordering risk; the reported invisible kitchen was not reproduced in the coordinator's SwiftShader inspection, and this is not claimed as its diagnosed fix.
+Authored Dining placement and the large pot's recorded10×7×6m footprint are retained; the editor and game use the same painter.
+No scale/placement/colour/interaction change.
+Actual browser/GPU/save/entry-path evidence remains separate.
 
-The cauldron's reach (Ed, 2026-11-03: "The cauldron it could affect all witches in a radius"; "10m cauldron reach is fine"; "The cauldron smoke effect should cover the 10m area for ten seconds or so, and if you walk into it you are affected by the potion"): `rules/mushrooms.ts` `inCauldronReach` replaces `inKitchen`'s room: on foot in the house within `treehouse.house.cauldronReach` (10 m) of the pot's middle. The smoke hangs `treehouse.house.cauldronSmoke` (10 s) and is drawn over that disc; whoever is in it at any moment while it lasts is taken once (`smoke.taken`), spinning `SMOKE_SPIN` (4 s, the old smoke's length) from then before she falls. Unloading carried mushrooms needs the reach; a basket works within its own 2.4 m wherever it stands. The legacy `?cauldron=1` kitchen (`cauldronKitchen.ts`, `cauldronNight.ts`) uses the same radius and walk-in rule in place of the snapshot at the third ingredient below. Both are sliders in the pause page's "Cauldron reach" group. This supersedes the next paragraph's room membership and four-second window.
+The cauldron's reach (Ed, 2026-11-03: "The cauldron it could affect all witches in a radius";
+"10m cauldron reach is fine";
+"The cauldron smoke effect should cover the 10m area for ten seconds or so, and if you walk into it you are affected by the potion"): `rules/mushrooms.ts` `inCauldronReach` replaces `inKitchen`'s room: on foot in the house within `treehouse.house.cauldronReach` (10 m) of the pot's middle.
+The smoke hangs `treehouse.house.cauldronSmoke` (10 s) and is drawn over that disc; whoever is in it at any moment while it lasts is taken once (`smoke.taken`), spinning `SMOKE_SPIN` (4 s, the old smoke's length) from then before she falls.
+Unloading carried mushrooms needs the reach; a basket works within its own 2.4 m wherever it stands.
+The legacy `?cauldron=1` kitchen (`cauldronKitchen.ts`, `cauldronNight.ts`) uses the same radius and walk-in rule in place of the snapshot at the third ingredient below.
+Both are sliders in the pause page's "Cauldron reach" group.
+This supersedes the next paragraph's room membership and four-second window.
 
-Current house placement (Ed, 2026-11-01,1565#6551357170): the authored cauldron and nine baskets now sit in Dining. `kitchenPlan().room` resolves the physical room containing the selected cauldron; `inKitchen` uses that same room for basket use, carried-mushroom unload and recipients throughout active smoke. The classic layout still uses Kitchen. The existing four-second smoke window, later entrants, KO/ground/perch/seated guards, transfer intervals and fall/sleep/wake/trip timing are unchanged. This is room membership, not a new proximity radius or global potion effect. `render/brewingFrame.ts` expands texture coverage only, preserving the classic panel exactly and retaining the existing smoke artwork. Actual-browser visual acceptance is separate from data/rules tests.
+Current house placement (Ed, 2026-11-01,1565#6551357170): the authored cauldron and nine baskets now sit in Dining.
+`kitchenPlan().room` resolves the physical room containing the selected cauldron; `inKitchen` uses that same room for basket use, carried-mushroom unload and recipients throughout active smoke.
+The classic layout still uses Kitchen.
+The existing four-second smoke window, later entrants, KO/ground/perch/seated guards, transfer intervals and fall/sleep/wake/trip timing are unchanged.
+This is room membership, not a new proximity radius or global potion effect.
+`render/brewingFrame.ts` expands texture coverage only, preserving the classic panel exactly and retaining the existing smoke artwork.
+Actual-browser visual acceptance is separate from data/rules tests.
 
-Wild mushroom lighting first used `config/playtest-render.json` (its capture values kept as they were; the live values are now the tuning's `mushroomLight`, below). Marked spots spill their colour one texel onto the cap. The outer halo removes complementary light and adds a pool in the mushroom’s own hue, including on dark ground. The capture driver in `tools/shot/playtest-render.cjs` compares three colours at two distances. Ed chose the strengths from the pause page on 2026-11-02 (below).
+Wild mushroom lighting first used `config/playtest-render.json` (its capture values kept as they were; the live values are now the tuning's `mushroomLight`, below).
+Marked spots spill their colour one texel onto the cap.
+The outer halo removes complementary light and adds a pool in the mushroom’s own hue, including on dark ground.
+The capture driver in `tools/shot/playtest-render.cjs` compares three colours at two distances.
+Ed chose the strengths from the pause page on 2026-11-02 (below).
 
-Ed, 2026-11-02 (#1640/#1643): the normal “Mushroom light” decision group exposes halo/pool strength, radius/height multipliers, complement amount and cap spot glow live. The defaults are Ed's own pause-page values (2026-11-02): halo strength 0.3, colour pool 0.1, radius 2.35, complement 0.1, height 1.2, cap glow 4.7, test row off, declared canonically in `config/tuning.json` `mushroomLight` with schema/ranges and knob documentation; `rules/mushroomLight.ts` supplies a copy for renderer fallbacks. The halo lies flat on the ground (an 8×8 disc set onto the terrain, foreshortening with the camera; `height` scales its 0.04 m lift), no longer a camera-facing disc cut off at its bottom. The historical playtest-render.json capture values (0.8, 0.45, 4.8) remain unchanged; `src/rules/mushroomLight.test.ts` pins both, separately. The “Mushroom test row” switch is OFF by default. Resuming simulation creates ordinary pickable patches, one per kind, 10 m apart east–west, nominally centred 40 m south of the dancefloor. The whole row uses the nearest clear 2 m grid offset within 100 m in each direction, rejecting map edges, lakes, stone/reserved zones, tree/bush trunks, decor, walls, beds, set pieces and relics with conservative clearances. If no whole clear row exists, it places none rather than unsafe samples. Off removes only the sample patches; on restores their picked state for this night. Normal wild patches and inventory are unchanged. Seeded-map checks cover123/1000/165272; default lighting and UI decision plumbing are checked separately. No default tuning changes.
+Ed, 2026-11-02 (#1640/#1643): the normal “Mushroom light” decision group exposes halo/pool strength, radius/height multipliers, complement amount and cap spot glow live.
+The defaults are Ed's own pause-page values (2026-11-02): halo strength 0.3, colour pool 0.1, radius 2.35, complement 0.1, height 1.2, cap glow 4.7, test row off, declared canonically in `config/tuning.json` `mushroomLight` with schema/ranges and knob documentation; `rules/mushroomLight.ts` supplies a copy for renderer fallbacks.
+The halo lies flat on the ground (an 8×8 disc set onto the terrain, foreshortening with the camera; `height` scales its 0.04 m lift), no longer a camera-facing disc cut off at its bottom.
+The historical playtest-render.json capture values (0.8, 0.45, 4.8) remain unchanged; `src/rules/mushroomLight.test.ts` pins both, separately.
+The “Mushroom test row” switch is OFF by default.
+Resuming simulation creates ordinary pickable patches, one per kind, 10 m apart east–west, nominally centred 40 m south of the dancefloor.
+The whole row uses the nearest clear 2 m grid offset within 100 m in each direction, rejecting map edges, lakes, stone/reserved zones, tree/bush trunks, decor, walls, beds, set pieces and relics with conservative clearances.
+If no whole clear row exists, it places none rather than unsafe samples.
+Off removes only the sample patches; on restores their picked state for this night.
+Normal wild patches and inventory are unchanged.
+Seeded-map checks cover123/1000/165272; default lighting and UI decision plumbing are checked separately.
+No default tuning changes.
 
-Visibility investigation at pickup: source/software-canvas tests prove opaque physical kitchen artwork, finite panel geometry and all nine placed baskets in classic and authored Dining layouts. Empty baskets paint no halo; filled baskets use a separate kitchen halo painter sharing complement() with the wild halo. House mesh registration includes the brewing group and its layer traversal. These exclude some source hypotheses but do not reproduce or fix Ed's actual invisible-prop/red-tint report. Exact-head cloud draw/readiness/visibility/layer/screen-bounds evidence requested on1643#6576082021 and relayed to1638#6576082449. No laptop browser allocation or guessed visibility fix.
+Visibility investigation at pickup: source/software-canvas tests prove opaque physical kitchen artwork, finite panel geometry and all nine placed baskets in classic and authored Dining layouts.
+Empty baskets paint no halo; filled baskets use a separate kitchen halo painter sharing complement() with the wild halo.
+House mesh registration includes the brewing group and its layer traversal.
+These exclude some source hypotheses but do not reproduce or fix Ed's actual invisible-prop/red-tint report.
+Exact-head cloud draw/readiness/visibility/layer/screen-bounds evidence requested on1643#6576082021 and relayed to1638#6576082449.
+No laptop browser allocation or guessed visibility fix.
 
-**Where mushrooms grow** (Ed, 2026-11-06: "Mushrooms shouldn't grow on berry patches, paths, stump fight areas, etc."; `rules/mushrooms.ts` `placeMushrooms`): one patch per non-home area, the most secluded of 256 seeded candidates (`treeChance` and `arenaOpen` scored, as before) clear of a tree trunk, on ground that is all of: its own area, inside the map's edge (3 m) and off the lakes (2 m); not `hardClear` (the beach's sand, a lake's shore, the dancefloor's and treehouse's clearings, a sleeping legend's circle, the find's and the challenge circle's clearings, grounds, scenes, set pieces, a stump's 17 m roots clearing) nor `reserved`; 2 m off every path (`map.paths.at`, the bushes' test, which keep 1.5 m); out of every stump's fighting arena, the berries' own clearance (`map.ts` `stumpClearance`, 55 m from the nearest stump: `map.stoneGap`); and `patch.radius` + `MUSHROOM_BUSH_MARGIN` (3.5 + 3 = 6.5 m) from every berry bush, so the berries are placed first (`rules/game.ts` passes `berries.bushes`). A cramped area searches its whole vicinity on a 2 m grid on the same ground; failing that, the same search with the paths allowed (Ed, 2026-11-06: "If no valid spot, on a path is ok.", logged with `console.info`); failing even that, the area gets no mushroom and a `console.warn`, never a throw. Measured on the fox (seed 123) and bear (seed 424242) islands: every area has its mushroom, none needed a path; nearest bush 11 and 6.6 m at least (before: 14.3 and 0.9 m, two of bear's under 6.5 m), nearest stump 58.5 and 58.7 m (before: one of bear's 38 m from its neighbour's stump), nearest path 7.5 and 3.8 m. `src/rules/mushrooms.test.ts` holds each rule and the fallback order.
+**Where mushrooms grow** (Ed, 2026-11-06: "Mushrooms shouldn't grow on berry patches, paths, stump fight areas, etc.";
+`rules/mushrooms.ts` `placeMushrooms`): one patch per non-home area, the most secluded of 256 seeded candidates (`treeChance` and `arenaOpen` scored, as before) clear of a tree trunk, on ground that is all of: its own area, inside the map's edge (3 m) and off the lakes (2 m);
+not `hardClear` (the beach's sand, a lake's shore, the dancefloor's and treehouse's clearings, a sleeping legend's circle, the find's and the challenge circle's clearings, grounds, scenes, set pieces, a stump's 17 m roots clearing) nor `reserved`; 2 m off every path (`map.paths.at`, the bushes' test, which keep 1.5 m);
+out of every stump's fighting arena, the berries' own clearance (`map.ts` `stumpClearance`, 55 m from the nearest stump: `map.stoneGap`);
+and `patch.radius` + `MUSHROOM_BUSH_MARGIN` (3.5 + 3 = 6.5 m) from every berry bush, so the berries are placed first (`rules/game.ts` passes `berries.bushes`).
+A cramped area searches its whole vicinity on a 2 m grid on the same ground; failing that, the same search with the paths allowed (Ed, 2026-11-06: "If no valid spot, on a path is ok.", logged with `console.info`); failing even that, the area gets no mushroom and a `console.warn`, never a throw.
+Measured on the fox (seed 123) and bear (seed 424242) islands: every area has its mushroom, none needed a path; nearest bush 11 and 6.6 m at least (before: 14.3 and 0.9 m, two of bear's under 6.5 m), nearest stump 58.5 and 58.7 m (before: one of bear's 38 m from its neighbour's stump), nearest path 7.5 and 3.8 m.
+`src/rules/mushrooms.test.ts` holds each rule and the fallback order.
 
-PR #1472, branch `codex/cauldron-slice`. This older implementation is retained as an explicit compatibility preview with `?cauldron=1`, including Mirror Floor. Normal nights now use the nine-colour mushroom system in `rules/mushrooms.ts` and keep `game.cauldron` null. The preview's six-kind inventory, automatic collection, fixed recipient snapshot and 90-second Mirror Floor below describe only the legacy preview. The current game instead uses place-key collection, one patch per non-home area, nightly replenishment, nine baskets, late smoke entrants and ten minutes of game-clock potion time. While the legacy preview is active, its rules and presentation replace the new mushroom rules and presentation rather than running both together. Mirror Floor remains available there for future integration into the current recipe catalogue.
+PR #1472, branch `codex/cauldron-slice`.
+This older implementation is retained as an explicit compatibility preview with `?cauldron=1`, including Mirror Floor.
+Normal nights now use the nine-colour mushroom system in `rules/mushrooms.ts` and keep `game.cauldron` null.
+The preview's six-kind inventory, automatic collection, fixed recipient snapshot and 90-second Mirror Floor below describe only the legacy preview.
+The current game instead uses place-key collection, one patch per non-home area, nightly replenishment, nine baskets, late smoke entrants and ten minutes of game-clock potion time.
+While the legacy preview is active, its rules and presentation replace the new mushroom rules and presentation rather than running both together.
+Mirror Floor remains available there for future integration into the current recipe catalogue.
 
-Ed's rulings (2026-10-30, recorded in `docs/backlog/cauldron.md`): unlimited hidden bags; nothing lost on knockout; six shared baskets and one shared pot in the host's treehouse; partial ingredients stay in the pot; BBB Mirror Floor first; slight wobbly screen edges, not a coloured frame. Everyone in the kitchen takes the brew. Coordinator clarification #6512476115 fixes the group at the third ingredient, with that same group exiting after one second of smoke regardless of later movement.
+Ed's rulings (2026-10-30, recorded in `docs/backlog/cauldron.md`): unlimited hidden bags; nothing lost on knockout; six shared baskets and one shared pot in the host's treehouse; partial ingredients stay in the pot; BBB Mirror Floor first; slight wobbly screen edges, not a coloured frame.
+Everyone in the kitchen takes the brew.
+Coordinator clarification #6512476115 fixes the group at the third ingredient, with that same group exiting after one second of smoke regardless of later movement.
 
-Rules: `cauldron.ts` owns order-independent recipes and stock references; `cauldronKitchen.ts` owns room presence, the recipient snapshot and smoke timer; `cauldronNight.ts` connects automatic collection, entry deposits, basket use and exits to `game.ts` after every witch has moved. Each witch's inventory points at the same host baskets and ingredient array, preserved by the existing snapshot graph. Her bag remains hers. No forest generation or world time rules change. Exit places recipients on the clear outdoor dancefloor beside the Ent. Mirror Floor lasts 90 simulation seconds, fading at each end over three seconds, through each witch's separate `cauldronTrip` state. Other recipe mappings are recorded but their effects are outside this first slice.
+Rules: `cauldron.ts` owns order-independent recipes and stock references; `cauldronKitchen.ts` owns room presence, the recipient snapshot and smoke timer; `cauldronNight.ts` connects automatic collection, entry deposits, basket use and exits to `game.ts` after every witch has moved.
+Each witch's inventory points at the same host baskets and ingredient array, preserved by the existing snapshot graph.
+Her bag remains hers.
+No forest generation or world time rules change.
+Exit places recipients on the clear outdoor dancefloor beside the Ent.
+Mirror Floor lasts 90 simulation seconds, fading at each end over three seconds, through each witch's separate `cauldronTrip` state.
+Other recipe mappings are recorded but their effects are outside this first slice.
 
-Presentation: `render/cauldronView.ts`, hooked narrowly into `render/view.ts`, reuses the existing glowing mushroom/stump model and kitchen palette, per coordinator #6513317902. Six baskets tremble and light up nearby; use adds one. Mushroom transfers jump into baskets and the pot; the brew emits bubbles and smoke. Mirror Floor copies existing sprite meshes upside down, darkens a private clone of the ground material and adds a final edge-wobble pass. Shared sprite, lighting, effects and post-shader modules are untouched. Browser verification is still required; these are intended behaviours, not a claim of visual quality.
+Presentation: `render/cauldronView.ts`, hooked narrowly into `render/view.ts`, reuses the existing glowing mushroom/stump model and kitchen palette, per coordinator #6513317902.
+Six baskets tremble and light up nearby; use adds one.
+Mushroom transfers jump into baskets and the pot; the brew emits bubbles and smoke.
+Mirror Floor copies existing sprite meshes upside down, darkens a private clone of the ground material and adds a final edge-wobble pass.
+Shared sprite, lighting, effects and post-shader modules are untouched.
+Browser verification is still required; these are intended behaviours, not a claim of visual quality.
 
-To check in play after the PR build publishes: open its preview with `?cauldron=1&seed=123`, collect the cluster right of the home dancefloor, enter the kitchen, approach the second basket and press use three times. The third starts smoke automatically; after one second she is outside with Mirror Floor, fading away after 90 seconds. Collection and brewing also work after the party. With multiple witches, only the third-ingredient snapshot group should take the trip; witches elsewhere stay normal. There is no recipe book or bag panel.
+To check in play after the PR build publishes: open its preview with `?cauldron=1&seed=123`, collect the cluster right of the home dancefloor, enter the kitchen, approach the second basket and press use three times.
+The third starts smoke automatically; after one second she is outside with Mirror Floor, fading away after 90 seconds.
+Collection and brewing also work after the party.
+With multiple witches, only the third-ingredient snapshot group should take the trip; witches elsewhere stay normal.
+There is no recipe book or bag panel.
 
-Required builder checks: `npm run typecheck` and the four `src/rules/cauldron*.test.ts` files with one worker. The coordinator owns combined full-suite/smoke and visual validation. `node art/check.mjs` currently fails before opening a browser because this laptop cannot resolve its configured Playwright module; no workaround or browser run is authorised without an assigned serial slot.
+Required builder checks: `npm run typecheck` and the four `src/rules/cauldron*.test.ts` files with one worker.
+The coordinator owns combined full-suite/smoke and visual validation.
+`node art/check.mjs` currently fails before opening a browser because this laptop cannot resolve its configured Playwright module; no workaround or browser run is authorised without an assigned serial slot.
 
-Cloud evidence (X-ray, PR #1472 comment6513989868, runtime ffb7903a): served SHA verified; bounded manual frames with two teleports passed collection, deposit, three uses, smoke, exit and 90-second expiry. A matched-position A/B showed inverted witch/speaker reflections and a darker floor. These are automated checks, not real-time human play. Edge wobble remains for Ed to judge in motion. The cloud art check was stopped after its time box without a result; no art-check pass is claimed.
+Cloud evidence (X-ray, PR #1472 comment6513989868, runtime ffb7903a): served SHA verified; bounded manual frames with two teleports passed collection, deposit, three uses, smoke, exit and 90-second expiry.
+A matched-position A/B showed inverted witch/speaker reflections and a darker floor.
+These are automated checks, not real-time human play.
+Edge wobble remains for Ed to judge in motion.
+The cloud art check was stopped after its time box without a result; no art-check pass is claimed.
 
-The follow-up to coordinator comment6514000488 replaces shader cloning with `cauldronMaterials.ts`, sharing live uniform objects and render-target textures. Reflection copies cannot write depth or stencil masks. Only the private ground material is darkened, by a multiplier bounded between 0.38 and 1; ordinary forest/creature materials are not darkened or replaced. The edge pass only resamples within 0.003 UV of the picture. This bounds the trip's own darkening; it does not prove that scenery has loaded after a teleport. Focused tests cover retained texture bindings, no cloneUniforms warnings, unchanged source material and depth/stencil isolation. Post-fix GL rendering has not been rechecked locally; the coordinator owns that validation.
+The follow-up to coordinator comment6514000488 replaces shader cloning with `cauldronMaterials.ts`, sharing live uniform objects and render-target textures.
+Reflection copies cannot write depth or stencil masks.
+Only the private ground material is darkened, by a multiplier bounded between 0.38 and 1; ordinary forest/creature materials are not darkened or replaced.
+The edge pass only resamples within 0.003 UV of the picture.
+This bounds the trip's own darkening; it does not prove that scenery has loaded after a teleport.
+Focused tests cover retained texture bindings, no cloneUniforms warnings, unchanged source material and depth/stencil isolation.
+Post-fix GL rendering has not been rechecked locally; the coordinator owns that validation.
 
-Follow-up conditions: full six-kind shape/name design starts when Ed approves those designs through the coordinator; biome spawning and discovery-at-home progression start when the coordinator authorises the next journey-mushroom slice; another trip starts when Ed selects its assigned recipe. All remain outside this BBB vertical slice. The other three home recipe mappings are data only: their brews currently smoke and exit without a trip effect.
+Follow-up conditions: full six-kind shape/name design starts when Ed approves those designs through the coordinator; biome spawning and discovery-at-home progression start when the coordinator authorises the next journey-mushroom slice; another trip starts when Ed selects its assigned recipe.
+All remain outside this BBB vertical slice.
+The other three home recipe mappings are data only: their brews currently smoke and exit without a trip effect.
 
-Recipes #19, #34, #35 and #57 use the usual wake and expiry envelope. Mirrorball replaces the moon and projects moving spots in world coordinates even before a party. Woodcut prints crosshatched shadows, while Kaleidoscope folds the scene around the witch. Masterplan shows nearby animals’ chosen destinations, role-coloured pack slots and committed attack aims. Its renderer observes the combat solver output without running it again. Each recipe has a Potion Lab control and filters the existing sound mix.
+Recipes #19, #34, #35 and #57 use the usual wake and expiry envelope.
+Mirrorball replaces the moon and projects moving spots in world coordinates even before a party.
+Woodcut prints crosshatched shadows, while Kaleidoscope folds the scene around the witch.
+Masterplan shows nearby animals’ chosen destinations, role-coloured pack slots and committed attack aims.
+Its renderer observes the combat solver output without running it again.
+Each recipe has a Potion Lab control and filters the existing sound mix.
 
-The ten landscape recipes use a single active presentation setting for the local drinker. Walking Wood (#6) moves a tree's two halves together; Giant Trees (#25) stretches them from the foot. Distant Giants (#82) scales scenery by distance. Living Bark (#93) colours the trunk without moving its silhouette. Inside-Out Relief (#92) reverses the surface-normal slopes, and Underwater Light (#89) sends caustics through the shared world lighting. Seeing Through Seeing (#75) inks the real canopy/occlusion mask. Held Breath (#78) bends the ground with wave progress; Out of Time (#79) gives mist and foliage a clock that can run backwards. Concertina (#65) squeezes horizontal distance in both the GPU projection and CPU marker projection. Each uses the normal trip fade, has a Potion Lab control and filters the existing sound mix.
+The ten landscape recipes use a single active presentation setting for the local drinker.
+Walking Wood (#6) moves a tree's two halves together; Giant Trees (#25) stretches them from the foot.
+Distant Giants (#82) scales scenery by distance.
+Living Bark (#93) colours the trunk without moving its silhouette.
+Inside-Out Relief (#92) reverses the surface-normal slopes, and Underwater Light (#89) sends caustics through the shared world lighting.
+Seeing Through Seeing (#75) inks the real canopy/occlusion mask.
+Held Breath (#78) bends the ground with wave progress; Out of Time (#79) gives mist and foliage a clock that can run backwards.
+Concertina (#65) squeezes horizontal distance in both the GPU projection and CPU marker projection.
+Each uses the normal trip fade, has a Potion Lab control and filters the existing sound mix.

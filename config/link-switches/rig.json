@@ -1,0 +1,9 @@
+{
+ "name": "rig",
+ "values": [
+  "0"
+ ],
+ "does": "Creatures as baked sprites, without the live rig.",
+ "group": "debug",
+ "since": "2026-10-05"
+}

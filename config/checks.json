@@ -37,6 +37,16 @@
       "note": "docs/notes/config.md"
     },
     {
+      "id": "stale-rulings",
+      "command": "node tools/docs/rulings.mjs",
+      "what": "Warnings, never a failure: comments and notes that state a rule a later ruling of Ed's replaced (docs/rules/replaced.json), name a knob with a number the tuning no longer has, or date one quote two ways; and docs/rules references that no longer resolve. Read the warnings in files you touched; --topic <word> lists Ed's rulings on something, newest first.",
+      "paths": ["src/**", "art/**", "tools/**", "config/knobs/**", "config/decisions/**", "config/tuning.json", "docs/notes/**", "docs/rules/**"],
+      "runner": "builder",
+      "ci": "every PR (check-work prints the warnings; it cannot fail the run)",
+      "from": "Ed, 2026-11-15",
+      "note": "docs/rules/README.md"
+    },
+    {
       "id": "art-check",
       "command": "node art/check.mjs {art-scope}",
       "what": "The art generator's check: every species, area and the lab pages drawn headless (only the touched creatures and areas when that is all that changed).",

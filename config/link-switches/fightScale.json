@@ -1,0 +1,9 @@
+{
+ "name": "fightScale",
+ "values": [
+  "<k>"
+ ],
+ "does": "The fight's scale for this load (the debug overlay's slider; never remembered).",
+ "group": "run",
+ "since": "2026-10-07"
+}

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { COVERAGE_SCREEN_NIGHTS, COVERAGE_SCREEN_LIMITS, COVERAGE_SCREEN_DECISION, finalCoverageCases } from "./expert-coverage-screen.mjs";
-const held = JSON.parse(readFileSync(new URL("../../docs/notes/expert-held-out-pairs.json", import.meta.url), "utf8"));
+const held = JSON.parse(readFileSync(new URL("../../data/balance/expert-held-out-pairs.json", import.meta.url), "utf8"));
 test("final coverage matrix is sixteen exact paired cases with alternating arm order and visits on", () => {
   const cases = finalCoverageCases(held);
   assert.equal(cases.length, 16); assert.deepEqual([...new Set(cases.map(c => c.seed))], [16838,24757,32676,40595]);

@@ -1,0 +1,10 @@
+{
+ "name": "online",
+ "values": [
+  "host",
+  "guest"
+ ],
+ "does": "The separate online prototype page hosts a night or joins an invitation.",
+ "group": "debug",
+ "since": "2026-10-30"
+}

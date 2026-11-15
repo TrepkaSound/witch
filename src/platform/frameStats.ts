@@ -17,6 +17,10 @@ export class FrameStats {
   private ext: { TIME_ELAPSED_EXT: number; GPU_DISJOINT_EXT: number } | null = null;
   private queries: WebGLQuery[] = [];
   private open: WebGLQuery | null = null;
+  /** Each GPU time as it comes back (ms), for a tool that keeps its own list (the frame check: app/frameCheck.ts). */
+  onGpu: ((ms: number) => void) | null = null;
+  /** Whether this browser times the GPU. */
+  get timesGpu(): boolean { return !!this.ext; }
 
   constructor(gl?: WebGLRenderingContext | WebGL2RenderingContext) {
     if (gl && typeof WebGL2RenderingContext !== "undefined" && gl instanceof WebGL2RenderingContext) {
@@ -59,7 +63,7 @@ export class FrameStats {
       const q = this.queries[0];
       if (!gl.getQueryParameter(q, gl.QUERY_RESULT_AVAILABLE)) break;
       const ns = gl.getQueryParameter(q, gl.QUERY_RESULT) as number, disjoint = gl.getParameter(ext.GPU_DISJOINT_EXT);
-      if (!disjoint) { this.gpu.push(ns / 1e6); if (this.gpu.length > 120) this.gpu.shift(); }
+      if (!disjoint) { this.gpu.push(ns / 1e6); if (this.gpu.length > 120) this.gpu.shift(); this.onGpu?.(ns / 1e6); }
       gl.deleteQuery(q); this.queries.shift();
     }
   }

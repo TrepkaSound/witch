@@ -1,0 +1,10 @@
+{
+ "name": "warmChart",
+ "values": [
+  "1",
+  "0"
+ ],
+ "does": "The night's chart islands made ahead even under automation (1), or never (0).",
+ "group": "debug",
+ "since": "2026-10-12"
+}

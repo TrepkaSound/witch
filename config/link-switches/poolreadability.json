@@ -1,0 +1,10 @@
+{
+ "name": "poolreadability",
+ "values": [
+  "0",
+  "1"
+ ],
+ "does": "Review-only dark-creature lighting inside the witch's light pool (1 enables it; off by default).",
+ "group": "debug",
+ "since": "2026-10-30"
+}

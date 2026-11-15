@@ -1,10 +1,16 @@
 # Real-rules reports and legacy coverage
 
-<!-- summary: The report tool, how to rerun it, and what the old balance sims still cover. -->
+<!-- summary: The report tool, how to rerun it, and what the deleted balance sims measured that nothing does yet. -->
 
 Ed, 2026-10-29: "improving the real-rules balance reporting, then establishing matched-seed/loadout baselines"; no tuning. PR #1463 keeps `src/rules` read-only.
 
-`node tools/balance/report.mjs` runs `newGame`/`stepGame` and the existing `newBot` policies through Vite SSR. It never imports `balance.ts` or `states.ts`. `sloppy` is an alias for the existing `novice`, not a new calibrated human model. All bots get the same explicit bag, no hat and no broom parts. They start unseated at `newGame`'s legacy active headless start, as `runbot` does; the bedroom tutorial and app persistence are outside this experiment. Opening means before wave 1, not a waiting bedroom. Records use the game's `recordTempo`, retaining its tempo arc and knockdown increments.
+`node tools/balance/report.mjs` runs `newGame`/`stepGame` and the existing `newBot` policies through Vite SSR.
+It never imports `balance.ts` or `states.ts`.
+`sloppy` is an alias for the existing `novice`, not a new calibrated human model.
+All bots get the same explicit bag, no hat and no broom parts.
+They start unseated at `newGame`'s legacy active headless start, as `runbot` does; the bedroom tutorial and app persistence are outside this experiment.
+Opening means before wave 1, not a waiting bedroom.
+Records use the game's `recordTempo`, retaining its tempo arc and knockdown increments.
 
 Examples (one CPU worker, no browser):
 
@@ -18,26 +24,70 @@ node tools/balance/report-fixture-sanity.mjs --out=previews/report-fixture-sanit
 node --test tools/balance/report-fixture-split.test.mjs
 ```
 
-`--seeds N` means N seeds starting at `1000 + 7919 * skip`, not an end index; `--skip` defaults to 0. `--islands all` selects every built island, including home. Phase summaries describe only the selected islands, equally weighted by run. Run phases are opening (before wave 1), waves, stragglers and lap. Completed phase durations and unfinished durations are separate; a cutoff is censored, not lost. The limit counts player seconds; durations count world seconds, which slow in legend circles. `wavesPassed` means later wave arrivals observed, not a count of won sieges. The latest wave may still have active besiegers when a run ends.
+`--seeds N` means N seeds starting at `1000 + 7919 * skip`, not an end index; `--skip` defaults to 0.
+`--islands all` selects every built island, including home.
+Phase summaries describe only the selected islands, equally weighted by run.
+Run phases are opening (before wave 1), waves, stragglers and lap.
+Completed phase durations and unfinished durations are separate; a cutoff is censored, not lost.
+The limit counts player seconds; durations count world seconds, which slow in legend circles.
+`wavesPassed` means later wave arrivals observed, not a count of won sieges.
+The latest wave may still have active besiegers when a run ends.
 
-JSONL starts with an experiment manifest and appends each completed case immediately. The same command resumes only with an identical manifest: full commit, source fingerprint, seed list, selected cases, limit and loadout. The fingerprint covers rules, configuration, art data and report tools. A changed checkout or command requires a new output file; a partial final JSON line is refused rather than silently ignored. Output Markdown can be regenerated from the JSONL even after the source changes. Runtime estimates are printed after each case; they exclude already completed cases. Measured runtime is deliberately absent from deterministic result rows.
+JSONL starts with an experiment manifest and appends each completed case immediately.
+The same command resumes only with an identical manifest: full commit, source fingerprint, seed list, selected cases, limit and loadout.
+The fingerprint covers rules, configuration, art data and report tools.
+A changed checkout or command requires a new output file; a partial final JSON line is refused rather than silently ignored.
+Output Markdown can be regenerated from the JSONL even after the source changes.
+Runtime estimates are printed after each case; they exclude already completed cases.
+Measured runtime is deliberately absent from deterministic result rows.
 
-Stun fixtures have **an active party**. `newGame`'s legacy headless start has `spellAt` undefined, which is active; only the app opening makes it null (waiting). If waiting, the fixture casts the public party spell and waits out its input hold; it asserts that the world is active before timing. One wild target, no allies or waves, a stationary witch with protected health, and continuous aim at its current position. Movement, retaliatory combat, invitations and orbit slots run under real rules, with a focused test requiring the boar to retaliate. `--distance` (default 10 m) is the starting separation. Every bag shares the same fixture and seeds. Landed letters, completion and world time are separate; a timeout is not "impossible". These measure isolated invitation stuns, not blows from an adult ally or ordinary unprotected combat. They cannot establish how many species a normal witch can defeat alone. Rows carry fixture version `active-party-after-intro-v2` and a retaliation count; an earlier pilot lacks that explicit validation and is not committed.
+Stun fixtures have **an active party**.
+`newGame`'s legacy headless start has `spellAt` undefined, which is active; only the app opening makes it null (waiting).
+If waiting, the fixture casts the public party spell and waits out its input hold; it asserts that the world is active before timing.
+One wild target, no allies or waves, a stationary witch with protected health, and continuous aim at its current position.
+Movement, retaliatory combat, invitations and orbit slots run under real rules, with a focused test requiring the boar to retaliate.
+`--distance` (default 10 m) is the starting separation.
+Every bag shares the same fixture and seeds.
+Landed letters, completion and world time are separate; a timeout is not "impossible".
+These measure isolated invitation stuns, not blows from an adult ally or ordinary unprotected combat.
+They cannot establish how many species a normal witch can defeat alone.
+Rows carry fixture version `active-party-after-intro-v2` and a retaliation count; an earlier pilot lacks that explicit validation and is not committed.
 
-Night wins, discovered islands, islands kept by `win.found`, finds on loan and eligibility to keep a found loan are separate columns. App saving/sleep is not executed, so the report never claims an unlock was persisted. The existing bots are not find-hunting policies.
+Night wins, discovered islands, islands kept by `win.found`, finds on loan and eligibility to keep a found loan are separate columns.
+App saving/sleep is not executed, so the report never claims an unlock was persisted.
+The existing bots are not find-hunting policies.
 
 ## Legacy coverage map
 
-T6 nightly hookup (#1667; coordinator1632#6578304163, 2026-11-02): the independent behaviour runner now invokes the original MJS replay test as an execution check and the separate fixture command for four informational observations. Both run sequentially with bounded subprocesses; actual outcomes, references, raw fixture JSON, logs and timings are retained in the report artifact. Replay failures remain execution errors; changed scenario predicates do not fail a release or reporting command. No new release CI discovery/gate was added. See [report usage](../../tools/behaviour/README.md). Cloud execution of this new hookup remains separate from source validation.
+T6 nightly hookup (#1667; coordinator1632#6578304163, 2026-11-02): the independent behaviour runner now invokes the original MJS replay test as an execution check and the separate fixture command for four informational observations.
+Both run sequentially with bounded subprocesses; actual outcomes, references, raw fixture JSON, logs and timings are retained in the report artifact.
+Replay failures remain execution errors; changed scenario predicates do not fail a release or reporting command.
+No new release CI discovery/gate was added.
+See [report usage](../../tools/behaviour/README.md).
+Cloud execution of this new hookup remains separate from source validation.
 
-Ed, 2026-11-02 (#1654): the seeded bot-night win/recruitment aggregates formerly in bot.test.ts are optional observations in `node tools/balance/bot-outcomes.mjs`. The original seeds11/22/33, ten-area starts,20-minute ceiling and15-recruit historical reference are retained, together with seed1000's40-second first-recruit scenario. False historical outcomes do not fail release checks. Direct invitation waking remains protected in inviteWakes.test.ts; bot replay contracts remain blocking. No new simulation run is required for release or claimed here.
+Ed, 2026-11-02 (#1654): the seeded bot-night win/recruitment aggregates formerly in bot.test.ts are optional observations in `node tools/balance/bot-outcomes.mjs`.
+The original seeds11/22/33, ten-area starts,20-minute ceiling and15-recruit historical reference are retained, together with seed1000's40-second first-recruit scenario.
+False historical outcomes do not fail release checks.
+Direct invitation waking remains protected in inviteWakes.test.ts; bot replay contracts remain blocking.
+No new simulation run is required for release or claimed here.
 
-Ed, 2026-11-02, T6: replay equality and phase accounting remain assertions in the original replay test, with unchanged interleaving, seeds, loadouts and horizons. Fixture identity stays an assertion on the same stun executor. Four scenario predicates now belong to the separate fixture-sanity command: the first run being censored, the fox becoming stunned, the fox receiving hits, and the active boar retaliating. JSON reports observed values, their historical references and matchesReference; a changed outcome does not fail the command, while execution failures or malformed observations still fail. The active boar's30s-only sanity run moved out of replay. This is a diagnostic, not a simulation model or acceptance threshold. Default Vitest/CI does not currently discover the original MJS replay file; its explicit Node command still fails on integrity errors. No CI time saving is demonstrated. Shared nightly workflow integration is owned by1632's separate report-pattern PR.
+Ed, 2026-11-02, T6: replay equality and phase accounting remain assertions in the original replay test, with unchanged interleaving, seeds, loadouts and horizons.
+Fixture identity stays an assertion on the same stun executor.
+Four scenario predicates now belong to the separate fixture-sanity command: the first run being censored, the fox becoming stunned, the fox receiving hits, and the active boar retaliating.
+JSON reports observed values, their historical references and matchesReference; a changed outcome does not fail the command, while execution failures or malformed observations still fail.
+The active boar's30s-only sanity run moved out of replay.
+This is a diagnostic, not a simulation model or acceptance threshold.
+Default Vitest/CI does not currently discover the original MJS replay file; its explicit Node command still fails on integrity errors.
+No CI time saving is demonstrated.
+Shared nightly workflow integration is owned by1632's separate report-pattern PR.
 
 
-Do not retire the copied models until every needed row below has an explicit replacement or the coordinator rules that the experiment is obsolete. Current coverage is partial. Their numbers are historical hypotheses, not calibrated measurements of current pack/orbit combat.
+**The copied models were deleted on 2026-11-15** (Ed: "Do 1-7", the software-quality list's dead code; the builder's decision, as the coordinator's brief asked): `src/rules/balance.ts`, `src/rules/states.ts`, their tests, and `tools/balance/sim.mjs`, `logistics.mjs`, `states.mjs`, `waves.mjs`, `endgame.mjs`.
+Why, though the rows below are only partly replaced: every remaining gap is either a counterfactual the game does not have (attrition, the director, constant F a minute, the invite policies, rush policies) or a measurement the old models could only give for the 5 October rules (babies invited, relic-woken legends, growth by the wave, 500-health soundsystems, no pack or orbit combat), so keeping them answered none of the open rows for the game as it is.
+The table stays as the list of what the real-rules report still does not measure; the old code is in git history.
 
-| Old measurement | Existing entry point | Real-rules replacement / remaining gap |
+| Old measurement | Entry point (deleted 2026-11-15) | Real-rules replacement / remaining gap |
 |---|---|---|
 | Idle loss and time to party end | `balance.ts` / `sim.mjs` | `runs --bots idle`, explicit lost/censored outcome and overAt |
 | Enemy value, population and siege strength by wave | `balance.ts` / `sim.mjs --per-wave` | Wave arrivals observed; per-wave strength/population snapshots not yet covered |
@@ -52,4 +102,4 @@ Do not retire the copied models until every needed row below has an explicit rep
 | Faster/ramped waves | `states.ts` / `waves.mjs` | Actual record bpm 100/120/160/200 covered; simulator-only rush policies not covered |
 | Current invitation stuns per bag/species/rank | Neither copied model | `stuns`, observed landed letters, time and explicit timeout |
 
-Retirement is therefore deferred until the missing measurements are implemented or explicitly ruled obsolete on PR #1463; the files and their callers/tests remain intact. No square-law result is reused in the new report.
+No square-law result is reused in the new report.

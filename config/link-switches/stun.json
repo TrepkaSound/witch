@@ -1,0 +1,10 @@
+{
+ "name": "stun",
+ "values": [
+  "old"
+ ],
+ "does": "A creature's stun on her staggers her for its length, as before, to compare: not the slow that replaced it (to 40% of her speed for three times as long, with the circling stars).",
+ "group": "compare",
+ "since": "2026-11-13",
+ "decision": "A slow by default (Ed, 2026-11-13: \"I think stun and slow are very similar, and stun is less fun than slow, so how about stun is replaced with slow and we use circling stars?\"; \"Big: 40% speed, 3× as long\")"
+}

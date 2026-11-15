@@ -6,7 +6,6 @@ import { floorRects, fromPlan, HOUSE_ROOMS, roomAccessFor } from "./houseRooms";
 import { newWitch, NO_INTENT, stepWitch } from "./witch";
 import { sightClearance } from "./crown";
 import { DECISION_LIST, applyKnobParams } from "../ui/decisions";
-import { NO_LOAD } from "./leashWeight";
 const H = TUNING.treehouse.house!, B = { minX: -10000, maxX: 10000, minZ: -10000, maxZ: 10000 };
 it("enables all four looks in the published tuning, as chosen by Ed on 2 November", () => {
   expect([H.look!.indoor, H.look!.noNotch, H.look!.approach, H.look!.noWalls]).toEqual([true, true, true, true]);
@@ -52,15 +51,15 @@ describe("open platform edge rules (Ed, 2 Nov)", () => {
     const dx = outside.x - q.x, dz = outside.z - q.z, length = Math.hypot(dx, dz), mx = dx / length, mz = dz / length;
     const start = { ...newWitch(q.x, q.z), perch: true, vx: mx * H.walk, vz: mz * H.walk };
     const move = { ...NO_INTENT, moveX: mx, moveZ: mz };
-    const falling = stepWitch(start, move, .3, TUNING, B, NO_LOAD, d);
+    const falling = stepWitch(start, move, .3, TUNING, B, d);
     expect(falling.falling).toBe(0); expect(falling.fallOrigin).toBeDefined();
     const origin = falling.fallOrigin!; expect(onFloor(d, origin.x, origin.z)).toBe(true);
     const broomDeck = { ...d, house: { ...d.house!, fall: { ...d.house!.fall, on: false } } };
-    const flying = stepWitch(start, move, .3, TUNING, B, NO_LOAD, broomDeck);
+    const flying = stepWitch(start, move, .3, TUNING, B, broomDeck);
     expect(flying.mode).toBe("rising"); expect(flying.falling).toBeUndefined();
-    const down = stepWitch(falling, NO_INTENT, H.fall.time, TUNING, B, NO_LOAD, d);
+    const down = stepWitch(falling, NO_INTENT, H.fall.time, TUNING, B, d);
     expect(down.falling).toBe(H.fall.time);
-    const back = stepWitch(down, NO_INTENT, (H.fall.beat ?? 0) + .01, TUNING, B, NO_LOAD, d);
+    const back = stepWitch(down, NO_INTENT, (H.fall.beat ?? 0) + .01, TUNING, B, d);
     expect([back.x, back.z]).toEqual([origin.x,origin.z]); expect(back.falling).toBeUndefined(); expect(back.fallOrigin).toBeUndefined();
     // Default remains the old wall constraint at this same non-Terrace edge.
     if (room.id !== "terrace") { const closed = { ...d, house: { ...d.house!, noWalls: false } }; expect(keepInHouse(closed, outside.x, outside.z).off).toBe(false); }

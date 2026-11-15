@@ -58,4 +58,4 @@ const moth = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette as its plan draws it, wings out, turned towards us: its generated drawing's
  *  heights, Ed, 2026-11-12, "keep the sizes") (on the bench: src/rules/kinds.ts BENCH); plans, each level's build. */
-export const MESH = { id: "moth", heights: [29, 46, 69, 226], plans: moth };
+export const MESH = { id: "moth", heights: [29, 46, 69, 226], gait: "fly", plans: moth };

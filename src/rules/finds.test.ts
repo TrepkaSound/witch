@@ -6,7 +6,7 @@ import { TUNING } from "./tuning";
 import { stepGame, type Controls, type Game } from "./game";
 import { BAG_ITEMS, FINDABLE, FIND_KINDS, HAT_FINDS, fillTrunk, findPiece, goneAtWin, loanFind, nightFind, nightPick, spawnFind, spawnSpot, trunkAt, wayTo, TRUNK_CLEAR } from "./finds";
 import { HAT_FLOOR, floorHats, hatsOnFloor } from "./houseRooms";
-import { newSpells, ownsHat } from "./spells";
+import { HAT_SPELLS, newSpells, ownsHat } from "./spells";
 import { COUNTRY_BY_ID } from "../../art/country.js";
 import { PART_IDS, fittedKey } from "./broomParts";
 import { deckOf, onFloor } from "./treehouse";
@@ -72,7 +72,7 @@ describe("tonight's travel trunk", () => {
 
   it("finds hats and bags each on its own (Ed, 2026-10-23): every spell hat but the plain one, and the found bags (the Satchel, Bumbag and Purse hers from the start: Ed, 2026-10-29), out of the trunk", () => {
     expect(HAT_FINDS).not.toContain("none");
-    expect(HAT_FINDS.length).toBe(14);
+    expect([...HAT_FINDS].sort()).toEqual(HAT_SPELLS.filter(s => s.built && s.id !== "none").map(s => s.id).sort()); // (every built spell hat: counted from the hats, not written here)
     expect([...BAG_ITEMS].sort()).toEqual(["backpack", "briefcase", "clutch", "duffel", "messenger", "tote"]);
     for (const b of BAG_ITEMS) expect(FINDABLE.some(i => i.id === b), b).toBe(false); // (no longer in the trunk)
     for (const k of FIND_KINDS) for (const id of k.items) { expect(COUNTRY_BY_ID[k.piece(id)], k.piece(id)).toBeDefined(); } // (every find drawn: art/country.js)

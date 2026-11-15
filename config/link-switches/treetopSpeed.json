@@ -1,0 +1,9 @@
+{
+ "name": "treetopSpeed",
+ "values": [
+  "<m/s>"
+ ],
+ "does": "Her treetop speed for this load only (never remembered: it changes the balance).",
+ "group": "run",
+ "since": "2026-10-07"
+}

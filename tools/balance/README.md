@@ -75,14 +75,6 @@ Does dodging matter? A headless run of the real rules: she stands on the ground 
 node tools/balance/dodgebot.mjs [--dodge none,a,b,c,abc] [--groups wolf*4,boar*4,...] [--all] [--bots still,back,strafe,dodger]
 ```
 
-## `endgame.mjs`
-
-How long losing takes.
-
-```
-node tools/balance/endgame.mjs [--seeds 4] [--gaps 300,120] [--skills 0.1,0.25,0.5,1] [--policies defend,leash,relay,mass] [--cap 60] [--hurry 0.5,3] [--relics 0]
-```
-
 ## `expert-calibrate.mjs`
 
 One approved full-night throughput case, never a training batch.
@@ -140,7 +132,7 @@ Deterministic, evaluation-independent coordinate search.
 Single-worker, bounded real-rules expert search and disjoint held-out evaluation.
 
 ```
-node tools/balance/expert-search.mjs --out docs/notes/expert-results/pilot --time 60 --iterations 3 --train-seeds 1 --held-seeds 1 --wall-seconds 480
+node tools/balance/expert-search.mjs --out data/balance/expert-results/pilot --time 60 --iterations 3 --train-seeds 1 --held-seeds 1 --wall-seconds 480
 ```
 
 ## `expert-space.mjs`
@@ -178,14 +170,6 @@ node tools/balance/leycross.mjs [--seeds 300] [--from 1] [--varied | --was | --b
 ## `lib.mjs`
 
 What the balance tools share: the rules loaded through Vite's SSR, command-line flags, and a few statistics.
-
-## `logistics.mjs`
-
-The logistics sweep. Over a grid of area size × treetop speed, with the balance simulator's logistics: the areas the witch can visit a wave, the party animals' walk to the frontier, whether a defence gets to each new soundsystem before its first blow, and…
-
-```
-node tools/balance/logistics.mjs [--seeds 8] [--sizes 112,168,224,280] [--treetops 32,48,64,96]
-```
 
 ## `lunges.mjs`
 
@@ -286,22 +270,6 @@ Full runs: a bot plays the real rules headless for the first --time seconds of a
 node tools/balance/runbot.mjs [--seeds 3 (seeds 0 to N-1; --skip K starts at K)] [--bots skilled,crude] [--time 1800] [--happy N (the N legends nearest home happy from the start)] [--calm (no legend ever turns angry)] [--quests (the skilled bot fetches what sleeping legends dream of)] [--relics (and picks up relics for them)] [--relic-policy nearest|home|front|far (which sleeping legend gets each relic)] [--quest-max N (at most N quests, then she plays on as usual)] [--relic-max N (at most N relics brought)] [--strategy invite|feed|quest|sigil|mixed (the skilled bot's strategies: rules/bot.ts STRATEGIES)] [--feed (the skilled bot leads her babies and young to berry patches)] [--guards 3 --keep 2 (the skilled bot parks up to G at the next soundsystem, keeping K)] [--island 10|20|...|off (map.islandAreas)] [--game (each bot with the bot game's own options, rules/bot.ts BOT_GAME, in place of the flags)] [--set path=value;...] [--combat path=value;... (config/combat.json's)] [--json out.json] | --report a.json,b.json
 ```
 
-## `sim.mjs`
-
-The balance simulator's runner: many seeds, wave gaps of 60 s and 300 s.
-
-```
-node tools/balance/sim.mjs [--seeds 12] [--gaps 60,300|4m/s] [--skills 10,30,50,70,100] [--cap 60]
-```
-
-## `states.mjs`
-
-The creature-state model's report: src/rules/states.ts on the real maps.
-
-```
-node tools/balance/states.mjs [--seeds 6] [--gap 60|4m/s] [--skills 0.5,1,2,4] [--policies defend,third,leash,babies,relay] [--cap 40]
-```
-
 ## `stunhits.mjs`
 
 Hits to stun: the real rules headless, her adult wolf parked beside one wild creature of each species and rank, the blows it lands counted till the creature is down, and the seconds that took.
@@ -327,15 +295,6 @@ Bot sweeps: every bot kind over many seeds, the real rules headless, with a tuni
 ```
 node tools/balance/sweep.mjs [--bots idle,novice,crude,skilled,top] [--seeds 20 (seeds 1000 + 7919 i, as runbot)]
 node tools/balance/sweep.mjs --report a.csv,b.csv   (the summaries of earlier sweeps, side by side)
-```
-
-## `waves.mjs`
-
-Faster waves for the endgame, against the siege hurry: waves rushing once the run is lost, and a ramp shortening the gap over the whole run.
-
-```
-node tools/balance/waves.mjs [--seeds 3] [--gap 300] [--skills 0.1,0.25,0.5] [--policies defend,leash,relay,mass] [--cap 60 (waves at the starting gap: the runs stop at cap × gap seconds)] [--json out.json]
-node tools/balance/waves.mjs --report a.json,b.json,...   (merge several runs' JSON into the tables)
 ```
 
 ## Also here

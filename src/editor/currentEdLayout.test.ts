@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import authored from "../../docs/evidence/treehouse-layout-ed-2026-11-12.v2.json";
-import previous from "../../docs/evidence/treehouse-layout-ed-2026-11-01.v2.json";
+import authored from "../../data/house/treehouse-layout-ed-2026-11-12.v2.json";
+import previous from "../../data/house/treehouse-layout-ed-2026-11-01.v2.json";
 import current from "../../config/house/layouts/ed-current.json";
 import fixes from "../../config/house/layouts/ed-current-fixes.json";
 import identities from "../../config/house/layouts/editor-v2-identities.json";
@@ -15,7 +15,7 @@ const sha = (path: string) => createHash("sha256").update(readFileSync(path)).di
 
 it("publishes Ed's 2026-11-12 export, all 114 poses/anchors but the recorded fixes, its 22 removed clutter and the old hats' area", () => {
   // (Ed, 2026-11-12, "New treehouse layout": archived byte for byte)
-  expect(sha("docs/evidence/treehouse-layout-ed-2026-11-12.v2.json")).toBe("8053ea09fe99ea261bb982ebb9ac5f16465bd3ccc446aabf20774ef2eca1a2a9");
+  expect(sha("data/house/treehouse-layout-ed-2026-11-12.v2.json")).toBe("8053ea09fe99ea261bb982ebb9ac5f16465bd3ccc446aabf20774ef2eca1a2a9");
   // (but for the few poses in ed-current-fixes.json, each with its reason: Ed, 2026-11-13, "fix the others", after the pictures showed
   // the basin and the workbench with use points at or past the floor's edge and Bedroom 3's shoe rack with her behind it)
   const fixed = structuredClone(authored);
@@ -48,7 +48,7 @@ it("publishes Ed's 2026-11-12 export, all 114 poses/anchors but the recorded fix
   expect(drawn).toHaveLength(current.objects.filter(p => p.id.startsWith("clutter:")).length);
 });
 it("still opens Ed's 2026-11-01 export, archived byte for byte, in the editor", () => {
-  expect(sha("docs/evidence/treehouse-layout-ed-2026-11-01.v2.json")).toBe("18c3c64c68a60d67d3d55b2f8f349983fe2260f467634b8b48b216984bb49af6");
+  expect(sha("data/house/treehouse-layout-ed-2026-11-01.v2.json")).toBe("18c3c64c68a60d67d3d55b2f8f349983fe2260f467634b8b48b216984bb49af6");
   const items = layoutItems(), key = floorplanKey(EDITOR_HOUSE, items);
   // (less the guests' bedrooms' two doors, gone since Ed, 2026-11-03; the objects new since, Ed 2026-11-07, at their defaults)
   expect(parseLayout(previous, items, key).objects).toHaveLength(130 + ADDED_OBJECTS.length);

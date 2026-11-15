@@ -64,4 +64,4 @@ const griffin = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs griffin`: Ed, 2026-11-12, "keep the
  *  sizes"; its legend's is to the top of its raised wings, as today's is); plans, each level's build. */
-export const MESH = { id: "griffin", heights: [63, 139, 218, 524], plans: griffin };
+export const MESH = { id: "griffin", heights: [63, 139, 218, 524], gait: "trot", plans: griffin };

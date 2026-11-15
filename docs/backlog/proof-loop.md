@@ -25,7 +25,7 @@ The strictness did pay off once: the exact repaint comparison caught a real bug 
 
 ## What to change
 
-1. **Run proof scripts in CI** (inbox: *Inbox: run proof scripts in CI*, brief `docs/plans/proof-ci.md`). Any proof that runs headless (SwiftShader is fine for correctness, not for timing) becomes a CI job, so builders see the result on every push without waiting for the coordinator. Laptop runs stay for real-GPU timing and two-machine multiplayer only.
+1. **Run proof scripts in CI** (inbox: *Inbox: run proof scripts in CI*, brief `docs/archive/plans/proof-ci.md`). Any proof that runs headless (SwiftShader is fine for correctness, not for timing) becomes a CI job, so builders see the result on every push without waiting for the coordinator. Laptop runs stay for real-GPU timing and two-machine multiplayer only.
 2. **Agree the acceptance bar before the first run.** Write down what must match exactly, and what is allowed and recorded (e.g. art finishing loading during a pause), in the plan before any proof runs.
 3. **Build tracing into proofs from the start.** On a mismatch, every proof should save the images, the diff and the object/material/uniform trace for the differing pixels.
 4. **When a proof finds one cause, hunt the whole class.** E.g. after the first wall-clock leak, audit every render path for `performance.now`, `Date.now`, frame counters and `Math.random` at once, instead of one per round.

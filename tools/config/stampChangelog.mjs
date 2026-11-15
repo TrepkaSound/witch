@@ -15,11 +15,12 @@ export const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 export const DIR = "config/changelog";
 const NULL = /"version"\s*:\s*null/;
 
-/** The fragments (not the frozen archive, which holds `entries`) in `dir` whose version is null, by file name, sorted. */
+/** The fragments (not the frozen archive, which holds `entries`, nor stamped.json, which holds the folded `fragments`:
+ *  tools/config/foldChangelog.mjs) in `dir` whose version is null, by file name, sorted. */
 export function nullFragments(dir = join(ROOT, DIR)) {
   return readdirSync(dir).filter(f => f.endsWith(".json")).sort().filter(f => {
     const j = JSON.parse(readFileSync(join(dir, f), "utf8"));
-    return !j.entries && (j.version ?? null) === null;
+    return !j.entries && !j.fragments && (j.version ?? null) === null;
   });
 }
 

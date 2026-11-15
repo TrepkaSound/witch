@@ -1,0 +1,9 @@
+{
+ "name": "bloom",
+ "values": [
+  "off"
+ ],
+ "does": "The bloom off.",
+ "group": "view",
+ "since": "2026-10-07"
+}

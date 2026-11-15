@@ -1,12 +1,11 @@
 // No coming down over a lake (Ed, 2026-10-23: "At the moment you can press x to leave treetop mode while over a lake; you go
 // lower and move more slowly. I don't think you should be able to do that"): up in the treetops over the water, the press to
 // come down is dropped (rules/game.ts), said by the "lakeHold" leash event, and she flies on at full height; ashore it works
-// as ever; and her followers' pull never lands her on the water (rules/witch.ts).
+// as ever.
 import { describe, expect, it } from "vitest";
 import { TUNING, type Tuning } from "./tuning";
 import { newGame, stepGame, STEP, type Controls, type Game } from "./game";
 import { lakeDepth, lakeKnobs } from "./lakes";
-import { newWitch, stepWitch, NO_INTENT, type WitchState } from "./witch";
 
 // Keep this 40-area phase-4 seed: it supplies the real deep-water/ashore pair used by the lake landing regression.
 const isle: Tuning = { ...TUNING, map: { ...TUNING.map!, islandAreas: 40, island: "", phase: 4 } };
@@ -56,14 +55,5 @@ describe("no coming down over a lake", () => {
     expect(g.leashEvents.some(e => e.kind === "lakeHold")).toBe(false);
     for (let i = 0; i < 5 / STEP; i++) stepGame(g, idle, STEP);
     expect(g.witches[0].body.mode).toBe("ground");
-  });
-
-  it("her followers' pull never lands her on the water", () => {
-    const { water } = spots(g0), B = g0.map.bounds;
-    let w: WitchState = { ...newWitch(water.x, water.z), mode: "treetop", lift: 1 };
-    const load = { total: 12, over: 10, extreme: true, x: 0, z: 0 };
-    for (let i = 0; i < 20 / STEP; i++) w = stepWitch(w, NO_INTENT, STEP, isle, B, load);
-    expect(w.mode).toBe("treetop");
-    expect(w.lift).toBeGreaterThan(0);
   });
 });

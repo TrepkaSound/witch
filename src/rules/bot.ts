@@ -206,7 +206,7 @@ export function newBot(kind: BotKind, o: BotOptions = {}): Bot {
   if (careful) o = { siege: true, regroup: true, blink: true, ...o };
   let legendOf: Map<string, number> | null = null;
   let qjob = null as QJob | null, questAgain = 0, questCount = 0, relicCount = 0, questTries = 0, relicTries = 0; // (tries, so a quest or relic that keeps failing doesn't eat the run)
-  let rjob: { phase: "pick" | "place"; r?: { x: number; z: number; sx?: number; sz?: number; state: string }; since: number; n?: number } | null = null, relicAgain = 0;
+  let rjob: { phase: "pick"; r?: { x: number; z: number; sx?: number; sz?: number; state: string }; since: number } | null = null, relicAgain = 0;
   // (a feeding stop: the patch, and the phase: feeding them there, a tap a berry, then waiting while they eat)
   let feeding: { x: number; z: number; until: number; phase?: "feed" | "wait" } | null = null, feedAgain = 0, healing = false;
   let target: Target | null = null, pickAt = -1, landWave = -1, lastWave = 0, seenWave = 0, lastWoken: Cell | null = null, steps = 0;
@@ -376,7 +376,7 @@ export function newBot(kind: BotKind, o: BotOptions = {}): Bot {
       if (w.leash.feedHold !== undefined) { held = true; return; }
       let near: { x: number; z: number } | null = null, nd = Math.max(t.leash.pickRadius, t.leash.spacing) * 1.1; // (and far enough that the next isn't blocked by it)
       for (const p of w.leash.placed) { const d = Math.hypot(p.x - b.x, p.z - b.z); if (d < nd) { nd = d; near = p; } }
-      if (!near) { if (stackBottom(w.leash)?.kind === "relic") cycle = true; else { sigil = true; if (feedOffer(g, w)) held = true; } return; } // (a relic's sigil at the bottom: cycled past first)
+      if (!near) { sigil = true; if (feedOffer(g, w)) held = true; return; }
       if (nd > 0.01) { mx = (b.x - near.x) / nd; mz = (b.z - near.z) / nd; } else { mx = 1; mz = 0; }
     };
     /** Toward (x, z): over the treetops when far, landing there if `land`; true once on the ground within `within` m. */
@@ -497,8 +497,7 @@ export function newBot(kind: BotKind, o: BotOptions = {}): Bot {
         // A lucky find: to the nearest lying flask, and drink it on its sigil (the sigil button there: Ed, 2026-10-18, a growth
         // spurt, every animal following her an adult). It waits till some of hers following her are under age.
         if (!rjob) {
-          if (w.leash.relics.length) rjob = { phase: "place", since: now, n: w.leash.relics.length };
-          else { const r = g.relics.filter(r => r.state === "lying").sort((a, c) => Math.hypot(a.x - c.x, a.z - c.z) - Math.hypot(c.x - c.x, c.z - c.z) || Math.hypot(a.x - b.x, a.z - b.z) - Math.hypot(c.x - b.x, c.z - b.z))[0]; rjob = r ? { phase: "pick", r, since: now } : null; if (rjob) relicTries++; if (!rjob) relicAgain = time + 60; }
+          { const r = g.relics.filter(r => r.state === "lying").sort((a, c) => Math.hypot(a.x - c.x, a.z - c.z) - Math.hypot(c.x - c.x, c.z - c.z) || Math.hypot(a.x - b.x, a.z - b.z) - Math.hypot(c.x - b.x, c.z - b.z))[0]; rjob = r ? { phase: "pick", r, since: now } : null; if (rjob) relicTries++; if (!rjob) relicAgain = time + 60; }
         }
         bot.doing = "fetching a flask";
         if (rjob?.phase === "pick") {
@@ -506,14 +505,6 @@ export function newBot(kind: BotKind, o: BotOptions = {}): Bot {
           if (!young) { rjob = null; relicAgain = time + 30; } // (nothing to grow: later)
           else if (goTo(rjob.r!.sx ?? rjob.r!.x, rjob.r!.sz ?? rjob.r!.z, true, 2)) { /* (standing on its sigil, a little south of it: #279) */ sigil = true; if (rjob.r!.state === "used") { bot.done.relics.push({ at: time, id: g.relics.findIndex(r => r === rjob!.r) }); relicCount++; rjob = null; relicAgain = time + 30; } }
           if (rjob && now - rjob.since > 120) { rjob = null; relicAgain = time + 60; }
-        }
-        else if (rjob?.phase === "place") {
-          const P = o.relicPolicy ?? "nearest", d0 = map.dancefloor, next = new Set((g.party.next ?? []).map(c => cellKey(c)));
-          const score = (c: Creature) => P === "home" ? Math.hypot(c.x - d0.x, c.z - d0.z) : P === "far" ? -Math.hypot(c.x - d0.x, c.z - d0.z) : P === "front" ? (next.has(cellKey(c.cell)) ? Math.hypot(c.x - b.x, c.z - b.z) : 1e6 + Math.hypot(c.x - d0.x, c.z - d0.z)) : Math.hypot(c.x - b.x, c.z - b.z);
-          const L = [...LO.values()].map(id => g.creatures[id]).filter(c => !c.gone && (c.legendState === "asleep" || c.legendState === "restless")).sort((a, c) => score(a) - score(c))[0];
-          if (!L) rjob = null;
-          else if (goTo(...spotBy(L), true, 4)) { if (w.leash.relics.length < rjob.n!) { bot.done.relics.push({ at: time, id: L.id }); relicCount++; rjob = null; relicAgain = time + 30; } else if (stackBottom(w.leash)?.kind === "relic") sigil = true; else cycle = true; } // (the relic's sigil cycled to the bottom first, as a player would)
-          if (rjob && now - (rjob.since ?? now) > 150) { rjob = null; relicAgain = time + 60; }
         }
       } else if (o.quests && careful && (qjob || (time >= questAgain && questCount < (o.questMax ?? Infinity) && questTries < (o.questMax ?? Infinity) * 2))) {
         // A quick player: the nearest sleeping legend with an open quest whose dream she can fetch (a creature of that

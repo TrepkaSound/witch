@@ -4,7 +4,7 @@
 //   ...
 //   <!-- /data: <name> -->
 // TABLES below says what each name is made from. tools/docs/tables.test.ts fails while one is out of date.
-//   node tools/docs/tables.mjs           checks every doc's tables (exit 1 if one is out of date)
+//   node tools/docs/tables.mjs           checks every doc's tables (noted only; exit 1 if one is out of date at a release: tools/config/strict.mjs)
 //   node tools/docs/tables.mjs --write   writes them
 import fs from "node:fs";
 import path from "node:path";
@@ -103,6 +103,7 @@ export async function stale() {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const s = await stale();
   if (process.argv.includes("--write")) { for (const { file, want } of s) { fs.writeFileSync(path.join(ROOT, file), want); console.log(`wrote ${file}`); } if (!s.length) console.log("every table up to date"); }
+  else if (s.length && !(await import("../config/strict.mjs")).releaseStrict()) console.log(`out of date (noted only: the release rewrites them, node tools/config/regen.mjs): ${s.map(x => x.file).join(", ")}`);
   else if (s.length) { console.error(`out of date (node tools/docs/tables.mjs --write): ${s.map(x => x.file).join(", ")}`); process.exit(1); }
   else console.log("every table up to date");
 }

@@ -1,0 +1,9 @@
+{
+ "name": "latest",
+ "values": [
+  "<build>"
+ ],
+ "does": "Written by a fresh game's boot when version.json shows a newer build than the page running: the one reload to it, past the browser's cached page; a link with it never reloads again, and the boot takes it off.",
+ "group": "run",
+ "since": "2026-11-03"
+}

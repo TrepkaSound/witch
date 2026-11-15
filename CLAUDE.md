@@ -10,6 +10,9 @@ This file keeps only what every builder needs every time (housekeeping, Ed 2026-
 
 **Read an area's note before working on it; add to the note, not to this file.**
 
+What lives where in `docs/` is [`docs/README.md`](docs/README.md): finished plans and one-off reports go to `docs/archive/`, and machine-written data (measurements, audits, study results) goes to `data/`, never `docs/` ([`data/README.md`](data/README.md)).
+**The rules as they are now** (Ed, 2026-11-15): before you brief or build on creatures and babies, invites, legends, combat, sieges and soundsystems, the leash, or her movement, read its short page under [`docs/rules/`](docs/rules/README.md): each line is checked against the code and dated. Comments and older notes can be stale; `node tools/docs/rulings.mjs` warns about the ones it can catch, and `--topic <word>` lists Ed's rulings on something, newest first.
+
 ## Deploys
 
 **Merging to `main` deploys** the game to https://edsaperia.github.io/witch/; only the coordinator does that. Every pull request from this repository gets a preview at `/pr-<number>/`, linked on the PR (none for a documents-only one). How it works, and when a release counts as live (the public `version.json`): [`docs/notes/deploys.md`](docs/notes/deploys.md).
@@ -34,7 +37,7 @@ Several builders work in parallel (Claude sessions; Codex builders are paused); 
 The start screen's What's new panel is made from **one small file per change** in `config/changelog/`, so builders working in parallel don't conflict (details: `docs/notes/config.md`, **Changelog fragments**).
 
 - A push that changes something Ed can see adds its own fragment, `config/changelog/<yyyy-mm-dd>-<slug>.json`, holding `{ "version": null, "items": ["…"] }` in plain player-facing words ("Trees no longer pop in and out"), not commit-speak. Later pushes of the same work may add to it.
-- Leave `version` null: the coordinator stamps fragments at each release (`node tools/config/stampChangelog.mjs`). Never edit anyone else's fragment, or the frozen `config/changelog/archive.json`. `src/changelog.test.ts` checks every file's shape.
+- Leave `version` null: the coordinator stamps fragments at each release (`node tools/config/stampChangelog.mjs`), and may then fold the stamped ones into `config/changelog/stamped.json` (`node tools/config/foldChangelog.mjs`). Never edit anyone else's fragment, the frozen `config/changelog/archive.json` or `stamped.json`. `src/changelog.test.ts` checks every file's shape.
 
 ## Fixing bugs (Ed, 2026-10-13)
 
@@ -49,4 +52,4 @@ Bring a bug back to Ed early rather than guess: he can answer questions, take a 
 
 ## Testing
 
-`node tools/checks/which.mjs [--base <ref>]` lists the checks your change needs, from its changed files and `config/checks.json`: the builder's, before a FINAL, and the coordinator's, on the combined build. The builder minimum is `npm run typecheck` and the tests near what you touched (`npx vitest related --run <files>`), plus `node art/check.mjs` when you touch the art (CI runs it on PRs that change art, narrowed the same way: `docs/notes/art-checks.md`). CI, the smoke tests and every other check: `docs/notes/testing.md` and the area's note.
+`node tools/checks/which.mjs [--base <ref>]` lists the checks your change needs, from its changed files and `config/checks.json`: the builder's, before a FINAL, and the coordinator's, on the combined build. The builder minimum is `npm run typecheck` and the tests near what you touched (`npx vitest related --run <files>`), plus `node art/check.mjs` when you touch the art (CI runs it on PRs that change art, narrowed the same way: `docs/notes/art-checks.md`). CI, the smoke tests and every other check: `docs/notes/testing.md` and the area's note. Generated reader pages (`docs/LINK-SWITCHES.md`, `config/KNOBS.md`, `docs/notes/INDEX.md`, the tools' READMEs) needn't be committed: the release rewrites them (Ed, 2026-11-15; `docs/notes/config.md`, **Generated files**).

@@ -136,7 +136,7 @@ Ed, 2026-10-30: **"It's more important that creatures look like their real-life 
 
 ## Evidence and scope
 
-[All 64 species in one source-backed table](roster-census.md), with [machine-readable facts](roster-census.json). Regenerate with `node tools/roster/audit.mjs`. Counts and dispatch come from present code, not backlog estimates: 64 species, 23 active builder IDs, 42 using `quad`, 22 on individual builders, unused `scarab`, plus two idle-pose builders. World-0 island membership is computed from the actual roster functions. It is a sample campaign, not a fixed global habitat assignment.
+[All 64 species in one source-backed table](roster-census.md), with [machine-readable facts](../data/roster/roster-census.json). Regenerate with `node tools/roster/audit.mjs`. Counts and dispatch come from present code, not backlog estimates: 64 species, 23 active builder IDs, 42 using `quad`, 22 on individual builders, unused `scarab`, plus two idle-pose builders. World-0 island membership is computed from the actual roster functions. It is a sample campaign, not a fixed global habitat assignment.
 
 The audit separates factual source fields from artistic assessments. The rendered-quality column now records the builder's actual inspection of all eight cloud catalogue sheets at `8308346aaa488b7a015f08fc60a01cb939c2aa79`, linked per species. These are studio/towards/native-art observations; independent scores, gait, night habitat and exact in-game acceptance are still separate. Encoded natural cues are evidence of intent, not proof that the pixels express it. A geometry pass cannot establish animal likeness or acceptance. No external art assets are copied into the game.
 

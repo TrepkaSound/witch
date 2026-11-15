@@ -95,7 +95,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
-      # A documents-only pull request plays exactly prototype's game, so it gets no preview (the coordinator,
+      # A documents-only pull request (docs/, data/ or Markdown) plays exactly prototype's game, so it gets no preview (the coordinator,
       # 2026-11-09: nine docs-only art-pass drafts held ~300 MB of the ~1 GB snapshot, at Pages' limit; history:
       # after the garbage collection gh-pages measured 406 MiB on 2026-11-12, docs/notes/deploys.md).
       - name: Skip a documents-only pull request's preview
@@ -105,7 +105,7 @@ jobs:
         run: |
           [ "${{ github.event_name }}" = pull_request ] || exit 0  # (main's deploy shares these steps: never skipped)
           files=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.number }}/files?per_page=100" --paginate --jq '.[].filename') || files=""
-          if [ -n "$files" ] && ! grep -qvE '^docs/|\.md$' <<<"$files"; then
+          if [ -n "$files" ] && ! grep -qvE '^(docs|data)/|\.md$' <<<"$files"; then
             echo "docs=true" >> "$GITHUB_OUTPUT"
             echo "::notice::Documents only: the game is prototype's, so no preview is published."
           fi
@@ -191,7 +191,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && !startsWith(github.event.pull_request.head.ref, 'claude/release-') && github.event.pull_request.head.ref != 'claude/publish-snapshot' }}
     runs-on: ubuntu-latest
     steps:
-      # A documents-only pull request plays exactly prototype's game, so it gets no preview (the coordinator,
+      # A documents-only pull request (docs/, data/ or Markdown) plays exactly prototype's game, so it gets no preview (the coordinator,
       # 2026-11-09: nine docs-only art-pass drafts held ~300 MB of the ~1 GB snapshot, at Pages' limit; history:
       # after the garbage collection gh-pages measured 406 MiB on 2026-11-12, docs/notes/deploys.md).
       - name: Skip a documents-only pull request's preview
@@ -201,7 +201,7 @@ jobs:
         run: |
           [ "${{ github.event_name }}" = pull_request ] || exit 0  # (main's deploy shares these steps: never skipped)
           files=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.number }}/files?per_page=100" --paginate --jq '.[].filename') || files=""
-          if [ -n "$files" ] && ! grep -qvE '^docs/|\.md$' <<<"$files"; then
+          if [ -n "$files" ] && ! grep -qvE '^(docs|data)/|\.md$' <<<"$files"; then
             echo "docs=true" >> "$GITHUB_OUTPUT"
             echo "::notice::Documents only: the game is prototype's, so no preview is published."
           fi
@@ -378,6 +378,12 @@ jobs:
         run: npm --prefix server ci && npm --prefix server test
       - run: npm run typecheck
         if: needs.build.outputs.reuse != 'true'
+      # A report, never a failure (Ed, 2026-11-15, on keeping the notes honest automatically): comments and notes that
+      # state a rule a later ruling replaced, or a knob's number the tuning no longer has. docs/rules/README.md.
+      - name: Stale rulings (warnings only)
+        if: needs.build.outputs.reuse != 'true'
+        continue-on-error: true
+        run: node tools/docs/rulings.mjs
       - name: Failure annotation totals
         if: always() && needs.build.outputs.reuse != 'true' && steps.source.outcome == 'success'
         run: node tools/ci/annotations.cjs --summary

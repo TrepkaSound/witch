@@ -1,0 +1,9 @@
+{
+ "name": "trail",
+ "values": [
+  "0"
+ ],
+ "does": "No trail behind her.",
+ "group": "view",
+ "since": "2026-10-07"
+}

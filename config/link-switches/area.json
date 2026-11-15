@@ -1,0 +1,9 @@
+{
+ "name": "area",
+ "values": [
+  "off"
+ ],
+ "does": "Scenery isn't averaged where it shrinks (a performance suspect, to compare).",
+ "group": "compare",
+ "since": "2026-10-14"
+}

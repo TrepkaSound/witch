@@ -182,14 +182,14 @@ describe("an island's outline (rules/islandShape.ts) is the map's own coast", ()
 });
 
 describe("the islands of kinds not designed yet (placeholders, '?': Ed, 2026-10-11)", () => {
-  it("gives all 64 kinds an island with a seed, size and roster, 10 to 30 areas by phase", () => {
-    expect(KIND_NAMES.length).toBe(64);
+  it("gives every kind an island with a seed, size and roster, 10 to 30 areas by phase", () => { // (how many kinds, and in which phase: rules/kinds.test.ts)
+    expect(KIND_NAMES).toEqual(Object.keys(KINDS));
     for (const k of KIND_NAMES) {
       const i = islandOf(k)!;
       expect(i.size).toBe(sizeOfPhase(i.phase));
       expect(i.roster.reduce((a, r) => a + r.areas, 0)).toBe(i.size);
     }
-    expect(new Set(KIND_NAMES.map(k => islandOf(k)!.seed)).size).toBe(64);
+    expect(new Set(KIND_NAMES.map(k => islandOf(k)!.seed)).size).toBe(KIND_NAMES.length);
   });
 
   it("never puts a placeholder on any island's roster, deals one as a legend, or plays a placeholder's island", () => {

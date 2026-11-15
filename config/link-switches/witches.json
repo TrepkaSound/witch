@@ -1,0 +1,9 @@
+{
+ "name": "witches",
+ "values": [
+  "<n>"
+ ],
+ "does": "This many more party witches.",
+ "group": "debug",
+ "since": "2026-10-07"
+}

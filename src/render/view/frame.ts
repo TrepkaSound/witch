@@ -126,7 +126,7 @@ export function render(a4ViewHost: View, a4PrivateHost: ViewInternals, a4SharedH
     fireChallenge(g, a4ViewHost.fireworks); // (the cleared challenge circle's firework each bar: render/challenge.ts)
     a4ViewHost.fireworks.update(g.waveEvents, time, t, key => { const [cx, cy] = key.split(",").map(Number); return sigilColour(AREA_TYPES[g.map.typeOf(cx, cy)].creature) as number[]; }, at => !!g.win && g.win.lapAt !== undefined && at >= g.win.lapAt); // (the win's, from its victory lap on: the finale's palette; before the soundsystems: a celebrated one's lasers come on as its show starts)
     const party = a4PrivateHost.partyView.update(g, time, (x, z, ww, hh) => inView(a4ViewHost, x, z, ww, hh, 4), () => false, a4ViewHost.fireworks.celebrated, offAt);
-    if (over.front > 0) { for (const l of party.lights) l.strength *= 1 - offAt(l.x, l.z); party.playing = party.playing.filter(p => offAt(p.x, p.z) < 0.98); party.projectors = party.projectors.filter(p => offAt(p.x, p.z) < 0.98); }
+    if (over.front > 0) { for (const l of party.lights) l.strength *= 1 - offAt(l.x, l.z); party.projectors = party.projectors.filter(p => offAt(p.x, p.z) < 0.98); }
     a4PrivateHost.soundBatch.set(party.items);
     a4ViewHost.ground.setLegendRings(a4PrivateHost.legendRings(g, time), a4ViewHost.ringCount);
     a4ViewHost.ground.setLegendFloors(a4PrivateHost.floorItems, a4ViewHost.ringCount);

@@ -1,0 +1,9 @@
+{
+ "name": "all",
+ "values": [
+  ""
+ ],
+ "does": "With ?zoo, every island counts as found (the map's see-all); on the sea chart page, every island is shown.",
+ "group": "debug",
+ "since": "2026-10-11"
+}

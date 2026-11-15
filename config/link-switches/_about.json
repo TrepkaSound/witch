@@ -1,0 +1,19 @@
+{
+ "_": "The link switches' registry: one file a switch here (<name>.json: name, values, does, group, since, decision), the retired ones in retired/, and this file's words for docs/LINK-SWITCHES.md and the families named by a pattern. Where each is read is found from the code, never written here. Detailed notes and decisions: docs/notes/config-history/link-switches.md.",
+ "intro": "Every `?name=value` the game reads from its link, and where it reads it. Most are read once as the page loads (`src/app/linkParams.ts` for the tuning, `src/app/gameParams.ts` for the game, `src/app/viewParams.ts` for the view, `src/main.ts` for the page); a few are read where they're used. Several can be combined: `?seed=123&wave=30&creator=0`. This page is written from `config/link-switches/` (a file a switch), and a test checks that file against the code.",
+ "patterns": [
+  {
+   "name": "d_<id>",
+   "values": [
+    "<v>"
+   ],
+   "does": "A choice from Ed's decisions panel (ui/decide.ts), kept in the link.",
+   "readIn": [
+    "src/app/sail.ts",
+    "src/ui/decide.ts",
+    "src/ui/decisions.ts"
+   ]
+  }
+ ],
+ "retiredIntro": "Switches that brought back an older look or behaviour, to compare against what replaced it, gone with their old code paths (2026-10-07, the coordinator's recommendation to Ed). A link that still names one plays as the default does."
+}

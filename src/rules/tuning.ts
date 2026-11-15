@@ -601,7 +601,7 @@ export interface Tuning {
   tiltShift: { on: boolean; /** The share of the blur the sky takes, so the stars stay perceptible (Ed, 2026-10-06); 1 as the ground. */ skyBlur?: number; /** Her sigil stack kept out of the blur, sharp at any height (Ed, 2026-10-27); default on. */ stackSharp?: boolean; strength: number; band: number; centre: number; /** Over the treetops (Ed, v160: stronger there), blended in by lift. */ treetop: { strength: number; band: number } };
   /** Wild creatures: every area starts with `start` and, from the first frame (Ed, 2026-10-07: no growth on a clock),
    *  byRoute's extra by its place on the waves' route (rules/growth.ts routePopulation: a threat curve spent by each
-   *  kind's profile, and a fixed number of babies). `growth` is the old per-wave growth: the game no longer reads it (the balance simulators do). */
+   *  kind's profile, and a fixed number of babies). `growth` is the old per-wave growth: the game no longer reads it (tools/balance/fightbot.mjs does). */
   population: { start: { babies: number; young: number; adults: number }; byRoute: ByRoute; /** The hostile swarms by the runestone order (Ed, 2026-10-08; rules/swarm.ts). */ swarm: SwarmTuning; growth: { on: boolean; perWave: number; weights: number[]; hide: number } };
   /** Area legends (Ed, 2026-10-04; redesigned 2026-10-05, rules/legends.ts): in a share of the areas, asleep and dreaming its quest; no wave wakes it. */
   /** A sleeping legend's dream bubble (Ed, 2026-10-05): shown only to a witch on the ground within range metres of it. */

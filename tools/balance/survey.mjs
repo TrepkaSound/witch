@@ -342,7 +342,7 @@ async function main() {
   const adapterPath = resolve(ROOT, m.requiredAdapter);
   if (!existsSync(adapterPath)) throw Error("Survey adapter not integrated yet; design commands must wait for #1477/coordinator contract");
   const adapter = await import(pathToFileURL(adapterPath).href);
-  const protectedPairs = json("docs/notes/expert-held-out-pairs.json");
+  const protectedPairs = json("data/balance/expert-held-out-pairs.json");
   if (digest(protectedPairs) !== digest(model.heldOutPairs)) throw Error("Model lock protected pairs differ from #1477's committed held-out list");
   const runtime = await adapter.createCaseRunner();
   try {

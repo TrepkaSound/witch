@@ -1,0 +1,9 @@
+{
+ "name": "hiz",
+ "values": [
+  "0"
+ ],
+ "does": "The depth-pyramid culling off, to compare.",
+ "group": "compare",
+ "since": "2026-10-23"
+}

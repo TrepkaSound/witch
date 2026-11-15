@@ -1,0 +1,9 @@
+{
+ "name": "fightSpeed",
+ "values": [
+  "<k>"
+ ],
+ "does": "The fight's speed for this load (the debug overlay's slider; never remembered).",
+ "group": "run",
+ "since": "2026-10-07"
+}

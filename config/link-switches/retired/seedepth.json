@@ -1,0 +1,10 @@
+{
+ "name": "seedepth",
+ "values": [
+  "off"
+ ],
+ "broughtBack": "the see-through pass not writing its depth, as before 2026-10-13",
+ "stays": "its depth written; the pause page's suspects toggle (tuning `suspects.seeDepth`) still switches the depth pass off for a hunt",
+ "since": "2026-10-13",
+ "retired": "2026-11-15"
+}

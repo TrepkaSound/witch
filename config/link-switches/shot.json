@@ -1,0 +1,14 @@
+{
+ "name": "shot",
+ "values": [
+  "object:<id>",
+  "room:<id>",
+  "area:<type>",
+  "creature:<species>[@level]",
+  "find:<kind>:<item>",
+  "at:<x>,<z>"
+ ],
+ "does": "A builder's quick proof shot: only the art the scene needs, with her put at it.",
+ "group": "debug",
+ "since": "2026-10-23"
+}

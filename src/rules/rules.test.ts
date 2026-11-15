@@ -18,7 +18,6 @@ import { newParty, routeOf, spreadWave, stepParty, spawnMarkers, nextWave, pickS
 import { countScale, islandReach, routeIndex, routePopulation, startCount } from "./growth";
 import { segmentsCross, stringsFor } from "./strings";
 import { wallFeatures } from "./walls";
-import { laserShow } from "./lasers";
 import { borderOf } from "./borders";
 import { newLeash, stepLeash, type LeashControls } from "./leash";
 import { newClock, tick, MAX_STEP } from "./clock";
@@ -937,24 +936,6 @@ describe("inviting and leashing", () => {
   });
 });
 
-describe("laser shows", () => {
-  it("are seeded, on about duty of the time, at most maxCount beams, and fade rather than pop", () => {
-    const L = TUNING.lasers;
-    let maxJump = 0;
-    for (const seed of [3, 17, 99, 1234]) {
-      let last = laserShow(0, seed, 1, TUNING).on;
-      for (let t = 0; t < 600; t += 1 / 60) {
-        const s = laserShow(t, seed, 1, TUNING);
-        expect(s.count).toBeGreaterThanOrEqual(1); expect(s.count).toBeLessThanOrEqual(L.maxCount);
-        expect(laserShow(t, seed, 1, TUNING)).toEqual(s);
-        maxJump = Math.max(maxJump, Math.abs(s.on - last)); last = s.on;
-      }
-    }
-    expect(maxJump).toBeLessThan(0.35);
-    // Original duty and neighbouring-show agreement are reported in art-rules.
-  }, 60000); // (144 000 shows compared: near the default 5 s on a busy CI runner)
-});
-
 describe("area borders", () => {
   it("run along the edge of an area's own ground, each point knowing the area across, cheaply", () => {
     const cell: [number, number] = [map.centreCell[0] + 1, map.centreCell[1]];
@@ -1104,7 +1085,7 @@ describe("paths, roads and railways", () => {
     for (const p of P.pieces) expect(map.reserved(p.x, p.z, p.r)).toBe(false); // clear of soundsystems, set pieces, grounds
     const forest = new Forest(map);
     for (const p of P.pieces.slice(0, 60)) for (const t of forest.treesNear(p.x, p.z, p.r + 1)) expect(Math.hypot(t.x - p.x, t.z - p.z)).toBeGreaterThanOrEqual(p.r - 1e-6);
-  }, 20000); // six maps
+  }); // six maps
   it("stop at the edge of clearings, so they never run under the dancefloor or a set piece", () => {
     const d = map.dancefloor, clear = d.radius + TUNING.dancefloor.clearing;
     for (const l of P.lines) for (const p of l.pts) {
@@ -1180,7 +1161,7 @@ describe("finds, each at most once per map (Ed, v160)", () => {
       expect(ruins.length + freaks.length).toBeGreaterThan(5);
       expect(decor.filter(d => d.family === "rocks").length).toBeGreaterThan(m.cells.length / 4); // rocks are generic scatter (about one an area or more)
     }
-  }, 30000); // five whole maps
+  }); // five whole maps
   it("places scenes, each at most once, in areas they suit, off the paths and clear of the gameplay (Ed, 2026-10-04)", () => {
     let total = 0;
     for (const m of maps) {
@@ -1258,7 +1239,7 @@ describe("the dancefloor's speakers (Ed, v160)", () => {
     // More of them, further out: still outside.
     const T2 = smallWorldTuning(withTuning({ dancefloor: { ...D, speakers: { ...S, count: 20, radiusFactor: 3 } } }), "Expanded home speaker-ring clearance is local geometry."), m = generateMap(1, T2);
     expect(Math.hypot(m.treehouse.x - m.dancefloor.x, m.treehouse.z - m.dancefloor.z) - T2.treehouse.clear).toBeGreaterThan(speakerRadius(T2) + S.footprint);
-  }, 30000); // (nine maps)
+  }); // (nine maps)
   it("are the dancefloor's only sound: no soundsystem stands in their ring or the floor's clearing, over seeds (Ed, v183)", () => {
     for (const seed of [1, 2, 3, 123]) {
       const m = sharedMap(seed, TUNING), d = m.dancefloor;

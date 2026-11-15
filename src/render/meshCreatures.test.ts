@@ -8,8 +8,8 @@ import { napping } from "../../art/mesh/gear.js";
 import { newStride, stepStride } from "../../art/mesh/stride.js";
 import { bakeMesh } from "../../art/mesh/raster.js";
 import { GENOME_BY_ID } from "../../art/genome/index.js";
-import { MESH_SPECIES } from "../../art/mesh/species/index.js";
-import { indexText, meshIds } from "../../tools/creature-mesh/index.mjs";
+import * as MESH_SPECIES from "../../art/mesh/species/index.js";
+import { indexFresh, indexText, meshIds } from "../../tools/creature-mesh/index.mjs";
 import { readFileSync } from "node:fs";
 
 interface Frame { albedo: Uint8ClampedArray; normal: Uint8ClampedArray; flipped: Uint8ClampedArray; eyes?: Uint8Array; head?: [number, number] }
@@ -37,7 +37,9 @@ describe("mesh creatures", () => {
   });
 
   it("a kind's mesh is its own file, and the list of them is made from the folder (tools/creature-mesh/index.mjs)", () => {
-    expect(readFileSync("art/mesh/species/index.js", "utf8"), "run node tools/creature-mesh/index.mjs").toBe(indexText());
+    expect(indexFresh(readFileSync("art/mesh/species/index.js", "utf8")), "run node tools/creature-mesh/index.mjs").toBe(true);
+    expect(indexFresh(indexText(["b", "a"]).split("\n").reverse().join("\n"), ["a", "b"])).toBe(true); // (two batches' lines joined out of order still list the same kinds)
+    expect(indexFresh(indexText(["a"]), ["a", "b"])).toBe(false);
     expect(Object.keys(MESH_SPECIES)).toEqual(meshIds());
     for (const [id, m] of Object.entries(MESH_SPECIES as Record<string, { id: string; heights: number[]; plans: Record<string, unknown> }>)) {
       expect(m.id, id).toBe(id);
@@ -125,22 +127,18 @@ describe("mesh creatures", () => {
     return lo; };
   /** How many empty rows lie under a frame's lowest drawn pixel. */
   const gap = (f: Frame, w: number, h: number): number => { for (let y = h - 1; y >= 0; y--) for (let x = 0; x < w; x++) if (f.albedo[(y * w + x) * 4 + 3]) return h - 1 - y; return h; };
-  /** How each kind gets about (Ed, 2026-11-12: "many small creatures bound rather than trot"). A new kind's goes here with its mesh. */
-  const GAITS: Record<string, string> = { fox: "trot", stoat: "bound", marten: "bound", hare: "bound", squirrel: "bound", dormouse: "bound", badger: "trot", mole: "trot", hedgehog: "trot", turtle: "walk", snail: "glide", bee: "fly", stag: "trot", elk: "trot", roe: "bound", ram: "trot", ibex: "bound", boar: "trot" };
-  Object.assign(GAITS, { wolf: "trot", arcticfox: "trot", raccoon: "trot", redpanda: "trot", fennec: "bound", otter: "bound", meerkat: "bound" }); // (batch A, 2026-11-13)
-  Object.assign(GAITS, { cat: "bound", lynx: "bound", cheetah: "bound", snowleopard: "bound", lion: "trot", tiger: "trot", jaguar: "trot" }); // (batch B, the cats: kit/feline.js)
-  Object.assign(GAITS, { bear: "trot", polarbear: "trot", rhino: "trot", elephant: "walk", beaver: "trot", flyingsquirrel: "bound" }); // (batch D, the heavy and the gnawing)
-  Object.assign(GAITS, { salamander: "trot", komodo: "trot", crocodile: "trot", armadillo: "trot", toad: "bound", snake: "glide", rattlesnake: "glide" }); // (batch E, the cold-blooded: kit/sprawl.js, kit/serpent.js)
-  Object.assign(GAITS, { heron: "walk", raven: "walk", owl: "bound", penguin: "walk", butterfly: "fly", moth: "fly", bat: "fly", dragonfly: "fly" }); // (batch F, wings: kit/bird.js, on the ground; a bird's fast pace flies, and the insects and the bat fly at any; the butterfly and the moth are two kinds since 2026-11-13)
-  Object.assign(GAITS, { beetle: "trot", spider: "trot", scorpion: "trot", crab: "trot", woodlouse: "walk" }); // (batch G, the many-legged: kit/manylegs.js; alternating sets, and the woodlouse's ripple)
-  Object.assign(GAITS, { griffin: "trot", sphinx: "trot", unicorn: "trot", frosttroll: "trot", stegosaurus: "trot", frostwyrm: "glide", featheredserpent: "glide", hydra: "glide" }); // (batch H, the wonders: the cats' prowl and trot, the heavy kinds' trundle, kit/serpent.js)
-  /** How many legs a kind stands on, where it isn't four (batch G: "six, eight and fourteen legs"; the woodlouse's baby has ten). */
-  const LEGS: Record<string, number[]> = { beetle: [6], spider: [8], scorpion: [8], crab: [8], woodlouse: [10, 14] };
+  /** How each kind gets about (Ed, 2026-11-12: "many small creatures bound rather than trot"), and how many legs it stands on
+   *  where it isn't four (batch G: "six, eight and fourteen legs"; the woodlouse's baby has ten): said by the kind's own file, its
+   *  MESH's `gait` and `legs` (art/mesh/species/<id>.js), so a batch adding kinds adds no line here. */
+  const SAID = MESH_SPECIES as unknown as Record<string, { gait?: string; legs?: number[] }>;
+  const GAITS: Record<string, string | undefined> = Object.fromEntries(Object.entries(SAID).map(([id, m]) => [id, m.gait]));
+  const LEGS: Record<string, number[] | undefined> = Object.fromEntries(Object.entries(SAID).map(([id, m]) => [id, m.legs]));
 
   it("every kind says how it goes, and its stride is long enough to read as one (not a shuffle on the spot)", () => {
     for (const [species, levels] of Object.entries(PLANS)) levels.forEach((make, level) => {
       const p = make(), F = meshFacts(species, level) as { type: string; stride: number; body: number; step: number }, name = `${species} ${level}`;
       expect(GAIT_TYPES, name).toContain(p.gait.type);
+      expect(GAIT_TYPES, `${name}: its file's MESH says its gait`).toContain(GAITS[species]);
       expect(F.type, name).toBe(GAITS[species]);
       expect(F.body, name).toBeGreaterThan(0.2);
       // (how far it goes in one cycle of its legs, in its own body's lengths: the first meshes went a twentieth to a third)

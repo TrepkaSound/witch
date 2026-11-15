@@ -43,7 +43,7 @@ const diveOptions = (): FlyOptions => {
   return (named && DIVES[named]) || TUNING.arrive?.handoff || {};
 };
 /** The testing toggle's key (this browser): sail to any island with a creature. */
-const SAIL_ANY = "witch.chart.sailAnywhere";
+export const SAIL_ANY = "witch.chart.sailAnywhere";
 /** How long (ms) the landing bake's workers wait for the island's map before they start anyway (bakeFor): the map first. */
 const MAP_FIRST = 8000;
 export interface ChartViewOptions {

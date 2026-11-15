@@ -1,0 +1,9 @@
+{
+ "name": "pixels",
+ "values": [
+  "keep"
+ ],
+ "does": "The art atlases keep their pixels on the page (the smoke test's floating check reads them).",
+ "group": "debug",
+ "since": "2026-10-13"
+}

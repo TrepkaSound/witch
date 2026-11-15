@@ -1,0 +1,10 @@
+{
+ "name": "wholecull",
+ "values": [
+  "0"
+ ],
+ "broughtBack": "quads faded whole drawn in the solid and front passes too, as before the quality-ladder study (2026-10-26)",
+ "stays": "left out of both passes (the picture the same to the pixel); `uWholeCull` gone",
+ "since": "2026-10-26",
+ "retired": "2026-11-15"
+}

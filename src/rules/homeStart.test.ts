@@ -135,17 +135,17 @@ describe("home on the map (rules/map.ts)", () => {
     expect(m6.specialSites).toEqual([]);
   }, 120000);
 
-  it("no challenge and no find till every island on the chart is found; then its challenge area, its pack an adult and a youth of each of 64", () => {
-    const most = REAL_KINDS.slice(0, 63);
+  it("no challenge and no find till every island on the chart is found; then its challenge area, its pack an adult and a youth of each kind", () => {
+    const most = REAL_KINDS.slice(0, -1);
     expect(allIslandsFound(most)).toBe(false);
     expect(allIslandsFound(REAL_KINDS)).toBe(true);
     const g63 = newGame(1, home(most));
     expect(g63.map.specialSites).toEqual([]);
     expect(g63.trunk).toBeNull();
     const g64 = newGame(1, home([...REAL_KINDS]));
-    expect(areas(g64.map).size).toBe(64);
+    expect(areas(g64.map).size).toBe(REAL_KINDS.length);
     expect(g64.map.specialSites.map(s => s.kind)).toEqual(["challenge"]);
-    expect(g64.challenge?.pack).toHaveLength(128);
+    expect(g64.challenge?.pack).toHaveLength(2 * REAL_KINDS.length);
     expect(g64.trunk).not.toBeNull(); // (its reward for now: Ed, "we'll figure this out later")
   }, 300000);
 
@@ -161,6 +161,6 @@ describe("home on the map (rules/map.ts)", () => {
   it("the sea chart draws home at its size for what's found", () => {
     expect(homeShape(0, []).size).toBe(5);
     expect(homeShape(0, ["beetle", "hedgehog", "fox", "owl", "butterfly", "otter"]).size).toBe(7);
-    expect(homeShape(0, [...REAL_KINDS]).size).toBe(64);
+    expect(homeShape(0, [...REAL_KINDS]).size).toBe(REAL_KINDS.length);
   });
 });

@@ -38,9 +38,9 @@ describe("the zoo laid out like the sea chart (Ed, 2026-10-26)", () => {
 
   it("?all (found \"*\", the map's see-all): every island its kind's area; the rest of the ground home's (the plaza and the streets)", () => {
     const g = game(["*"]), m = g.map, Z = m.zoo!, L = Z.layout!;
-    expect(Z.blocks.length).toBe(64);
+    expect(Z.blocks.length).toBe(KIND_NAMES.length);
     expect(Z.blocks.every(b => b.found)).toBe(true);
-    expect(m.cells.length).toBe(65); // (64 islands and home)
+    expect(m.cells.length).toBe(KIND_NAMES.length + 1); // (every kind's island, and home)
     expect(new Set(Z.blocks.map(b => b.area)).size).toBe(AREA_TYPES.length); // (every area type, on exactly one island)
     for (const b of Z.blocks) {
       expect(AREA_TYPES[m.typeOf(b.cell[0], b.cell[1])].id).toBe(b.area);

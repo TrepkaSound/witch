@@ -1,0 +1,12 @@
+{
+ "name": "debug",
+ "values": [
+  "",
+  "cull",
+  "shadows",
+  "attack"
+ ],
+ "does": "The debug overlay and the metre rulers on from the start; cull also tints whatever just appeared or vanished (pops), shadows draws every shadow a flat magenta, and attack blows on the two farthest soundsystems every 10 s (never felling one).",
+ "group": "debug",
+ "since": "2026-10-04"
+}

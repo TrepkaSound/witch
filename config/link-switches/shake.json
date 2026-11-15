@@ -1,0 +1,9 @@
+{
+ "name": "shake",
+ "values": [
+  "0"
+ ],
+ "does": "No screen shake (else the start screen's choice).",
+ "group": "run",
+ "since": "2026-10-07"
+}

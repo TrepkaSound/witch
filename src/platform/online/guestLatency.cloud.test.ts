@@ -53,7 +53,7 @@ for (const delay of [0, 100, 250]) {
     expect(quantile(errors, .95)).toBeLessThan(.05);
     expect(Math.max(...errors)).toBeLessThan(.3);
     expect(prediction.stats.snaps).toBe(0);
-  }, 30000);
+  });
 
   cloud(`cloud: guest-seen moving-target hit and grouped plausibility rejects at ${delay}ms + jitter`, () => {
     const g = world(), W = g.witches[1], target = g.creatures.find(c => c.level === 1 && !c.boss)!;
@@ -73,7 +73,7 @@ for (const delay of [0, 100, 250]) {
     target.hp = 0; authority.receive(hit); expect(authority.drain().effects).toHaveLength(0);
     expect(authority.rejected).toMatchObject({ "out-of-range": 1, "dead-or-missing-target": 1 });
     console.log(JSON.stringify({ evidence: "guest-pve", oneWayDelayMs: delay, acceptedMovingTarget: 1, rejectedByReason: authority.rejected }));
-  }, 30000);
+  });
 }
 
 for (const delay of [100, 250]) for (const route of ["straight", "turning", "indoor", "entry"] as const) {

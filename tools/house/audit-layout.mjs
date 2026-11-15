@@ -4,7 +4,7 @@ import { build } from 'esbuild';
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
-const [input = 'docs/evidence/treehouse-layout-ed-2026-10-31.v1.json', output = 'previews/layout-audit'] = process.argv.slice(2);
+const [input = 'data/house/treehouse-layout-ed-2026-10-31.v1.json', output = 'previews/layout-audit'] = process.argv.slice(2);
 mkdirSync(output, { recursive: true });
 const modulePath = resolve(output, 'audit.cjs');
 await build({ stdin: { contents: 'export * from "./src/editor/houseLayout.ts"; export { auditLayout } from "./src/editor/houseLayoutAudit.ts"; export { HOUSE_ROOMS } from "./src/rules/houseRooms.ts";', resolveDir: process.cwd() }, bundle: true, platform: 'node', format: 'cjs', outfile: modulePath });

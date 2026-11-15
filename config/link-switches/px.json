@@ -1,0 +1,9 @@
+{
+ "name": "px",
+ "values": [
+  "2..6"
+ ],
+ "does": "The art pixel (screen pixels per art pixel).",
+ "group": "view",
+ "since": "2026-10-07"
+}

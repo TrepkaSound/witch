@@ -1,0 +1,11 @@
+{
+ "name": "dodge",
+ "values": [
+  "a,b,c",
+  "0"
+ ],
+ "does": "Which dodge changes are on (Ed, 2026-10-08; all by default): a committed strikes, b predictive aim, c packs cutting off her retreat.",
+ "group": "view",
+ "since": "2026-10-09",
+ "decision": "All on by default (Ed, 2026-10-08)"
+}

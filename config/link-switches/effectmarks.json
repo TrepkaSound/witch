@@ -1,0 +1,10 @@
+{
+ "name": "effectmarks",
+ "values": [
+  "0"
+ ],
+ "does": "No marks, tints or sounds for the effects on her (slowed: circling stars and drag marks; confused: a spiral; thrown hard: a dust skid), as before, to compare: only her confusion's pale swirl.",
+ "group": "compare",
+ "since": "2026-11-13",
+ "decision": "Shown by default (Ed, 2026-11-13: \"Mark + tint + sound\")"
+}

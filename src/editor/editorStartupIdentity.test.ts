@@ -4,7 +4,7 @@ import vm from "node:vm";
 import { createRequire } from "node:module";
 import proposal from "../../config/house/layouts/ed-current.json";
 import identities from "../../config/house/layouts/editor-v2-identities.json";
-import original from "../../docs/evidence/treehouse-layout-ed-2026-10-31.v1.json";
+import original from "../../data/house/treehouse-layout-ed-2026-10-31.v1.json";
 import legacy from "../../config/house/layouts/editor-v1-baseline.json";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -20,7 +20,7 @@ function startup(perturb: boolean) {
     floats[0] = value; bits[0] += value > 0 ? 1n : -1n; return floats[0];
   };
   const module = { exports: {} as typeof import("./houseLayout") & typeof import("./publishedLayout") };
-  vm.runInNewContext(source, { require, module, exports: module.exports, Math: math, structuredClone }, { timeout: 1500 });
+  vm.runInNewContext(source, { require, module, exports: module.exports, Math: math, structuredClone }, { timeout: 30_000 }); // (a guard against a hang only: generous, so a busy machine never trips it)
   const x = module.exports, items = x.layoutItems(), key = x.floorplanKey(x.EDITOR_HOUSE, items);
   return { x, items, key, selected: x.publishedLayout(items, key, new URLSearchParams()) };
 }
@@ -64,5 +64,5 @@ it("keeps the original v1 bytes and its camera-preserving import under both math
     expect(Math.sin(a.x.cameraYaw(p))).toBeCloseTo(Math.sin(yaw), 12);
     expect(Math.cos(a.x.cameraYaw(p))).toBeCloseTo(Math.cos(yaw), 12);
   }
-  expect(createHash("sha256").update(readFileSync("docs/evidence/treehouse-layout-ed-2026-10-31.v1.json")).digest("hex")).toBe("7a939d05aa6b12e3973c3be0097e9b0376ccc00b38779b9c195fb01637ef4cd9");
+  expect(createHash("sha256").update(readFileSync("data/house/treehouse-layout-ed-2026-10-31.v1.json")).digest("hex")).toBe("7a939d05aa6b12e3973c3be0097e9b0376ccc00b38779b9c195fb01637ef4cd9");
 });

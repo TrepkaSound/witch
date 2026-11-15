@@ -1,0 +1,9 @@
+{
+ "name": "tuning",
+ "values": [
+  "<preset>"
+ ],
+ "does": "A tuning preset laid over the config files for this load.",
+ "group": "debug",
+ "since": "2026-10-07"
+}

@@ -6,8 +6,8 @@
 // there, hers still, guarding as any parked one does, till she comes back for it. (Since nothing eats on its own any more,
 // parking them can't hand out free growth, which was why they were let go happy before: Ed's playtest of v4821, 2026-10-26, "they
 // should become happy instead of leashed to a point by a floor sigil"; letGoHappy is kept for a guest leaving an online night.)
-// Its queued berries are cancelled as she goes down (rules/game.ts). One timeline (Ed, 2026-10-07), the whole wait counted from her going down (knockout.respawn: short, longer for
-// knockdowns close together, back to base after a cooldown): her hat floats to the ground (knockout.hatFloat, the screen
+// Its queued berries are cancelled as she goes down (rules/game.ts). One timeline (Ed, 2026-10-07), the whole wait counted from her going down (knockout.respawn: a flat 6 s now, its step 0; it
+// could grow for knockdowns close together and fall back after a cooldown): her hat floats to the ground (knockout.hatFloat, the screen
 // dimmed, a sad trumpet; if she had one to drop), she sparkles out and back in behind her decks, and scratches there for the
 // rest of the wait ("Every time she respawns she could do a bit of scratching to increase the respawn time"), her army
 // fighting on without her; then she can move. No drawing here.
@@ -201,7 +201,7 @@ export function stepWanderers(creatures: Creature[], map: ForestMap, dt: number)
 export const respawnLeft = (k: Knockout | null | undefined, time: number): number | null => (k && time >= k.seatAt && time < k.backAt ? k.backAt - time : null);
 
 /** The candles along the front of her DJ desk while she scratches (Ed, 2026-10-07; art builder 4 draws them), a loading bar:
- *  one for every knockout.candleStep seconds of the wait (1: 6 for the first knockdown's 6 s, up to 12 for 12; 0.5: 12 to 24),
+ *  one for every knockout.candleStep seconds of the wait (1: 6 for the 6 s wait, which is flat now, knockout.respawn's step 0 and max 6; 0.5: 12),
  *  0 with no wait. */
 export const candleCount = (k: Knockout | null | undefined, t: Tuning): number =>
   (k && k.backAt > k.seatAt ? Math.max(1, Math.round(k.wait / (t.knockout.candleStep ?? 1))) : 0);

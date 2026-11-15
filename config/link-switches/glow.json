@@ -1,0 +1,9 @@
+{
+ "name": "glow",
+ "values": [
+  "<reach>,<falloff>,<near>"
+ ],
+ "does": "The witch's glow (0 keeps a value).",
+ "group": "view",
+ "since": "2026-10-07"
+}

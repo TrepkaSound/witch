@@ -1,0 +1,9 @@
+{
+ "name": "arena",
+ "values": [
+  "wolf*4@2,beetle*3"
+ ],
+ "does": "A fight below the dancefloor, no waves; J sets it up again.",
+ "group": "debug",
+ "since": "2026-10-07"
+}

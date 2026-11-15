@@ -1,0 +1,9 @@
+{
+ "name": "quick",
+ "values": [
+  "1"
+ ],
+ "does": "Only the art the start needs (the quick smoke and bench).",
+ "group": "debug",
+ "since": "2026-10-07"
+}

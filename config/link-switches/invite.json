@@ -1,0 +1,9 @@
+{
+ "name": "invite",
+ "values": [
+  "<token>"
+ ],
+ "does": "The online prototype reads this invitation token from the URL fragment to join the host's room.",
+ "group": "debug",
+ "since": "2026-10-30"
+}

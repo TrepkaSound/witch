@@ -46,7 +46,7 @@ describe("gated cauldron game hooks", () => {
     expect(W.ko).toBeNull();
     expect(W.mushrooms!.bag.B).toBe(1);
     expect(g.cauldron!.pickups[0].collected).toBe(true);
-  }, 30000);
+  });
 
   it("deposits both visitors, retains partial ingredients and snapshots all occupants on BBB", () => {
     const g = fresh(2);

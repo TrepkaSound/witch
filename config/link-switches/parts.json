@@ -1,0 +1,9 @@
+{
+ "name": "parts",
+ "values": [
+  "<part>,…"
+ ],
+ "does": "Her broom's parts for one load, found or not.",
+ "group": "debug",
+ "since": "2026-10-23"
+}

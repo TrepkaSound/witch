@@ -1,0 +1,10 @@
+{
+ "name": "look",
+ "values": [
+  "old"
+ ],
+ "broughtBack": "fights drawn with the old attack look: wild shots, beams, hits and warnings as red dots, lines and rings",
+ "stays": "the attack looks and elements (`render/leash/attackLook.ts`); the old dots drawn only for what the look never covered (a party animal's and a happy legend's wind-ups, in their neon)",
+ "since": "2026-10-27",
+ "retired": "2026-11-15"
+}

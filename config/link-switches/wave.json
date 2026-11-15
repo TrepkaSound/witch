@@ -1,0 +1,10 @@
+{
+ "name": "wave",
+ "values": [
+  "<n>",
+  "off"
+ ],
+ "does": "The repro link: the night brought on to wave n before play; off holds the waves where they are (as pulse=off).",
+ "group": "run",
+ "since": "2026-10-07"
+}

@@ -7,14 +7,13 @@ import {AREA_TYPES,generateMap} from "../../src/rules/map";
 import {Forest} from "../../src/rules/forest";
 import {TUNING as GAME_TUNING,type Tuning} from "../../src/rules/tuning";
 import {stringsFor,segmentsCross} from "../../src/rules/strings";
-import {laserShow} from "../../src/rules/lasers";
 import {composeFloor,floorLevel,floorPatterns,newFloor,pickPattern,stepFloor,switchOn,type FloorInputs} from "../../src/rules/dancefloor";
 const TUNING: Tuning = { ...GAME_TUNING, setPieceChance: 0.25, grounds: { ...GAME_TUNING.grounds, kinds: ["playground", "tennis", "baseball", "football", "basketball"] }, decor: { ...GAME_TUNING.decor, mix: { ruins: 1, rocks: 1, freak: 1 } }, paths: { ...GAME_TUNING.paths, pieces: true }, scenes: { ...GAME_TUNING.scenes, featured: undefined } };
 const map = generateMap(123,TUNING);
   const forest = new Forest(map), all = forest.lightsNear((map.bounds.minX + map.bounds.maxX) / 2, (map.bounds.minZ + map.bounds.maxZ) / 2, (map.bounds.maxX - map.bounds.minX) / 2); // (most of the map: the areas are big)
   const beat = 60 / TUNING.beat.bpm, boot = 8 * beat; // the switch-on sequence is 8 beats
   const inputs = (time: number, o: Partial<FloorInputs> = {}): FloorInputs => ({ time, seed: 7, level: 2, partifiedAreas: new Set(), witch: { x: -50, y: -50, lift: 1, rgb: [255, 238, 70] }, dancers: [], ...o });
-it("reports original wet ponds, string abundance, laser duty and floor variety",()=>{
+it("reports original wet ponds, string abundance and floor variety",()=>{
   const metrics:ReturnType<typeof metric>[]=[],samples:Record<string,unknown>={};
 {
 {
@@ -49,31 +48,6 @@ it("reports original wet ponds, string abundance, laser duty and floor variety",
     void [junctions,total / 4];
       metrics.push(metric("three-area string span abundance",total,"spans",{operator:">",value:20}),metric("three-area string junction count",junctions,"junctions",{operator:"<",value:total/4}));
     samples.strings={seed:123,cells:[[map.centreCell[0]+1,map.centreCell[1]],[map.centreCell[0],map.centreCell[1]+1],[3,4]],total,junctions};
-}
-}
-{
-{
-    const L = TUNING.lasers;
-    let on = 0, n = 0, maxJump = 0;
-    for (const seed of [3, 17, 99, 1234]) {
-      let last = laserShow(0, seed, 1, TUNING).on;
-      for (let t = 0; t < 600; t += 1 / 60) {
-        const s = laserShow(t, seed, 1, TUNING);
-        void [s.count,1]; void [s.count,L.maxCount];
-        void [laserShow(t, seed, 1, TUNING),s];
-        maxJump = Math.max(maxJump, Math.abs(s.on - last)); last = s.on;
-        if (s.on > 0.5) on++;
-        n++;
-      }
-    }
-    void [on / n,L.duty * 0.5]; void [on / n,L.duty * 1.6];
-    void [maxJump,0.35];
-    // Neighbours aren't in lockstep.
-    let same = 0;
-    for (let t = 0; t < 300; t += 0.5) if ((laserShow(t, 3, 1, TUNING).on > 0.5) === (laserShow(t, 4, 1, TUNING).on > 0.5)) same++;
-    void [same / 600,0.9];
-      metrics.push(metric("laser duty lower",on/n,"share",{operator:">",value:L.duty*0.5}),metric("laser duty upper",on/n,"share",{operator:"<",value:L.duty*1.6}),metric("neighbouring laser agreement",same/600,"share",{operator:"<",value:0.9}));
-    samples.lasers={seeds:[3,17,99,1234],seconds:600,dt:1/60,on,n,maxJump,neighbours:[3,4],neighbourSeconds:300,neighbourDt:0.5,same,config:L};
 }
 }
 {

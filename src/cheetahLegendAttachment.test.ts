@@ -22,5 +22,5 @@ describe("cheetah legend flame attachment regression",()=>{
       expect(result.candidate.components.length).toBeLessThanOrEqual(result.current.components.length);
       expect(result.candidate.detachedPixels).toBeLessThanOrEqual(result.current.detachedPixels+3);
     }
-  },30000);
+  });
 });
