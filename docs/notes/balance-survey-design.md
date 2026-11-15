@@ -117,7 +117,7 @@ Before dispatch, combine the survey design and #1477, train/freeze the first exp
 }
 ```
 
-`trainingPairs` must be the complete actual training/search inventory, not this one-item shape example. Execution refuses an untrained/missing lock, first-round overlap with the 30 survey pairs, any final-held-out overlap, a changed checkout, model/vector/source mismatch, or an unknown cell. The held-out list must equal `docs/notes/expert-held-out-pairs.json` from #1477: its final scores are never survey/search feedback.
+`trainingPairs` must be the complete actual training/search inventory, not this one-item shape example. Execution refuses an untrained/missing lock, first-round overlap with the 30 survey pairs, any final-held-out overlap, a changed checkout, model/vector/source mismatch, or an unknown cell. The held-out list must equal `data/balance/expert-held-out-pairs.json` from #1477: its final scores are never survey/search feedback.
 
 The adapter is **exactly** `expert-contract.mjs`: `await createCaseRunner()` returns `{runCase(case,lock),close,fingerprint}`. The wrapper translates fields to `kind,worldSeed,nightSeed,island,bpm,bag,hat,broomPart,condition,limit,bot` (fixtures add species/rank/distance), passes only the unmodified nested modelLock, and retains its external row. It does not edit or duplicate report-runtime. First cloud shard is a compatibility/throughput pilot after the training gate, before queueing the rest.
 

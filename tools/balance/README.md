@@ -140,7 +140,7 @@ Deterministic, evaluation-independent coordinate search.
 Single-worker, bounded real-rules expert search and disjoint held-out evaluation.
 
 ```
-node tools/balance/expert-search.mjs --out docs/notes/expert-results/pilot --time 60 --iterations 3 --train-seeds 1 --held-seeds 1 --wall-seconds 480
+node tools/balance/expert-search.mjs --out data/balance/expert-results/pilot --time 60 --iterations 3 --train-seeds 1 --held-seeds 1 --wall-seconds 480
 ```
 
 ## `expert-space.mjs`

@@ -8,7 +8,7 @@ const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 const parts = shards(manifest), cases = cells(manifest), keys = new Set(cases.map(c => c.key));
 if (parts.length !== 5 || cases.length !== 2560 || keys.size !== cases.length ||
   digest(parts.flatMap(s => s.cases.map(c => c.key)).sort()) !== digest([...keys].sort())) throw Error('Frozen census matrix changed; review proposal before regenerating');
-const dir = resolve('docs/notes/attack-audit/census-proposal');
+const dir = resolve('data/attack-audit/census-proposal');
 mkdirSync(dir, { recursive: true });
 const save = (path, value) => writeFileSync(resolve(dir, path), JSON.stringify(value, null, 2) + '\n');
 for (const part of parts) save(`${part.id}.cases.json`, { proposalOnly: true, manifestPath, manifestHash: digest(manifest), ...part });

@@ -6,7 +6,7 @@ import { resolve, join } from 'node:path';
 import { randomUUID, createHash } from 'node:crypto';
 
 const start = Date.now(), root = process.cwd(), at = process.argv.indexOf('--out');
-const out = resolve(at >= 0 ? process.argv[at + 1] : 'docs/notes/attack-audit/stage1');
+const out = resolve(at >= 0 ? process.argv[at + 1] : 'data/attack-audit/stage1');
 if (existsSync(join(out, 'manifest.json'))) throw Error('Existing audit retained; choose a new --out directory');
 mkdirSync(out, { recursive: true });
 const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();

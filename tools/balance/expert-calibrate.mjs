@@ -27,7 +27,7 @@ if (process.argv.includes("--worker")) {
   clearTimeout(timer);
   const result = timedOut ? { status: "hard-wall-cutoff", completedCase: false } : code === 0 ? JSON.parse(output) : { status: "error", exitCode: code, output };
   const record = { ...result, processStartUTC: startUTC, processEndUTC: new Date().toISOString(), totalWallSeconds: performance.now() / 1000, hardCapSeconds: 600 };
-  const out = resolve(arg("out", "docs/notes/expert-results/full-night-calibration.json"));
+  const out = resolve(arg("out", "data/balance/expert-results/full-night-calibration.json"));
   mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, JSON.stringify(record, null, 2) + "\n");
   console.log(JSON.stringify(record));
   process.exitCode = timedOut ? 2 : code ?? 1;

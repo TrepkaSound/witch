@@ -26,7 +26,7 @@ if (!output || !["baseline", "A", "B", "C", "D"].includes(vector)) throw Error("
 if ((vector === "baseline") === Boolean(baselineFile)) throw Error("Only candidate jobs require --baseline evaluation.json");
 const root = fileURLToPath(new URL("../..", import.meta.url)), out = resolve(output);
 const vectors = JSON.parse(readFileSync(resolve(root, "tools/balance/expert-evaluation-vectors.json"), "utf8"));
-const heldOutPairs = JSON.parse(readFileSync(resolve(root, "docs/notes/expert-held-out-pairs.json"), "utf8"));
+const heldOutPairs = JSON.parse(readFileSync(resolve(root, "data/balance/expert-held-out-pairs.json"), "utf8"));
 const { sourceFingerprint } = await import("./expert-contract.mjs");
 const manifest = evaluationManifest({ fingerprint: sourceFingerprint(root), commit: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(),
   runtime: { node: process.version, platform: process.platform, arch: process.arch }, heldOutPairs, vectors, vector });

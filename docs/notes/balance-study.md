@@ -20,7 +20,7 @@ These logs therefore do not validate "sloppy = newcomer" on the current build. D
 
 Game source: prototype `3c13498d7`. Experiment checkout: `6d1ae3898dd4645effb402fcf78b4b72c880d2f5` (only this study's initial note added). Schema 2; source fingerprint `7788c4ef429986b851d070d9188f936791f59858caab2625cdd6b2a736f84313`. This is a source label, not an asserted published build number. Both experiment manifests match exactly except their starting record bpm. The game's tempo arc and knockdown increments remain active.
 
-Raw evidence and full phase tables: [100-bpm JSONL](balance-data/prototype-3c13498d7-preflight-100.jsonl), [100-bpm tables](balance-data/prototype-3c13498d7-preflight-100.md), [200-bpm JSONL](balance-data/prototype-3c13498d7-preflight-200.jsonl), [200-bpm tables](balance-data/prototype-3c13498d7-preflight-200.md).
+Raw evidence and full phase tables: [100-bpm JSONL](../../data/balance/runs/prototype-3c13498d7-preflight-100.jsonl), [100-bpm tables](../../data/balance/runs/prototype-3c13498d7-preflight-100.md), [200-bpm JSONL](../../data/balance/runs/prototype-3c13498d7-preflight-200.jsonl), [200-bpm tables](../../data/balance/runs/prototype-3c13498d7-preflight-200.md).
 
 All times below are world seconds; the cap was 4200 player seconds. Each row is **one run**, not an estimated population win rate. Reached/passed waves are arrivals/subsequent arrivals, not won sieges. Ranged targeting is the observed lower bound defined in the reporting notes. All discovery/kept-island/loan columns were zero; no progression conclusion follows from these recruitment policies.
 

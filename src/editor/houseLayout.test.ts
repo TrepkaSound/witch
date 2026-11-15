@@ -6,8 +6,8 @@ import { Model, render } from "../../art/model3d.js";
 import { M } from "../../art/core.js";
 import { FURNITURE_IDS } from "../../art/furniture.js";
 import legacy from "../../config/house/layouts/editor-v1-baseline.json";
-import supplied from "../../docs/evidence/treehouse-layout-ed-2026-10-31.v1.json";
-import proposal from "../../docs/evidence/treehouse-layout-ed-2026-10-31.v2-proposal.json";
+import supplied from "../../data/house/treehouse-layout-ed-2026-10-31.v1.json";
+import proposal from "../../data/house/treehouse-layout-ed-2026-10-31.v2-proposal.json";
 import current from "../../config/house/layouts/ed-current.json";
 import { ADDED_OBJECTS, artKey, attachedPoint, cameraYaw, corners, defaultLayout, exportLayout, floorplanKey, hitItem, isHatZone, itemKind, LayoutHistory, layoutItems, normalAngle, parseLayout, physicalRoom, RETIRED_OBJECTS, rotate, zoneSlots } from "./houseLayout";
 
@@ -87,7 +87,7 @@ describe("treehouse authoring layouts", () => {
     expect(plan.z).toBeGreaterThan(0); expect(rotate(2, .5, -p.rotation).z).toBeLessThan(0);
   });
   it("converts Ed's exact v1 using camera facings, preserves newer kitchen/new clutter, and keeps original evidence bytes", () => {
-    expect(createHash("sha256").update(readFileSync("docs/evidence/treehouse-layout-ed-2026-10-31.v1.json")).digest("hex")).toBe("7a939d05aa6b12e3973c3be0097e9b0376ccc00b38779b9c195fb01637ef4cd9");
+    expect(createHash("sha256").update(readFileSync("data/house/treehouse-layout-ed-2026-10-31.v1.json")).digest("hex")).toBe("7a939d05aa6b12e3973c3be0097e9b0376ccc00b38779b9c195fb01637ef4cd9");
     const converted = parseLayout(supplied, items, key);
     expect(converted.version).toBe(2); expect(converted.objects).toHaveLength(items.length - current.removed.length);
     expect(converted.migration?.held.map(p => p.id)).toEqual(["cauldron"]);

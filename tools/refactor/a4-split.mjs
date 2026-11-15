@@ -11,7 +11,7 @@ const apply = argv.includes('--apply'), check = argv.includes('--check'), replay
 const dryRun = argv.includes('--dry-run');
 if (dryRun && !replay) throw new Error('--dry-run requires --replay');
 if ([apply, check, replay].filter(Boolean).length !== 1) throw new Error('Choose exactly one of --apply, --replay or --check');
-const manifestPath = 'docs/plans/a4-dry-run-manifest.json';
+const manifestPath = 'data/refactor/a4-dry-run-manifest.json';
 const hash = s => crypto.createHash('sha256').update(s).digest('hex');
 const read = f => fs.readFileSync(f, 'utf8').replaceAll('\r\n', '\n');
 const started = performance.now();

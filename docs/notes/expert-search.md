@@ -289,7 +289,7 @@ The later island is Komodo (kind phase 4, island phase 5), later than Tiger
 (kind phase 3, island phase 4) and volcanic rather than jungle. Policy bounds
 and equipment index domains live in `tools/balance/expert-space.mjs`. The search
 does not relax human floors. Training seeds start at night 1000/world 0; protected
-held-out pairs are committed in `expert-held-out-pairs.json`. Both training rounds
+held-out pairs are committed in `data/balance/expert-held-out-pairs.json`. Both training rounds
 exclude every protected pair. First-round external imports additionally exclude
 the survey's world `910000+i` / night `1000+7919*(10000+i)` for i=0..29.
 
@@ -384,7 +384,7 @@ Before cloud dispatch, the home calibration on source
 wave 10 reached, 9 passed, no knockdowns, quests 0/2. The briefcase find was
 picked up but was not eligible to keep after a loss. This is a single-case
 throughput result with possible coexisting unit checks, not a strength estimate.
-Its raw result is `expert-results/full-night-calibration.json`.
+Its raw result is `data/balance/expert-results/full-night-calibration.json`.
 
 The subsequent policy adds a deliberate visit to a sleeping legend actually
 seen, then reads its dream only after landing. `questMax` (0–6, default 1) bounds
@@ -422,7 +422,7 @@ must be reviewed before freezing another source or making a trained lock.
 Pilot reproduction (one worker; at most 480 s between case boundaries):
 
 ```
-node tools/balance/expert-search.mjs --out docs/notes/expert-results/pilot --time 60 --iterations 3 --train-seeds 1 --held-seeds 1 --wall-seconds 480
+node tools/balance/expert-search.mjs --out data/balance/expert-results/pilot --time 60 --iterations 3 --train-seeds 1 --held-seeds 1 --wall-seconds 480
 ```
 
 Repeat the exact command on the same source fingerprint to resume `checkpoint.json`.
@@ -500,7 +500,7 @@ All four 55-minute attempts capped after 23/23/25/26 rows. Approved unchanged-
 source checkpoint resumes then completed in about 20.5/26.2/12.9/13.6 minutes;
 all cloud preflights passed (typecheck, Vitest 16 and Node 14 tests), no held-out
 cases ran. Exact commits, separate goal counts and per-cell changes are in
-`expert-results/r1b-review.json`. Each candidate uses 16 cells but just two night
+`data/balance/expert-results/r1b-review.json`. Each candidate uses 16 cells but just two night
 seeds on one map world; the 128 logged rows include repeated baselines and
 matched cases unchanged by gear. There are only 56 unique effective cases.
 
@@ -537,7 +537,7 @@ there is no new observation, quest logic, game rule or equipment change.
 After cloud preflight, run the baseline first:
 
 ```sh
-node tools/balance/expert-evaluate.mjs --vector baseline --out docs/notes/expert-results/r1c-baseline --wall-seconds 2400
+node tools/balance/expert-evaluate.mjs --vector baseline --out data/balance/expert-results/r1c-baseline --wall-seconds 2400
 ```
 
 It must exit 0 with `evaluation.json` complete before any candidate starts.
@@ -547,10 +547,10 @@ source identical; do not merge unrelated source or edit a fingerprint. Then
 run these on four independent single-worker runners:
 
 ```sh
-node tools/balance/expert-evaluate.mjs --vector A --baseline docs/notes/expert-results/r1c-baseline/evaluation.json --out docs/notes/expert-results/r1c-A --wall-seconds 2400
-node tools/balance/expert-evaluate.mjs --vector B --baseline docs/notes/expert-results/r1c-baseline/evaluation.json --out docs/notes/expert-results/r1c-B --wall-seconds 2400
-node tools/balance/expert-evaluate.mjs --vector C --baseline docs/notes/expert-results/r1c-baseline/evaluation.json --out docs/notes/expert-results/r1c-C --wall-seconds 2400
-node tools/balance/expert-evaluate.mjs --vector D --baseline docs/notes/expert-results/r1c-baseline/evaluation.json --out docs/notes/expert-results/r1c-D --wall-seconds 2400
+node tools/balance/expert-evaluate.mjs --vector A --baseline data/balance/expert-results/r1c-baseline/evaluation.json --out data/balance/expert-results/r1c-A --wall-seconds 2400
+node tools/balance/expert-evaluate.mjs --vector B --baseline data/balance/expert-results/r1c-baseline/evaluation.json --out data/balance/expert-results/r1c-B --wall-seconds 2400
+node tools/balance/expert-evaluate.mjs --vector C --baseline data/balance/expert-results/r1c-baseline/evaluation.json --out data/balance/expert-results/r1c-C --wall-seconds 2400
+node tools/balance/expert-evaluate.mjs --vector D --baseline data/balance/expert-results/r1c-baseline/evaluation.json --out data/balance/expert-results/r1c-D --wall-seconds 2400
 ```
 
 Each parent enforces a hard 40-minute wall cap, including worker startup; the
@@ -574,7 +574,7 @@ The survey-focused `--round 2 --cases ... --from ...` search remains separate.
 ## First pilot, not trained strength
 
 Source `9be247f04e21aa8175e3d534a7a6ea904be7a250`, artifacts in
-`expert-results/pilot/`: three candidates, one training seed, 24 training cases,
+`data/balance/expert-results/pilot/`: three candidates, one training seed, 24 training cases,
 24 held-out comparison cases with one distinct held-out seed per cell, 60 player
 seconds each. Completed in 219.337 simulation wall seconds, 13.13 short cases/min
 (startup excluded). All three objectives tied at `[0,0,0,0,0,402.86]`; no parameter

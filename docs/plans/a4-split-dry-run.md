@@ -168,7 +168,7 @@ binding uses no libraries or module graph and runs no game typecheck.
 Latest implementation checkpoint: 149 named bodies/statements across 16 source
 files, with two derived link-switch location files. Replay measured 2,086.3 ms;
 identity check 240.9 ms. These are script timings, NOT total fence costs.
-Every source/body hash is in `a4-dry-run-manifest.json`. All 149 bodies reverse
+Every source/body hash is in `data/refactor/a4-dry-run-manifest.json`. All 149 bodies reverse
 exactly. Config freshness gate passed after updating moved switch locations.
 View's public signatures/defaults/field initializers also match syntactically
 (the async boundary moves into its implementation, retaining the Promise type).
@@ -300,7 +300,7 @@ FENCE OPEN after the difficulty-curve batch; no fence is open, no lock is held,
 and no production branch is changed. Brooms will be a separate branch/PR.
 
 Pinned source: b29e5a3701aca479e95d5de3429042439963f002.
-The current inventory is a4-next-source-inventory.json: main 1,967 lines and
+The current inventory is data/refactor/a4-next-source-inventory.json: main 1,967 lines and
 View 2,040 (including final empty lines). Removed cuts: warmAt and treeExtent,
 which no longer exist. Added cuts: keepNightie, personalKit, hostCollections,
 traceVisit and aheadMorning in pageNight; reconcilePickers in pageStations;
