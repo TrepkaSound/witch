@@ -201,10 +201,9 @@ Part of Witch's notes (`docs/notes/INDEX.md` is the index): what the renderer dr
 Moved here from CLAUDE.md as it stood (housekeeping, Ed 2026-10-23: a note an area, so pull requests add to their own area's file, not one shared file); every rule kept.
 Add to this file, not CLAUDE.md, when you change this area.
 
-A4 split (#1562, applied on its own branch under canonical fence opening 6655305768; not merged or released): `tools/refactor/a4-split.mjs` extracts View methods by layer while retaining callable boundaries and private state.
+A4 split (#1562; shipped in v7731): View's methods were extracted by layer into `src/render/view/` (frame, houseFrame, markers, atmosphere, readiness, lifecycle, viewport), keeping callable boundaries and private state. Its tool, `tools/refactor/a4-split.mjs`, was deleted with the finished `main.ts` split (#2085); it is in git history.
 The lifecycle layer includes `islandAhead`, `islandFaces` and `coastAhead`, preserving the loading-screen preparation order.
 Lifecycle also owns tuft baking and stump specifications; readiness owns stump lookup and mist updates, with the mist source getter retained on View.
-`--replay --dry-run` validates and reports code hashes without writing; `--check` reverses declared host/import adapters against pinned source slices.
 The private live bridge is created lazily and cached in a WeakMap, preserving headless prototype stand-ins that bypass the WebGL constructor.
 This is mechanical identity evidence only; exact-head unit, frame/rules benchmark with no declaration, and smoke/art checks remain required.
 The production fence is coordinator-owned.

@@ -279,7 +279,7 @@ async function next(): Promise<void> {
     else if (o) send(o, currentTrace);
     else currentTrace?.finish('cache-miss');
   } catch (e) { currentTrace?.finish('error'); console.warn(`sea chart: ${id}'s island`, e); }
-  setTimeout(next, 0); // (between islands, so a `first` can come in)
+  setTimeout(() => void next(), 0); // (between islands, so a `first` can come in)
 }
 const note = (m: WarmNote) => (self as unknown as { postMessage(m: unknown): void }).postMessage(m);
 
@@ -287,11 +287,11 @@ self.onmessage = (e: MessageEvent<OutlineAsk>) => {
   const m = e.data;
   const meta = readWorkerTrace(m);
   if (meta) { const request = new WorkerJobTrace(meta); request.start(); request.finish('request-received'); }
-  if ("detail" in m) { detailTrace?.finish('superseded'); detailTrace = childTrace(meta, m.detail, true, queue.length); detail = m.detail; if (!busy && job) { busy = true; setTimeout(next, 0); } return; }
+  if ("detail" in m) { detailTrace?.finish('superseded'); detailTrace = childTrace(meta, m.detail, true, queue.length); detail = m.detail; if (!busy && job) { busy = true; setTimeout(() => void next(), 0); } return; }
   if ("first" in m) { const i = queue.indexOf(m.first); if (i > 0) { queue.splice(i, 1); queue.unshift(m.first); } return; }
   if (m.cold) coldCache(); // (a cold page's worker: nothing read or kept from here on)
   job = { world: m.world, found: m.found, step: m.step, warm: m.warm, cacheOnly: m.cacheOnly }; queue = [...m.ids];
   for (const trace of queueTraces.values()) if (!trace.active) trace.finish('superseded'); queueTraces.clear();
   if (meta) for (const [index, id] of queue.entries()) { const trace = childTrace(meta, id, false, index + (detail ? 1 : 0))!; queueTraces.set(id, trace); }
-  if (!busy) { busy = true; void (m.warm ? Promise.resolve() : serveKept()).then(() => setTimeout(next, 0)); }
+  if (!busy) { busy = true; void (m.warm ? Promise.resolve() : serveKept()).then(() => setTimeout(() => void next(), 0)); }
 };

@@ -127,13 +127,11 @@ describe("main.ts's side of it", () => {
     const boot = main.slice(main.indexOf("await view.prepare();"), main.indexOf("night.arrival?.begin(night.game);"));
     const at = (s: string) => { const i = boot.indexOf(s); expect(i, s).toBeGreaterThanOrEqual(0); return i; };
     expect(at("await view.prepare();")).toBeLessThan(at("night.flags.ready = true;"));
-    expect(at("night.flags.ready = true;")).toBeLessThan(at("loading.finish(wakeFirst)"));
-    expect(boot).toMatch(/if \(loading\) loading\.finish\(wakeFirst\); else wakeFirst\(\);/); // (no wake-up of its own while the screen's up)
+    expect(at("night.flags.ready = true;")).toBeLessThan(at("loading.finish("));
+    expect(boot).toMatch(/if \(loading\) loading\.finish\(\(\) => wakeFirst\(pageHost\)\); else wakeFirst\(pageHost\);/); // (no wake-up of its own while the screen's up)
   });
   it("lets no key start the night while she's asleep under the screen", () => {
-    // A4 retains the page's live host and delegates both operations to pageNight.
-    expect(main).toMatch(/function start\(\): boolean \{ return a4_start\(pageHost\); \}/);
-    expect(main).toMatch(/function wakeFirstNow\(\): void \{ return a4_wakeFirstNow\(pageHost\); \}/);
+    // (start and wakeFirstNow live in app/pageNight.ts and read the page's live state through its host)
     expect(main).toMatch(/get bootAsleep\(\): typeof bootAsleep \{ return bootAsleep; \}, set bootAsleep\(value: typeof bootAsleep\) \{ bootAsleep = value; \}/);
     const start = night.slice(night.indexOf("export function start("), night.indexOf("export function startDirect("));
     expect(start).toMatch(/if \(pageHost\.bootAsleep\) return false;/);

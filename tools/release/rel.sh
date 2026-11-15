@@ -8,8 +8,8 @@
 # 1. the same test merge, before anything else; 2. each PR's head CI must be green (SKIPGREEN="<pr>:<why>" accepts a
 # known red); 3. a fresh checkout of prototype in the work folder, claude/release-N claimed on the remote; 4. stamps
 # live changelog fragments still null with main's build; 5. merges each PR's head by SHA (--no-ff); 6. combines the
-# PRs' bench declarations; 7. checks the merged result: changed JSON parses, no conflict markers, tsc, config check,
-# inventory, glossary; 8. pushes, opens the release PR; 9. starts pubnow.sh in the background (log: pub<PR>.log in
+# PRs' bench declarations and clears the released ones; 7. checks the merged result: changed JSON parses, no conflict
+# markers, tsc, config check, inventory, glossary; 8. pushes, opens the release PR; 9. starts pubnow.sh in the background (log: pub<PR>.log in
 # the work folder), handing it the lock. --dry-run (or DRY_RUN=1) does every local step and prints, instead of
 # running, whatever would push or change GitHub. Exits: 2 usage or setup, 3 CI not green, 4 conflict, 5 locked or a
 # release PR open, 6 number taken, 1 anything else.
@@ -108,8 +108,7 @@ run git push -q --force-with-lease="$BRANCH:" "$REMOTE" "$BASE_SHA:$BRANCH" || d
 # 4. stamps: fragments already live on main but still null get main's build number
 MAIN=$(git rev-parse "$REMOTE/main"); STAMP=""
 if ! node tools/config/stampChangelog.mjs --check "$REMOTE/main" >/dev/null 2>&1; then
-  BUILD=$(gh api "$R/actions/runs?head_sha=$MAIN" --jq '[.workflow_runs[]|select(.name=="CI")][0].run_number')
-  [[ $BUILD =~ ^[0-9]+$ ]] || die 1 "no CI run number for main ${MAIN:0:9} to stamp the changelog with (got \"$BUILD\")"
+  BUILD=$(ci_build "$MAIN") || die 1 "no CI run number for main ${MAIN:0:9} to stamp the changelog with"
   node tools/config/stampChangelog.mjs "$MAIN" "$BUILD"
   git add config/changelog
   if ! git diff --cached --quiet; then git commit -q -m "Stamp changelog fragments for v$BUILD$T"; STAMP=" Also stamps the v$BUILD changelog fragments."; fi
@@ -125,9 +124,10 @@ for i in "${!PRS[@]}"; do
   LIST+="#$P ($PT), "; EXPS+=("$P=${REFS[$i]}")
 done
 
-# 6. the release branch carries its PRs' bench declarations together (combine-bench.mjs)
+# 6. the release branch carries its PRs' bench declarations together (combine-bench.mjs), and drops those nothing reads any
+#    more: the released PRs' own and earlier releases' combined ones (docs/notes/guardrails.md)
 node "$RELEASE_TOOLS/combine-bench.mjs" "$N" "${EXPS[@]}"
-if [ -n "$(git status --porcelain tools/bench/expect)" ]; then git add tools/bench/expect; git commit -q -m "Bench: declare release $N's changes$T"; fi
+if [ -n "$(git status --porcelain tools/bench/expect)" ]; then git add -A tools/bench/expect; git commit -q -m "Bench: declare release $N's changes, clear released declarations$T"; fi
 
 # 7. checks on the merged result, before anything of it is pushed
 CHANGED=$(git diff --name-only --diff-filter=AM "$BASE_SHA" HEAD)
