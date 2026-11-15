@@ -125,6 +125,7 @@ node tools/inventory.mjs [--check]
 - [`rainbow/`](rainbow/README.md): 1 script — shots.cjs
 - [`refactor/`](refactor/README.md): 4 scripts — a4-browser-preload.cjs, a4-inventory.mjs, a4-proof-artifacts.cjs, a4-split.mjs
 - [`refraction/`](refraction/README.md): 6 scripts — capture-hold.cjs, capture-pair.cjs, depth-coverage.cjs, depth-readback.cjs, foreground.cjs, review-depth-coverage.mjs
+- [`release/`](release/README.md): 1 script — combine-bench.mjs
 - [`relics/`](relics/README.md): 1 script — map.mjs
 - [`rig/`](rig/README.md): 4 scripts — demo.cjs, legends.cjs, perf.cjs, strip.mjs
 - [`robustness/`](robustness/README.md): 5 scripts — bundle-size.mjs, catch-audit.mjs, measure-log.mjs, measure-recorder.mjs, rules-layer.mjs
