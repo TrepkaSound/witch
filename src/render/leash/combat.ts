@@ -428,8 +428,8 @@ export function drawCombat(lv: LeashView, time: number, camera: THREE.Camera, wi
       else if (A.delivery === "beam") { const L = Math.min(A.range, d + 2); lv.look.beamLine(c.x + ux * 1.2, c.z + uz * 1.2, c.x + ux * L, c.z + uz * L, (A.width ?? 2) / 2, k, left, time); }
       else if (A.delivery === "lob") lv.look.ring(f.aimX, f.aimZ, A.radius ?? 2, 0, left + (A.flight ?? 1), time);
     } else if (atk && f) {
-      const A = (f.move && attackNamed(f.move)) || atk.attack, k = Math.max(0, Math.min(1, 1 - (f.windupUntil - time) / Math.max(0.05, A.windup))), wild = !c.leashed && c.legendState !== "happy"; // (a happy legend fights for her, in her colours)
-      const [r, gg, b] = wild ? [1, 0.3, 0.3] : [neon(c.species).r, neon(c.species).g, neon(c.species).b];
+      const A = (f.move && attackNamed(f.move)) || atk.attack, k = Math.max(0, Math.min(1, 1 - (f.windupUntil - time) / Math.max(0.05, A.windup))); // (a party animal or a happy legend, fighting for her: in its neon; a wild one's wind-up is the attack look's, above)
+      const { r, g: gg, b } = neon(c.species);
       // The anticipation's cue: a glint over its head as it starts winding up (Ed, 2026-10-06: wind-ups that read).
       if (k < 0.35) { const y = (lv.tops.get(c.id) ?? 1.4) + 0.5, R = SPRITE_UNIFORMS.uRight.value, e = 1 - k / 0.35, L = 0.35 * (0.5 + 0.5 * Math.sin(k * 30)) + 0.2;
         lv.over.add(c.x, y, c.z, 0.32 * e + 0.1, dot, 1, 1, 0.85, e); for (const [ox, oy] of [[L, 0], [-L, 0], [0, L], [0, -L]]) lv.over.add(c.x + R.x * ox, y + oy, c.z + R.z * ox, 0.12, dot, 1, 0.95, 0.7, e); }
@@ -454,10 +454,6 @@ export function drawCombat(lv: LeashView, time: number, camera: THREE.Camera, wi
         for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2; lv.flat.add(c.x + Math.cos(a) * R, 0, c.z + Math.sin(a) * R * 0.8, 0.35, dot, r, gg, b, 0.4 + 0.5 * k); }
         if (A.delivery === "melee" && (A.lunge ?? 0) > 3) {
           lungeTell(c, A, f.aimX, f.aimZ, f.target?.kind === "witch", f.windupAt === undefined ? k : Math.max(0, Math.min(1, (time - f.windupAt) / Math.max(1e-6, f.windupUntil - f.windupAt))), false, { r, g: gg, b });
-        }
-        if ((A.delivery === "shot" || A.delivery === "beam") && wild) {
-          const dx = f.aimX - c.x, dz = f.aimZ - c.z, d = Math.hypot(dx, dz) || 1, L = Math.min(A.range, d + 2);
-          for (let s2 = 1.2; s2 < L; s2 += 0.9) lv.flat.add(c.x + (dx / d) * s2, 0, c.z + (dz / d) * s2, 0.28, dot, 1, 0.3, 0.3, 0.12 + 0.3 * k);
         }
       }
     }
