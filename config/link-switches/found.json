@@ -1,0 +1,9 @@
+{
+ "name": "found",
+ "values": [
+  "<kind>,…"
+ ],
+ "does": "These islands count as found for this load, whatever the browser's save says (the repro link).",
+ "group": "debug",
+ "since": "2026-10-14"
+}

@@ -1,0 +1,10 @@
+{
+ "name": "prepChart",
+ "values": [
+  "1",
+  "0"
+ ],
+ "does": "The sea chart made ahead even under automation (1), or never (0).",
+ "group": "debug",
+ "since": "2026-10-19"
+}

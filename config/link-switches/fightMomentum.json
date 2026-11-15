@@ -1,0 +1,9 @@
+{
+ "name": "fightMomentum",
+ "values": [
+  "<k>"
+ ],
+ "does": "The creatures' momentum in a fight for this load (the debug overlay's slider; never remembered).",
+ "group": "run",
+ "since": "2026-10-07"
+}

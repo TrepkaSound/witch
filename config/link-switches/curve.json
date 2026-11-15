@@ -1,0 +1,9 @@
+{
+ "name": "curve",
+ "values": [
+  "<k>"
+ ],
+ "does": "The world's bend over the treetops (0 off).",
+ "group": "view",
+ "since": "2026-10-07"
+}

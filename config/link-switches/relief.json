@@ -1,0 +1,9 @@
+{
+ "name": "relief",
+ "values": [
+  "<strength>"
+ ],
+ "does": "The ground's fake relief (0 flat).",
+ "group": "view",
+ "since": "2026-10-07"
+}

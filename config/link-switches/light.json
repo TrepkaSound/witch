@@ -1,0 +1,10 @@
+{
+ "name": "light",
+ "values": [
+  "spooky",
+  "plain"
+ ],
+ "does": "The lighting's mood.",
+ "group": "view",
+ "since": "2026-10-07"
+}

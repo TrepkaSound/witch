@@ -1,0 +1,8 @@
+{
+ "name": "route",
+ "values": [
+  "varied"
+ ],
+ "broughtBack": "the older ways of picking the next area to wake",
+ "stays": "the spiral route (and the noisy picker as its own fallback); near3, near3touch, nearest, `variedOrder` and `party.route` gone"
+}

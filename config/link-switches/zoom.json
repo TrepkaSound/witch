@@ -1,0 +1,9 @@
+{
+ "name": "zoom",
+ "values": [
+  "<n>"
+ ],
+ "does": "The repro link: the camera's zoom step.",
+ "group": "debug",
+ "since": "2026-10-14"
+}

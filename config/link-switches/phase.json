@@ -1,0 +1,14 @@
+{
+ "name": "phase",
+ "values": [
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "does": "An island of that phase's shape, of random area types.",
+ "group": "run",
+ "since": "2026-10-11"
+}

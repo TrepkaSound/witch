@@ -1,0 +1,10 @@
+{
+ "name": "slow",
+ "values": [
+  "0",
+  "<k>"
+ ],
+ "does": "Legend circles slowing time: off, or another speed (0 < k < 1).",
+ "group": "run",
+ "since": "2026-10-07"
+}

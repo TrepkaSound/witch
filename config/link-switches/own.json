@@ -1,0 +1,12 @@
+{
+ "name": "own",
+ "values": [
+  "all",
+  "none",
+  "<kind>:<item>",
+  "<kind>:*"
+ ],
+ "does": "Finds given or let go on this browser's saves, as the dev control does.",
+ "group": "debug",
+ "since": "2026-10-23"
+}

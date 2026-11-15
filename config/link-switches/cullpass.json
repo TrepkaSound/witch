@@ -1,0 +1,9 @@
+{
+ "name": "cullpass",
+ "values": [
+  "0"
+ ],
+ "does": "Each see-through pass isn't culled by the kind of pixel it keeps, as before the performance pass.",
+ "group": "compare",
+ "since": "2026-10-24"
+}

@@ -1,0 +1,9 @@
+{
+ "name": "micCheck",
+ "values": [
+  "1"
+ ],
+ "does": "Also listens to the microphone for dropouts after the game (debug only).",
+ "group": "debug",
+ "since": "2026-10-06"
+}

@@ -1,0 +1,9 @@
+{
+ "name": "arrive",
+ "values": [
+  "1"
+ ],
+ "does": "The night opens with the sea chart's arrival flight (a sail sets it); the boot's map isn't made ahead.",
+ "group": "run",
+ "since": "2026-10-12"
+}

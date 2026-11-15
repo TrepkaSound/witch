@@ -1,0 +1,10 @@
+{
+ "name": "biome",
+ "values": [
+  "<name>",
+  "<a|b|w>"
+ ],
+ "does": "Every area's trees and props in that biome's look (or a blend of two), over the island's own.",
+ "group": "view",
+ "since": "2026-10-23"
+}

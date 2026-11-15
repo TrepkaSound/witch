@@ -39,4 +39,4 @@ const heron = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: today's drawn heights, Ed, 2026-11-12, "keep
  *  the sizes"); plans, each level's build. */
-export const MESH = { id: "heron", heights: [39, 62, 91, 233], plans: heron };
+export const MESH = { id: "heron", heights: [39, 62, 91, 233], gait: "walk", plans: heron };

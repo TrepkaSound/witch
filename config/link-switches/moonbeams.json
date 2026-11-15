@@ -1,0 +1,10 @@
+{
+ "name": "moonbeams",
+ "values": [
+  "on"
+ ],
+ "does": "The moonbeams (off by default).",
+ "group": "compare",
+ "since": "2026-10-07",
+ "decision": "Kept when the other compare switches were retired (2026-10-07)"
+}

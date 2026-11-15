@@ -1,0 +1,12 @@
+{
+ "name": "flora",
+ "values": [
+  "new",
+  "fantasy",
+  "all",
+  "<ids>"
+ ],
+ "does": "Every wooded area grows these tree species.",
+ "group": "view",
+ "since": "2026-10-07"
+}

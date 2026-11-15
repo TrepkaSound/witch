@@ -1,0 +1,9 @@
+{
+ "name": "artdelay",
+ "values": [
+  "<s>"
+ ],
+ "does": "Each area type's trees drawn ahead of need held back to land one every that many seconds, to watch the loading mist roll away.",
+ "group": "debug",
+ "since": "2026-10-24"
+}

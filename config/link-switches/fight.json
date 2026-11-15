@@ -1,0 +1,10 @@
+{
+ "name": "fight",
+ "values": [
+  "",
+  "<seed>"
+ ],
+ "does": "The Fight Arena: straight into a fight with a seeded pack (a new seed when blank).",
+ "group": "debug",
+ "since": "2026-10-27"
+}

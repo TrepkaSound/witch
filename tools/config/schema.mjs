@@ -1,13 +1,14 @@
 // The config schemas (housekeeping, issue #122): writes and checks config/schema/*.schema.json (the
 // tuning file's, and the others' listed in src/rules/configSchemas.ts) and the knob reference
 // config/KNOBS.md (src/rules/schema.ts and src/rules/knobDocs.ts do the work; the knobs' words are config/knobs/*.json).
-//   node tools/config/schema.mjs --check     validate the config files against their schemas
+//   node tools/config/schema.mjs --check     validate the config files against their schemas (stale knob docs are only noted, and fail at a release: strict.mjs)
 //   node tools/config/schema.mjs --docs      rewrite config/KNOBS.md and the tuning schema's descriptions from config/knobs/*.json
 //   node tools/config/schema.mjs --init      (re)infer every schema from its file as it stands, with TUNING_OVER and CONFIGS' records and choices
 //   node tools/config/schema.mjs --add       add the knobs the file has and the schema lacks (inferred), drop the ones it no longer has, keep the rest
 // After adding a knob to config/tuning.json: its entry in config/knobs/<section>.json, --add (or edit the schema), then --docs.
 import { schemaRuntime } from "./schema-runtime.mjs";
 import { readFileSync, writeFileSync } from "node:fs";
+import { releaseStrict } from "./strict.mjs";
 
 const { validate, inferSchema, knobsReference, describeSchema, TUNING_OVER, CONFIGS, configData } = schemaRuntime();
 const FILE = "config/tuning.json", SCHEMA = "config/schema/tuning.schema.json", DOCS = "config/KNOBS.md";
@@ -35,8 +36,9 @@ if (has("docs") || has("check")) {
   const reference = knobsReference(tuning, described, index, sections);
   if (has("check")) {
     if (JSON.stringify(schema) !== JSON.stringify(described) || readFileSync(DOCS, "utf8").replace(/\r\n/g, "\n") !== reference) {
-      console.error("Generated knob docs are stale; fix: node tools/config/schema.mjs --docs");
-      process.exitCode = 1;
+      // (a reader page: the release rewrites it, so it fails only then: tools/config/strict.mjs)
+      if (releaseStrict()) { console.error("Generated knob docs are stale; fix: node tools/config/schema.mjs --docs"); process.exitCode = 1; }
+      else console.log("Generated knob docs are stale (noted only: the release rewrites them, node tools/config/regen.mjs)");
     }
   } else {
     schema = described;

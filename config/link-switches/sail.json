@@ -1,0 +1,10 @@
+{
+ "name": "sail",
+ "values": [
+  "inplace",
+  "reload"
+ ],
+ "does": "How a sail starts the next night: in place, or by loading the island's link.",
+ "group": "run",
+ "since": "2026-10-20"
+}

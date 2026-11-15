@@ -54,4 +54,4 @@ const scorpions = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. It sleeps on its belly at every level, legs folded, its tail laid round its side and its pincers drawn in. */
-export const MESH = { id: "scorpion", heights: [30, 46, 65, 200], plans: scorpions };
+export const MESH = { id: "scorpion", heights: [30, 46, 65, 200], gait: "trot", legs: [8], plans: scorpions };

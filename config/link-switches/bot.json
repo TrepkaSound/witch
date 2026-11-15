@@ -1,0 +1,11 @@
+{
+ "name": "bot",
+ "values": [
+  "skilled",
+  "crude",
+  "…"
+ ],
+ "does": "A bot plays the run (rules/bot.ts), with a seeded witch.",
+ "group": "run",
+ "since": "2026-10-06"
+}

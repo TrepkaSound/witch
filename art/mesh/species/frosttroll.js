@@ -56,4 +56,4 @@ const frosttroll = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs frosttroll`: Ed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. */
-export const MESH = { id: "frosttroll", heights: [89, 137, 201, 293], plans: frosttroll };
+export const MESH = { id: "frosttroll", heights: [89, 137, 201, 293], gait: "trot", plans: frosttroll };

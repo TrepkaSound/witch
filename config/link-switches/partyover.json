@@ -1,0 +1,9 @@
+{
+ "name": "partyover",
+ "values": [
+  "1"
+ ],
+ "does": "The party's over from the start (the afterparty).",
+ "group": "debug",
+ "since": "2026-10-06"
+}

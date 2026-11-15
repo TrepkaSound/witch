@@ -1,0 +1,9 @@
+{
+ "name": "attack",
+ "values": [
+  "<attack as JSON>"
+ ],
+ "does": "The Fight Arena or a debug arena tries this attack (an attack spec, as JSON) on its pack.",
+ "group": "debug",
+ "since": "2026-10-27"
+}

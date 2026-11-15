@@ -1,0 +1,9 @@
+{
+ "name": "restore",
+ "values": [
+  "comment"
+ ],
+ "does": "Builder loader: consume the comment snapshot selected on the pause page, restoring that exact saved moment paused on the same build.",
+ "group": "debug",
+ "since": "2026-10-30"
+}

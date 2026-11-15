@@ -1,0 +1,9 @@
+{
+ "name": "mapAreas",
+ "values": [
+  "<n>"
+ ],
+ "does": "How many areas the map has, for this load only (never remembered).",
+ "group": "run",
+ "since": "2026-10-07"
+}

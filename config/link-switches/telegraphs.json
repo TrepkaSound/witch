@@ -1,0 +1,10 @@
+{
+ "name": "telegraphs",
+ "values": [
+  "red"
+ ],
+ "does": "Every attack's warning shape on the ground red, as before, to compare: not in its attacker's element colour.",
+ "group": "compare",
+ "since": "2026-11-13",
+ "decision": "Element colours by default, as a trial (Ed, 2026-11-13: \"Element coloured warning shape on the ground\", \"Let's try element colours and see.\")"
+}

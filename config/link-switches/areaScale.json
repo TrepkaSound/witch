@@ -1,0 +1,9 @@
+{
+ "name": "areaScale",
+ "values": [
+  "<k>"
+ ],
+ "does": "Each area's size as a multiple of the tuning's, for this load only (never remembered).",
+ "group": "run",
+ "since": "2026-10-07"
+}

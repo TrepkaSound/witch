@@ -1,0 +1,11 @@
+{
+ "name": "fxmock",
+ "values": [
+  "1",
+  "iso",
+  "frost"
+ ],
+ "does": "Show the original fire and frost mock for comparison with the production effects.",
+ "group": "debug",
+ "since": "2026-10-29"
+}

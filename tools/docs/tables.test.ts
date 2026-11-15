@@ -4,11 +4,13 @@ import fs from "node:fs";
 import path from "node:path";
 // @ts-expect-error (a plain .mjs tool, no types)
 import { docs, fill, stale, TABLES } from "./tables.mjs";
+// @ts-expect-error (a plain .mjs tool, no types)
+import { releaseStrict } from "../config/strict.mjs";
 
 const ROOT = path.resolve(__dirname, "../..");
 
 describe("the docs' tables", () => {
-  it("are as the data makes them (node tools/docs/tables.mjs --write)", async () => {
+  it.skipIf(!releaseStrict())("are as the data makes them at a release (node tools/config/regen.mjs)", async () => {
     expect((await stale()).map((s: { file: string }) => s.file)).toEqual([]);
   });
 

@@ -1,0 +1,8 @@
+{
+ "name": "fx",
+ "values": [
+  "pixel"
+ ],
+ "broughtBack": "mist, haze and dapple as dithered pixel steps",
+ "stays": "smooth; `fx` and the shaders' `uSmooth`, `uBands` and `uDither` paths gone"
+}

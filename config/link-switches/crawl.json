@@ -1,0 +1,9 @@
+{
+ "name": "crawl",
+ "values": [
+  "old"
+ ],
+ "does": "The crawl as it was, to compare: overlapping see-through things of one layer drawn in the order of their distance from the camera (not the world's fixed far-to-near order), and the camera's pixel snap taken up the screen (not along the ground), so things off the focus's depth slide to and fro as she walks north or south.",
+ "group": "compare",
+ "since": "2026-11-11"
+}

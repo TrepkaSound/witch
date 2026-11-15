@@ -1,0 +1,9 @@
+{
+ "name": "clouds",
+ "values": [
+  "<n>"
+ ],
+ "does": "How many clouds.",
+ "group": "view",
+ "since": "2026-10-07"
+}

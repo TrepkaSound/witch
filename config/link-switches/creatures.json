@@ -1,0 +1,9 @@
+{
+ "name": "creatures",
+ "values": [
+  "<k>"
+ ],
+ "does": "Creatures drawn at this size against the style's (1 is the size before Ed's +50%).",
+ "group": "view",
+ "since": "2026-10-08"
+}

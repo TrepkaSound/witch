@@ -1,0 +1,9 @@
+{
+ "name": "telescopeRes",
+ "values": [
+  "<k>"
+ ],
+ "does": "The telescope's render resolution.",
+ "group": "debug",
+ "since": "2026-10-21"
+}

@@ -1,0 +1,10 @@
+{
+ "name": "hats",
+ "values": [
+  "all",
+  "<id>,…"
+ ],
+ "does": "These hats are hers for one load, instead of her save.",
+ "group": "run",
+ "since": "2026-10-23"
+}

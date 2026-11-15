@@ -1,0 +1,10 @@
+{
+ "name": "dev",
+ "values": [
+  "0",
+  "finds"
+ ],
+ "does": "Hides the bedroom's dev \"Player:\" pick (0), or opens the finds dev panel (finds).",
+ "group": "run",
+ "since": "2026-10-04"
+}

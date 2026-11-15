@@ -1,0 +1,11 @@
+{
+ "name": "dive",
+ "values": [
+  "near",
+  "far",
+  "skim"
+ ],
+ "does": "Where the chart's flight hands over to the game's dive, for one load (Ed, 2026-10-24).",
+ "group": "view",
+ "since": "2026-10-24"
+}

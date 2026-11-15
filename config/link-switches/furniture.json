@@ -1,0 +1,9 @@
+{
+ "name": "furniture",
+ "values": [
+  "0"
+ ],
+ "does": "The treehouse rooms without their furniture.",
+ "group": "debug",
+ "since": "2026-10-23"
+}

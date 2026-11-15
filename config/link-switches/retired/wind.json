@@ -1,0 +1,8 @@
+{
+ "name": "wind",
+ "values": [
+  "smooth"
+ ],
+ "broughtBack": "the old per-pixel sway",
+ "stays": "the pixel wind; `uPixelWind` gone"
+}

@@ -1,0 +1,9 @@
+{
+ "name": "mode",
+ "values": [
+  "treetop"
+ ],
+ "does": "The repro link: with at=, she starts in the treetops.",
+ "group": "debug",
+ "since": "2026-10-14"
+}

@@ -1,0 +1,10 @@
+{
+ "name": "timing",
+ "values": [
+  "1",
+  "0"
+ ],
+ "does": "The frame-timing log on (kept on this browser) or off.",
+ "group": "debug",
+ "since": "2026-10-19"
+}

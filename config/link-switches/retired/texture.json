@@ -1,0 +1,8 @@
+{
+ "name": "texture",
+ "values": [
+  "0"
+ ],
+ "broughtBack": "creatures without fur, feathers and scales",
+ "stays": "the Art Lab's own knob, `style.texture`"
+}

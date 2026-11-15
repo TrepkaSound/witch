@@ -63,4 +63,4 @@ const crabs = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. It goes sideways. It sleeps settled on its belly at every level, legs folded in, claws across its face. */
-export const MESH = { id: "crab", heights: [34, 50, 79, 228], plans: crabs };
+export const MESH = { id: "crab", heights: [34, 50, 79, 228], gait: "trot", legs: [8], plans: crabs };

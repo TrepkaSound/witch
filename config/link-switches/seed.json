@@ -1,0 +1,9 @@
+{
+ "name": "seed",
+ "values": [
+  "<n>"
+ ],
+ "does": "The run's seed (a random one is put in the link when it's missing).",
+ "group": "run",
+ "since": "2026-10-04"
+}

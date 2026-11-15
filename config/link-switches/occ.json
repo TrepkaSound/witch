@@ -1,0 +1,9 @@
+{
+ "name": "occ",
+ "values": [
+  "off"
+ ],
+ "does": "The occlusion fade (what's in front of her drawn see-through) off.",
+ "group": "compare",
+ "since": "2026-10-13"
+}

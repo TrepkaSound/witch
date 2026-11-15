@@ -1,0 +1,10 @@
+{
+ "name": "attacks",
+ "values": [
+  "old"
+ ],
+ "does": "Every species fights with its old attacks from config/combat.json, not its own in the attack grammar.",
+ "group": "compare",
+ "since": "2026-10-27",
+ "decision": "Each species' own attack is the default (Ed, 2026-10-27, #1326)"
+}

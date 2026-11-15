@@ -1,0 +1,10 @@
+{
+ "name": "creatureSizeCandidate",
+ "values": [
+  "0",
+  "1"
+ ],
+ "does": "Revised creature sizes are on by default; 0 compares the previous sizes.",
+ "group": "compare",
+ "since": "2026-10-31"
+}

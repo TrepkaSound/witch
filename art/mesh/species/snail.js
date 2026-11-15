@@ -77,4 +77,4 @@ const snails = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. */
-export const MESH = { id: "snail", heights: [35, 54, 73, 222], plans: snails };
+export const MESH = { id: "snail", heights: [35, 54, 73, 222], gait: "glide", plans: snails };

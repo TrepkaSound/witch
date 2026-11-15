@@ -1,0 +1,10 @@
+{
+ "name": "hat",
+ "values": [
+  "<id>",
+  "none"
+ ],
+ "does": "She wears this hat for one load (and owns it for that load).",
+ "group": "run",
+ "since": "2026-10-11"
+}

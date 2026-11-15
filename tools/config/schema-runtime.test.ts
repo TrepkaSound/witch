@@ -24,7 +24,7 @@ it('loads identical assembled game config and validators without Vite SSR', () =
 it('keeps the real read-only CLI strict for invalid config and stale knob docs', () => {
   const fixture = mkdtempSync(join(tmpdir(), 'witch-schema-gate-'));
   const command = resolve('tools/config/schema.mjs');
-  const run = () => spawnSync(process.execPath, [command, '--check'], { cwd: fixture, encoding: 'utf8', timeout: 55_000 }); // (a hang guard under the suite's 60 s, not a budget)
+  const run = (strict = '1') => spawnSync(process.execPath, [command, '--check'], { cwd: fixture, encoding: 'utf8', timeout: 55_000, env: { ...process.env, GENERATED_STRICT: strict } });
   try {
     cpSync('config', join(fixture, 'config'), { recursive: true });
     const valid = run();
@@ -37,7 +37,8 @@ it('keeps the real read-only CLI strict for invalid config and stale knob docs',
     expect(readFileSync(file, 'utf8')).toBe(invalid);
     writeFileSync(file, original);
     const doc = join(fixture, 'config/KNOBS.md'); writeFileSync(doc, 'stale fixture');
-    const stale = run();
+    expect(run('0').status).toBe(0); // (a builder's pull request: noted only)
+    const stale = run('1'); // (a release)
     expect(stale.status).toBe(1); expect(stale.stderr).toContain('Generated knob docs are stale');
     expect(readFileSync(doc, 'utf8')).toBe('stale fixture');
   } finally {

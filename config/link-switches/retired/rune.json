@@ -1,0 +1,8 @@
+{
+ "name": "rune",
+ "values": [
+  "beam|column|both"
+ ],
+ "broughtBack": "one of the ways an awake runestone shows",
+ "stays": "both; `runeMarkers.awakeStyle` gone"
+}

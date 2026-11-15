@@ -1,0 +1,9 @@
+{
+ "name": "style",
+ "values": [
+  "ref"
+ ],
+ "does": "Ed's reference pixel-art treatment (bold, the default, otherwise).",
+ "group": "view",
+ "since": "2026-10-07"
+}
