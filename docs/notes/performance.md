@@ -913,7 +913,7 @@ A playtest log's per-second samples carry their **scene** (her mode: ground, tre
 **Quads faded whole** (the quality-ladder study, 2026-10-26, on Ed's profile: 2321×1343, px 3, keep 0.35, the cloud's renderer, the game held still and each frame timed on the GPU): on foot in a thick wood two thirds of the frame was the trees' three extra passes (`render/sprites.ts`: see-through, depth, front), most of it the crowns in the hole's band.
 A crown there fades by its middle (`canopyCutout.whole` 1), so every pixel of it is half see-through, and the solid pass shaded each such crown's whole quad only to throw every pixel away; nor has the front pass a pixel of it.
 The vertex shader now leaves a quad faded whole (such a crown, a place kept clear, a batch still appearing) out of those two passes: 19% of the frame's GPU time in the Alder wood on foot, 12% in the jaguar's River jungle, none in the treetops (no such crowns there); the picture the same to the pixel (the frame read off the canvas with it on, off and on again: 0 pixels differ).
-`?wholecull=0` draws them as before.
+(`?wholecull=0` drew them as before; retired 2026-11-15.)
 
 **The GPU memory budget** (the coordinator's ask, Ed-approved 2026-10-26, after the zoo fix;
 `node tools/gpu/budget.cjs [out]`, ONLY=night,sail,zoo,tight, SEED, ISLAND, SECS, DRAW, TIGHT, WAIT): every texture and render buffer the page's WebGL context makes is counted where it's made (`render/gpuLedger.ts`: its bytes at `texImage2D/3D`, `texStorage2D/3D`, `copyTexImage2D`, `generateMipmap` and `renderbufferStorage`, by its own internal format and type, so R8 palette indices count a byte a texel;

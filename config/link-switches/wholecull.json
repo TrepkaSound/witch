@@ -1,9 +1,0 @@
-{
- "name": "wholecull",
- "values": [
-  "0"
- ],
- "does": "Quads faded whole drawn in the solid and front passes too, as before.",
- "group": "compare",
- "since": "2026-10-26"
-}
