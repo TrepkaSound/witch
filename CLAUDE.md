@@ -36,7 +36,7 @@ Several builders work in parallel (Claude sessions; Codex builders are paused); 
 The start screen's What's new panel is made from **one small file per change** in `config/changelog/`, so builders working in parallel don't conflict (details: `docs/notes/config.md`, **Changelog fragments**).
 
 - A push that changes something Ed can see adds its own fragment, `config/changelog/<yyyy-mm-dd>-<slug>.json`, holding `{ "version": null, "items": ["…"] }` in plain player-facing words ("Trees no longer pop in and out"), not commit-speak. Later pushes of the same work may add to it.
-- Leave `version` null: the coordinator stamps fragments at each release (`node tools/config/stampChangelog.mjs`). Never edit anyone else's fragment, or the frozen `config/changelog/archive.json`. `src/changelog.test.ts` checks every file's shape.
+- Leave `version` null: the coordinator stamps fragments at each release (`node tools/config/stampChangelog.mjs`), and may then fold the stamped ones into `config/changelog/stamped.json` (`node tools/config/foldChangelog.mjs`). Never edit anyone else's fragment, the frozen `config/changelog/archive.json` or `stamped.json`. `src/changelog.test.ts` checks every file's shape.
 
 ## Fixing bugs (Ed, 2026-10-13)
 

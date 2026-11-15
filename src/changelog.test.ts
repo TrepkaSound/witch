@@ -35,10 +35,43 @@ describe("the changelog (config/changelog/: a frozen archive and one fragment pe
     for (const name of readdirSync(dir)) {
       const f = JSON.parse(readFileSync(new URL(name, dir), "utf8"));
       if (name === "archive.json") { expect(Array.isArray(f.entries)).toBe(true); continue; }
+      if (name === "stamped.json") { // (the stamped fragments, folded by tools/config/foldChangelog.mjs)
+        for (const g of f.fragments) {
+          expect(g.file).toMatch(/^\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.json$/);
+          expect(Number.isInteger(g.version)).toBe(true);
+          expect(Array.isArray(g.items) && g.items.length > 0 && g.items.every((i: unknown) => typeof i === "string")).toBe(true);
+        }
+        continue;
+      }
       expect(name).toMatch(/^\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.json$/);
       expect(f.version === null || Number.isInteger(f.version)).toBe(true);
       expect(Array.isArray(f.items) && f.items.length > 0 && f.items.every((i: unknown) => typeof i === "string")).toBe(true);
     }
+  });
+});
+
+describe("the stamped fragments folded into stamped.json (the docs tidy, Ed 2026-11-15)", () => {
+  const loose = {
+    "x/archive.json": { entries: [{ version: 12, items: ["old twelve"] }] },
+    "x/2026-10-07-new.json": { version: null, items: ["n"] },
+    "x/2026-10-06-the-freeze.json": { version: 14, title: "Pause for screenshots", items: ["b"] },
+    "x/2026-10-05-bigger-areas.json": { version: 14, items: ["a"] },
+    "x/2026-10-03-d.json": { version: 12, items: ["d"] },
+  };
+  const folded = {
+    "x/archive.json": loose["x/archive.json"], "x/2026-10-07-new.json": loose["x/2026-10-07-new.json"],
+    "x/stamped.json": { fragments: [
+      { file: "2026-10-03-d.json", version: 12, items: ["d"] },
+      { file: "2026-10-05-bigger-areas.json", version: 14, items: ["a"] },
+      { file: "2026-10-06-the-freeze.json", version: 14, title: "Pause for screenshots", items: ["b"] },
+    ] },
+  };
+  it("reads exactly as the fragment files did, titles, dates and order included", () => {
+    expect(groupChangelog(folded)).toEqual(groupChangelog(loose));
+    expect(collectChangelog(folded)).toEqual(collectChangelog(loose));
+  });
+  it("refuses a fragment that is both folded and a file", () => {
+    expect(() => groupChangelog({ ...folded, "x/2026-10-03-d.json": { version: 12, items: ["d"] } })).toThrow(/both folded and a file/);
   });
 });
 

@@ -10,6 +10,15 @@ Read-only config/docs freshness gate, run before CI's shared build; every failur
 node tools/config/check.mjs
 ```
 
+## `foldChangelog.mjs`
+
+Folds the changelog's stamped fragments into one file: every config/changelog/<yyyy-mm-dd>-<slug>.json whose version is a build number moves into config/changelog/stamped.json, under its old file name, and the file is removed.
+
+```
+node tools/config/foldChangelog.mjs            fold every stamped fragment
+node tools/config/foldChangelog.mjs --dry-run  list what it would fold, change nothing
+```
+
 ## `format.mjs`
 
 Stable tuning JSON: one leaf setting per line, small numeric vectors inline, original key order.
@@ -81,6 +90,7 @@ node tools/config/typegen.mjs --check
 
 ## Also here
 
+- `foldChangelog.test.ts`
 - `format.test.ts`
 - `inventory.test.ts`
 - `schema-runtime.test.ts`
