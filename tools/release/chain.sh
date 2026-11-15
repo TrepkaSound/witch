@@ -1,4 +1,29 @@
-# Helpers the coordinator's release chains used: source this, then call waitci <pr> and rel <n> "<title>" "<go>" <pr>...
-R=repos/edsaperia/witch
-waitci() { for i in $(seq 1 75); do h=$(gh api $R/pulls/$1 --jq .head.sha); pend=$(gh api "$R/commits/$h/check-runs?per_page=100" --jq '[.check_runs[]|select(.name!="art check" and .status!="completed")]|length'); [ "$pend" = 0 ] && break; sleep 60; done; echo "#$1 CI: [$(gh api "$R/commits/$h/check-runs?per_page=100" --jq '[.check_runs[]|select(.name!="art check")]|group_by(.name)|map(select(all(.conclusion!="success" and .conclusion!="skipped"))|.[0].name)|join(",")')]"; }
-rel() { n=$1; t=$2; g=$3; shift 3; timeout 1200 bash rel.sh $n "$t" "$g" "$@" > rel$n.log 2>&1; echo "rel $n exit $?"; tail -4 rel$n.log; P=$(grep -o "release PR #[0-9]*" rel$n.log | grep -o "[0-9]*$"); [ -n "$P" ] || return 4; while pgrep -f "pubnow.sh $P" >/dev/null; do sleep 30; done; grep -v "unsupported protocol" pub$P.log | tail -3; }
+#!/usr/bin/env bash
+# Helpers for the coordinator's release chains. Source it, then call:
+#   waitci <pr>                                waits (up to 75 min) for the PR head's CI, then prints "#<pr> CI: [<what isn't green>]"
+#   rel <N|next> "<title>" "<Ed's go>" <pr>... one release through rel.sh and its pubnow.sh, start to live; logs in the work folder
+# (source tools/release/chain.sh; sourcing turns on "set -euo pipefail" in the calling shell, as the scripts have it.)
+# shellcheck source=tools/release/lib.sh
+. "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+
+waitci() {
+  local h ci
+  for _ in $(seq 1 75); do
+    h=$(gh api "$R/pulls/$1" --jq .head.sha); ci=$(ci_state "$h")
+    case $ci in *pending*|"none yet") sleep 60 ;; *) break ;; esac
+  done
+  say "#$1 CI: [$ci]"
+}
+
+rel() {
+  local log P rc
+  mkdir -p "$WORK"; log=$WORK/rel-$(date -u +%Y%m%dT%H%M%S).log
+  timeout 1200 bash "$RELEASE_TOOLS/rel.sh" "$@" > "$log" 2>&1 && rc=0 || rc=$?
+  say "rel $1 exit $rc ($log)"; tail -4 "$log"
+  [ "$rc" = 0 ] || return "$rc"
+  P=$(sed -n 's/^release PR #\([0-9]*\)$/\1/p' "$log" | tail -1)
+  [ -n "$P" ] || return 0 # (a dry run opens none)
+  for _ in $(seq 1 400); do lock_busy || break; sleep 30; done # pubnow.sh holds the lock until live or failed
+  tail -3 "$WORK/pub$P.log"
+  grep -q '^LIVE' "$WORK/pub$P.log"
+}
