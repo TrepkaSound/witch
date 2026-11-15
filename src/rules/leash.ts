@@ -49,6 +49,10 @@ export interface LeashState {
   /** Legends that have given her their unimpressed look this approach: not again until she's
    *  been beyond invite.cancelDistance of them. */
   snubbed: Set<number>;
+  /** Always empty: the relic sigils she once carried (none since Ed, 2026-10-18: a flask is drunk where it lies). Nothing reads it;
+   *  it stays only as part of the leash's saved and compared shape (a night saved without it would not load in an earlier build, and
+   *  the bench's rules comparison reads the witches' whole state). Taking it out is a save-format change, for its own review. */
+  relics: number[];
   /** Her trail on the ground while babies follow her (rules/babies.ts): breadcrumbs, newest first, flat x, z pairs. Made only then. */
   trail?: number[];
   /** While she's in a fight with babies following (rules/babies.ts): the way from the first attacker to her when it began,
@@ -149,7 +153,7 @@ export interface LeashControls {
   talk?: boolean;
 }
 
-export const newLeash = (): LeashState => ({ stack: [], placed: [], talk: null, progress: new Map(), events: [], snubbed: new Set() });
+export const newLeash = (): LeashState => ({ stack: [], placed: [], talk: null, progress: new Map(), events: [], snubbed: new Set(), relics: [] });
 
 /** Seconds of talk a creature needs: young 6, adults 12; babies and legends can't be invited. */
 export const talkTime = (c: Creature, t: Tuning): number => t.invite.talkTime[Math.min(c.level, t.invite.talkTime.length - 1)];

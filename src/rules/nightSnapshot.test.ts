@@ -60,17 +60,18 @@ describe("a whole night's snapshot", () => {
     expect(rngState(Math.random)).toBeUndefined();
   });
 
-  it("reads a night saved when the leash still listed carried relics (always none since Ed, 2026-10-18), and it plays on the same", () => {
+  it("reads a night saved when a carried relic still had its place in the stack (none since Ed, 2026-10-18), and it plays on the same", () => {
     const g = fresh(); g.clock.paused = false;
     for (let i = 0; i < 60; i++) stepGame(g, idle, STEP);
     const c = g.creatures.find(c => !c.boss && c.level > 0)!;
     inviteCreature(g.leash, c, c.x, c.z, g.clock.time);
     const now = roundtrip(g);
-    (g.witches[0].leash as unknown as { relics: number[] }).relics = []; // (as the build before saved it)
+    (g.witches[0].leash as unknown as { relicAt: Record<number, number> }).relicAt = {}; // (as a build before could save it)
     const saved = JSON.parse(JSON.stringify(snapshotGame(g)));
-    expect(JSON.stringify(saved)).toContain('"relics"');
+    expect(JSON.stringify(saved)).toContain('"relicAt"');
     const old = restoreGame(saved);
-    expect("relics" in old.witches[0].leash).toBe(false);
+    expect("relicAt" in old.witches[0].leash).toBe(false);
+    expect(old.witches[0].leash.relics).toEqual([]);
     expect(old.witches[0].leash.stack).toEqual(now.witches[0].leash.stack);
     old.clock.paused = false; now.clock.paused = false;
     for (let i = 0; i < 120; i++) { stepGame(old, { ...idle, cycle: i === 0 }, STEP); stepGame(now, { ...idle, cycle: i === 0 }, STEP); }

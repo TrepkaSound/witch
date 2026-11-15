@@ -143,8 +143,8 @@ export function restoreGame(input: unknown): Game {
     if (!w || w.id !== i || !w.body || !Number.isFinite(w.body.x) || !Number.isFinite(w.body.z) || !w.leash || !w.spells || !w.health || !Number.isFinite(w.health.hp) || !(w.leash.progress instanceof Map) || !Array.isArray(w.leash.stack) || !Array.isArray(w.leash.placed)) return invalid();
     const creatureId = (id: number) => Number.isInteger(id) && id >= 0 && id < game.creatures.length;
     if (w.leash.stack.some(id => !creatureId(id)) || w.leash.placed.some(p => !p || !creatureId(p.id) || !Number.isFinite(p.x) || !Number.isFinite(p.z))) return invalid();
-    // (a night saved while the leash still had its carried relics' list, always empty since Ed, 2026-10-18: read without it)
-    delete (w.leash as { relics?: unknown }).relics; delete (w.leash as { relicAt?: unknown }).relicAt;
+    // (a night saved while a carried relic had a place in the stack, none since Ed, 2026-10-18: read without it)
+    delete (w.leash as { relicAt?: unknown }).relicAt;
   });
   // Resume awaits a player gesture. No held control, pending press or stale interpolation can fire.
   game.clock.paused = true;
