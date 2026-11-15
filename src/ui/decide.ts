@@ -17,6 +17,8 @@ export interface DecideHost { mutate?: (label: string, action: () => void) => vo
 export interface DecideHost { downloadReadableLog?: () => void }
 export * from "./decisions";
 export interface DecideHost { potionLab?: () => void }
+/** The Frame check button and its results (Ed, 2026-11-15: "And have 8 be a button on the right side pause menu"; ui/frameCheckPanel.ts). */
+export interface DecideHost { frameCheck?: () => HTMLElement }
 /** "Load latest version" (playtest 31 Oct item 11; Ed, 2026-10-31: "Can we put the 'load to latest version' button in the pause menu"):
  *  the newer build's label while one is out (app/newBuild.ts), and the reload. */
 export interface DecideHost { newBuild?: { latest(): string | null; load(): void } }
@@ -273,6 +275,7 @@ export class PauseSliders {
     const intro = h("div", { class: "top", html: `<div class="title">❚❚ Paused · test sliders</div><p class="hint">Esc resumes · . steps (Shift+. ten) · changes show now; double-click a slider for its built value</p>` });
     const top = h("div", { class: "top" }, ...settingsBtn, ...latestBtn, copy, ...logBtn, ...(unlockBtn ? [unlockBtn] : []), ...this.defaultBtns, ...(host.report ? [button("Report", () => { this.status.textContent = "drawing the frame with each neutral pair…"; void host.report!().then(t => { this.status.textContent = t; }, e => { this.status.textContent = `report failed: ${e}`; }); }, { class: "copyall", title: "For a visual bug: draw this frame with each neutral pair of settings and save a picture and a JSON (where they differ, the GPU, her place, the repro link)" })] : []), ...(host.musicLab ? [button("🎛 Music Lab", () => host.musicLab!(), { class: "copyall", title: "The night's own music with the lab's sliders, down the right edge: the singer, the levels, a jump to any wave or section; Esc resumes with it up" })] : []), ...(host.audioTest ? [button("🔊 Audio test", () => host.audioTest!(), { class: "copyall", title: "About two minutes in a new tab: the game's music under a rising sound load, with and without AudioWorklets, then Copy results for the builders" })] : []), ...(host.fightArena ? [button("⚔ Fight arena", () => host.fightArena!(), { class: "copyall", title: "In a new tab: her alone against a random wild pack (a seed you can share), with slow motion and today's attacks" })] : []), ...(host.finds ? [this.findsBtn = button("🧪 Finds", () => host.finds!(), { class: "copyall", title: "Dev: give yourself finds, or spawn one near her (the debug overlay's tools are on)" })] : []), this.status);
     if (host.potionLab) top.append(button('Potion lab', () => host.potionLab!(), { class: 'copyall' }));
+    if (host.frameCheck) top.append(host.frameCheck());
     // (held 1.5 s, its fill showing how far: Ed, 2026-11-02, "useful to be able to test from a fresh game")
     const R = host.resetAll;
     if (R) top.insertBefore(this.resetBtn = holdButton("🗑️ Reset everything (hold)", 1500, () => {

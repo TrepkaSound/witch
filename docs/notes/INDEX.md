@@ -355,6 +355,7 @@ glossary; these are the prototype's), by note.
 - The telescope's forest under the loading screen
 - Sail take-off freeze
 - Outfit load time
+- Frame check
 
 ### [The run](run.md)
 

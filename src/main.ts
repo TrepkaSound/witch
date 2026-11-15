@@ -139,6 +139,7 @@ import { BackGuard, nightFromHref, nightHref, type NightWay } from "./app/sail";
 import { hudFade } from "./app/arrive";
 import { forgetArrival, type Arrival } from "./app/arrival";
 import { shotParams } from "./app/shot";
+import { frameCheckFrames, frameCheckParams, holdFrameCheckKeys } from "./app/frameCheck";
 import type { FlightEnd } from "./render/chart/seaChart";
 import { restoreGame } from "./rules/nightSnapshot";
 import { renamedLink } from "./app/renamedLink";
@@ -452,6 +453,9 @@ const logTiming = (): void => { N().playtest.timing(sinceSail(transitionTiming()
 if (params.has("zoo") && !params.has("creator")) params.set("creator", "0");
 // A builder's quick shot (?shot=<scene>, app/shot.ts): only the art the view needs, no start card or bedroom, the waves held.
 shotParams(params); shotParams(bootLink);
+// The frame check (?framecheck=1, the pause page's button: app/frameCheck.ts): the bench's seed and start, in a game of its own.
+frameCheckParams(params); frameCheckParams(bootLink);
+if (frameCheckFrames(params) !== null) holdFrameCheckKeys(window);
 // (its controls, src/zoo/panel.ts, loaded only for it, once the game is made)
 let zooPanel: import("./zoo/panel").ZooPanel | null = null;
 let zooLeaving = false;
@@ -1388,3 +1392,16 @@ a4_installDebug31(pageHost);
 a4_installDebug32(pageHost);
 // Known synchronous console mutations use declared boundaries too. Arbitrary direct writes to witch.game remain detectable replay failures.
 a4_installDebug33(pageHost);
+// The frame check's run (app/frameCheckRun.ts): the loop stood still, play begun with no key and no sound, the scenes driven and timed.
+{
+  const frames = frameCheckFrames(params);
+  if (frames !== null) {
+    void import("./app/frameCheckRun").then(({ bootFrameCheck }) => bootFrameCheck({ build: BUILD, frames, ready: () => N().flags.ready, begin: () => {
+      const { game } = N();
+      revealArt();
+      mutate("frame check: start play", () => { game.clock.paused = false; });
+      startedNights.add(game);
+      startEl.style.display = "none";
+    } }));
+  }
+}

@@ -54,6 +54,29 @@ export class MemoryStorage {
   clear(): void { this.m.clear(); }
 }
 
+/** The frame check's stores (Ed, 2026-11-15: a pause-page button that measures frame time on his machine; app/frameCheck.ts): a
+ *  throwaway game that must not touch his saved one, yet runs at his real settings. So it reads only his settings from the browser
+ *  (FRAME_CHECK_READS: display, controls, the quality ladder's remembered rung) and keeps every write in this page's memory, but for
+ *  its own results (FRAME_CHECK_KEY), which are the real browser's so the last few can be compared. */
+export const FRAME_CHECK_KEY = "witch.framecheck";
+export const FRAME_CHECK_READS = ["witch.settings", "witch.player", "witch.shake", "witch.bindings", "witch.volume", "witch.ladder"] as const;
+/** The link's frame check switch (?framecheck=1, or =quick; not =0). */
+export const frameCheckLink = (search: string): boolean => { const v = new URLSearchParams(search).get("framecheck"); return v !== null && v !== "0"; };
+/** A Storage over `real` that reads through for the keys under `reads` and writes through only for `writes`; all else in memory. */
+export class OverlayStorage extends MemoryStorage {
+  constructor(private readonly real: Storage | null, private readonly reads: readonly string[], private readonly writes: readonly string[]) { super(); }
+  override getItem(key: string): string | null {
+    const own = super.getItem(key);
+    if (own !== null || !this.real) return own;
+    if (this.writes.includes(key) || this.reads.some(r => key.startsWith(r))) { try { return this.real.getItem(key); } catch { return null; } }
+    return null;
+  }
+  override setItem(key: string, value: string): void {
+    if (this.real && this.writes.includes(key)) { try { this.real.setItem(key, String(value)); return; } catch { /* (storage refused: kept for this page) */ } }
+    super.setItem(key, value);
+  }
+}
+
 /** IndexedDB with every database name under `prefix`. */
 export function prefixedIdb(real: IDBFactory, prefix: string): IDBFactory {
   return {
@@ -108,6 +131,10 @@ function wipeFresh(stores: (Storage | null)[], idb: IDBFactory | null, keep: str
 
 export function makeStorageScope(env: ScopeEnv): StorageScope {
   const link = freshLink(env.search);
+  if (frameCheckLink(env.search)) { // (before ?fresh: a frame check never begins or wipes a fresh game)
+    const local = new OverlayStorage(tryGet(env.local), FRAME_CHECK_READS, [FRAME_CHECK_KEY]) as unknown as Storage, session = new MemoryStorage() as unknown as Storage;
+    return { fresh: null, began: false, local: () => local, session: () => session, idb: () => undefined };
+  }
   if (link === null) return { fresh: null, began: false, local: () => tryGet(env.local), session: () => tryGet(env.session), idb: () => tryGet(env.idb) ?? undefined };
   const began = link === "new", token = began ? (env.token ?? newToken)() : link, prefix = `${FRESH_PREFIX}${token}.`;
   const realLocal = tryGet(env.local), realSession = tryGet(env.session), realIdb = tryGet(env.idb);
