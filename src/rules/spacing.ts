@@ -95,5 +95,6 @@ export function spaceOut(list: Creature[], dt: number, still: (c: Creature) => b
       pushX[a] = (px / m) * v * dt; pushZ[a] = (pz / m) * v * dt; moved++;
     } else pushX[a] = NaN;
   }
+  // eslint-disable-next-line no-self-compare -- the fast not-NaN test (NaN marks "not pushed"), on a hot path
   if (moved) for (let a = 0; a < n; a++) if (pushX[a] === pushX[a]) { list[a].x += pushX[a]; list[a].z += pushZ[a]; }
 }

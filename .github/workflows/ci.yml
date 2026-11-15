@@ -363,6 +363,8 @@ jobs:
       - uses: actions/checkout@v4
         id: source
         if: needs.build.outputs.reuse != 'true'
+        with:
+          fetch-depth: 0 # (the guardrails compare the PR with its base: docs/notes/guardrails.md)
       - uses: actions/setup-node@v4
         if: needs.build.outputs.reuse != 'true'
         with:
@@ -378,6 +380,21 @@ jobs:
         run: npm --prefix server ci && npm --prefix server test
       - run: npm run typecheck
         if: needs.build.outputs.reuse != 'true'
+      # The guardrails (Ed's go, 2026-11-15; docs/notes/guardrails.md): no new import edge inside an import loop, and nothing
+      # over the size limits grows, both against the PR's base (no baseline file); then ESLint over src/ and tools/.
+      - name: No new import loops
+        if: needs.build.outputs.reuse != 'true' && github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: node tools/checks/loops.mjs --base "origin/$BASE_REF"
+      - name: Size ratchet
+        if: needs.build.outputs.reuse != 'true' && github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: node tools/checks/size.mjs --base "origin/$BASE_REF"
+      - name: Lint
+        if: needs.build.outputs.reuse != 'true'
+        run: npm run lint
       # A report, never a failure (Ed, 2026-11-15, on keeping the notes honest automatically): comments and notes that
       # state a rule a later ruling replaced, or a knob's number the tuning no longer has. docs/rules/README.md.
       - name: Stale rulings (warnings only)

@@ -577,7 +577,7 @@ setupDebugKeys(view, input, params); // (app/keys.ts)
 // The playtest log (Ed, 2026-10-04): a sample every 10 s of play, kept on this browser, a run a night (app/night.ts); the pause
 // page's Download log (Ed, 2026-10-29: "rather than a key": the L key is gone), or opening the game with ?playtest=download, saves
 // the last few runs as JSON.
-if (params.get("playtest") === "download") setTimeout(() => N().playtest.download(), 500);
+if (params.get("playtest") === "download") setTimeout(() => { void N().playtest.download(); }, 500);
 
 // The debug knobs: the fight's scale, speed and momentum, the treetop speed (app/knobs.ts): their keys, and their live setters
 // for the pause page's sliders and the decisions panel (by the link's param); their start is the night's.
@@ -639,7 +639,7 @@ const chartWarmer = new ChartWarmSchedule(({ world, found, ids }, done) => {
 }, stopWarmChart);
 let chartWarmNextCheck = 0;
 function updateChartWarm(): void { return a4_updateChartWarm(pageHost); }
-requestAnimationFrame(() => setTimeout(async () => {
+requestAnimationFrame(() => setTimeout(async () => { // eslint-disable-line @typescript-eslint/no-misused-promises -- setTimeout drops the promise; left as it was by the lint step
   const night = N();
   if (night.arrival) bedFirst(night); // (the island's link loaded anew, &arrive=1: in bed before the dive, as a sail in place)
   else if (inBedroom) view.asleepInBed = mutate("wake: first bed", () => tuckIn(night.game)); // (in her bed, the camera on her, before the start's made round her, as the bed's next night: nightInPlace; drawn there under the loading screen, never at her decks first)

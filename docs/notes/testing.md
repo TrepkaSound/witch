@@ -306,6 +306,7 @@ It prints the commit, what it adds or changes, and each file's link; `--dry` bui
 
 `node tools/checks/which.mjs [--base <ref>]` lists the checks the current change needs, from its changed files, split into the builder's (before a FINAL) and the coordinator's (on the combined build); `--all` lists them all.
 The rule is the data in `config/checks.json` (Ed, 2026-11-12: "is there text that could be data?"), shown here; edit the data, then `node tools/docs/tables.mjs --write`.
+The guardrails (lint, no new import loops, the size ratchet; Ed's go, 2026-11-15) have their own note: [`guardrails.md`](guardrails.md).
 
 <!-- data: checks (node tools/docs/tables.mjs --write; edit the data, not this) -->
 | Check | Command | Who | Changed paths | CI | From |

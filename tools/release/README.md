@@ -44,7 +44,8 @@ source tools/release/chain.sh   # then: waitci <pr>   and   rel <N|next> "<title
 - **`rel.sh`**: one release. In order: takes the lock; refuses if a release PR is still open; takes the number (`next`) or
   checks the given one against the remote; the same test merge; each PR's head CI green (`SKIPGREEN="<pr>:<why>"` accepts
   one PR's known red, as before); a fresh checkout of prototype; claims `claude/release-N` on the remote; stamps live
-  changelog fragments still null; merges each head by SHA; combines the PRs' bench declarations (`combine-bench.mjs`);
+  changelog fragments still null; merges each head by SHA; combines the PRs' bench declarations and deletes the ones nothing reads any more, the released PRs' own and earlier
+  releases' combined ones (`combine-bench.mjs`; `docs/notes/guardrails.md`);
   checks the merged result (changed JSON parses, no conflict markers, `tsc`, `node tools/config/check.mjs`, inventory,
   glossary); pushes; opens the release PR; starts `pubnow.sh` in the background and hands it the lock. Prints
   `release PR #<n>` and the publish log's path.
@@ -82,8 +83,13 @@ Exit codes (`rel.sh`): 2 usage or setup, 3 CI not green, 4 conflict, 5 locked or
 6. **Paths.** Everything is relative to the clone and `$RELEASE_WORKDIR`; the session link and co-author are settings.
 7. **The watcher.** Same lock and numbering through `rel.sh`; conflicts are loud and make it exit 1.
 
+8. **The build number** (2026-11-15, release 57 stopped on it): `lib.sh`'s `ci_build` looks up a main commit's CI run with
+   `per_page=100` (main's commit soon has more than 30 runs: each PR preview's Pages publish runs there by
+   repository_dispatch, and the default 30 lost CI's) and fails, saying so, when it finds none; `rel.sh` and `pubnow.sh` use it.
+
 ## Testing
 
+- `npx vitest run tools/ci/combine-bench.test.ts`: combining a release's declarations and which files it clears.
 - `npx vitest run tools/ci/release-check.test.ts`: `--check` against throwaway branches in a temp clone (clean, a clash
   between two PRs, a clash with prototype, order, nothing pushed), the CI rule on sample check runs, and the workflows'
   concurrency groups. Offline.

@@ -71,6 +71,16 @@ lock_hand_to() { echo "$1" > "$LOCK/pid"; LOCK_MINE=""; }
 lock_inherit() { echo "$$" > "$LOCK/pid"; echo "$1, since $(date -u +%Y-%m-%dT%H:%MZ)" > "$LOCK/what"; LOCK_MINE=1; }
 lock_traps() { trap 'lock_drop' EXIT; trap 'exit 143' TERM; trap 'exit 130' INT; trap 'exit 129' HUP; }
 
+# --- The CI build number (the game's version) of a commit on main. per_page=100: main's commit soon has more than 30 runs
+# (each PR preview's Pages publish runs on main by repository_dispatch), and the default page of 30 lost CI's run, so the
+# number came back empty (release 57). Fails, saying so, if there's still none.
+ci_build() {
+  local b
+  b=$(gh api "$R/actions/runs?head_sha=$1&per_page=100" --jq '[.workflow_runs[]|select(.name=="CI")][0].run_number // empty')
+  [[ $b =~ ^[0-9]+$ ]] || die 1 "no CI run number for ${1:0:9} (got \"$b\"): look in Actions for its CI run"
+  printf '%s\n' "$b"
+}
+
 # --- CI on a commit. A job counts as passed if any run of it passed (a duplicate run cancelled by a newer one is not
 # a failure; release 46), or if every run of it was skipped. The art check never holds a release (Ed, 2026-11-01).
 ci_runs() { gh api --paginate "$R/commits/$1/check-runs?per_page=100" --jq '.check_runs[]|{name,status,conclusion}' | jq -s .; }

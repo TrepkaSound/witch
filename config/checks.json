@@ -16,6 +16,36 @@
       "note": "docs/notes/testing.md"
     },
     {
+      "id": "lint",
+      "command": "npx eslint --no-warn-ignored --no-error-on-unmatched-pattern {files}",
+      "what": "ESLint on the files you changed (eslint.config.js: unhandled promises, eqeqeq, dead else-ifs and a few more); npm run lint is the whole of src/ and tools/, about a minute.",
+      "paths": ["src/**/*.ts", "tools/**/*.{js,mjs,cjs,ts}"],
+      "runner": "builder",
+      "ci": "every PR (check-work: npm run lint)",
+      "from": "Ed's go, 2026-11-15 (guardrails)",
+      "note": "docs/notes/guardrails.md"
+    },
+    {
+      "id": "import-loops",
+      "command": "node tools/checks/loops.mjs",
+      "what": "No new import edge inside an import loop in src/ since the merge base (a new loop, or a worse tangle); about a second.",
+      "paths": ["src/**"],
+      "runner": "builder",
+      "ci": "every PR (check-work, against the PR's base)",
+      "from": "Ed's go, 2026-11-15 (guardrails)",
+      "note": "docs/notes/guardrails.md"
+    },
+    {
+      "id": "size-ratchet",
+      "command": "node tools/checks/size.mjs",
+      "what": "No file in src/ over 800 lines, or function over 150, grew since the merge base, and none new; a few seconds.",
+      "paths": ["src/**"],
+      "runner": "builder",
+      "ci": "every PR (check-work, against the PR's base)",
+      "from": "Ed's go, 2026-11-15 (guardrails)",
+      "note": "docs/notes/guardrails.md"
+    },
+    {
       "id": "related-tests",
       "command": "npx vitest related --run --passWithNoTests {files}",
       "what": "The unit tests that import what you changed: the tests near what you touched.",

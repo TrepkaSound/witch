@@ -350,7 +350,7 @@ function telegraph(S: SpellState, t: Omit<Telegraph, "id" | "alive">): void {
 }
 
 /** An attack's warnings, from `start` to its release at `fire`: each by its kind, as geometry. */
-function showTelegraphs(S: SpellState, W: SpellWorld, spec: AttackSpec, name: string, x: number, z: number, heading: number, target: Hittable | null, side: string, source: number, castId: number, start: number, fire: number, o: { aimAt?: { x: number; z: number }; centre?: boolean } = {}): void { // eslint-disable-line max-params
+function showTelegraphs(S: SpellState, W: SpellWorld, spec: AttackSpec, name: string, x: number, z: number, heading: number, target: Hittable | null, side: string, source: number, castId: number, start: number, fire: number, o: { aimAt?: { x: number; z: number }; centre?: boolean } = {}): void {
   const kind = telegraphKind(spec), lead = spec.telegraph?.lead, from = lead !== undefined ? Math.max(start, fire - lead) : start;
   if (kind === "none") return;
   const base = { kind, attack: name, side, source, cast: castId, start: from, fire };
@@ -490,7 +490,7 @@ function headOffset(a: AttackSpec, k: number, heading: number): { dx: number; dz
   return { dx: Math.cos(heading) * ahead - Math.sin(heading) * side, dz: Math.sin(heading) * ahead + Math.cos(heading) * side };
 }
 
-function emitOne(S: SpellState, W: SpellWorld, lib: Library, a: AttackSpec, p: Pending, x: number, z: number, heading: number, time: number, B: string): void { // eslint-disable-line max-params
+function emitOne(S: SpellState, W: SpellWorld, lib: Library, a: AttackSpec, p: Pending, x: number, z: number, heading: number, time: number, B: string): void {
   if (p.depth > 0) {
     const made = (S.made.get(p.cast) ?? 0) + 1;
     if (made > CAPS.children) { S.capped++; return; }
