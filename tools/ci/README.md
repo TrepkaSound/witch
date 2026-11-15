@@ -117,6 +117,7 @@ Inventory real world-constructor calls and explicit small-fixture reasons; comme
 - `PLAN.md`
 - `PROOF-PLAN.md`
 - `behaviour-report.test.ts`
+- `combine-bench.test.ts`
 - `effects-scene.test.ts`
 - `install-chromium.test.ts`
 - `mockingTests.test.ts`

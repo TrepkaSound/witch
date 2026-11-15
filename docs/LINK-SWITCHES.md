@@ -140,7 +140,7 @@ For the builders, the smoke and bench runs, the repro link and the arenas.
 | `rig=0` | Creatures as baked sprites, without the live rig. | 2026-10-05 | render/rig/rigView.ts |
 | `scenery=<m>` | A fixed scenery radius instead of the adaptive budget. | 2026-10-07 | app/viewParams.ts |
 | `set=<path>=<value>;…` | Any tuning settings for one load (the repro link's: every setting changed from the build's). | 2026-10-14 | app/linkParams.ts, app/mapPrep.ts, app/night.ts, app/sail.ts |
-| `shot=object:<id>` / `shot=room:<id>` / `shot=area:<type>` / `shot=creature:<species>[@level]` / `shot=find:<kind>:<item>` / `shot=at:<x>,<z>` | A builder's quick proof shot: only the art the scene needs, with her put at it. | 2026-10-23 | app/gameParams.ts, app/pageDebug.ts, app/pageFinds.ts, app/pageFrame.ts, app/shot.ts, main.ts |
+| `shot=object:<id>` / `shot=room:<id>` / `shot=area:<type>` / `shot=creature:<species>[@level]` / `shot=find:<kind>:<item>` / `shot=at:<x>,<z>` | A builder's quick proof shot: only the art the scene needs, with her put at it. | 2026-10-23 | app/gameParams.ts, app/pageDebug.ts, app/pageFinds.ts, app/pageFrame.ts, app/pageVisit.ts, app/shot.ts, main.ts |
 | `spawnfind=<kind>:<item>` / `spawnfind=tonight` | That find spawned once where she first stands on open ground, for shots. | 2026-10-23 | main.ts |
 | `telephone=1` | Proof-only: shows the unfinished telephone station panel; default play keeps the existing quiet-line message. Calls stay off unless telephoneCalls=1 is also explicitly supplied. | 2026-11-01 | app/telephoneSwitch.ts |
 | `telephoneCalls=1` | Explicit two-client proof only: admits calls only when telephone=1 is also supplied. Ordinary calls remain off until canonical GO. | 2026-11-01 | app/telephoneSwitch.ts |
