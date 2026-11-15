@@ -18,12 +18,14 @@ that; `tools/docs/glossary.test.ts` fails while this is out of date. Read an are
 - [Deploys](deploys.md): GitHub Pages and publishing: the gh-pages snapshot and its publisher, PR previews, garbage collection, version.json and the newer-build notice, and when a release counts as live.
 - [Expert search: implementation and fairness audit](expert-search.md): Observation limits, deterministic training, protected seeds and the survey adapter.
 - [Creatures in play](gameplay.md): Inviting, the leash and sigils, combat and sieges, creature states, the legends and their quests.
+- [Guardrails](guardrails.md): The checks that stop the code getting worse: ESLint, no new import loops in src/, the size ratchet on big files and functions, their escapes, and the release's clean-up of bench declarations.
 - [The treehouse and its house](house.md): The treehouse and its deck, arriving, the house's rooms, the station menus, the Studio, finds, the Workshop and broom parts, hats and brooms, the telescope.
 - [Islands and the journey](island.md): Island growth and shape, the land, lakes, biomes and beaches, the archipelago and the sea chart, sailing in place, kinds, the zoo.
 - [Light-pool readability experiment](light-pool-readability.md): Default-off creature readability inside the witch's light pool, investigation and review evidence requirements.
 - [The Making Of](making-of.md): The static site about how the game was made.
 - [The music](music.md): The music engine, its style, sections and arc, the singer, the labs and studio, samples.
 - [Two-browser prototype](online-prototype.md): The separate two-browser prototype: local relay, host authority, joining, checks and current limits.
+- [The page](page.md): How the game's page is put together: src/main.ts's start-up and wiring, the src/app/page*.ts modules by job, and the page's host (pageHost) they share.
 - [Performance](performance.md): The View's build in slices, the start's shaders, the stall hunt.
 - [The run](run.md): The phases of a run, the opening and the party spell, the clock, her controls and the camera, waves, knockouts and the party's end.
 - [Save slots](save-slots.md): Independent progress and settings storage, legacy migration and save-format guards.
@@ -206,6 +208,10 @@ glossary; these are the prototype's), by note.
 - Route out and back
 - The challenge circle hidden till the party
 
+### [Guardrails](guardrails.md)
+
+- Fails
+
 ### [The treehouse and its house](house.md)
 
 - The house one room
@@ -324,6 +330,15 @@ glossary; these are the prototype's), by note.
 ### [Two-browser prototype](online-prototype.md)
 
 (no entries: its tools and checks only)
+
+### [The page](page.md)
+
+- Imports run one way
+- Order.
+- About 150 members
+- Why not narrower everywhere:
+- Narrowed so far:
+- Next, if wanted:
 
 ### [Performance](performance.md)
 
