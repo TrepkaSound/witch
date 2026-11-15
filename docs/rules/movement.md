@@ -63,7 +63,7 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 1. A creature's stun on her is now a slow: 40% speed for 3 times the stun's length. PR #2073. Code: `src/rules/game.ts#stunWitch`, `config/tuning.json#witch.stunAsSlow.on`, `config/tuning.json#witch.stunAsSlow.speed`, `config/tuning.json#witch.stunAsSlow.time`. Ruling: Ed, 2026-11-13: "I think stun and slow are very similar, and stun is less fun than slow, so how about stun is replaced with slow and we use circling stars?".
 2. A slow multiplies her top speed on the ground and in the treetops alike. Slows do not multiply together: the end time is the latest, and the strength is the stronger of the new one and any older one that lasts longer. Code: `src/rules/game.ts#slowMult`, `src/rules/game.ts#slowUntil`. Ruling: none found (code only).
 3. A root on her is a slow to 0.05 of her speed, not a full stop. Code: `src/rules/attacks/combatWorld.ts#w.slowWitch?.(id, time + e.root, 0.05)`. Ruling: none found (code only).
-4. Every blow's own short stagger (see Being thrown) was not changed: it is still a full stop of 0.25 to 1 s. Code: `src/rules/knock.ts#stunUntil`, `src/rules/game.ts#stunned(W.knock, ht)`. Ruling: Ed, 2026-11-13: "Big: 40% speed, 3× as long".
+4. Every blow's own short stagger (see Being thrown) was not changed: it is still a full stop of 0.25 to 1 s. Code: `src/rules/knock.ts#stunUntil`, `src/rules/game.ts#stunned(W.knock, ht)`. Ruling: none found (code only). Ed's 2026-11-13 stun ruling does not mention the stagger.
 
 ## Knockout and respawn
 

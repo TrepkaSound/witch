@@ -92,8 +92,9 @@ export function citations(text) {
   hits.forEach((m, n) => {
     const date = m[1] ?? iso(m[2], m[3], m[4]);
     const rest = text.slice(m.index + m[0].length, hits[n + 1]?.index ?? text.length);
-    const q = /^[^"“]{0,90}["“]([^"”]{4,}?)["”]/.exec(rest);
-    out.push({ date, quote: q ? q[1].trim() : "" });
+    const q = /^([^"“]{0,90})["“]([^"”]{4,}?)["”]/.exec(rest);
+    // (another date between this one and the quote: the quote is that date's, "Ed, 2026-11-03, replacing the rule of 2026-10-18, "…"")
+    out.push({ date, quote: q && !/20\d\d-\d\d-\d\d/.test(q[1]) ? q[2].trim() : "" });
   });
   return out;
 }

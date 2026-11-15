@@ -2,8 +2,9 @@
 // 'blink' - she vanishes and reappears in the direction of travel"): on the ground, she's gone from
 // where she stood and is dash.distance metres on the way she's steering (or flying, or facing), all
 // in one step; for dash.gone seconds after she isn't drawn and can't be hit, then dash.cooldown
-// seconds before the next. She never lands in a trunk, a rock or a soundsystem: the blink is
-// shortened to the furthest clear spot along its line. No drawing here.
+// seconds before the next. On foot she never lands on a lake or over the zoo's fence: the blink is
+// shortened to the furthest clear spot along its line (rules/game.ts blinkClear). Trunks, rocks and soundsystems no longer
+// stop it (Ed, 2026-11-13: "Drop all of them"). No drawing here.
 import type { Tuning } from "./tuning";
 import type { WitchState } from "./witch";
 import { keepIn, type Bounds } from "./mapShape";

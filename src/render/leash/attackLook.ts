@@ -4,9 +4,9 @@
 // the treetops). Its parts, each placed by a delivery: core (what flies), trail (left behind it), impact (the hit: a flash, a
 // shock ring, its bits flying its element's way, and a mark left on the ground), beam (beads strung along it), area (a quake's or
 // a pulse's ground, its tiles spreading with the front) and motif (a side effect, by shape). And the shared DANGER FRAME every
-// wild attack wears, whatever its element (Ed, 2026-10-27: "composability and telegraphing"): red = warning (Ed, 2026-11-02: "the
-// telegraph should be red"), a dark edge each side, marching = live, fill = the time left, a flash = now, brackets = you; its
-// element shows only at the hit. Seeded from each attack's id and time (hash2), so a shot or a replay draws the same. How big,
+// wild attack wears, whatever its element (Ed, 2026-10-27: "composability and telegraphing"): in its element's colour (a trial, Ed, 2026-11-13: "Let's try
+// element colours and see"; red till then, his 2026-11-02 rule, which ?telegraphs=red brings back), a dark edge each side,
+// marching = live, fill = the time left, a flash = now, brackets = you. Seeded from each attack's id and time (hash2), so a shot or a replay draws the same. How big,
 // solid, glowing and lasting the spells are is the tuning's attackFx.visibility (Visibility, below; Ed, 2026-11-03: "Let's dial up
 // current creature spell effects a lot so they're easier to see. Larger, extra Bloom. Don't bring back the flash and rings yet").
 import * as THREE from "three";

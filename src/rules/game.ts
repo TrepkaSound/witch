@@ -658,7 +658,7 @@ export function stepWitchLocomotion(g: Game, W: Witch, input: Controls, hdt: num
   else if (stunned(W.knock, ht)) c = { moveX: 0, moveZ: 0, toggleMode: false, zoom: c.zoom, sigil: c.sigil, place: c.place, cycle: c.cycle, cycleBack: c.cycleBack };
   // Her movement turned (pack combat: the bat's screech, rules/combat/packs.ts): her steering swung, wavering, as her aim is by the stoat's dance.
   else if (W.confused?.move && ht < W.confused.until && W.body.mode === "ground") { const a = W.confused.drift * Math.sin(ht * 2.3), cs = Math.cos(a), sn = Math.sin(a); c = { ...c, moveX: c.moveX * cs - c.moveZ * sn, moveZ: c.moveX * sn + c.moveZ * cs }; }
-  // Grounded by who follows her (Ed, 2026-10-18: "One adult stops you taking off. Three young do.", by weight; "you try and fly
+  // Grounded by who follows her (Ed, 2026-11-03: only adults and legends ground her; his 2026-10-18 rule by weight, "One adult stops you taking off. Three young do.", is replaced; "you try and fly
   // but get pulled down"; rules/leashWeight.ts groundedBy, leash.grounded): the press keeps her on the ground, dropped before the
   // cooldown's (so it spends none), and is said, the "grounded" leash event: the view draws her lifting off and yanked back down
   // by her taut, blazing leashes (render/view/witch.ts groundedHop, render/leash/stack.ts drawBond) and the landing's thud
