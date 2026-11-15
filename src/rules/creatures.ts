@@ -286,40 +286,120 @@ export function makeCreature(map: ForestMap, cell: [number, number], level: Leve
   const range = wanderRange(map), [anchorX, anchorZ] = anchorOf(map, cell, home.x, home.z, range);
   const base = { cell, homeX: home.x, homeZ: home.z, range, anchorX, anchorZ, level };
   const [x, z] = at ?? pointInArea(map, base, r);
-  // One shape for every creature, built as one literal (every field, in CREATURE_OPTIONAL's order after the required ones):
+  // One shape for every creature, built as one literal (every field: the required ones, then each optional one on a line of its
+  // own, so two builders adding fields change different lines; EveryField fails the typecheck on a field of Creature left out):
   // phase 2's GC churn wanted one shape (35 shapes among a late game's creatures made each c.x read allocate); setting the
   // optional fields one by one after the fact did that but tipped V8 into dictionary mode (86 fields added by keyed
   // stores), every field read a hash lookup, most of a step's work with every area peopled. A literal stays fast.
-  const c: Creature = {
+  const c: EveryField<Creature> = {
     id, species: type.creature, level, cell, homeX: home.x, homeZ: home.z, range, anchorX, anchorZ, x, z, tx: x, tz: z,
     rest: r() * 3, speed: (level === LEGEND ? t.legendSpeed : t.creatureSpeed * speedFactor(type.creature, level, t)) * (0.7 + r() * 0.6),
     facing: r() < 0.5 ? 1 : -1, away: false, moving: false, walk: r(), seen: 0, leashed: false,
     rand: rng(map.seed * 31 + (id + 1) * 7 + 11),
-    lod: undefined, hp: undefined, hurtAt: undefined, kx: undefined, kz: undefined, slowUntil: undefined,
-    stunUntil: undefined, burrow: undefined, leap: undefined, fight: undefined, fleeUntil: undefined,
-    retreat: undefined, retreatFrom: undefined, fleeX: undefined, fleeZ: undefined, vx: undefined, vz: undefined,
-    run: undefined, lairX: undefined, lairZ: undefined, homing: undefined, charge: undefined, dug: undefined,
-    travelling: undefined, state: undefined, happyAt: undefined, partyLegend: undefined, dazed: undefined,
-    dancing: undefined, restlessness: undefined, questOpen: undefined, atStone: undefined, loose: undefined, aims: undefined,
-    dazedUntil: undefined, affection: undefined, affectionAt: undefined, fills: undefined, drops: undefined, ranOff: undefined, cheerUntil: undefined, holdT: undefined, holdAt: undefined,
-    route: undefined, engagedUntil: undefined, brace: undefined, legend: undefined, moveReadyAt: undefined,
-    sprung: undefined, enraged: undefined, asleepAt: undefined, bed: undefined, gone: undefined, beach: undefined, beached: undefined, siege: undefined,
-    wanderTo: undefined, circle: undefined, dropped: undefined, healedAt: undefined, healedSmall: undefined, boss: undefined, legendState: undefined,
-    stateAt: undefined, quest: undefined, friendly: undefined, asleep: undefined, napUntil: undefined, lulled: undefined,
-    wakeUntil: undefined, safeX: undefined, safeZ: undefined, safeR: undefined, watchUntil: undefined, hunting: undefined, taunt: undefined, swoop: undefined, finale: undefined,
-    packGlow: undefined, packHide: undefined, packShell: undefined, packProwl: undefined, feintUntil: undefined, coverBy: undefined, packSync: undefined, packThrow: undefined, sitUntil: undefined, mind: undefined, spell: undefined, hop: undefined, hopNext: undefined, homeGuard: undefined, statue: undefined, shy: undefined, journey: undefined,
+    lod: undefined,
+    hp: undefined,
+    hurtAt: undefined,
+    kx: undefined,
+    kz: undefined,
+    slowUntil: undefined,
+    stunUntil: undefined,
+    burrow: undefined,
+    leap: undefined,
+    fight: undefined,
+    fleeUntil: undefined,
+    retreat: undefined,
+    retreatFrom: undefined,
+    fleeX: undefined,
+    fleeZ: undefined,
+    vx: undefined,
+    vz: undefined,
+    run: undefined,
+    lairX: undefined,
+    lairZ: undefined,
+    homing: undefined,
+    charge: undefined,
+    dug: undefined,
+    travelling: undefined,
+    state: undefined,
+    happyAt: undefined,
+    partyLegend: undefined,
+    dazed: undefined,
+    dancing: undefined,
+    restlessness: undefined,
+    questOpen: undefined,
+    atStone: undefined,
+    loose: undefined,
+    aims: undefined,
+    dazedUntil: undefined,
+    affection: undefined,
+    affectionAt: undefined,
+    fills: undefined,
+    drops: undefined,
+    ranOff: undefined,
+    cheerUntil: undefined,
+    holdT: undefined,
+    holdAt: undefined,
+    route: undefined,
+    engagedUntil: undefined,
+    brace: undefined,
+    legend: undefined,
+    moveReadyAt: undefined,
+    sprung: undefined,
+    enraged: undefined,
+    asleepAt: undefined,
+    bed: undefined,
+    gone: undefined,
+    beach: undefined,
+    beached: undefined,
+    siege: undefined,
+    wanderTo: undefined,
+    circle: undefined,
+    dropped: undefined,
+    healedAt: undefined,
+    healedSmall: undefined,
+    boss: undefined,
+    legendState: undefined,
+    stateAt: undefined,
+    quest: undefined,
+    friendly: undefined,
+    asleep: undefined,
+    napUntil: undefined,
+    lulled: undefined,
+    wakeUntil: undefined,
+    safeX: undefined,
+    safeZ: undefined,
+    safeR: undefined,
+    watchUntil: undefined,
+    hunting: undefined,
+    taunt: undefined,
+    swoop: undefined,
+    finale: undefined,
+    packGlow: undefined,
+    packHide: undefined,
+    packShell: undefined,
+    packProwl: undefined,
+    feintUntil: undefined,
+    coverBy: undefined,
+    packSync: undefined,
+    packThrow: undefined,
+    sitUntil: undefined,
+    mind: undefined,
+    spell: undefined,
+    hop: undefined,
+    hopNext: undefined,
+    homeGuard: undefined,
+    statue: undefined,
+    shy: undefined,
+    journey: undefined,
   };
   if (level === LEGEND) { c.boss = true; c.legendState = "asleep"; c.stateAt = 0; }
   return c;
 }
 
-/** Every optional field of a Creature, in the order makeCreature's literal lists them (one shape for all; creatures.test.ts checks the order). A field added to
- *  Creature and not here fails the typecheck (OptionalMissing). */
-export const CREATURE_OPTIONAL = ["lod", "hp", "hurtAt", "kx", "kz", "slowUntil", "stunUntil", "burrow", "leap", "fight", "fleeUntil", "retreat", "retreatFrom", "fleeX", "fleeZ", "vx", "vz", "run", "lairX", "lairZ", "homing", "charge", "dug", "travelling", "state", "happyAt", "partyLegend", "dazed", "dancing", "restlessness", "questOpen", "atStone", "loose", "aims", "dazedUntil", "affection", "affectionAt", "fills", "drops", "ranOff", "cheerUntil", "holdT", "holdAt", "route", "engagedUntil", "brace", "legend", "moveReadyAt", "sprung", "enraged", "asleepAt", "bed", "gone", "beach", "beached", "siege", "wanderTo", "circle", "dropped", "healedAt", "healedSmall", "boss", "legendState", "stateAt", "quest", "friendly", "asleep", "napUntil", "lulled", "wakeUntil", "safeX", "safeZ", "safeR", "watchUntil", "hunting", "taunt", "swoop", "finale", "packGlow", "packHide", "packShell", "packProwl", "feintUntil", "coverBy", "packSync", "packThrow", "sitUntil", "mind", "spell", "hop", "hopNext", "homeGuard", "statue", "shy", "journey"] as const satisfies readonly (keyof Creature)[];
-type RequiredKeys = "id" | "species" | "cell" | "level" | "homeX" | "homeZ" | "range" | "anchorX" | "anchorZ" | "x" | "z" | "tx" | "tz" | "rest" | "speed" | "facing" | "away" | "moving" | "walk" | "seen" | "leashed" | "rand";
-type OptionalMissing = Exclude<keyof Creature, RequiredKeys | (typeof CREATURE_OPTIONAL)[number]>;
-const _everyField: [OptionalMissing] extends [never] ? true : OptionalMissing = true;
-void _everyField;
+/** A Creature with every optional field named (as undefined, or its value): makeCreature's literal is one of these, so a field
+ *  added to Creature and not to the literal fails the typecheck, and the literal is the only list of them (until 2026-11-15 a
+ *  second list, CREATURE_OPTIONAL, had to be kept in the same order by hand: every pull request adding a field clashed in both). */
+type EveryField<T> = { [K in Exclude<keyof T, never>]: T[K] }; // (not mapped straight over keyof T, so no field stays optional, and an optional one's type keeps its undefined)
 
 /** Where an area's legend lies (Ed, 2026-10-04): out of its clearing, but well inside the map (where she can fly). */
 function legendSpot(map: ForestMap, cell: [number, number], r: () => number): [number, number] {
