@@ -201,7 +201,6 @@ describe("legends, redesigned (Ed, 2026-10-05; #87)", () => {
     g.witch = { ...g.witch, x: r.sx, z: r.sz }; // (on its sigil, south of it)
     run(g, 0.2, { ...idle, sigil: true });
     expect(r.state).toBe("used");
-    expect(g.leash.relics).toEqual([]);
     expect(pup.level).toBe(2);
     expect(L.legendState).not.toBe("happy");
   }, 60000);

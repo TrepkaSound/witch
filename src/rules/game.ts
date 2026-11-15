@@ -841,7 +841,7 @@ function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonl
     if (was.falling !== undefined && W.body.falling === undefined) W.leash.events.push({ kind: "fell", id: W.id, x: W.body.x, z: W.body.z, at: ht }); // (off the balcony with no broom: back at the circle)
     // Her hat's spell on putting it down or picking it up (rules/hatSpells.ts: Harvest, Dowsing, Gathering).
     // Stealth (rules/brooms.ts): throwing 💌s, or putting down or picking up anything, gives her away for a moment.
-    if (firing || W.leash.events.some(e => e.at === ht && (e.kind === "placed" || e.kind === "picked" || e.kind === "hatPut" || e.kind === "hatPicked" || e.kind === "relicPicked" || e.kind === "flaskDrunk" || e.kind === "relicPlaced" || e.kind === "relicDropped"))) revealed(W.spells, ht, t);
+    if (firing || W.leash.events.some(e => e.at === ht && (e.kind === "placed" || e.kind === "picked" || e.kind === "hatPut" || e.kind === "hatPicked" || e.kind === "relicPicked" || e.kind === "flaskDrunk" || e.kind === "relicPlaced"))) revealed(W.spells, ht, t);
     for (const e of W.leash.events.slice()) if (e.at === ht && e.id === W.id) {
       if (e.kind === "hatPut" && W.hat.down) onHatPut(g, W, W.hat.down.x, W.hat.down.z, ht, t);
       else if (e.kind === "hatPicked") { onHatPicked(g, W, e.x, e.z, ht, t); const waking = wakeOf(g, W); if (waking) wearPiece(waking, "hat"); } // (a hat on her head: out of last night's pile, so she's drawn in it; rules/clothesPile.ts)

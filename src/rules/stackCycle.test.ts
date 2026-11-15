@@ -7,7 +7,7 @@ import { TUNING } from "./tuning";
 import { newGame as fullGame, stepGame, STEP } from "./game";
 import { smallWorld } from "../test/worlds";
 const newGame = smallWorld(fullGame, "Stack cycling uses three nearby creatures and one tethered legend, independent of distant areas.");
-import { stackBottom } from "./leash";
+import { cycleStack, cycleStackBack, newLeash, stackBottom, stackOrder, toBottom } from "./leash";
 import { stackShown } from "../platform/playtestLog";
 
 const C = { moveX: 0, moveZ: 0, toggleMode: false, zoom: 0 };
@@ -38,5 +38,32 @@ describe("cycling her stack", () => {
       expect(shown).toHaveLength(3);
       expect(shown[2]).toBe(`tether #${L.id} ${L.species}`);
     }
+  });
+  // (From stackRelics.test.ts, which also held a carried flask's place in the stack; none is carried since Ed, 2026-10-18.)
+  it("cycles forward (the bottom to the top) and back (the pad's L1, Ed 2026-10-28: the top to the bottom), each undoing the other", () => {
+    const s = newLeash(), ids = () => stackOrder(s).map(it => it.id);
+    s.stack.push(1, 2, 3);
+    expect(cycleStack(s)).toEqual({ kind: "creature", id: 3 });
+    expect(ids()).toEqual([3, 1, 2]);
+    expect(stackBottom(s)).toEqual({ kind: "creature", id: 2 });
+    expect(cycleStackBack(s)).toEqual({ kind: "creature", id: 3 });
+    expect(ids()).toEqual([1, 2, 3]);
+    toBottom(s, 1);
+    expect(ids()).toEqual([2, 3, 1]);
+    toBottom(s, 9); // (not hers: nothing)
+    expect(ids()).toEqual([2, 3, 1]);
+  });
+  it("one sigil alone, or none, doesn't cycle", () => {
+    const s = newLeash();
+    expect(cycleStack(s)).toBeNull(); expect(cycleStackBack(s)).toBeNull(); expect(stackBottom(s)).toBeNull();
+    s.stack.push(4);
+    expect(cycleStack(s)).toBeNull(); expect(cycleStackBack(s)).toBeNull();
+    expect(s.stack).toEqual([4]);
+  });
+  it("cycles back in play, on the cycle-back control, with a cycled event naming the sigil", () => {
+    const { g } = leashed(3), before = [...g.leash.stack];
+    stepGame(g, { ...C, cycleBack: true } as never, STEP);
+    expect(g.leash.stack).toEqual([...before.slice(1), before[0]]);
+    expect(g.leashEvents.find(e => e.kind === "cycled")).toMatchObject({ id: before[0] });
   });
 });
