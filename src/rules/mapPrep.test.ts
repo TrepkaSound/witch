@@ -41,7 +41,7 @@ function play(seed: number, t: Tuning, prep?: MapPrep) {
   g.clock.paused = false;
   for (let i = 0; i < 300; i++) stepGame(g, { ...idle, moveX: 1 }, STEP);
   // (the state that moves, as the bench's fingerprint has it)
-  return plain({ clock: g.clock, witches: g.witches, creatures: g.creatures, party: g.party, combat: g.combat, berries: g.berries, beat: g.beat, camera: g.camera, speakers: g.speakers, floor: g.floor, partyWitches: g.partyWitches, friendly: g.friendly, tally: g.tally });
+  return plain({ clock: g.clock, witches: g.witches, creatures: g.creatures, party: g.party, combat: g.combat, growth: g.growth, berries: g.berries, beat: g.beat, camera: g.camera, speakers: g.speakers, floor: g.floor, partyWitches: g.partyWitches, friendly: g.friendly, tally: g.tally });
 }
 
 describe("a map made from its prep (rules/map.ts MapPrep; app/mapPrep.ts)", () => {

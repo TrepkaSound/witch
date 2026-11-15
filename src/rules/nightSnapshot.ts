@@ -130,15 +130,13 @@ export function restoreGame(input: unknown): Game {
   if (!Object.hasOwn(state, 'mushrooms')) state.mushrooms = game.mushrooms;
   // Saved nights from before the challenge area (rules/challenge.ts) have no pack among their creatures: no challenge that night.
   if (!Object.hasOwn(state, 'challenge')) state.challenge = null;
-  // Saved nights from before the old wave-by-wave growth's counts left the game (never filled: no growth since Ed, 2026-10-07) still carry them: dropped.
-  delete state.growth;
   // A compatible save has every non-optional field made by newGame. Extra fields are allowed only
   // if they belong to Game (optional fields aren't all present on a new night).
   for (const key of Object.keys(game)) if (!OMIT.has(key) && !Object.hasOwn(state, key)) return invalid();
   if (Object.keys(state).some(key => !Object.hasOwn(game, key) && !OPTIONAL.has(key))) return invalid();
   Object.assign(game, state);
   const stream = (r: unknown) => typeof r === "function" && rngState(r as () => number) !== undefined;
-  if (!Number.isFinite(game.clock.time) || game.clock.time < 0 || !Number.isFinite(game.herTime) || game.herTime < 0 || !Number.isInteger(game.party.wave) || game.party.wave < 0 || !(game.party.areas instanceof Map) || !(game.combat.sounds instanceof Map) || !(game.berries.onBush instanceof Int32Array) || !stream(game.berries.rand) || !stream(game.partyWitches.rand) || !Array.isArray(game.berries.berries) || !Array.isArray(game.combat.shots)) return invalid();
+  if (!Number.isFinite(game.clock.time) || game.clock.time < 0 || !Number.isFinite(game.herTime) || game.herTime < 0 || !Number.isInteger(game.party.wave) || game.party.wave < 0 || !(game.party.areas instanceof Map) || !(game.combat.sounds instanceof Map) || !(game.growth.pending instanceof Map) || !(game.berries.onBush instanceof Int32Array) || !stream(game.berries.rand) || !stream(game.partyWitches.rand) || !Array.isArray(game.berries.berries) || !Array.isArray(game.combat.shots)) return invalid();
   if (game.beach !== null && (!Array.isArray(game.beach) || game.beach.some(b => !b || !stream(b.rand)))) return invalid();
   game.creatures.forEach((c, i) => { if (!c || c.id !== i || typeof c.rand !== "function" || !Number.isFinite(c.x) || !Number.isFinite(c.z)) return invalid(); });
   game.witches.forEach((w, i) => {

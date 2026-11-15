@@ -56,6 +56,7 @@ import { keepInBedroom, stepWake, wakeOf, startWakeInLastBed, WAKE_DEFAULT, type
 import { wearPiece } from "./clothesPile";
 import { hatLetters, hatsDown, onHatPicked, onHatPut, stepHatSpells } from "./hatSpells";
 import { groundedBy } from "./leashWeight";
+import { newGrowth, type GrowthState } from "./growth";
 import { pinWitch, type Pinned } from "./partyLegend";
 import { beginChains, chainLength, dragWitch } from "./chains";
 import { pullsOf, stepPop, stepTug, tautKnobs, yankFrom, type PopMeter } from "./tautChain";
@@ -174,6 +175,8 @@ export interface Game {
   readonly forest: Forest;
   /** Every creature made so far (ids are their places here): a night's all at its start (no growth: Ed, 2026-10-28); the zoo's bar adds more. */
   readonly creatures: Creature[];
+  /** The old wave-by-wave growth's counts: never filled (no growth: Ed, 2026-10-07, 2026-10-28); only the saved night's format keeps it (rules/growth.ts GrowthState). */
+  growth: GrowthState;
   readonly clock: Clock;
   /** Every player's witch; the first is this machine's (the camera follows her). */
   witches: Witch[];
@@ -353,7 +356,7 @@ export function newGame(seed: number, tuning: Tuning, players = 1, ready?: MapPr
     speakerBoot: map.dancefloor.speakers.map(() => null),
     beat: newBeatClock(tuning.beat.bpm), knockdowns: [] as { at: number; back: number }[], musicSet: set,
     floor: newFloor(), partyWitches: newPartyWitches(seed), beach: newBeachWitches(seed, map.bounds, tuning),
-    combat: newCombat(), koEvents: [] as KnockoutEvent[], friendly: new Set<string>(), wildEntry: new Map(), questEvents: [] as QuestEvent[], islandsTonight: [] as string[], waveEvents: [] as WaveEvent[], leashEvents: [] as LeashEvent[], loose: [] as LooseSigil[], relics: placeRelics(map, forest), trunk: null as Trunk | null, challenge: newChallenge(map, creatures), tally: { berries: 0, invites: 0, evolved: 0 }, partyOver: null as PartyOver | null, win: null as WinState | null,
+    combat: newCombat(), koEvents: [] as KnockoutEvent[], friendly: new Set<string>(), wildEntry: new Map(), questEvents: [] as QuestEvent[], islandsTonight: [] as string[], waveEvents: [] as WaveEvent[], leashEvents: [] as LeashEvent[], loose: [] as LooseSigil[], relics: placeRelics(map, forest), trunk: null as Trunk | null, challenge: newChallenge(map, creatures), tally: { berries: 0, invites: 0, evolved: 0 }, growth: newGrowth(), partyOver: null as PartyOver | null, win: null as WinState | null,
     acc: 0, alpha: 1, timeScale: 1, herTime: 0, pending: {}, prev: { witches: [], creatures: new Float64Array(creatures.length * 2), camera: null },
   };
   g.trunk = placeTrunk(map, forest, g.relics);

@@ -9,6 +9,11 @@ import { buildSwarm, islandShare, phaseReach, POWER_TABLE, type PowerTable, type
 import { foundShare } from "./rosters";
 import { hash2 } from "./random";
 
+/** The old growth's counts, never filled (no growth since Ed, 2026-10-07). Kept, with the game's `growth`, only because it is part
+ *  of the saved night's reviewed format (src/app/saveFormat.test.ts): taking it out is a save-format change, for its own review. */
+export interface GrowthState { pending: Map<string, { level: Level; wave: number; n: number }[]>; wave: number; grown: number; made: number; lookedAt: number }
+export const newGrowth = (): GrowthState => ({ pending: new Map(), wave: 0, grown: 0, made: 0, lookedAt: -Infinity });
+
 /** The level of an area's `n`th creature grown at `wave`, by the weights (baby, young, adult): the
  *  same for the same seed, area and wave. */
 export function growthLevel(seed: number, cell: readonly [number, number], wave: number, n: number, weights: readonly number[]): Level {

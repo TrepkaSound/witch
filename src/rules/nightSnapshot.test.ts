@@ -28,13 +28,6 @@ describe("a whole night's snapshot", () => {
     old.mushrooms.trips[0] = { recipe: ['blue', 'blue', 'blue'], key: 'blue+blue+blue', at: 10, until: 610 };
     expect(roundtrip(old).mushrooms).toEqual(old.mushrooms);
   });
-  it("still reads a night saved when the game carried the old growth counts (never filled; gone with the dead code, 2026-11-15)", () => {
-    const g = fresh("fox");
-    (g as unknown as { growth: unknown }).growth = { pending: new Map(), wave: 0, grown: 0, made: 0, lookedAt: -Infinity }; // (as newGame made it till then)
-    const old = roundtrip(g);
-    expect(Object.hasOwn(old, "growth")).toBe(false);
-    expect(old.creatures.length).toBe(g.creatures.length);
-  });
   it("reads a night saved when the swallowtail wore the moth's id as the butterfly's night (Ed, 2026-11-13); a night saved since is left as it is", () => {
     const g = fresh("butterfly"); g.clock.paused = false;
     for (let i = 0; i < 120; i++) stepGame(g, idle, STEP);
@@ -103,6 +96,7 @@ describe("a whole night's snapshot", () => {
     expect(h.friendly).toEqual(g.friendly); expect(h.wildEntry).toEqual(g.wildEntry);
     expect(h.berries.onBush).toEqual(g.berries.onBush); expect(h.berries.onBush).toBeInstanceOf(Int32Array);
     expect(h.berries.feeding.get(100_001)).toBe(h.berries.feeding.get(100_002));
+    expect(h.growth.lookedAt).toBe(g.growth.lookedAt);
     expect(h.witches[0].health.repairAt).toBe(Infinity);
     expect(h.leash.stack).toEqual(g.leash.stack);
     expect(h.leash.placed).toEqual(g.leash.placed);
