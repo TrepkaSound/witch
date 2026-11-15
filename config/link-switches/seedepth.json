@@ -1,9 +1,0 @@
-{
- "name": "seedepth",
- "values": [
-  "off"
- ],
- "does": "The see-through pass doesn't write depth, as before.",
- "group": "compare",
- "since": "2026-10-13"
-}

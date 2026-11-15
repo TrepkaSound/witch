@@ -890,8 +890,7 @@ export class SpriteBatch {
       // there, and everything the fade so much as touched round her came out milkier than the same trees just beyond: a ring. The
       // same pixels' depth, written last (no colour), hides that layer behind them as behind anything solid.
       const depth = new THREE.Mesh(this.geo, new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms: uniforms({ uFadePass: { value: 2 } }), transparent: true, colorWrite: false, depthWrite: true })); // (uFadePass 2: the see-through pass's pixels, its depth only)
-      depth.frustumCulled = false; depth.renderOrder = 19.9;
-      if (typeof location !== "undefined" && new URLSearchParams(location.search).get("seedepth") === "off") (depth.material as THREE.ShaderMaterial).depthWrite = false; // (?seedepth=off: as before, to compare) // (after the see-through pass and the effects over it; before the HUD's numbers)
+      depth.frustumCulled = false; depth.renderOrder = 19.9; // (after the see-through pass and the effects over it; before the HUD's numbers)
       this.meshes.push(fade, depth, front);
     }
     if (opts.silhouette) {
