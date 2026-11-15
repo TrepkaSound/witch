@@ -2,7 +2,7 @@
 // (dist/), loads the link in headless Chromium and prints the result the page makes: the same code and scenes Ed's button runs
 // on his machine, so a builder's numbers and his are of the same frames. Writes <out>/framecheck.json and framecheck.txt.
 //   node tools/bench/framecheck.cjs [out dir] (default bench-out/)   FRAMES=quick|1 (default quick: half a second a scene; the
-//   cloud's software renderer takes seconds a frame)   SIZE=1280x720   DIST=dist   SHOT=1 (framecheck.png, the page as it ends)
+//   cloud's software renderer takes seconds a frame), FRAMES=quick,sail only the scenes named (the sail alone: 10 to 20 minutes here)   SIZE=1280x720   DIST=dist   SHOT=1 (framecheck.png, the page as it ends)
 // Run `npm run build` first. In the cloud the numbers are the software renderer's: compare them only with the cloud's own.
 const http = require("http");
 const fs = require("fs");

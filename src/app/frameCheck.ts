@@ -3,7 +3,10 @@
 // reports milliseconds) would catch it": "And have 8 be a button on the right side pause menu"). The pause page's Frame check
 // button, or the link ?framecheck=1: a throwaway game on the bench's seed and start (tools/bench/frames.cjs: seed 123,
 // ?opening=old&creator=0) driven a frame at a time at a fixed 1/60 s through four fixed scenes, on this machine's real renderer at
-// the player's settings and quality rung (held still for the run, so two runs compare), each drawn frame timed.
+// the player's settings and quality rung (held still for the run, so two runs compare), each drawn frame timed. Then the sail (Ed,
+// 2026-11-15, asked whether to add the voyage between islands on the sea chart as a scene: "Yes"): the map table's chart opened,
+// the nightly sail take-off check's island and seed sailed to (tools/stall/sail-takeoff.cjs), the dive, the wake-up and the take-off
+// from the treehouse, on the page's own loop in real time (a sail waits on the night being made: it can't be stepped), a row a part.
 // This file is its fixed data and its sums (the scenes, the statistics, the plain-text table, the last few results kept, the link);
 // app/frameCheckRun.ts runs it on the page, ui/frameCheckPanel.ts is the pause page's button and tables.
 import type { Controls } from "../rules/game";
@@ -14,6 +17,9 @@ export const FRAME_CHECK_DT = 1 / 60;
 export const FRAME_CHECK_FRAMES = 600, FRAME_CHECK_QUICK = 30;
 /** What the link implies where it doesn't say: the bench's seed and start, the party spell waited for (the decks scene casts it). */
 export const FRAME_CHECK_LINK = [["seed", "123"], ["opening", "old"], ["creator", "0"], ["spell", "wait"]] as const;
+/** The sail's island and night: the nightly sail take-off check's (tools/stall/sail-takeoff.cjs: raven, seed 864794, by the map
+ *  table's chart with "sail anywhere" on, the dive path), so its take-off is the one that check guards. */
+export const FRAME_CHECK_SAIL = { island: "raven", seed: 864794, table: "mapTable" } as const;
 /** How many results are kept (the newest first). */
 export const FRAME_CHECK_KEEP = 5;
 
@@ -28,6 +34,8 @@ export interface FrameCheckScene {
   /** Put in place before its frames: a debug arena (window.witch.arena) or a quick shot's scene (window.witch.shot). */
   arena?: string;
   shot?: string;
+  /** The sail: not stepped but run on the page's own loop (app/frameCheckRun.ts runSail), its parts each a row (FRAME_CHECK_SAIL_PARTS). */
+  sail?: true;
   controls(i: number): Controls;
 }
 
@@ -42,7 +50,18 @@ export const FRAME_CHECK_SCENES: readonly FrameCheckScene[] = [
   { id: "treehouse", label: "the treehouse (the parlour)", bench: "the quick shot's room:parlour, a slow walk round; no bench scene times the house",
     shot: "room:parlour",
     controls: i => ({ ...idle, moveX: 0.5 * Math.cos(i / 90), moveZ: 0.5 * Math.sin(i / 90) }) },
+  { id: "sail", label: "the sail: the sea chart, its flight, the dive, the take-off", bench: "the nightly sail take-off check's voyage (tools/stall/sail-takeoff.cjs: the map table's chart to raven, seed 864794), from this game's home (seed 123, not its 81808); no bench scene times a sail",
+    sail: true, controls: () => idle },
 ];
+/** The sail's parts, each a row of the result (their ids as a scene's): in real time on the page's own loop, so `frames` differs a
+ *  run (the flight waits for the next night to be made, the bedroom for the house). */
+export const FRAME_CHECK_SAIL_PARTS = [
+  { id: "sail-chart", label: "sail: the sea chart open at the map table" },
+  { id: "sail-flight", label: "sail: the chart's flight to the island (the next night made under it)" },
+  { id: "sail-dive", label: "sail: the dive down to her bed" },
+  { id: "sail-bedroom", label: "sail: woken in the bedroom, the house and forest still building" },
+  { id: "sail-takeoff", label: "sail: the take-off from the treehouse to the treetops" },
+] as const;
 
 /** A list of milliseconds, summed up. */
 export interface Spread { median: number; p95: number; worst: number }
@@ -50,8 +69,9 @@ export interface FrameCheckSceneResult {
   id: string; label: string; frames: number;
   /** Frame to frame, as shown (ms): never under the screen's refresh. */
   frame: Spread;
-  /** The frame's own work on the CPU (ms): the rules' step and the view's, up to handing the frame to the GPU. */
-  cpu: Spread;
+  /** The frame's own work on the CPU (ms): the rules' step and the view's, up to handing the frame to the GPU; null for the sail's
+   *  parts (the page's own loop runs them: only the frames are timed). */
+  cpu: Spread | null;
   /** The GPU's time drawing it (ms), null where the browser can't time the GPU. */
   gpu: Spread | null;
   /** Draw calls and triangles a frame (medians). */
@@ -84,12 +104,24 @@ export function spread(xs: readonly number[]): Spread {
 }
 export const median = (xs: readonly number[]): number => spread(xs).median;
 
-/** The link's frame check: null without it, else the frames a scene. */
+/** The link's frame check: null without it, else the frames a scene. Its value is words with commas: "1" (or nothing else) the
+ *  full run, "quick" the short one, a scene's id to run only the scenes named (framecheck=quick,sail: as the bench's ONLY=), and
+ *  "left" (FRAME_CHECK_LEFT: the check's page loaded anew, never by hand). */
 export function frameCheckFrames(params: URLSearchParams): number | null {
   const v = params.get("framecheck");
   if (v === null || v === "0") return null;
-  return v === "quick" ? FRAME_CHECK_QUICK : FRAME_CHECK_FRAMES;
+  return v.split(",").includes("quick") ? FRAME_CHECK_QUICK : FRAME_CHECK_FRAMES;
 }
+/** The scenes the link asks for (all of them if it names none). */
+export function frameCheckScenes(params: URLSearchParams): readonly FrameCheckScene[] {
+  const words = (params.get("framecheck") ?? "").split(","), named = FRAME_CHECK_SCENES.filter(s => words.includes(s.id));
+  return named.length ? named : FRAME_CHECK_SCENES;
+}
+/** The word a frame check's page carries if it is ever loaded anew (a sail in place gone wrong falls back to loading the island's
+ *  link: platform/storageScope.ts freshHref puts this on it), so the page it lands on is still the check's (its storage, never her
+ *  saved game's) and says what happened instead of playing. */
+export const FRAME_CHECK_LEFT = "left";
+export const frameCheckLeft = (params: URLSearchParams): boolean => (params.get("framecheck") ?? "").split(",").includes(FRAME_CHECK_LEFT);
 /** The switches a frame check implies, set where the link doesn't say (the rest of the link is kept). */
 export function frameCheckParams(params: URLSearchParams): void {
   if (frameCheckFrames(params) === null) return;
@@ -115,7 +147,7 @@ export function frameCheckHead(r: FrameCheckResult): string[] {
 /** The result as plain text, to paste to the coordinator; `prev`, the run before, as a line under each scene. */
 export function frameCheckText(r: FrameCheckResult, prev?: FrameCheckResult | null): string {
   const out = [...frameCheckHead(r), "ms as median / p95 / worst"];
-  const line = (s: FrameCheckSceneResult) => `frame ${three(s.frame)} · cpu ${three(s.cpu)} · gpu ${three(s.gpu)} · ${count(s.draws)} draws · ${count(s.triangles)} tris`;
+  const line = (s: FrameCheckSceneResult) => `frame ${three(s.frame)} · cpu ${three(s.cpu)} · gpu ${three(s.gpu)} · ${count(s.draws)} draws · ${count(s.triangles)} tris${s.frames !== r.frames ? ` · ${s.frames} frames` : ""}`;
   for (const s of r.scenes) {
     out.push(`${s.id}: ${line(s)}`);
     const p = prev?.scenes.find(q => q.id === s.id);
@@ -148,10 +180,27 @@ export const isFrameCheckMessage = (x: unknown): x is FrameCheckMessage => !!x &
 
 /** The frame check's page keeps every key from its game (the scenes' controls are fixed; Esc would open its own pause page): put on
  *  the window before the game's own key listeners (main.ts, as the link is read), Esc going to `onEscape` (the run's: it stops). */
-export const frameCheckKeys: { onEscape: (() => void) | null } = { onEscape: null };
+export const frameCheckKeys: { onEscape: (() => void) | null; own: boolean } = { onEscape: null, own: false };
 export function holdFrameCheckKeys(target: Pick<Window, "addEventListener">): void {
   for (const type of ["keydown", "keyup"] as const) target.addEventListener(type, e => {
+    if (frameCheckKeys.own) return; // (the check's own press, for the sail: pressFrameCheckKey)
     e.stopImmediatePropagation();
     if (type === "keydown" && e.key === "Escape") { e.preventDefault(); frameCheckKeys.onEscape?.(); }
   }, { capture: true });
+}
+/** A key pressed or let go by the check itself (the sail: Enter held on the chart, D to get up, Space to take off), let through to
+ *  the game as a real one is. */
+export function pressFrameCheckKey(target: Pick<Window, "dispatchEvent">, type: "keydown" | "keyup", code: string, key: string): void {
+  frameCheckKeys.own = true;
+  try { target.dispatchEvent(new KeyboardEvent(type, { code, key, bubbles: true, cancelable: true })); } finally { frameCheckKeys.own = false; }
+}
+/** No sound from the check's page, whatever the browser would allow it (the sail's own presses would count as her gesture): every
+ *  audio context it makes is held suspended. */
+export function quietFrameCheck(w: { AudioContext?: typeof AudioContext }): void {
+  const AC = w.AudioContext;
+  if (!AC) return;
+  w.AudioContext = class extends AC {
+    constructor(o?: AudioContextOptions) { super(o); void super.suspend().catch(() => undefined); }
+    override resume(): Promise<void> { return Promise.resolve(); }
+  };
 }

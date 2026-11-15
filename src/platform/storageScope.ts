@@ -168,10 +168,12 @@ export const pageIdb = (): IDBFactory | undefined => storageScope().idb();
 export const freshGame = (): boolean => storageScope().fresh !== null;
 
 /** A link this page goes to, its ?fresh=<token> carried (a fresh game's reload, sail or save switch stays in it), and its ?cold=1
- *  (a cold load's reload or sail is cold too); as it was otherwise. */
-export function freshHref(href: string, fresh: string | null = storageScope().fresh, cold = coldLoad()): string {
-  if (!fresh && !cold) return href;
+ *  (a cold load's reload or sail is cold too); a frame check's page (`check`) stays one, marked as left; as it was otherwise. */
+export function freshHref(href: string, fresh: string | null = storageScope().fresh, cold = coldLoad(), check = typeof location !== "undefined" && frameCheckLink(location.search)): string {
+  if (!fresh && !cold && !check) return href;
   const u = new URL(href, typeof location === "undefined" ? "https://witch.invalid/" : location.href);
+  // (a frame check's page loaded anew, a sail's fallback: still the check's page, its storage never her saved game's; "left", app/frameCheck.ts FRAME_CHECK_LEFT)
+  if (check) u.searchParams.set("framecheck", "left");
   if (fresh) u.searchParams.set("fresh", fresh);
   if (cold) u.searchParams.set("cold", "1");
   return u.toString();

@@ -38,11 +38,12 @@ const count = (n: number): string => (n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n 
 
 /** A scene's table: frame, cpu and gpu by median, p95 and worst, and the run before's median and p95 beside. */
 function sceneTable(s: FrameCheckSceneResult, was: FrameCheckSceneResult | undefined): HTMLTableElement {
+  const sail = s.id.startsWith("sail-"); // (the sail's parts: as long as they take, not a fixed count)
   const row = (name: string, now: Spread | null, before: Spread | null | undefined) => h("tr", {},
     h("td", { text: name }), ...(now ? [ms(now.median), ms(now.p95), ms(now.worst)] : ["–", "–", "–"]).map(text => h("td", { text })),
     ...(was ? (before ? [ms(before.median), ms(before.p95)] : ["–", "–"]).map(text => h("td", { class: "was", text })) : []));
   return h("table", {},
-    h("caption", { text: `${s.label} · ${count(s.draws)} draws · ${count(s.triangles)} tris` }),
+    h("caption", { text: `${s.label} · ${count(s.draws)} draws · ${count(s.triangles)} tris${sail ? ` · ${s.frames} frames` : ""}` }),
     h("thead", {}, h("tr", {}, ...["ms", "median", "p95", "worst", ...(was ? ["was", "p95"] : [])].map(text => h("th", { text })))),
     h("tbody", {}, row("frame", s.frame, was?.frame), row("cpu", s.cpu, was?.cpu), row("gpu", s.gpu, was?.gpu)));
 }
@@ -86,7 +87,7 @@ export function frameCheckPanel(host: FrameCheckPanelHost): HTMLElement {
     host.hold(true);
     status.textContent = "Frame check running…";
   };
-  const start = button("Frame check", e => run(e.shiftKey), { class: "copyall", title: "Measure frame time on this machine: about 40 s of fixed scenes in a throwaway game (your own stays paused, untouched), then the milliseconds here to copy to the coordinator. Close other heavy tabs first. Shift-click: a half-second run of each scene" });
+  const start = button("Frame check", e => run(e.shiftKey), { class: "copyall", title: "Measure frame time on this machine: about a minute and a half of fixed scenes (the decks, a flight, a fight, the treehouse, a sail) in a throwaway game (your own stays paused, untouched), then the milliseconds here to copy to the coordinator. Close other heavy tabs first. Shift-click: a half-second run of each scene" });
   paint();
   return h("div", { id: "frame-check" }, start, status, results);
 }

@@ -139,7 +139,7 @@ import { BackGuard, nightFromHref, nightHref, type NightWay } from "./app/sail";
 import { hudFade } from "./app/arrive";
 import { forgetArrival, type Arrival } from "./app/arrival";
 import { shotParams } from "./app/shot";
-import { frameCheckFrames, frameCheckParams, holdFrameCheckKeys } from "./app/frameCheck";
+import { frameCheckFrames, frameCheckLeft, frameCheckParams, frameCheckScenes, holdFrameCheckKeys, quietFrameCheck } from "./app/frameCheck";
 import type { FlightEnd } from "./render/chart/seaChart";
 import { restoreGame } from "./rules/nightSnapshot";
 import { renamedLink } from "./app/renamedLink";
@@ -455,7 +455,7 @@ if (params.has("zoo") && !params.has("creator")) params.set("creator", "0");
 shotParams(params); shotParams(bootLink);
 // The frame check (?framecheck=1, the pause page's button: app/frameCheck.ts): the bench's seed and start, in a game of its own.
 frameCheckParams(params); frameCheckParams(bootLink);
-if (frameCheckFrames(params) !== null) holdFrameCheckKeys(window);
+if (frameCheckFrames(params) !== null) { holdFrameCheckKeys(window); quietFrameCheck(window); }
 // (its controls, src/zoo/panel.ts, loaded only for it, once the game is made)
 let zooPanel: import("./zoo/panel").ZooPanel | null = null;
 let zooLeaving = false;
@@ -1396,7 +1396,7 @@ a4_installDebug33(pageHost);
 {
   const frames = frameCheckFrames(params);
   if (frames !== null) {
-    void import("./app/frameCheckRun").then(({ bootFrameCheck }) => bootFrameCheck({ build: BUILD, frames, ready: () => N().flags.ready, begin: () => {
+    void import("./app/frameCheckRun").then(({ bootFrameCheck }) => bootFrameCheck({ build: BUILD, frames, scenes: frameCheckScenes(params), left: frameCheckLeft(params), ready: () => N().flags.ready, begin: () => {
       const { game } = N();
       revealArt();
       mutate("frame check: start play", () => { game.clock.paused = false; });
