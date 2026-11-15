@@ -2,7 +2,8 @@
 // docs/notes/ holds its area's entries as bold names opening a line (`**Name**` or `- **Name**`), and docs/notes/INDEX.md lists them,
 // made from the notes, never by hand. One entry a line, so two pull requests adding entries to different notes don't touch the
 // same lines (the index stood in CLAUDE.md until 2026-10-28 and fell 46 entries behind the notes).
-//   node tools/docs/glossary.mjs           checks docs/notes/INDEX.md is as the notes make it (exit 1 if not)
+//   node tools/docs/glossary.mjs           checks docs/notes/INDEX.md is as the notes make it (noted only; exit 1 if not at a release:
+//                                          tools/config/strict.mjs, since the release rewrites it and a builder needn't commit it)
 //   node tools/docs/glossary.mjs --write   writes it
 // The list of notes at its top is made the same way (Ed, 2026-11-12: "is there text that could be data?"): each note's title and
 // its one-line summary, a `<!-- summary: ... -->` line under its heading; CLAUDE.md points here instead of keeping the list.
@@ -10,6 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { releaseStrict } from "../config/strict.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 export const NOTES = path.join(ROOT, "docs/notes"), INDEX = path.join(NOTES, "INDEX.md");
@@ -56,6 +58,7 @@ export function indexText(list = notes()) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const want = indexText(), have = fs.existsSync(INDEX) ? fs.readFileSync(INDEX, "utf8").replace(/\r\n/g, "\n") : "";
   if (process.argv.includes("--write")) { if (want !== have) fs.writeFileSync(INDEX, want); console.log(`${path.relative(ROOT, INDEX)}: ${want === have ? "already up to date" : "written"}`); }
+  else if (want !== have && !releaseStrict()) console.log(`${path.relative(ROOT, INDEX)} is out of date with the notes (noted only: the release rewrites it, node tools/config/regen.mjs)`);
   else if (want !== have) { console.error(`${path.relative(ROOT, INDEX)} is out of date with the notes: node tools/docs/glossary.mjs --write`); process.exit(1); }
   else console.log(`${path.relative(ROOT, INDEX)}: up to date`);
 }

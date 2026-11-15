@@ -25,20 +25,19 @@ const DROP_RGB: [number, number, number] = [0.42, 0.68, 1];
 /** Seconds a travelling animal's drawn route takes to settle onto a re-plan (render/routeEase.ts). */
 const ROUTE_EASE = 0.3;
 
-/** A stacked sigil's key in the view's maps: a creature's id, a carried relic's -(id + 1). */
-export const stackKey = (kind: "creature" | "relic" | "tether", id: number): number => (kind === "relic" ? -(id + 1) : kind === "tether" ? -(id + 1e6) : id);
+/** A stacked sigil's key in the view's maps: a creature's id, a tether's -(id + 1e6). */
+export const stackKey = (kind: "creature" | "tether", id: number): number => (kind === "tether" ? -(id + 1e6) : id);
 
 /** The stack above her hat: newest at the bottom. A chain of springs: each sigil follows the one below with lag, so the stack
  *  trails behind her flight in proportion to speed, overshoots when she stops or turns, and settles into a gentle idle sway;
- *  higher ones swing more. A carried relic's sigil (the flask, in gold) is one of the chain in its place (Ed's playtest,
- *  2026-10-08: "Flasks should ... sit in the stack, and cycle when it cycles"; rules/leash.ts stackOrder), as big as an adult's,
- *  with a soft halo and a slow twinkle. Returns where each stacked creature's sigil is drawn (the bond's threads start there). */
+ *  higher ones swing more. (No flask's sigil rides in it since Ed, 2026-10-18: a flask is drunk where it lies.) Returns where
+ *  each stacked creature's sigil is drawn (the bond's threads start there). */
 export function drawStack(lv: LeashView, time: number, hatTop: number, dot: number[]): Map<number, THREE.Vector3> {
   const g = lv.game, s = g.leash, t = g.tuning, w = g.witch;
   const S = t.stack, dt = Math.min(0.1, Math.max(0, time - lv.lastTime)), slotPos = new Map<number, THREE.Vector3>();
   lv.lastTime = time; lv.frameDt = dt;
   // (a sleeping legend's sigil she carries, its tether's: at the bottom of her stack, never cycled; rules/stoneStacks.ts)
-  const order: { kind: "creature" | "relic" | "tether"; id: number }[] = [...stackOrder(s), ...(s.tether && g.creatures[s.tether.id] ? [{ kind: "tether" as const, id: s.tether.id }] : [])];
+  const order: { kind: "creature" | "tether"; id: number }[] = [...stackOrder(s), ...(s.tether && g.creatures[s.tether.id] ? [{ kind: "tether" as const, id: s.tether.id }] : [])];
   const keys = new Set(order.map(it => stackKey(it.kind, it.id)));
   // Its sigils more visible (Ed, 2026-10-15: "more opacity, and never obscured by scenery"): drawn over the scenery (stack.over: no
   // depth test, after the see-through pass), brighter (stack.bright, in the batch's gain), each over a near-black disc (stack.backing).
@@ -49,9 +48,9 @@ export function drawStack(lv: LeashView, time: number, hatTop: number, dot: numb
   let below = { x: 0, z: 0 }, y = hatTop;
   for (const id of [...lv.stackY.keys()]) if (!keys.has(id)) lv.stackY.delete(id);
   for (let k = order.length - 1; k >= 0; k--) {
-    const it = order[k], relic = it.kind === "relic", key = stackKey(it.kind, it.id), j = order.length - 1 - k, link = lv.chain[j]; // j: 0 at the bottom
-    const c = relic ? null : g.creatures[it.id], sg = c ? lv.sigilOf(c) : null;
-    const size = c ? (ranks ? (2 + 2 * 0.4) * rankSize(t, rankOf(c)) * standScale(t) : 2 + c.level * 0.4) * S.scale * sg!.scale : 4.2 * S.scale; // (rank sigils: an adult's size, a rank's share of it, Ed 2026-10-28) // (a relic's: half again an adult's size, Ed 2026-10-09: "+50% in the stack"; an adult's before, his playtest 2026-10-07)
+    const it = order[k], key = stackKey(it.kind, it.id), j = order.length - 1 - k, link = lv.chain[j]; // j: 0 at the bottom
+    const c = g.creatures[it.id], sg = lv.sigilOf(c);
+    const size = (ranks ? (2 + 2 * 0.4) * rankSize(t, rankOf(c)) * standScale(t) : 2 + c.level * 0.4) * S.scale * sg.scale; // (rank sigils: an adult's size, a rank's share of it, Ed 2026-10-28)
     const idle = Math.sin(time * 1.7 + j * 0.9) * S.idleSway * (1 + j * 0.5);
     const tx = below.x - w.vx * S.trail + idle, tz = below.z - w.vz * S.trail;
     link.vx += ((tx - link.x) * S.stiffness - link.vx * S.damping) * dt; link.vz += ((tz - link.z) * S.stiffness - link.vz * S.damping) * dt;
@@ -65,8 +64,8 @@ export function drawStack(lv: LeashView, time: number, hatTop: number, dot: numb
     const pos = new THREE.Vector3(w.x + link.x, hatTop + sy, w.z + link.z);
     // Pulled out by its taut chain (Ed, 2026-11-12: "you can see the sigil in your stack being pulled out"; rules/tautChain.ts stepPop):
     // slid toward its creature and down, by the meter, shaking more as it goes; full, it's put down (the ordinary put-down's look).
-    const P = c ? g.witches[0]?.pop : undefined;
-    if (P && c && P.id === it.id) {
+    const P = g.witches[0]?.pop;
+    if (P && P.id === it.id) {
       const dx = c.x - w.x, dz = c.z - w.z, d = Math.hypot(dx, dz) || 1, k = P.k * P.k * (3 - 2 * P.k), shake = Math.sin(time * 47 + it.id) * 0.06 * size * P.k;
       pos.x += (dx / d) * k * size * 1.8 + shake; pos.z += (dz / d) * k * size * 1.8; pos.y -= k * size * 0.9;
     }
@@ -75,65 +74,58 @@ export function drawStack(lv: LeashView, time: number, hatTop: number, dot: numb
     // Just picked up, it flies up from where it lay to here (Ed, 2026-11-12: "sparkles above the head"; render/leash/sigilFeel.ts):
     // pos moved to where it is on the way, and drawn at its size there; arrived, its flash and sparkles round the stack.
     let drawSize = size, flying = false;
-    if (c && feelOn) { const fc = lv.colOf(c), R = riseInStack(lv, it.id, time, pos, size, lv.groundSize(c), fc.r, fc.g, fc.b); flying = R.flying; drawSize = R.size; }
-    const shade = ranks && c ? lv.shadeOf(sg!.uv) : null;
+    if (feelOn) { const fc = lv.colOf(c), R = riseInStack(lv, it.id, time, pos, size, lv.groundSize(c), fc.r, fc.g, fc.b); flying = R.flying; drawSize = R.size; }
+    const shade = ranks ? lv.shadeOf(sg.uv) : null;
     if (shade) lv.stackBack.add(pos.x, pos.y, pos.z, drawSize, shade, 0.02, 0.02, 0.035, back); // (a rank sigil's: the dark in its own shape, no disc)
     else if (backUv) lv.stackBack.add(pos.x, pos.y, pos.z, drawSize * (S.backSize ?? 1.3), backUv, 0.02, 0.02, 0.035, back); // (the dark disc behind it)
-    if (c) {
-      slotPos.set(it.id, pos);
-      col = lv.colOf(c);
-      // (No flicker when she's hurt: Ed, 2026-10-08, "When you're hurt, your leashes sigils flash - please turn this off"; her
-      // claw slashes say how hurt she is.)
-      batch.add(pos.x, pos.y, pos.z, drawSize, sg!.uv, col.r, col.g, col.b, 1, 1, false, ranks ? legendShine(rankOf(c), time, it.id) : 0); // (a legend's shiny: ranks.ts)
-      if (ranks && !flying) {
-        // Rank sigils (render/leash/ranks.ts): embers off its glyph, fewer and lower than on the ground; and a youth's dots off to
-        // the right of it, two rows, one a berry it eats on the move: bright eaten, dim not, all of them pulsing when it's ready.
-        drawEmbers(batch, dot, lv.glyphPts.get(`${sg!.uv[0]},${sg!.uv[1]}`) ?? [], pos.x, pos.y, pos.z, size, false, rankOf(c), [col.r, col.g, col.b], time, it.id * 3 + 1, RK.embers, RK.embers.stack);
-        // (the berries' dots in the berries' own colour, and on the left its 💧s in blue: Ed, 2026-10-28, rules/orbit.ts)
-        const drops = c.drops ? meterHits(t)[Math.min(3, c.level)] ?? 4 : 0;
-        // (an adult's berry pips the same way, Ed 2026-11-03: "shown in the sigil bar the same way as a youth growing up"; the draining
-        // one twinkling in its last buffs.pips.warn seconds: rules/buffs.ts)
-        const fuel = c.level === 2 && t.buffs ? pipFuel(g.berries, c.id, t) : 0, pips = c.level === 2 && t.buffs ? { n: t.buffs.pips.max, lit: pipCount(fuel, t) } : null;
-        const fading = !!pips && pipFading(fuel, t), twinkle = 0.35 + 0.65 * Math.abs(Math.sin(time * 9));
-        const dotSets: [{ n: number; lit: number }, number, [number, number, number]][] = [
-          [shownDots(pips ?? youthDots(c, g.berries.fed.get(c.id) ?? 0, t), RK.dotsPerRow), 1, lv.berryRgb],
-          [shownDots({ n: drops, lit: Math.ceil((c.drops ?? 0) * drops - 1e-6) }, RK.dotsPerRow), -1, DROP_RGB],
-        ];
-        // (a berry queued for it, Ed 2026-11-03: the dot it will fill twinkles, bright, till it's eaten: ranks.ts queuedDot)
-        const next = queuedDot(dotSets[0][0], queuedFor(g.berries, c.id)), glint = 0.5 + 0.9 * Math.abs(Math.sin(time * 7));
-        for (const [D, side, rgb] of dotSets) if (D.n > 0) {
-          const ready = side > 0 && !pips && D.lit >= D.n, beat = ready ? 0.65 + 0.35 * Math.sin(time * 6) : 1, ds = size * 0.24;
-          for (let i = 0; i < D.n; i++) {
-            const q = dotAt(i, D.n, RK.dotsPerRow), qx = q.x * side, on = i < D.lit, k = (on ? (ready ? 1.25 * beat : 1) : side > 0 && i === next ? glint : 0.42) * (side > 0 && fading && i === D.lit - 1 ? twinkle : 1);
-            if (back > 0) lv.stackBack.add(pos.x + qx * size, pos.y + q.y * size, pos.z, ds * 1.5, dot, 0.02, 0.02, 0.035, back);
-            const lit = on ? 0.3 : 0; // (lit ones toward white a little, so they read over the dim)
-            batch.add(pos.x + qx * size, pos.y + q.y * size, pos.z + 0.02, ds, dot, (rgb[0] + (1 - rgb[0]) * lit) * k, (rgb[1] + (1 - rgb[1]) * lit) * k, (rgb[2] + (1 - rgb[2]) * lit) * k, on ? 1 : 0.85);
-          }
-        }
-        // Its buff's icon, to the right of its sigil and its dots (Ed, 2026-11-03: "an icon to the right of the creature's sigil in her
-        // stack"; render/leash/buffIcons.ts), on every leashed adult and legend (rules/buffs.ts icons), by its state (iconState; Ed,
-        // 2026-11-03: "When you have multiple ones of the same species, the inactive buff icons are blue. When a buff is inactive, it
-        // twinkles in pink."): the active one in her magic's amber, a redundant one blue and steady, an unfed one berry pink, twinkling.
-        // A legend's three in a row ("A legend should have three buff icons, to show that it's three times as powerful"; iconCount),
-        // each a little smaller and closer, so the row stays beside its bigger sigil, level with it, clear of the sigils above and below.
-        const group = buffs.iconGroup.get(it.id);
-        if (group) {
-          const D = dotSets[0][0], m = buffs.iconCount.get(it.id) ?? 1, ix = (D.n > 0 ? dotAt(D.n - 1, D.n, RK.dotsPerRow).x + 0.42 : 0.72) * size;
-          const is = size * (m > 1 ? 0.42 : 0.5), gap = is * 0.92, state = buffs.iconState.get(it.id), I = t.buffs?.icons;
-          const rgb = state === "redundant" ? I?.blue ?? ICON_BLUE : state === "unfed" ? I?.pink ?? ICON_PINK : [AMBER[0] * 1.2, AMBER[1] * 1.2, AMBER[2] * 1.2];
-          const k = state === "unfed" ? iconTwinkle(time, I?.twinkle ?? 0.8, it.id) : 1;
-          for (let h = 0; h < m; h++) {
-            const x = pos.x + ix + h * gap;
-            if (back > 0) lv.stackBack.add(x, pos.y, pos.z, is * 1.25, dot, 0.02, 0.02, 0.035, back);
-            batch.add(x, pos.y, pos.z + 0.02, is, buffIconUv(lv, group), rgb[0] * k, rgb[1] * k, rgb[2] * k, 1);
-          }
+    slotPos.set(it.id, pos);
+    col = lv.colOf(c);
+    // (No flicker when she's hurt: Ed, 2026-10-08, "When you're hurt, your leashes sigils flash - please turn this off"; her
+    // claw slashes say how hurt she is.)
+    batch.add(pos.x, pos.y, pos.z, drawSize, sg.uv, col.r, col.g, col.b, 1, 1, false, ranks ? legendShine(rankOf(c), time, it.id) : 0); // (a legend's shiny: ranks.ts)
+    if (ranks && !flying) {
+      // Rank sigils (render/leash/ranks.ts): embers off its glyph, fewer and lower than on the ground; and a youth's dots off to
+      // the right of it, two rows, one a berry it eats on the move: bright eaten, dim not, all of them pulsing when it's ready.
+      drawEmbers(batch, dot, lv.glyphPts.get(`${sg.uv[0]},${sg.uv[1]}`) ?? [], pos.x, pos.y, pos.z, size, false, rankOf(c), [col.r, col.g, col.b], time, it.id * 3 + 1, RK.embers, RK.embers.stack);
+      // (the berries' dots in the berries' own colour, and on the left its 💧s in blue: Ed, 2026-10-28, rules/orbit.ts)
+      const drops = c.drops ? meterHits(t)[Math.min(3, c.level)] ?? 4 : 0;
+      // (an adult's berry pips the same way, Ed 2026-11-03: "shown in the sigil bar the same way as a youth growing up"; the draining
+      // one twinkling in its last buffs.pips.warn seconds: rules/buffs.ts)
+      const fuel = c.level === 2 && t.buffs ? pipFuel(g.berries, c.id, t) : 0, pips = c.level === 2 && t.buffs ? { n: t.buffs.pips.max, lit: pipCount(fuel, t) } : null;
+      const fading = !!pips && pipFading(fuel, t), twinkle = 0.35 + 0.65 * Math.abs(Math.sin(time * 9));
+      const dotSets: [{ n: number; lit: number }, number, [number, number, number]][] = [
+        [shownDots(pips ?? youthDots(c, g.berries.fed.get(c.id) ?? 0, t), RK.dotsPerRow), 1, lv.berryRgb],
+        [shownDots({ n: drops, lit: Math.ceil((c.drops ?? 0) * drops - 1e-6) }, RK.dotsPerRow), -1, DROP_RGB],
+      ];
+      // (a berry queued for it, Ed 2026-11-03: the dot it will fill twinkles, bright, till it's eaten: ranks.ts queuedDot)
+      const next = queuedDot(dotSets[0][0], queuedFor(g.berries, c.id)), glint = 0.5 + 0.9 * Math.abs(Math.sin(time * 7));
+      for (const [D, side, rgb] of dotSets) if (D.n > 0) {
+        const ready = side > 0 && !pips && D.lit >= D.n, beat = ready ? 0.65 + 0.35 * Math.sin(time * 6) : 1, ds = size * 0.24;
+        for (let i = 0; i < D.n; i++) {
+          const q = dotAt(i, D.n, RK.dotsPerRow), qx = q.x * side, on = i < D.lit, k = (on ? (ready ? 1.25 * beat : 1) : side > 0 && i === next ? glint : 0.42) * (side > 0 && fading && i === D.lit - 1 ? twinkle : 1);
+          if (back > 0) lv.stackBack.add(pos.x + qx * size, pos.y + q.y * size, pos.z, ds * 1.5, dot, 0.02, 0.02, 0.035, back);
+          const lit = on ? 0.3 : 0; // (lit ones toward white a little, so they read over the dim)
+          batch.add(pos.x + qx * size, pos.y + q.y * size, pos.z + 0.02, ds, dot, (rgb[0] + (1 - rgb[0]) * lit) * k, (rgb[1] + (1 - rgb[1]) * lit) * k, (rgb[2] + (1 - rgb[2]) * lit) * k, on ? 1 : 0.85);
         }
       }
-    } else {
-      const slot = lv.slotOf("relic", 0), tw = 0.88 + 0.12 * Math.sin(time * 3 + it.id);
-      col = lv.colours.get("relic")!;
-      if (lv.haloGain > 0) batch.add(pos.x, pos.y, pos.z, size * 1.6, dot, col.r, col.g, col.b, 0.22 * tw * lv.haloGain); // (its halo)
-      batch.add(pos.x, pos.y, pos.z, size, lv.uv(slot), col.r * tw, col.g * tw, col.b * tw, 1);
+      // Its buff's icon, to the right of its sigil and its dots (Ed, 2026-11-03: "an icon to the right of the creature's sigil in her
+      // stack"; render/leash/buffIcons.ts), on every leashed adult and legend (rules/buffs.ts icons), by its state (iconState; Ed,
+      // 2026-11-03: "When you have multiple ones of the same species, the inactive buff icons are blue. When a buff is inactive, it
+      // twinkles in pink."): the active one in her magic's amber, a redundant one blue and steady, an unfed one berry pink, twinkling.
+      // A legend's three in a row ("A legend should have three buff icons, to show that it's three times as powerful"; iconCount),
+      // each a little smaller and closer, so the row stays beside its bigger sigil, level with it, clear of the sigils above and below.
+      const group = buffs.iconGroup.get(it.id);
+      if (group) {
+        const D = dotSets[0][0], m = buffs.iconCount.get(it.id) ?? 1, ix = (D.n > 0 ? dotAt(D.n - 1, D.n, RK.dotsPerRow).x + 0.42 : 0.72) * size;
+        const is = size * (m > 1 ? 0.42 : 0.5), gap = is * 0.92, state = buffs.iconState.get(it.id), I = t.buffs?.icons;
+        const rgb = state === "redundant" ? I?.blue ?? ICON_BLUE : state === "unfed" ? I?.pink ?? ICON_PINK : [AMBER[0] * 1.2, AMBER[1] * 1.2, AMBER[2] * 1.2];
+        const k = state === "unfed" ? iconTwinkle(time, I?.twinkle ?? 0.8, it.id) : 1;
+        for (let h = 0; h < m; h++) {
+          const x = pos.x + ix + h * gap;
+          if (back > 0) lv.stackBack.add(x, pos.y, pos.z, is * 1.25, dot, 0.02, 0.02, 0.035, back);
+          batch.add(x, pos.y, pos.z + 0.02, is, buffIconUv(lv, group), rgb[0] * k, rgb[1] * k, rgb[2] * k, 1);
+        }
+      }
     }
     const cyc = lv.cycledAt.get(key);
     if (cyc !== undefined) {

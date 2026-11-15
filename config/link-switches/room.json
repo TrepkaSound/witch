@@ -1,0 +1,9 @@
+{
+ "name": "room",
+ "values": [
+  "<S>"
+ ],
+ "does": "The creator's room drawn at this scale, or the online prototype's seven-digit room number.",
+ "group": "run",
+ "since": "2026-10-06"
+}

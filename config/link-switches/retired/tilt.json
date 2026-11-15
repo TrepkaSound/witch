@@ -1,0 +1,8 @@
+{
+ "name": "tilt",
+ "values": [
+  "before|after"
+ ],
+ "broughtBack": "the tilt-shift applied before or after the upscale",
+ "stays": "before (at the low resolution); `tiltShift.where` gone"
+}

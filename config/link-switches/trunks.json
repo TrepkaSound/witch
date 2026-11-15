@@ -1,0 +1,11 @@
+{
+ "name": "trunks",
+ "values": [
+  "soft",
+  "hard",
+  "off"
+ ],
+ "does": "The trunks' shadows from her glow and the campfires in ground mode.",
+ "group": "view",
+ "since": "2026-10-12"
+}

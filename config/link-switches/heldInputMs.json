@@ -1,0 +1,9 @@
+{
+ "name": "heldInputMs",
+ "values": [
+  "<milliseconds>"
+ ],
+ "does": "The online prototype holds the last guest movement input for this long before returning it to neutral (250 ms by default).",
+ "group": "debug",
+ "since": "2026-10-30"
+}

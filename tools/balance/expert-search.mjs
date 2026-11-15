@@ -1,5 +1,5 @@
 // Single-worker, bounded real-rules expert search and disjoint held-out evaluation.
-// node tools/balance/expert-search.mjs --out docs/notes/expert-results/pilot --time 60 --iterations 3 --train-seeds 1 --held-seeds 1 --wall-seconds 480
+// node tools/balance/expert-search.mjs --out data/balance/expert-results/pilot --time 60 --iterations 3 --train-seeds 1 --held-seeds 1 --wall-seconds 480
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, readdirSync, appendFileSync } from "node:fs";
 import { resolve, relative } from "node:path";
 import { createHash } from "node:crypto";
@@ -33,7 +33,7 @@ setPriority(0, constants.priority.PRIORITY_BELOW_NORMAL);
 const positive = (name, value, integer = false) => {
   const n = Number(arg(name, value)); if (!Number.isFinite(n) || n <= 0 || (integer && !Number.isInteger(n))) throw Error(`Invalid --${name}`); return n;
 };
-const out = resolve(arg("out", "docs/notes/expert-results/pilot"));
+const out = resolve(arg("out", "data/balance/expert-results/pilot"));
 const limit = positive("time", 60), iterations = positive("iterations", 3, true), trainCount = positive("train-seeds", 1, true), heldCount = positive("held-seeds", 1, true);
 const wall = positive("wall-seconds", 480), searchSeed = positive("search-seed", 1477, true);
 const execution = arg("execution", "pilot"), trainingOnly = process.argv.includes("--training-only"), shard = arg("shard", "local-pilot");
@@ -42,7 +42,7 @@ if (!["pilot", "cloud"].includes(execution)) throw Error("Unsupported execution 
 if (wall > (execution === "cloud" ? 3600 : 600)) throw Error("Wall cap exceeds approved execution window");
 if (limit > 120 && execution !== "cloud") throw Error("Long training is cloud-only; pilot case limit is 120 player seconds");
 // Keep seed ranges disjoint even if the training count is increased.
-const protectedPairs = JSON.parse(readFileSync(resolve(arg("held-list", "docs/notes/expert-held-out-pairs.json")), "utf8"));
+const protectedPairs = JSON.parse(readFileSync(resolve(arg("held-list", "data/balance/expert-held-out-pairs.json")), "utf8"));
 if (!Array.isArray(protectedPairs) || protectedPairs.some(p => p.worldSeed !== 0 || !Number.isInteger(p.nightSeed)) || heldCount > protectedPairs.length) throw Error("Invalid/insufficient protected held-out pairs");
 const trainSeeds = Array.from({ length: trainCount }, (_, i) => seedAt(i)), heldSeeds = protectedPairs.slice(0, heldCount).map(p => p.nightSeed);
 if (trainSeeds.some(n => protectedPairs.some(p => p.nightSeed === n))) throw Error("Training overlaps protected held-out pairs");

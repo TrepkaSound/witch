@@ -3,7 +3,7 @@
 // the ground; when a creature starts winding up a blow, FRAMES frames every STEP seconds of game time, cropped round it and
 // what it's after, into one row per arena: previews/attacks/<NAME>.png. BRIGHT=k brightens the picture (the night is dark
 // for judging shapes); TREETOP=1 flies up to the treetops first; PX=4 sets the art pixel (?px=); QUERY adds to the page's query
-// (QUERY=look=old: the attack look's before); ZOOM=n zooms in n steps (8, all the way, by default; 0 the play zoom); WILD=1 follows
+// ZOOM=n zooms in n steps (8, all the way, by default; 0 the play zoom); WILD=1 follows
 // only a wild creature's blows. Run `npm run build` first.
 //   ARENAS=strike,charge,swipe NAME=after node tools/attacks/strip.cjs
 const http = require("http"), fs = require("fs"), path = require("path");

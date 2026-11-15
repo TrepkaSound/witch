@@ -1,0 +1,9 @@
+{
+ "name": "perf",
+ "values": [
+  "1"
+ ],
+ "does": "The performance panel, always on: frames, hitches, the rules' step, the view's parts (draw split into the scene and the post passes), GL calls, the JS heap and its collections, the crowd and its level of detail.",
+ "group": "debug",
+ "since": "2026-10-07"
+}

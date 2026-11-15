@@ -1,0 +1,9 @@
+{
+ "name": "creatureModels",
+ "values": [
+  "<species>:<variant>,..."
+ ],
+ "does": "Selects available experimental creature records per species; omitted, current or unavailable variants keep the current art.",
+ "group": "compare",
+ "since": "2026-10-30"
+}

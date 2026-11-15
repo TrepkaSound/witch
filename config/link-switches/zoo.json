@@ -1,0 +1,9 @@
+{
+ "name": "zoo",
+ "values": [
+  ""
+ ],
+ "does": "The zoo: every area an island laid out like the sea chart, home a plaza, no timer.",
+ "group": "debug",
+ "since": "2026-10-13"
+}

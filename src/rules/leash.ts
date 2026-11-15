@@ -31,8 +31,8 @@ export interface Talk {
   total: number;
 }
 
-export type LeashEventKind = /** her soundsystem spell at a runestone (rules/stoneStacks.ts): begun, let go or moved off, broken by a hit, done (the stone converted) */ "castStart" | "castStop" | "castBroken" | "castDone" | /** a stone converted, by the spell or its wave (`key` its area; id -1): its friend sigils have fallen (g.loose) */ "converted" | /** her fall off the Terrace with no broom hitting the ground, unseen below (rules/kit.ts; id: the witch) */ "thud" | /** her invitations or a broom taken in the house (rules/kit.ts; obj: "invites" or "broom") */ "kit" | /** E at the invitations desk with no bag to carry them (rules/kit.ts needsBag; obj: the desk's id) */ "needBag" | "invited" | "befriended" | "placed" | "picked" | /** a berry queued for the bottom of her stack by a tap of the sigil button (rules/sigilButton.ts; id: the creature; x, z: the berry) */ "fed" | "fizzled" | "cancelled" | "cycled" | /** a take-off pulled back down: her followers too heavy (rules/leashWeight.ts groundedBy; id: the witch) */ "grounded" | /** pulling past a legend's chain, she's yanked back toward it (rules/tautChain.ts yankFrom; id: the legend) */ "yanked" | /** a coming-down refused: up in the treetops over a lake, she flies on (rules/game.ts; id: the witch) */ "lakeHold" | /** she walked off the balcony's open rim with no broom and fell (rules/treehouse.ts), back at the magic circle (id: the witch) */ "fell" | /** a relic picked up, or put down by a legend (id: the relic) */ "relicPicked" | "relicPlaced" | /** a flask drunk, a growth spurt for her followers (rules/sigilButton.ts; id: the relic) */ "flaskDrunk" | /** a relic's sigil put down on the ground, off any legend's clearing (id: the relic) */ "relicDropped" | /** her hat picked up and back on (rules/hat.ts; id: the witch) */ "hatPicked" | /** her hat put down at her feet, the sigil button held (rules/hat.ts putHat; id: the witch) */ "hatPut" | /** a quest sigil or a relic put down near a sleeping legend but outside its clearing, where it does nothing (id: the legend; x, z: its clearing's middle) */ "outsideCircle" | /** she landed on the treehouse deck (on) or rose off it (rules/treehouse.ts; id: the witch) */ "perch" | /** E at the treehouse's map table: open the sea chart (rules/treehouse.ts; id: the witch) */ "chart" | /** E at an object in the treehouse's rooms (rules/houseRooms.ts; id: the witch; obj: the object's id; "slept": the bed's hold done, the night over) */ "house" | /** E at tonight's find: a wearable in the travel trunk or a broom part in a wreck (rules/finds.ts; id: the witch; obj: the item's id; find: its kind) */ "found";
-export interface LeashEvent { kind: LeashEventKind; id: number; x: number; z: number; at: number; /** a "converted" event's: the stone's area key */ key?: string; /** a "cycled" event's: the sigil cycled was a relic's (id: the relic) */ relic?: boolean; /** a "perch" event's: on the deck (true) or off it */ on?: boolean; /** a "house" event's: the object used (config/house/), or "slept"; a "found" event's: the item */ obj?: string; /** a "found" event's: its kind (rules/finds.ts FIND_KINDS) */ find?: import("./finds").FindKindId }
+export type LeashEventKind = /** her soundsystem spell at a runestone (rules/stoneStacks.ts): begun, let go or moved off, broken by a hit, done (the stone converted) */ "castStart" | "castStop" | "castBroken" | "castDone" | /** a stone converted, by the spell or its wave (`key` its area; id -1): its friend sigils have fallen (g.loose) */ "converted" | /** her fall off the Terrace with no broom hitting the ground, unseen below (rules/kit.ts; id: the witch) */ "thud" | /** her invitations or a broom taken in the house (rules/kit.ts; obj: "invites" or "broom") */ "kit" | /** E at the invitations desk with no bag to carry them (rules/kit.ts needsBag; obj: the desk's id) */ "needBag" | "invited" | "befriended" | "placed" | "picked" | /** a berry queued for the bottom of her stack by a tap of the sigil button (rules/sigilButton.ts; id: the creature; x, z: the berry) */ "fed" | "fizzled" | "cancelled" | "cycled" | /** a take-off pulled back down: her followers too heavy (rules/leashWeight.ts groundedBy; id: the witch) */ "grounded" | /** pulling past a legend's chain, she's yanked back toward it (rules/tautChain.ts yankFrom; id: the legend) */ "yanked" | /** a coming-down refused: up in the treetops over a lake, she flies on (rules/game.ts; id: the witch) */ "lakeHold" | /** she walked off the balcony's open rim with no broom and fell (rules/treehouse.ts), back at the magic circle (id: the witch) */ "fell" | /** a relic picked up, or put down by a legend (id: the relic) */ "relicPicked" | "relicPlaced" | /** a flask drunk, a growth spurt for her followers (rules/sigilButton.ts; id: the relic) */ "flaskDrunk" | /** her hat picked up and back on (rules/hat.ts; id: the witch) */ "hatPicked" | /** her hat put down at her feet, the sigil button held (rules/hat.ts putHat; id: the witch) */ "hatPut" | /** a quest sigil or a relic put down near a sleeping legend but outside its clearing, where it does nothing (id: the legend; x, z: its clearing's middle) */ "outsideCircle" | /** she landed on the treehouse deck (on) or rose off it (rules/treehouse.ts; id: the witch) */ "perch" | /** E at the treehouse's map table: open the sea chart (rules/treehouse.ts; id: the witch) */ "chart" | /** E at an object in the treehouse's rooms (rules/houseRooms.ts; id: the witch; obj: the object's id; "slept": the bed's hold done, the night over) */ "house" | /** E at tonight's find: a wearable in the travel trunk or a broom part in a wreck (rules/finds.ts; id: the witch; obj: the item's id; find: its kind) */ "found";
+export interface LeashEvent { kind: LeashEventKind; id: number; x: number; z: number; at: number; /** a "converted" event's: the stone's area key */ key?: string; /** a "perch" event's: on the deck (true) or off it */ on?: boolean; /** a "house" event's: the object used (config/house/), or "slept"; a "found" event's: the item */ obj?: string; /** a "found" event's: its kind (rules/finds.ts FIND_KINDS) */ find?: import("./finds").FindKindId }
 
 export interface LeashState {
   /** Creatures leashed to the witch, oldest first: the last is the bottom of the stack, nearest her head. */
@@ -49,18 +49,15 @@ export interface LeashState {
   /** Legends that have given her their unimpressed look this approach: not again until she's
    *  been beyond invite.cancelDistance of them. */
   snubbed: Set<number>;
+  /** Always empty: the relic sigils she once carried (none since Ed, 2026-10-18: a flask is drunk where it lies). Nothing reads it;
+   *  it stays only as part of the leash's saved and compared shape (a night saved without it would not load in an earlier build, and
+   *  the bench's rules comparison reads the witches' whole state). Taking it out is a save-format change, for its own review. */
+  relics: number[];
   /** Her trail on the ground while babies follow her (rules/babies.ts): breadcrumbs, newest first, flat x, z pairs. Made only then. */
   trail?: number[];
   /** While she's in a fight with babies following (rules/babies.ts): the way from the first attacker to her when it began,
    *  kept the whole fight, and when it's over (babies.calm seconds after the last thing went for her or hers). */
   scatter?: { x: number; z: number; until: number };
-  /** Relic sigils she carries (rules/legends.ts: ids into the game's relics), in the stack's order, top first. None since Ed,
-   *  2026-10-18: a flask is drunk where it lies (rules/sigilButton.ts), and the game no longer calls carryRelic. */
-  relics: number[];
-  /** Where each carried relic sigil sits in the stack (Ed's playtest, 2026-10-08: "Flasks should behave like other sigils in
-   *  this regard; sit in the stack, and cycle when it cycles"): by relic id, how many of the creatures' sigils are above it.
-   *  One missing, or past the stack's end, sits at the bottom. See stackOrder. */
-  relicAt?: Record<number, number>;
   /** A sleeping legend's sigil she carries (rules/stoneStacks.ts; Ed, 2026-10-28): not on her stack (the legend isn't leashed: it
    *  sleeps on), the next she puts down, too heavy to drag; she can't go further than `length` metres from it (the distance its sigil
    *  lay from it when she picked it up). */
@@ -77,75 +74,43 @@ export interface LeashState {
   feedHold?: number;
 }
 
-/** One sigil in her stack: a leashed creature's, or a carried relic's. */
-export interface StackItem { kind: "creature" | "relic"; id: number }
+/** One sigil in her stack: a leashed creature's. (A relic's sigil rode here too till Ed, 2026-10-18: a flask is drunk where it
+ *  lies, rules/sigilButton.ts, so none is carried.) */
+export interface StackItem { kind: "creature"; id: number }
 
-/** Her whole stack, top first, the bottom (nearest her hat: the one E puts down or gives) last: the creatures' sigils in their
- *  order, each carried relic's sigil slotted in under as many of them as its relicAt says (relics in a slot in their own order). */
+/** Her whole stack, top first, the bottom (nearest her hat: the one E puts down) last. */
 export function stackOrder(s: LeashState): StackItem[] {
-  const out: StackItem[] = [], n = s.stack.length, at = (r: number) => Math.min(n, Math.max(0, s.relicAt?.[r] ?? n));
-  for (let k = 0; k <= n; k++) {
-    for (const r of s.relics) if (at(r) === k) out.push({ kind: "relic", id: r });
-    if (k < n) out.push({ kind: "creature", id: s.stack[k] });
-  }
-  return out;
+  return s.stack.map(id => ({ kind: "creature", id }));
 }
 
-/** The bottom of her stack: what the place button puts down (a creature's sigil) or gives (a relic's, by a sleeping legend). */
+/** The bottom of her stack: what the place button puts down. */
 export function stackBottom(s: LeashState): StackItem | null {
   const n = s.stack.length;
-  for (let i = s.relics.length - 1; i >= 0; i--) if (Math.min(n, s.relicAt?.[s.relics[i]] ?? n) >= n) return { kind: "relic", id: s.relics[i] };
   return n ? { kind: "creature", id: s.stack[n - 1] } : null;
 }
 
-/** Set the stack to this order (top first): the creatures' sigils, the relics' and where each relic sits. */
-function setStackOrder(s: LeashState, order: StackItem[]): void {
-  const at: Record<number, number> = {};
-  s.stack.length = 0; s.relics.length = 0;
-  for (const it of order) {
-    if (it.kind === "creature") s.stack.push(it.id);
-    else { at[it.id] = s.stack.length; s.relics.push(it.id); }
-  }
-  if (s.relics.length || s.relicAt) s.relicAt = at; // (made only once she's carried a relic: a leash without one is as it was)
-}
-
-/** Cycle the stack (Q; the sigil button in the treetops): its bottom sigil, a creature's or a relic's, to the top. */
+/** Cycle the stack (Q; the sigil button in the treetops): its bottom sigil to the top. */
 export function cycleStack(s: LeashState): StackItem | null {
-  const order = stackOrder(s);
-  if (order.length < 2) return null;
-  const it = order.pop()!;
-  setStackOrder(s, [it, ...order]);
-  return it;
+  if (s.stack.length < 2) return null;
+  const id = s.stack.pop()!;
+  s.stack.unshift(id);
+  return { kind: "creature", id };
 }
 
 /** Cycle the stack back (the pad's L1, Ed 2026-10-28): its top sigil to the bottom, the next put down. */
 export function cycleStackBack(s: LeashState): StackItem | null {
-  const order = stackOrder(s);
-  if (order.length < 2) return null;
-  const it = order.shift()!;
-  setStackOrder(s, [...order, it]);
-  return it;
+  if (s.stack.length < 2) return null;
+  const id = s.stack.shift()!;
+  s.stack.push(id);
+  return { kind: "creature", id };
 }
 
-/** A creature's sigil to the very bottom of her stack, under any relics' (the bots' shortcut for cycling to it). */
+/** A creature's sigil to the very bottom of her stack (the bots' shortcut for cycling to it). */
 export function toBottom(s: LeashState, id: number): void {
-  const order = stackOrder(s), i = order.findIndex(it => it.kind === "creature" && it.id === id);
+  const i = s.stack.indexOf(id);
   if (i < 0) return;
-  const [it] = order.splice(i, 1);
-  setStackOrder(s, [...order, it]);
-}
-
-/** A relic's sigil onto the bottom of her stack (picked up; the game no longer does: flasks are drunk, Ed 2026-10-18). */
-export function carryRelic(s: LeashState, id: number): void {
-  if (!s.relics.includes(id)) s.relics.push(id);
-  (s.relicAt ??= {})[id] = s.stack.length;
-}
-
-/** A relic's sigil off her stack (given to a legend). */
-export function dropRelic(s: LeashState, id: number): void {
-  const i = s.relics.indexOf(id);
-  if (i >= 0) s.relics.splice(i, 1);
-  if (s.relicAt) delete s.relicAt[id];
+  s.stack.splice(i, 1);
+  s.stack.push(id);
 }
 
 export interface LeashControls {
@@ -183,10 +148,6 @@ export interface LeashControls {
   barred?: (x: number, z: number) => boolean;
   /** Whether (x, z) is on the island's land, where a scattering baby may run to (rules/sigilButton.ts; none: anywhere). */
   land?: (x: number, z: number) => boolean;
-  /** Put a relic's sigil down on the ground at (x, z) (the game's relics: rules/sigilButton.ts), when it's at the bottom of
-   *  her stack and the button isn't giving it to a legend (Ed, 2026-10-08: "if the flask is in the bottom slot, it's what you
-   *  put down when you press e"). */
-  dropRelic?: (id: number, x: number, z: number) => void;
   /** Whether she may talk this frame: always with auto-talk on (the default); with it off, only
    *  while Talk is held (Ed's playtest, 2026-10-04: auto-talk can be turned off). */
   talk?: boolean;
@@ -308,13 +269,12 @@ export function stepLeash(s: LeashState, creatures: Creature[], c: LeashControls
   // puts down next) to the top; on the ground it picks up a placed sigil she's over, else puts the
   // bottom one down. Sigils go down and come up only on the ground.
   // (Since 2026-10-06 the keyboard has a button for each: E places, Q cycles anywhere.)
-  // (Carried relics' sigils cycle with the rest: Ed's playtest, 2026-10-08.)
-  if (((c.sigil && !onGround) || c.cycle) && s.stack.length + s.relics.length > 1) {
+  if (((c.sigil && !onGround) || c.cycle) && s.stack.length > 1) {
     const it = cycleStack(s)!;
-    s.events.push({ kind: "cycled", id: it.id, x: witch.x, z: witch.z, at: time, ...(it.kind === "relic" ? { relic: true } : {}) });
-  } else if (c.cycleBack && s.stack.length + s.relics.length > 1) {
+    s.events.push({ kind: "cycled", id: it.id, x: witch.x, z: witch.z, at: time });
+  } else if (c.cycleBack && s.stack.length > 1) {
     const it = cycleStackBack(s)!;
-    s.events.push({ kind: "cycled", id: it.id, x: witch.x, z: witch.z, at: time, ...(it.kind === "relic" ? { relic: true } : {}) });
+    s.events.push({ kind: "cycled", id: it.id, x: witch.x, z: witch.z, at: time });
   }
   // A run (Ed, 2026-10-15; leash.runs): the button held on since a press that picked up ("pick": she keeps picking up any sigil she
   // runs over) or put down ("place": each empty hex she moves into takes the next; off the grid, every leash.spacing metres). A press
@@ -409,7 +369,7 @@ export function pressPicks(s: LeashState, c: Pick<LeashControls, "sharedPlaced" 
 
 /** The sigil button on the ground at her feet (`only`: in a run, just picking up or just putting down; a press does whichever
  *  the spot asks): picks up her placed sigil in the hex cell she stands in (or within leash.pickRadius off the grid), else a
- *  happy creature's rune near her, else puts the bottom of her stack down (a relic's sigil on the ground, a creature's on the
+ *  happy creature's rune near her, else puts the bottom of her stack down (on the
  *  cell or at her feet). Returns what it did ("pick", "place"), or null when nothing happened (a fizzle counts as nothing). */
 function sigilPress(s: LeashState, creatures: Creature[], c: LeashControls, witch: { x: number; z: number }, time: number, t: Tuning, only: "pick" | "place" | undefined): "pick" | "place" | null {
   const byId = (id: number) => creatures[id];
@@ -444,18 +404,7 @@ function sigilPress(s: LeashState, creatures: Creature[], c: LeashControls, witc
     s.events.push({ kind: "placed", id, x: at.x, z: at.z, at: time });
     return "place";
   }
-  if (stackBottom(s)?.kind === "relic") {
-    // A relic's sigil at the bottom (Ed, 2026-10-08: "if the flask is in the bottom slot, it's what you put down when you press
-    // e"): it goes down on the ground where she stands (none is carried since Ed, 2026-10-18: flasks are drunk where they lie,
-    // rules/sigilButton.ts, and no legend takes one).
-    const id = stackBottom(s)!.id;
-    if (c.dropRelic) {
-      c.dropRelic(id, witch.x, witch.z);
-      dropRelic(s, id);
-      s.events.push({ kind: "relicDropped", id, x: witch.x, z: witch.z, at: time });
-      return "place";
-    }
-  } else if (s.stack.length) {
+  if (s.stack.length) {
     const id = s.stack[s.stack.length - 1];
     // A party legend's (the Easter egg): put down, it's let go where it stands, dancing (its rune at its feet), and she's free.
     if (byId(id).partyLegend) { s.stack.pop(); letPartyLegendGo(byId(id)); s.events.push({ kind: "placed", id, x: byId(id).x, z: byId(id).z, at: time }); return "place"; }

@@ -1,0 +1,9 @@
+{
+ "name": "border",
+ "values": [
+  "<twinkle>,<swapRate>,<swapBeat>"
+ ],
+ "does": "The party border's sparkle.",
+ "group": "view",
+ "since": "2026-10-07"
+}

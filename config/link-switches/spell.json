@@ -1,0 +1,10 @@
+{
+ "name": "spell",
+ "values": [
+  "auto",
+  "wait"
+ ],
+ "does": "The party spell: `auto` starts at once anywhere; `wait` keeps her at the decks even with `creator=0`.",
+ "group": "run",
+ "since": "2026-10-07"
+}

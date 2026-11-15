@@ -1,0 +1,8 @@
+{
+ "name": "props",
+ "values": [
+  "hand"
+ ],
+ "broughtBack": "the hand-made props",
+ "stays": "the prop generator (the Art Lab and `art/check.mjs` still draw both)"
+}

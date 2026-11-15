@@ -78,7 +78,7 @@ describe("the whole line, from home to its tip (Ed, 2026-10-06: \"The leyline sh
     // Its tip at TIP_PACE times the pulse's distance along the one path (the boot path, then the route; in metres, as links).
     const B = bootPath(map).length;
     for (const t of [12, 25, first - 1, first]) expect(leyReveal(party(), map, t, TIP_PACE)).toBeCloseTo(metresToLinks(lens, TIP_PACE * (B + pulseRouteMetres(party(), map, t)) - B), 9);
-  }, 30000);
+  });
 });
 
 describe("the line's front (Ed, 2026-10-06: \"Please come up with a better design for the front of the leyline\")", () => {
@@ -114,7 +114,7 @@ describe("the line's front (Ed, 2026-10-06: \"Please come up with a better desig
     const front = g.map.treehouseFront;
     expect(ley.pulseTip!.links).toBe(0); expect(Math.hypot(ley.pulseTip!.x - front.x, ley.pulseTip!.z - front.z)).toBeLessThan(0.01);
     ley.lap(null);
-  }, 30000);
+  });
 });
 
 describe("the ring and the route are one path (Ed, 2026-10-29: \"the boot-line/leyline/pulse goes around the dancefloor and then should continue smoothly in the same direction\")", () => {
@@ -215,7 +215,7 @@ describe("the line as dots through the boot (Ed, 2026-10-29: \"The leyline does 
     ley.update(1, () => ({ stones: [], current: 0 }), () => new THREE.Vector3(), 0, 0);
     const shown = (ley as unknown as { cur: { meshes: { visible: boolean }[]; glow: unknown } }).cur;
     expect(shown.meshes.filter(m => m.visible)).toEqual([shown.glow]);
-  }, 30000);
+  });
   it("mid-boot: the boot's spark on the ring's link, bars behind it and single dots ahead, the tip reveal times as far: off the ring and out along the route, all single dots there", async () => {
     const ley = await make(), time = (0.8 * P.length) / TUNING.boot.speed!; // (the boot's pulse 0.8 of the way round: the tip, reveal times as far, off the ring and out along the route)
     const pulse = bootPulseAt(p, map, time) / P.length, line = bootLineAt(p, map, time, reveal) / P.length;
@@ -230,7 +230,7 @@ describe("the line as dots through the boot (Ed, 2026-10-29: \"The leyline does 
     // Where the route runs on round the ring from the lap's end (the line over itself), the ring's bars stand while the boot's spark is
     // on the ring: the route's dots over them are hidden, as far as they're drawn.
     expect(L.hide[0]).toBe(1); expect(L.hide[1]).toBeGreaterThan(1.05); expect(L.hide[1]).toBeLessThan(to);
-  }, 30000);
+  });
   it("before the tip is round the whole ring, only the ring is drawn, as far as its line's got; before the spell, nothing, and no spark", async () => {
     const ley = await make(), time = (0.2 * P.length) / TUNING.boot.speed!, line = bootLineAt(p, map, time, reveal) / P.length;
     ley.pulse(null, bootPulseAt(p, map, time) / P.length); ley.grow(leyDrawnTo(p, map, time, reveal, false), line); ley.ring(1); ley.front(time, 0);
@@ -239,7 +239,7 @@ describe("the line as dots through the boot (Ed, 2026-10-29: \"The leyline does 
     ley.pulse(null, 0); ley.grow(0, 0); ley.ring(0); ley.front(time, 0);
     [L] = ley.dotLines(2);
     expect(L.strength).toBe(0); expect(ley.sparkLinks()).toBeNull();
-  }, 30000);
+  });
   it("the boot over: the ring's link faint (RING_AFTER) and all bars, the spark the wave's, bars behind it and dots ahead; the whole line shown (the hat), the spark still; the waves off, no spark and all bars", async () => {
     const C1 = routeLengths(p, map)[0], ley = await make(), time = p.bootUntil + (0.6 * C1) / v, sp = shaderPulse(p, map, time)!; // (the wave's spark 0.6 of the way along the first link)
     expect(sp).toBeCloseTo(0.6, 6);
@@ -258,5 +258,5 @@ describe("the line as dots through the boot (Ed, 2026-10-29: \"The leyline does 
     ley.pulse(null); ley.front(time, 0);
     [L] = ley.dotLines(2);
     expect(ley.sparkLinks()).toBeNull(); expect(L.spark).toBe(Infinity); expect(L.strength).toBe(1);
-  }, 30000);
+  });
 });

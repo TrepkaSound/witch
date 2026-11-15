@@ -1,0 +1,10 @@
+{
+ "name": "magic",
+ "values": [
+  "old",
+  "layers"
+ ],
+ "does": "Compare the old attack artwork with the layered magic effects.",
+ "group": "compare",
+ "since": "2026-10-30"
+}

@@ -1,0 +1,10 @@
+{
+ "name": "recording",
+ "values": [
+  "0",
+  "1"
+ ],
+ "does": "Profile-only: 0 disables input recording and incremental log journalling; ordinary games keep both enabled.",
+ "group": "debug",
+ "since": "2026-10-30"
+}

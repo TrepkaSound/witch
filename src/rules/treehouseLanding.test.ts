@@ -3,7 +3,6 @@ import { TUNING } from "./tuning";
 import { deckOf, flyOnto, landsOn, landingSpot, onFloor, overDeck } from "./treehouse";
 import { floorRects, fromPlan, HOUSE_ROOMS, roomAccessFor } from "./houseRooms";
 import { newWitch, NO_INTENT, stepWitch } from "./witch";
-import { NO_LOAD } from "./leashWeight";
 const H = TUNING.treehouse.house!, bounds = { minX:-10000, maxX:10000, minZ:-10000, maxZ:10000 };
 const deck = () => deckOf({ treehouse: { x:200,z:300 } }, TUNING)!;
 
@@ -17,15 +16,15 @@ describe("landing on the actual authorized treehouse floor (Ed, 2 November)", ()
     expect(flyOnto(d,clear.x,clear.z),room.id).toBe(true);
     expect(landsOn(d,clear.x,clear.z),room.id).toBe(true);
     const w = { ...newWitch(clear.x,clear.z),mode:"treetop" as const,lift:1 };
-    const half = stepWitch(w,{ ...NO_INTENT,toggleMode:true },H.landTime/2,TUNING,bounds,NO_LOAD,d);
+    const half = stepWitch(w,{ ...NO_INTENT,toggleMode:true },H.landTime/2,TUNING,bounds,d);
     expect([half.mode,half.perch]).toEqual(["descending",true]); expect(half.lift).toBeCloseTo(.5,10);
-    const down = stepWitch(half,NO_INTENT,H.landTime/2,TUNING,bounds,NO_LOAD,d);
+    const down = stepWitch(half,NO_INTENT,H.landTime/2,TUNING,bounds,d);
     expect([down.mode,down.perch,down.lift]).toEqual(["ground",true,0]);
     expect(onFloor(d,down.x,down.z)).toBe(true);
-    const rested = stepWitch(down,NO_INTENT,TUNING.treehouse.landCooldown ?? 0,TUNING,bounds,NO_LOAD,d); // (the landing's cooldown out: Ed, 2026-11-03)
-    const up = stepWitch(rested,{ ...NO_INTENT,toggleMode:true },TUNING.riseTime,TUNING,bounds,NO_LOAD,d);
+    const rested = stepWitch(down,NO_INTENT,TUNING.treehouse.landCooldown ?? 0,TUNING,bounds,d); // (the landing's cooldown out: Ed, 2026-11-03)
+    const up = stepWitch(rested,{ ...NO_INTENT,toggleMode:true },TUNING.riseTime,TUNING,bounds,d);
     expect([up.mode,!!up.perch]).toEqual(["treetop",false]);
-    const held = stepWitch(up,NO_INTENT,.1,TUNING,bounds,NO_LOAD,d);
+    const held = stepWitch(up,NO_INTENT,.1,TUNING,bounds,d);
     expect([held.mode,!!held.perch]).toEqual(["treetop",false]);
   });
   it("lands her on Bedrooms 2 and 3 in solo, open as every room (Ed, 2026-11-03)", () => {
@@ -44,7 +43,7 @@ describe("landing on the actual authorized treehouse floor (Ed, 2 November)", ()
     }
     expect(air).toBeDefined(); expect(landsOn(d,air!.x,air!.z)).toBe(false); expect(flyOnto(d,air!.x,air!.z)).toBe(false);
     const w={...newWitch(air!.x,air!.z),mode:"treetop" as const,lift:1};
-    const down=stepWitch(w,{...NO_INTENT,toggleMode:true},.01,TUNING,bounds,NO_LOAD,d);
+    const down=stepWitch(w,{...NO_INTENT,toggleMode:true},.01,TUNING,bounds,d);
     expect(down.perch).toBeUndefined(); expect(down.mode).toBe("descending");
   });
 });

@@ -57,4 +57,4 @@ const rhino = {
  *  the sizes"); plans, each level's build;
  *  curl, how it lies asleep (art/mesh/gear.js `napping` reads gait.curl): over on its side and bent only a little, not in a ring
  *  (on its brisket with its head down, its horn stood it off the ground). */
-export const MESH = { id: "rhino", heights: [82, 127, 179, 290], curl: { turn: 1.2, tail: 0.3, roll: 1.05 }, plans: rhino };
+export const MESH = { id: "rhino", heights: [82, 127, 179, 290], gait: "trot", curl: { turn: 1.2, tail: 0.3, roll: 1.05 }, plans: rhino };

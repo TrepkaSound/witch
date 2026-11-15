@@ -686,12 +686,7 @@ export class LeashView {
         if (e.kind === "placed") this.fx.push({ kind: "ring", x: e.x, y: 0, z: e.z, at: time, life: 0.6, r: 0.62, g: 0.4, b: 0.2, seed: 0, size: R * 0.8, n: 20, dot: 0.8 }); // (a deep amber: its dots overlap and add up, and it mustn't reach white)
         this.fx.push({ kind: "motes", x: e.x, y: 0.2, z: e.z, at: time, life: (e.kind === "placed" ? 0.9 : 0.7) * PM.life, r: col.r * PM.bright, g: col.g * PM.bright, b: col.b * PM.bright, seed: e.at * 53 + e.id!, size: e.kind === "placed" ? R * 0.35 : R * 0.25, tx: (e.kind === "placed" ? 3 : 4.5) * PM.rise, n: PM.count, dot: PM.size });
       }
-      if (e.kind === "relicDropped") { // (a flask's sigil put down: the same amber ring, and gold motes)
-        const col = (this.slotOf("relic", 0), this.colours.get("relic")!);
-        this.fx.push({ kind: "ring", x: e.x, y: 0, z: e.z, at: time, life: 0.6, r: 0.62, g: 0.4, b: 0.2, seed: 0, size: 4.8, n: 20, dot: 0.8 });
-        this.fx.push({ kind: "motes", x: e.x, y: 0.2, z: e.z, at: time, life: 0.9 * PM.life, r: col.r * PM.bright, g: col.g * PM.bright, b: col.b * PM.bright, seed: e.at * 53 + e.id, size: 2, tx: 3 * PM.rise, n: PM.count, dot: PM.size });
-      }
-      if (e.kind === "cycled" && e.id !== undefined) this.cycledAt.set(stackKey(e.relic ? "relic" : "creature", e.id), time);
+      if (e.kind === "cycled" && e.id !== undefined) this.cycledAt.set(stackKey("creature", e.id), time);
     }
     this.bursts = this.bursts.filter(b => time - b.at < 1.1);
     for (const [id, at] of this.joined) if (time - at > 1) this.joined.delete(id);
@@ -795,13 +790,9 @@ export class LeashView {
 
     drawProjection(this, time, dot); // (the sigils over the canopy from the treetops: render/leash/projection.ts)
 
-    // The ghost: where the bottom sigil would land; none where it can't (a relic's at the bottom: its own) (Ed, 2026-10-07: "no visual feedback when you can't put
+    // The ghost: where the bottom sigil would land; none where it can't (Ed, 2026-10-07: "no visual feedback when you can't put
     // down a sigil, just a refusal sound": the "fizzled" leash event, platform/audio).
-    const bottomRelic = stackBottom(s)?.kind === "relic";
-    if (w.mode === "ground" && bottomRelic && !s.placed.some(p => Math.hypot(p.x - w.x, p.z - w.z) <= L.pickRadius) && !relicsOut(g).some(r => (r.state === "lying" || r.state === "dropped") && Math.hypot(r.sx - w.x, r.sz - w.z) <= L.runeRadius)) {
-      const col = (this.slotOf("relic", 0), this.colours.get("relic")!); // (a flask's at the bottom: its ghost, Ed 2026-10-08: "it's what you put down when you press e")
-      this.groundSigil(w.x, 0, w.z, 3.4, this.uv(this.slotOf("relic", 0)), col.r, col.g, col.b, 0.22);
-    } else if (w.mode === "ground" && stackBottom(s)?.kind === "creature" && !blocked(s, w.x, w.z, t) && !s.placed.some(p => Math.hypot(p.x - w.x, p.z - w.z) <= L.pickRadius) && !runeNear(g.creatures, w.x, w.z, L.runeRadius, time, undefined, k => runeOffset(k, t)) && !relicsOut(g).some(r => r.state === "lying" && Math.hypot(r.sx - w.x, r.sz - w.z) <= L.runeRadius)) { // (on a relic's sigil the button picks the relic up)
+    if (w.mode === "ground" && stackBottom(s)?.kind === "creature" && !blocked(s, w.x, w.z, t) && !s.placed.some(p => Math.hypot(p.x - w.x, p.z - w.z) <= L.pickRadius) && !runeNear(g.creatures, w.x, w.z, L.runeRadius, time, undefined, k => runeOffset(k, t)) && !relicsOut(g).some(r => r.state === "lying" && Math.hypot(r.sx - w.x, r.sz - w.z) <= L.runeRadius)) { // (on a relic's sigil the button picks the relic up)
       const c = g.creatures[s.stack[s.stack.length - 1]], col = this.colOf(c);
       const sg = this.sigilOf(c), feeds = !!g.witches?.[0] && !!feedOffer(g, g.witches[0]); // (a tap feeds it now, a hold puts it down: fainter, Ed 2026-11-03)
       this.groundSigil(w.x, 0, w.z, ranks ? RK.glyph * rankSize(t, rankOf(c)) : (3 + c.level * 0.8) * sg.scale, sg.uv, col.r, col.g, col.b, feeds ? 0.12 : 0.22);
@@ -813,7 +804,7 @@ export class LeashView {
     // 2026-10-05: "a rare find"), never over the canopy; no markers.
     const aloft = w.lift > 0.5;
     for (const r of relicsOut(g)) { // (none before the party: rules/partyOver.ts)
-      const dropped = r.state === "dropped"; // (put down by her off any legend's clearing: its sigil alone, where she left it)
+      const dropped = r.state === "dropped"; // (the zoo's and the challenge's flasks: its sigil alone, no bottle)
       if ((r.state !== "lying" && !dropped) || Math.abs(r.sx - w.x) > 400 || Math.abs(r.sz - w.z) > 400) continue;
       // Its relic sigil on the ground south of it, written like any placed sigil (Ed, 2026-10-06:
       // stand on it and press the sigil button to pick the relic up), gold.

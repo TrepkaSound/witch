@@ -63,4 +63,4 @@ const elephant = {
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: today's drawn heights, Ed, 2026-11-12, "keep
  *  the sizes"); plans, each level's build;
  *  curl, how it lies asleep (art/mesh/gear.js `napping` reads gait.curl): over on its side and bent only a little, not in a ring. */
-export const MESH = { id: "elephant", heights: [90, 139, 200, 280], curl: { turn: 1.3, tail: 0.3, roll: 1.1 }, plans: elephant };
+export const MESH = { id: "elephant", heights: [90, 139, 200, 280], gait: "walk", curl: { turn: 1.3, tail: 0.3, roll: 1.1 }, plans: elephant };

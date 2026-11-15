@@ -1,0 +1,9 @@
+{
+ "name": "quest",
+ "values": [
+  "1"
+ ],
+ "does": "The first quest's demo: beside the nearest sleeping legend with its dream on her stack.",
+ "group": "debug",
+ "since": "2026-10-07"
+}

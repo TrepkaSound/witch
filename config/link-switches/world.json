@@ -1,0 +1,10 @@
+{
+ "name": "world",
+ "values": [
+  "<n>",
+  "<text>"
+ ],
+ "does": "The campaign's world seed (every island's shape) for this load.",
+ "group": "run",
+ "since": "2026-10-11"
+}

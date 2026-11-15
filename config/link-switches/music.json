@@ -1,0 +1,13 @@
+{
+ "name": "music",
+ "values": [
+  "off",
+  "live",
+  "<section>",
+  "wave<N>"
+ ],
+ "does": "No music, the music played live rather than the pre-recorded way (the default since Ed, 2026-10-27), one section on a loop, or wave N's music.",
+ "group": "debug",
+ "since": "2026-10-07",
+ "decision": "Pre-recorded (drawn-ahead) music is the default (Ed, 2026-10-27)"
+}

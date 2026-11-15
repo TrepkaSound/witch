@@ -1,0 +1,11 @@
+{
+ "name": "ladder",
+ "values": [
+  "off",
+  "auto",
+  "<n>"
+ ],
+ "does": "The quality ladder off, on under automation, or pinned at rung n.",
+ "group": "view",
+ "since": "2026-10-27"
+}

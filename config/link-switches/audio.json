@@ -1,0 +1,10 @@
+{
+ "name": "audio",
+ "values": [
+  "lite",
+  "full"
+ ],
+ "does": "The sound's weight for one load: lite sheds the costly parts (platform/audio/shed.ts).",
+ "group": "debug",
+ "since": "2026-10-07"
+}

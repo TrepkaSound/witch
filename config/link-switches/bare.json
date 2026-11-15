@@ -1,0 +1,10 @@
+{
+ "name": "bare",
+ "values": [
+  "1",
+  "2"
+ ],
+ "does": "The terrain on its own (2: grey, with contours and a grid).",
+ "group": "view",
+ "since": "2026-10-07"
+}

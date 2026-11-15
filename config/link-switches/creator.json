@@ -1,0 +1,9 @@
+{
+ "name": "creator",
+ "values": [
+  "0"
+ ],
+ "does": "No character creator: the plain start card (the tools and the smoke runs).",
+ "group": "run",
+ "since": "2026-10-05"
+}

@@ -31,4 +31,4 @@ Baseline source is prototype7313e5781, with accepted music/report dependency15a6
 
 ## Remaining scope
 
-Seventeen W8 declarations in the shared `rules.test.ts` remain unchanged:65,80,301,766,1049,1063,1110,1121,1131,1148,1172,1200,1221,1231,1513,1524,1621. Start their separate small PR after this slice reaches coordinator review, per [the plan](../plans/world-behaviour-reports.md). W4/W7/W-R2-1, combat and multiplayer are outside this PR. The accepted music dependency is combined once by the coordinator; this builder performs no merge to prototype/main or release.
+Seventeen W8 declarations in the shared `rules.test.ts` remain unchanged:65,80,301,766,1049,1063,1110,1121,1131,1148,1172,1200,1221,1231,1513,1524,1621. Start their separate small PR after this slice reaches coordinator review, per [the plan](../archive/plans/world-behaviour-reports.md). W4/W7/W-R2-1, combat and multiplayer are outside this PR. The accepted music dependency is combined once by the coordinator; this builder performs no merge to prototype/main or release.

@@ -1,0 +1,10 @@
+{
+ "name": "latency",
+ "values": [
+  "<category>",
+  "<seconds>"
+ ],
+ "does": "The audio output buffer for one load: a latency category or seconds.",
+ "group": "debug",
+ "since": "2026-10-07"
+}

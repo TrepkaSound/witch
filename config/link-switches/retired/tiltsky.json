@@ -1,0 +1,8 @@
+{
+ "name": "tiltsky",
+ "values": [
+  "0"
+ ],
+ "broughtBack": "the sky left sharp by the tilt-shift",
+ "stays": "`tiltShift.skyBlur` (the decisions panel's slider); `tiltShift.sky` gone"
+}

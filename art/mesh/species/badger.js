@@ -65,4 +65,4 @@ const badger = {
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build;
  *  curl, how it curls up to sleep where it differs from the rest (art/mesh/gear.js `napping` reads gait.curl): it curls the other way round, so its striped face is on the side she sees it from and not behind its plates. */
-export const MESH = { id: "badger", heights: [54, 82, 113, 256], curl: { side: -1 }, plans: badger };
+export const MESH = { id: "badger", heights: [54, 82, 113, 256], gait: "trot", curl: { side: -1 }, plans: badger };

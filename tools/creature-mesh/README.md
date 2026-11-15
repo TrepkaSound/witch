@@ -25,7 +25,7 @@ node tools/creature-mesh/frames.mjs --compare before.json [kind...]    fails, na
 
 ## `index.mjs`
 
-Writes art/mesh/species/index.js, the list of every kind drawn as a mesh, from the folder: one import a file in art/mesh/species/, sorted by id.
+Writes art/mesh/species/index.js, the list of every kind drawn as a mesh, from the folder: one line a file in art/mesh/species/, sorted by id.
 
 ```
 node tools/creature-mesh/index.mjs           writes it

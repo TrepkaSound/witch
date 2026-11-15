@@ -8,6 +8,8 @@ import { tuningFromLink } from "../app/linkParams";
 import type { Creature, Level } from "./creatures";
 import { newCombat, stepCombat, type CombatWorld } from "./combat";
 import { rng } from "./random";
+import { BENCH } from "./kinds";
+import { REAL_KINDS } from "./rosters";
 import { withCombatRoles } from "../test/combatRoles";
 import { queueCombatHit } from "../test/combatHit";
 import type { Game } from "./game";
@@ -88,9 +90,11 @@ describe("combat waiting spacing", () => {
     expect(speeds.some(v => v > 0)).toBe(true);
     expect(waitingDrive({ ...c, hopNext: 0.8 }, 0.8, data).airborne).toBe(true);
     expect(waitingProfile(creature(1, 0, 0, "boar"), data).turn).toBeLessThan(waitingProfile(c, data).turn);
-    const signatures = Object.keys(SPACING.body.radii).map(species => JSON.stringify(waitingProfile({ species }, data)));
-    expect(signatures).toHaveLength(67); // (the 64 kinds, and the marten, the newt and the moth on the bench: rules/kinds.ts BENCH)
-    expect(new Set(signatures).size).toBe(66); // (each its own, but the moth: its line is the butterfly's as it was, kept with it on the bench, 2026-11-13)
+    // (every kind, and those on the bench: rules/kinds.ts BENCH; counted from the roster, not written here)
+    const measured = Object.keys(SPACING.body.radii);
+    expect([...measured].sort()).toEqual([...REAL_KINDS, ...BENCH].sort());
+    const signatures = measured.filter(species => species !== "moth").map(species => JSON.stringify(waitingProfile({ species }, data)));
+    expect(new Set(signatures).size).toBe(signatures.length); // (each its own, but the moth: its line is the butterfly's as it was, kept with it on the bench, 2026-11-13)
     expect(waitingProfile({ species: "moth" }, data)).toEqual(waitingProfile({ species: "butterfly" }, data));
   });
   it("moves a waiting goal clear of large drawn bodies without moving the bodies", () => {

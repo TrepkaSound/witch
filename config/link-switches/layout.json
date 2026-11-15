@@ -1,0 +1,10 @@
+{
+ "name": "layout",
+ "values": [
+  "ed",
+  "classic"
+ ],
+ "does": "Ed's house arrangement is the default; classic selects the previous layout, and ed selects the default explicitly.",
+ "group": "debug",
+ "since": "2026-10-31"
+}

@@ -1,0 +1,9 @@
+{
+ "name": "mistgate",
+ "values": [
+  "0"
+ ],
+ "does": "The bedroom's curtains and door don't wait for the island's art, so she can go out while it's still drawing.",
+ "group": "debug",
+ "since": "2026-10-24"
+}

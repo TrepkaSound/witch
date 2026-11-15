@@ -1,0 +1,9 @@
+{
+ "name": "grass",
+ "values": [
+  "0..2"
+ ],
+ "does": "How thick the ground cover is.",
+ "group": "view",
+ "since": "2026-10-07"
+}

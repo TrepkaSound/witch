@@ -413,7 +413,6 @@ Fixed index omissions: root commands/build helpers and nested browser/audio/buil
 | `tools/smoke/dream-way.cjs` | Browser/render workload; no browser allocation in this task. |
 | `tools/smoke/dreams.cjs` | Browser/render workload; no browser allocation in this task. |
 | `tools/smoke/effects-scene.cjs` | Imported helper or browser/bundler entry; standalone invocation is not a supported dry run. |
-| `tools/smoke/flask-stack.cjs` | Browser/render workload; no browser allocation in this task. |
 | `tools/smoke/house-bed-start.cjs` | Imported helper or browser/bundler entry; standalone invocation is not a supported dry run. |
 | `tools/smoke/hud.cjs` | Browser/render workload; no browser allocation in this task. |
 | `tools/smoke/knockdown-bpm.cjs` | Browser/render workload; no browser allocation in this task. |

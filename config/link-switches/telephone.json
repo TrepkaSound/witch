@@ -1,0 +1,9 @@
+{
+ "name": "telephone",
+ "values": [
+  "1"
+ ],
+ "does": "Proof-only: shows the unfinished telephone station panel; default play keeps the existing quiet-line message. Calls stay off unless telephoneCalls=1 is also explicitly supplied.",
+ "group": "debug",
+ "since": "2026-11-01"
+}

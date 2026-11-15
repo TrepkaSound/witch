@@ -1,0 +1,10 @@
+{
+ "name": "dream",
+ "values": [
+  "won:<kind>:<item>",
+  "lost:<kind>:<item>"
+ ],
+ "does": "Her dream of a loaned find over the night, at once, for a look at it.",
+ "group": "debug",
+ "since": "2026-10-24"
+}

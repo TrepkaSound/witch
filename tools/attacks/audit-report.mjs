@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 const root = new URL('../../', import.meta.url);
 const read = p => JSON.parse(readFileSync(new URL(p, root), 'utf8'));
-const rows = read('docs/notes/attack-audit/stage1b/species.json');
+const rows = read('data/attack-audit/stage1b/species.json');
 const fmt = v => typeof v === 'number' ? Number(v.toFixed(3)) : String(v);
 const clean = v => String(v).replaceAll('|', '/').replaceAll('\n', ' ');
 const json = v => clean(JSON.stringify(v));
@@ -29,7 +29,7 @@ All64 configured species, young/adult legal attack derivations. Ranges in metres
 const table = rows.map(r => `|${r.species}|${r.body}/${r.pattern}|${fmt(r.range)}/${fmt(r.adultRange)}|${fmt(r.windup)}/${fmt(r.cooldown)}|${fmt(r.youngWarning)}/${fmt(r.adultWarning)}|${clean(r.tell?.pose ?? 'generic')}; ${r.telegraph}|${json(r.hit)}; ${r.children.join(',') || 'none'}|${clean(r.note ?? '')}|`).join('\n');
 const tail = `
 
-Babies have no attack; adults derive from young attacks (including spread/radius/range/lunge scaling), not separate tuned rows. Legends derive per species: range420, windup2.2, cooldown15; full derived form and minimum child warnings are recorded per row in [species.json](../notes/attack-audit/stage1b/species.json). Ed ruled these long-range attacks remain as-is because attacking legends already have a pointer; no legend visibility/LOS restriction is proposed.
+Babies have no attack; adults derive from young attacks (including spread/radius/range/lunge scaling), not separate tuned rows. Legends derive per species: range420, windup2.2, cooldown15; full derived form and minimum child warnings are recorded per row in [species.json](../../data/attack-audit/stage1b/species.json). Ed ruled these long-range attacks remain as-is because attacking legends already have a pointer; no legend visibility/LOS restriction is proposed.
 
 ## Readability, fairness and variety audit
 
@@ -49,7 +49,7 @@ The balance note mentions seven species/ages that cannot be stunned alone but do
 
 ## Measurements, provenance and limits
 
-Raw manifests and JSON/JSONL are retained in ../notes/attack-audit/stage1, stage1b and stage1c. Each manifest binds its exact tool/source revision and inputs. Do not relabel earlier outputs as later source fitness. Jobs each used one worker with a120s whole-job ceiling, completed without cap/restart: stage1 6.292s, corrected stage1b8.450s, stage1c3.164s. No browser, long sweep or drawing run.
+Raw manifests and JSON/JSONL are retained in data/attack-audit/stage1, stage1b and stage1c. Each manifest binds its exact tool/source revision and inputs. Do not relabel earlier outputs as later source fitness. Jobs each used one worker with a120s whole-job ceiling, completed without cap/restart: stage1 6.292s, corrected stage1b8.450s, stage1c3.164s. No browser, long sweep or drawing run.
 
 Initial stage1 pack fixtures left the spectator witch on the ground; retained as calibration, superseded for pure pack comparisons by stage1b's treetop spectator. Three20s corrected pack cases plus one exact repeat: wolves/ravens combat hits7, wolves/cats32 with one loss, boars/foxes13 with five generic stunned events. Item4 source inspection subsequently identifies those five as missed-charge self-stuns, not five opponent stuns; the detached observer separates these. All censored without whole-side win; spectator took no hits. Wolves/ravens repeat event/state/attack digest matches bab70dc278f7a748462eadf7859909b9cb233647217f23b81036c6beb33f8423. Combat totals include melee; engine contacts alone do not measure all damage. Historical Stage1 per-attack accepted hits/dodges/stuns are explicitly null, not zero, and remain unchanged in those artifacts. Expired untouched bodies are only a miss proxy; live bodies, beams and zones need different accounting.
 
@@ -63,7 +63,7 @@ Artifact assertions check all64 configured rows, strict parse errors0, warning f
 
 Stage2 sequence: reproduce target identity in unit tests and repair; reproduce sheltered effect leakage and repair all relevant adapters; correct momentum cache invalidation. Each gets a separate milestone REPORT with exact SHA/typecheck/nearby tests and original deterministic arena comparison when relevant. Then implement accepted-outcome observation with routed overlap, before using arena metrics to justify any readability/variety change. New unseen designs default OFF; no balance changes.
 
-Reproduce bounded current harness using a fresh directory: \`node tools/attacks/audit.mjs --out docs/notes/attack-audit/new-run\`; witch-only: \`node tools/attacks/audit.mjs --witch-only --out docs/notes/attack-audit/new-witch-run\`. It refuses manifest overwrite. Larger species/seed/loadout sweeps require canonical cloud routing and an explicit case-file/shard interface first; current tool has fixed short fixtures, so no unsupported sweep command is presented as runnable. Proposed shards:4 cases per job, each<=120s, deterministic seeds and raw accepted outcomes, exact legal loadout, with protected/privileged setup and censoring declared. No local larger sweep authorized or run.
+Reproduce bounded current harness using a fresh directory: \`node tools/attacks/audit.mjs --out data/attack-audit/new-run\`; witch-only: \`node tools/attacks/audit.mjs --witch-only --out data/attack-audit/new-witch-run\`. It refuses manifest overwrite. Larger species/seed/loadout sweeps require canonical cloud routing and an explicit case-file/shard interface first; current tool has fixed short fixtures, so no unsupported sweep command is presented as runnable. Proposed shards:4 cases per job, each<=120s, deterministic seeds and raw accepted outcomes, exact legal loadout, with protected/privileged setup and censoring declared. No local larger sweep authorized or run.
 `;
 writeFileSync(new URL('docs/plans/attack-system-audit.md', root), header + table + tail);
 console.log(`Wrote ${rows.length} species rows`);

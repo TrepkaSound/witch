@@ -1,0 +1,10 @@
+{
+ "name": "resume",
+ "values": [
+  "0",
+  "1"
+ ],
+ "does": "Disable night saves, or explicitly enable them on a debug or automated link.",
+ "group": "run",
+ "since": "2026-10-29"
+}

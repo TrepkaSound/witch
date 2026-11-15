@@ -1,0 +1,9 @@
+{
+ "name": "lights",
+ "values": [
+  "<n>"
+ ],
+ "does": "The light budget (0 none).",
+ "group": "view",
+ "since": "2026-10-07"
+}

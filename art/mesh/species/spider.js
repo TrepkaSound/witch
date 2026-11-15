@@ -58,4 +58,4 @@ const spiders = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. It sleeps on its belly with its legs drawn in, knees up, at every level: it can't curl. */
-export const MESH = { id: "spider", heights: [33, 50, 78, 426], plans: spiders };
+export const MESH = { id: "spider", heights: [33, 50, 78, 426], gait: "trot", legs: [8], plans: spiders };

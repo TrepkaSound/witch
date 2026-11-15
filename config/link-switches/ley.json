@@ -1,0 +1,9 @@
+{
+ "name": "ley",
+ "values": [
+  "0"
+ ],
+ "does": "No ley lines through the runestones.",
+ "group": "view",
+ "since": "2026-10-07"
+}

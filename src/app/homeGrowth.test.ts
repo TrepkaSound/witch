@@ -21,7 +21,7 @@ const FOUND5 = ["beetle", "otter", "butterfly", "owl", "toad"], FOUND7 = [...FOU
 describe("home grows with the islands she's found", () => {
   it("knows home's 10, then each kind found with an area type, in the order found, none twice (the zoo's); home is the found ones, at least 5", () => {
     expect(knownKinds()).toEqual(homeKinds());
-    expect(knownKinds(["beetle"]).length).toBe(11);
+    expect(knownKinds(["beetle"])).toEqual([...homeKinds(), "beetle"]);
     // (a home kind found is known already; a placeholder is never known)
     expect(knownKinds(["beetle", "fox", "unknown-01", "otter", "butterfly", "otter"])).toEqual([...homeKinds(), "beetle", "otter", "butterfly"]);
     expect(foundKinds(["beetle", "fox", "unknown-01", "otter", "butterfly", "otter"])).toEqual(["beetle", "fox", "otter", "butterfly"]);

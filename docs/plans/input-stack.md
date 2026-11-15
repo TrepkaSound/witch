@@ -29,7 +29,7 @@ and tests, then `platform/freeze.ts` and pause-on-top assertions; no `main.ts` o
 `settingsMenu.ts` edits. Freeze migration waits until PR #1493 lands on
 `claude/prototype` and the coordinator gives the handoff, then merges prototype
 normally. Preserve its `textEntry` guard and `mutate` / `advance` replay hooks;
-the future command candidates in `docs/robustness-plan.md` remain documentation,
+the future command candidates in `docs/archive/robustness-plan.md` remain documentation,
 not a second replay path. No other panel migration or view/main split here.
 
 Foundation checks cover exact top ownership, target filtering, one-shot close

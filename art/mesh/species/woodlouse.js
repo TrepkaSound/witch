@@ -66,4 +66,4 @@ const lice = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. It rolls into a ball to sleep at every level. */
-export const MESH = { id: "woodlouse", heights: [28, 45, 73, 219], plans: lice };
+export const MESH = { id: "woodlouse", heights: [28, 45, 73, 219], gait: "walk", legs: [10, 14], plans: lice };

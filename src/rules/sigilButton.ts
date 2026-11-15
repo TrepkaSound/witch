@@ -66,7 +66,7 @@ export function sigilBarred(g: Game, x: number, z: number, t: Tuning): boolean {
 export function stepSigilButton(g: Game, c: Controls, W: Witch, t: Tuning, ht: number, hdt: number, _legends: number[], busy: (id: number) => boolean, step: number, guards: PlacedSigil[] = []): void {
   // (the relic button's events: added after the leash's step, which starts its events afresh)
   const relicEvents: LeashEvent[] = [];
-  // The sigil button by a lying relic picks it up; carrying one, by a sleeping legend, puts it down there (rules/legends.ts).
+  // (None is carried since Ed, 2026-10-18: a flask is drunk on its sigil, below.)
   let sigil = !!c.sigil && !W.ko, place = !!c.place && !W.ko;
   // Keyboard names it place; gamepad/touch expose the same game.use action as sigil.
   if (!g.cauldron && mushroomButton(g, W, sigil || place, sigil || place)) { sigil = false; place = false; }
@@ -173,7 +173,7 @@ export function stepSigilButton(g: Game, c: Controls, W: Witch, t: Tuning, ht: n
   // press of her own this step (hers first: it's tried again next step), nor where nothing may go down (it's tried again as she moves).
   const pop = popSigil(W, onFoot && !sigil && !place && !run && !stone && !ring);
   if (pop) { place = true; placeOnly = true; }
-  stepLeash(W.leash, g.creatures, { sigil, place, held: pop ? false : held, placeOnly, heldSince, ...pickControls(g, W, t), cycle: !!c.cycle && !W.ko, cycleBack: !!c.cycleBack && !W.ko, dropRelic: (id, x, z) => Object.assign(g.relics[id], { state: "dropped", sx: x, sz: z }), inviteNearest: c.inviteNearest,
+  stepLeash(W.leash, g.creatures, { sigil, place, held: pop ? false : held, placeOnly, heldSince, ...pickControls(g, W, t), cycle: !!c.cycle && !W.ko, cycleBack: !!c.cycleBack && !W.ko, inviteNearest: c.inviteNearest,
     takeLoose: id => { g.loose = g.loose.filter(p => p.id !== id); g.creatures[id].loose = undefined; },
     dropTether: (id, x, z) => { g.loose.push({ id, x, z, at: g.clock.time, legend: true }); g.creatures[id].loose = true; }, land: (x, z) => isInside(g.map.bounds, x, z, BABY_COAST), talk: !t.invites.on && (c.autoTalk !== false || !!c.talkHeld) }, W.body, W.body.mode === "ground" && !perched && !W.ko, ht, hdt, t, id => busy(id) || heldByCombat(g.creatures[id]) || !!g.creatures[id].travelling, guards, homeArea(g.map));
   if (pop && !W.leash.events.some(e => e.kind === "placed" && e.id === pop.id)) { // (nowhere to go down: her stack as it was, no refusal said)
@@ -317,7 +317,7 @@ function popSigil(W: Witch, can: boolean): { id: number; undo(): void } | null {
   const id = W.popDue;
   delete W.popDue;
   if (id === undefined || !can || !W.leash.stack.includes(id)) return null;
-  const stack = [...W.leash.stack], relics = [...W.leash.relics], relicAt = W.leash.relicAt ? { ...W.leash.relicAt } : undefined;
+  const stack = [...W.leash.stack];
   toBottom(W.leash, id);
-  return { id, undo() { W.leash.stack.splice(0, W.leash.stack.length, ...stack); W.leash.relics.splice(0, W.leash.relics.length, ...relics); if (relicAt) W.leash.relicAt = relicAt; else delete W.leash.relicAt; } };
+  return { id, undo() { W.leash.stack.splice(0, W.leash.stack.length, ...stack); } };
 }

@@ -62,7 +62,7 @@ for (const r of rows) {
   lines.push("| " + [ `[${r.name} (${r.id})](../${r.sources[0]}); ${encoded}`, role, `${r.world0Islands.join(", ")}${r.homeAtStart ? "; home initially" : ""}; ${r.biome}; ${r.introducedPhase}/${r.ownIslandPhase}`, r.areaIds.map(id => `[${id}](../art/areas/${id}/kind.json)`).join(", "), r.family, r.assessment.likeness, r.assessment.naturalCue, `[bold ${r.sigil.boldStrokes} strokes](../art/creatures/${r.id}/bold.js): ${r.sigil.description}; thin ${r.sigil.thinStrokes}; ${r.sigil.neon}`, `${r.assessment.quality} ([sheet](${r.assessment.visualSource}))`, r.assessment.gap ].map(escape).join(" | ") + " |");
 }
 lines.push("", "## Active builders (from code)", "", ...Object.entries(builders).map(([b, ids]) => `- **${b} (${ids.length})**: ${ids.join(", ")}.`), "");
-mkdirSync("docs", { recursive: true });
-writeFileSync("docs/roster-census.json", JSON.stringify({ sourceCommit: sha, world: 0, builders, dispatch, unused, species: rows }, null, 2) + "\n");
+mkdirSync("data/roster", { recursive: true });
+writeFileSync("data/roster/roster-census.json", JSON.stringify({ sourceCommit: sha, world: 0, builders, dispatch, unused, species: rows }, null, 2) + "\n");
 writeFileSync("docs/roster-census.md", lines.join("\n"));
 console.log(JSON.stringify({ species: rows.length, activeBuilders: Object.keys(builders).length, quad: builders.quad.length, unused }));

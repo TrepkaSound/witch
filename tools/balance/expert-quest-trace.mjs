@@ -42,7 +42,7 @@ if (!process.argv.includes("--worker")) {
 setPriority(0, constants.priority.PRIORITY_BELOW_NORMAL);
 const root = fileURLToPath(new URL("../..", import.meta.url)), out = resolve(output);
 if (existsSync(out)) throw Error("Diagnostic output must be fresh; no resume/overwrite");
-const protectedPairs = JSON.parse(readFileSync(resolve(root, "docs/notes/expert-held-out-pairs.json"), "utf8"));
+const protectedPairs = JSON.parse(readFileSync(resolve(root, "data/balance/expert-held-out-pairs.json"), "utf8"));
 const cases = guardedCoveragePilot ? guardedCoverageCases(protectedPairs) : deliveryScreen ? deliveryCases(protectedPairs) : knownQuestScreen ? knownQuestCases(protectedPairs) : coverageScreen ? finalCoverageCases(protectedPairs) : (ablation ? ["home-everything"] : ["matched", "home-everything"]).flatMap(condition => (ablation || coveragePilot ? ["off", "on"] : ["baseline", "D"]).map(vector => ({ vector, condition, seed: 1000, worldSeed: 0, island: "home", bpm: 100, bag: "satchel", hat: "none", wearsHat: false, parts: [] })));
 if (cases.some(c => protectedPairs.some(p => p.worldSeed === c.worldSeed && p.nightSeed === c.seed))) throw Error("Diagnostic pair is protected");
 mkdirSync(out, { recursive: true });

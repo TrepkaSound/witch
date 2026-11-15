@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { HOUSE_ROOMS } from "../rules/houseRooms";
-import supplied from "../../docs/evidence/treehouse-layout-ed-2026-10-31.v1.json";
+import supplied from "../../data/house/treehouse-layout-ed-2026-10-31.v1.json";
 import { defaultLayout, floorplanKey, layoutItems, parseLayout } from "./houseLayout";
 import { auditLayout } from "./houseLayoutAudit";
 

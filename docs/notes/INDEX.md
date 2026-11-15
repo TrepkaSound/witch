@@ -8,12 +8,12 @@ that; `tools/docs/glossary.test.ts` fails while this is out of date. Read an are
 
 - [Art checks](art-checks.md): The art generator's check, the style bible, the genome compare, the lab and export commands.
 - [Balance baselines — v5655 rules](balance-baselines.md): The matched-seed, matched-bag tables from the real-rules report (v5655; one seed, no tuning).
-- [Real-rules reports and legacy coverage](balance-report-coverage.md): The report tool, how to rerun it, and what the old balance sims still cover.
+- [Real-rules reports and legacy coverage](balance-report-coverage.md): The report tool, how to rerun it, and what the deleted balance sims measured that nothing does yet.
 - [Balance study follow-up](balance-study.md): The follow-up on the real rules after the report tool (#1475): the matched-tempo preflight and the study's limits.
 - [Wide, shallow balance survey — design v1](balance-survey-design.md): The frozen five-study cloud design, first-wave limits and expert feedback gates.
 - [Balance](balance.md): The balance simulators and bots, fighting value, populations and costs, the playtest log.
 - [Cauldron collection and brewing preview](cauldron.md): The gated mushroom collection, shared kitchen and Mirror Floor preview; capturing possible mushroom trips and their sound; checks and remaining scope.
-- [Config files](config.md): The tuning file (values only) and its schema, the knobs' words in `config/knobs/<section>.json` (what each does, Ed's decisions), the style file, the link switches registry, the checks registry, the changelog's fragments.
+- [Config files](config.md): The tuning file (values only) and its schema, the knobs' words in `config/knobs/<section>.json` (what each does, Ed's decisions), the style file, the link switches registry, the generated files' rule, the checks registry, the changelog's fragments.
 - [Creatures' art](creatures.md): Genomes and templates, textures and palettes, evolution kits, faces, the live rig, the sleeping legends' art.
 - [Deploys](deploys.md): GitHub Pages and publishing: the gh-pages snapshot and its publisher, PR previews, garbage collection, version.json and the newer-build notice, and when a release counts as live.
 - [Expert search: implementation and fairness audit](expert-search.md): Observation limits, deterministic training, protected seeds and the survey adapter.
@@ -52,7 +52,7 @@ glossary; these are the prototype's), by note.
 
 ### [Real-rules reports and legacy coverage](balance-report-coverage.md)
 
-(no entries: its tools and checks only)
+- The copied models were deleted on 2026-11-15
 
 ### [Balance study follow-up](balance-study.md)
 
@@ -70,7 +70,7 @@ glossary; these are the prototype's), by note.
 - Log recovery
 - Input recording
 - Paused playtest comments
-- Legacy models retained (2026-10-29, #1459, coordinator decision).
+- Legacy models deleted (2026-11-15; Ed: "Do 1-7", the software-quality list's dead code).
 - Fighting value (F)
 - Population growth
 - Strength
@@ -97,6 +97,8 @@ glossary; these are the prototype's), by note.
 - Tuning file
 - Style file
 - Link switches
+- Generated files
+- Files that merge by line
 - Knob docs
 - Checks registry
 - Changelog fragments
@@ -355,6 +357,7 @@ glossary; these are the prototype's), by note.
 - The telescope's forest under the loading screen
 - Sail take-off freeze
 - Outfit load time
+- Frame check
 
 ### [The run](run.md)
 

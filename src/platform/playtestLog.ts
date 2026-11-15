@@ -81,7 +81,7 @@ export interface PlaytestSample {
   /** The witch's hits left. */
   hits: number;
   /** Her stack as drawn, top first (Ed's playtest of v5399: "one of them seemed pinned to the bottom of the stack"): each creature's
-   *  sigil as `#id species level`, a carried relic's as `relic #id`, and last a sleeping legend's sigil she carries, which never
+   *  sigil as `#id species level`, and last a sleeping legend's sigil she carries, which never
    *  cycles (rules/stoneStacks.ts), as `tether #id species`. */
   stack?: string[];
   /** The frames of the last two seconds (platform/frameStats.ts; Ed's overlay, 2026-10-13: "gpu 21.4 ms median", so a log shows
@@ -276,7 +276,7 @@ export function readablePlaytest(runs: readonly PlaytestRun[]): string {
 
 /** Her stack as drawn (render/leash/stack.ts), top first, for the log. */
 export function stackShown(g: Game): string[] {
-  const s = g.witches[0].leash, out = stackOrder(s).map(it => (it.kind === "relic" ? `relic #${it.id}` : `#${it.id} ${g.creatures[it.id]?.species} ${g.creatures[it.id]?.level}`));
+  const s = g.witches[0].leash, out = stackOrder(s).map(it => `#${it.id} ${g.creatures[it.id]?.species} ${g.creatures[it.id]?.level}`);
   const L = s.tether ? g.creatures[s.tether.id] : undefined;
   if (L) out.push(`tether #${L.id} ${L.species}`);
   return out;

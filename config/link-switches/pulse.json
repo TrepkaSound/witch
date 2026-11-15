@@ -1,0 +1,10 @@
+{
+ "name": "pulse",
+ "values": [
+  "<m/s>",
+  "off"
+ ],
+ "does": "How fast the ley pulse spreads the party, for one load; off holds the waves where they are.",
+ "group": "run",
+ "since": "2026-10-09"
+}

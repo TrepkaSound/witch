@@ -5,6 +5,8 @@ import fs from "node:fs";
 import path from "node:path";
 // @ts-expect-error (a plain .mjs tool, no types)
 import { entriesOf, indexText, INDEX, notes, summaryOf, titleOf } from "./glossary.mjs";
+// @ts-expect-error (a plain .mjs tool, no types)
+import { releaseStrict } from "../config/strict.mjs";
 
 describe("the glossary's index", () => {
   it("reads a note's entries: the bold names opening its lines, each once, in order", () => {
@@ -16,7 +18,7 @@ describe("the glossary's index", () => {
     expect(summaryOf(text)).toBe("");
   });
 
-  it("is up to date with the notes (node tools/docs/glossary.mjs --write)", () => {
+  it.skipIf(!releaseStrict())("is up to date with the notes at a release (node tools/config/regen.mjs)", () => {
     expect(fs.readFileSync(INDEX, "utf8").replace(/\r\n/g, "\n")).toBe(indexText());
   });
 
@@ -30,7 +32,7 @@ describe("the glossary's index", () => {
   });
 
   it("lists every note in INDEX.md's list of notes, each with its summary", () => {
-    const index = fs.readFileSync(INDEX, "utf8").replace(/\r\n/g, "\n");
+    const index = indexText() as string; // (as the notes make it now: the committed page is rewritten at each release)
     const list = index.slice(index.indexOf("## The notes"), index.indexOf("## The glossary"));
     const missing = (notes() as { file: string; title: string; summary: string }[])
       .filter(n => !n.summary || !list.includes(`- [${n.title || n.file}](${n.file}): ${n.summary}\n`)).map(n => n.file);

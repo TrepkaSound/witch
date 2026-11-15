@@ -1,0 +1,9 @@
+{
+ "name": "scenery",
+ "values": [
+  "<m>"
+ ],
+ "does": "A fixed scenery radius instead of the adaptive budget.",
+ "group": "debug",
+ "since": "2026-10-07"
+}

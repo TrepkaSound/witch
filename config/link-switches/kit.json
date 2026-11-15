@@ -1,0 +1,9 @@
+{
+ "name": "kit",
+ "values": [
+  "full"
+ ],
+ "does": "Her kit stays full while the party spell waits (otherwise she starts with a fresh kit).",
+ "group": "debug",
+ "since": "2026-10-26"
+}
