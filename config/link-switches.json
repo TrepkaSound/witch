@@ -2216,6 +2216,22 @@
    ]
   },
   {
+   "name": "framecheck",
+   "values": [
+    "1",
+    "quick",
+    "quick,sail"
+   ],
+   "does": "The frame check: a throwaway game on the bench's seed and start driven through fixed scenes (the decks, a ground flight, a wave fight, the treehouse) at a fixed 1/60 s, then a sail in real time (the map table's sea chart, its flight to raven, the dive, the wake-up and the take-off from the treehouse), every frame drawn and timed on this machine's real renderer (frame, CPU and GPU ms as median, p95 and worst; draw calls, triangles, the quality rung, the GPU's name), shown with a Copy button; quick: half a second a scene; a scene's id after a comma (decks, ground-flight, wave-fight, treehouse, sail) runs only the scenes named. Her settings are read, nothing of hers is written. The pause page's Frame check button opens it in a frame over the paused game.",
+   "group": "debug",
+   "since": "2026-11-15",
+   "decision": "Ed, 2026-11-15: \"And have 8 be a button on the right side pause menu\" (8, the coordinator's: a frame-time check he can run on his own machine).",
+   "readIn": [
+    "src/app/frameCheck.ts",
+    "src/platform/storageScope.ts"
+   ]
+  },
+  {
    "name": "latest",
    "values": [
     "<build>"
