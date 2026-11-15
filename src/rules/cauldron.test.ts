@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { MUSHROOM_KINDS, addIngredient, collectMushroom, depositMushrooms, newCauldronInventory, newCauldronStock, recipeKey, tutorialTrip, type Recipe } from "./cauldron";
 
 describe("commutative mushroom recipes", () => {
-  it("has exactly 56 unordered three-mushroom recipes, including repeats", () => {
+  it("has one recipe for every unordered three of its mushrooms, including repeats", () => {
     const keys = new Set<string>();
     for (const a of MUSHROOM_KINDS) for (const b of MUSHROOM_KINDS) for (const c of MUSHROOM_KINDS) {
       const key = recipeKey([a, b, c]);
@@ -11,7 +11,8 @@ describe("commutative mushroom recipes", () => {
       expect(recipeKey([b, c, a])).toBe(key);
       expect(recipeKey([b, a, c])).toBe(key);
     }
-    expect(keys.size).toBe(56);
+    const n = MUSHROOM_KINDS.length;
+    expect(keys.size).toBe(n * (n + 1) * (n + 2) / 6); // (56 of 6 kinds)
   });
 
   it.each<[Recipe, string]>([

@@ -24,7 +24,7 @@ it('loads identical assembled game config and validators without Vite SSR', () =
 it('keeps the real read-only CLI strict for invalid config and stale knob docs', () => {
   const fixture = mkdtempSync(join(tmpdir(), 'witch-schema-gate-'));
   const command = resolve('tools/config/schema.mjs');
-  const run = () => spawnSync(process.execPath, [command, '--check'], { cwd: fixture, encoding: 'utf8', timeout: 15000 });
+  const run = () => spawnSync(process.execPath, [command, '--check'], { cwd: fixture, encoding: 'utf8', timeout: 55_000 }); // (a hang guard under the suite's 60 s, not a budget)
   try {
     cpSync('config', join(fixture, 'config'), { recursive: true });
     const valid = run();

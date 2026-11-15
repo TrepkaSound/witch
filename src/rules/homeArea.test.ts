@@ -50,7 +50,7 @@ describe("the areas round home keep a sensible size, and their own centres", () 
     }
     expect(area(hx, hy)).toBeLessThan(2.5); // home's not swallowed its neighbours
     expect(sizes.length).toBe(8);
-  }, 30000);
+  });
 });
 
 describe("home is a meadow of its own (Ed, 2026-10-05)", () => {

@@ -7,7 +7,7 @@ describe('potion lab', () => {
   it('reverses each sortable column without changing permanent IDs', () => {
     for (const column of ['mushrooms', 'effect', 'status'] as const) {
       expect(sortedPotions(column, true)).toEqual(sortedPotions(column).reverse());
-      expect(new Set(sortedPotions(column).map(r => r.id)).size).toBe(165);
+      expect(new Set(sortedPotions(column).map(r => r.id)).size).toBe(POTION_RECIPES.length);
     }
   });
   it('tries implemented effects for ten game minutes and never pretends a pending effect works', () => {

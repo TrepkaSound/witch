@@ -66,7 +66,7 @@ describe("species strength (Ed, 2026-10-05: weaker ones more of them, stronger o
     expect(power(after) / was).toBeGreaterThan(0.9); expect(power(after) / was).toBeLessThan(1.1);
     expect(fighters(after) / fighters(before)).toBeGreaterThan(1.5);
     expect(after.filter(c => c.level === 0).length).toBe(before.filter(c => c.level === 0).length);
-  }, 30000);
+  });
 });
 
 describe("berries to evolve, tied to strength (Ed, 2026-10-05: \"tie the cost to strength\")", () => {

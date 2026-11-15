@@ -97,7 +97,7 @@ describe("paused playtest comments", () => {
     expect(readablePlaytest([run as PlaytestRun])).toContain("suggestion: try this");
     expect(() => parseComment(JSON.stringify(rows[1]), "fixture")).toThrow(/cannot restore/);
     expect(await parseCommentFile(JSON.stringify(await packLog([run])), "fixture")).toMatchObject({ id: "report-7", night: c.night });
-  }, 30_000);
+  }, 180_000); // (eight ~17 MiB reports packed and unpacked: 15 s alone, and it failed its old 30 s limit on a busy machine; a hang guard, not a budget)
   it("migrates v1 packed comments and retains oversized moments as written reports", async () => {
     const { game, context } = fixture(), c = captureComment(game, "keep my words", context, "", {}, []);
     const legacy = { format: "witch-comments/v1", bundles: [await packLog(c)] };

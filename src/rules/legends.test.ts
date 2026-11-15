@@ -391,7 +391,7 @@ describe("an awake legend with nothing in reach (balance, 2026-10-06)", () => {
     const at = L.fight!.readyAt;
     expect(at).toBeGreaterThan(g.clock.time); // (its next look is ahead of it, not this step)
     expect(at - g.clock.time).toBeLessThanOrEqual(LEGENDS.attack.recheck + 1e-9);
-  }, 30000);
+  });
 });
 
 describe("legends going back to sleep (Ed, 2026-10-06)", () => {
