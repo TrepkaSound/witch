@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 it('generates the same readable inventory from CRLF and LF and detects drift', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'witch-inventory-'));
   const tool = path.resolve('tools/inventory.mjs');
-  const run = (...args: string[]) => spawnSync(process.execPath, [tool, ...args], { cwd: root, encoding: 'utf8' });
+  const run = (arg?: string, strict = '1') => spawnSync(process.execPath, [tool, ...(arg ? [arg] : [])], { cwd: root, encoding: 'utf8', env: { ...process.env, GENERATED_STRICT: strict } });
   try {
     fs.mkdirSync(path.join(root, 'tools/demo'), { recursive: true });
     fs.writeFileSync(path.join(root, 'tools/inventory-notes.json'), '{}');
@@ -35,7 +35,8 @@ it('generates the same readable inventory from CRLF and LF and detects drift', (
     fs.writeFileSync(output, have.replace(/\n/g, '\r\n'));
     expect(run('--check').status).toBe(0);
     fs.writeFileSync(script, text.replace('useful', 'changed'));
-    const stale = run('--check');
+    expect(run('--check', '0').status).toBe(0); // (a builder's pull request: noted only)
+    const stale = run('--check', '1'); // (a release)
     expect(stale.status).toBe(1);
     expect(stale.stderr).toContain('fix: node tools/inventory.mjs');
   } finally {

@@ -39,11 +39,20 @@ node tools/config/knob-docs.mjs [--from <tuning.json with notes>] [--dry]
 
 ## `linkSwitches.mjs`
 
-The link switches as data: every ?name=value the game reads from its link is a record in config/link-switches.json, and docs/LINK-SWITCHES.md is written from it.
+The link switches as data: every ?name=value the game reads from its link is a record of its own, config/link-switches/<name>.json: a file a switch, so two builders adding switches never touch the same file.
 
 ```
-node tools/config/linkSwitches.mjs           refresh each record's readIn from the code, then rewrite docs/LINK-SWITCHES.md
-node tools/config/linkSwitches.mjs --check   say what's out of step (as the test does), change nothing
+node tools/config/linkSwitches.mjs           rewrite docs/LINK-SWITCHES.md
+node tools/config/linkSwitches.mjs --check   say what's out of step (as the test does), change nothing; a stale page alone is
+```
+
+## `regen.mjs`
+
+Rewrites every generated file from its sources, in one go.
+
+```
+node tools/config/regen.mjs           the coordinator, on the combined build before a release; anyone, after a clash
+node tools/config/regen.mjs --check   everything fresh, as a release needs it (the strict checks, whatever the branch)
 ```
 
 ## `schema-runtime.mjs`
@@ -55,7 +64,7 @@ Load the schema gate's real TypeScript/data modules without a Vite server or SSR
 The config schemas: writes and checks config/schema/*.schema.json and the knob reference config/KNOBS.md.
 
 ```
-node tools/config/schema.mjs --check     validate the config files against their schemas
+node tools/config/schema.mjs --check     validate the config files against their schemas (stale knob docs are only noted, and fail at a release: strict.mjs)
 node tools/config/schema.mjs --docs      rewrite config/KNOBS.md and the tuning schema's descriptions from config/knobs/*.json
 node tools/config/schema.mjs --init      (re)infer every schema from its file as it stands, with TUNING_OVER and CONFIGS' records and choices
 node tools/config/schema.mjs --add       add the knobs the file has and the schema lacks (inferred), drop the ones it no longer has, keep the rest
@@ -68,6 +77,14 @@ Stamps the changelog's fragments with the build they went live in.
 ```
 node tools/config/stampChangelog.mjs <release commit> <build>   stamp every null fragment that commit holds with <build>
 node tools/config/stampChangelog.mjs --check [<ref>]            list null fragments already in <ref> (origin/main by default); exit 1 if any
+```
+
+## `strict.mjs`
+
+When a stale generated reader page fails a check.
+
+```
+node tools/config/strict.mjs   says which
 ```
 
 ## `typegen.mjs`

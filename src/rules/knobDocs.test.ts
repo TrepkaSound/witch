@@ -4,6 +4,7 @@ import raw from "../../config/tuning.json";
 import schemaJson from "../../config/schema/tuning.schema.json";
 import indexJson from "../../config/knobs/index.json";
 import type { Schema } from "./schema";
+import { releaseStrict } from "../../tools/config/strict.mjs";
 import { describeSchema, knobDocsProblems, knobsReference, type KnobIndex, type KnobSection } from "./knobDocs";
 
 // The tuning knobs' words (config/knobs/*.json; knobDocs.ts): every knob has an entry, every entry a knob, and what's made from
@@ -64,7 +65,8 @@ describe("the knobs' words (config/knobs)", () => {
     expect(wrong, "an entry names a knob that isn't in config/tuning.json: rename or drop it in config/knobs").toEqual([]);
   });
 
-  it("keeps config/KNOBS.md and the schema's descriptions up to date (node tools/config/schema.mjs --docs)", () => {
+  // (reader pages: the release rewrites them, node tools/config/regen.mjs, so a builder needn't commit them: tools/config/strict.mjs)
+  it.skipIf(!releaseStrict())("keeps config/KNOBS.md and the schema's descriptions up to date at a release (node tools/config/schema.mjs --docs)", () => {
     const schema = schemaJson as Schema;
     expect(JSON.stringify(schema), FIX).toBe(JSON.stringify(describeSchema(schema, sections)));
     expect(readFileSync("config/KNOBS.md", "utf8").replace(/\r\n/g, "\n"), FIX).toBe(knobsReference(tuning, schema, index, sections));

@@ -84,11 +84,11 @@ node tools/inventory.mjs [--check]
 - [`checks/`](checks/README.md): 1 script — which.mjs
 - [`ci/`](ci/README.md): 19 scripts — annotations.cjs, build-proof-baseline.cjs, install-chromium.cjs, mockingTests.mjs, pages-gc.cjs, pages-policy.cjs, perch-profile.cjs, program-counts.cjs, prune-merged-branches.mjs, release-reuse.mjs, report-command.cjs, run-proofs.cjs, run-unit.mjs, same-game.mjs, sleep-cell-repro.mjs, test-scope.mjs, unit-timings.mjs, vitest-reporter.mjs, world-audit.mjs
 - [`combat-spacing/`](combat-spacing/README.md): 6 scripts — body-radii.mjs, capture-fight.cjs, capture.cjs, diagnose.mjs, measure.ts, run.mjs
-- [`config/`](config/README.md): 9 scripts — check.mjs, format.mjs, generated.mjs, knob-docs.mjs, linkSwitches.mjs, schema-runtime.mjs, schema.mjs, stampChangelog.mjs, typegen.mjs
+- [`config/`](config/README.md): 11 scripts — check.mjs, format.mjs, generated.mjs, knob-docs.mjs, linkSwitches.mjs, regen.mjs, schema-runtime.mjs, schema.mjs, stampChangelog.mjs, strict.mjs, typegen.mjs
 - [`creature-bake/`](creature-bake/README.md): 2 scripts — bake.mjs, page.js
 - [`creature-mesh/`](creature-mesh/README.md): 13 scripts — clip.mjs, draw.mjs, frames.mjs, index.mjs, lengths.mjs, make.mjs, page.js, quadruped.js, sheet.mjs, sizes.mjs, slip.mjs, slither.mjs, strike.mjs
 - [`dj/`](dj/README.md): 5 scripts — booth-sheet.mjs, booth.cjs, candles-sheet.mjs, respawn.cjs, strip.mjs
-- [`docs/`](docs/README.md): 2 scripts — glossary.mjs, tables.mjs
+- [`docs/`](docs/README.md): 3 scripts — glossary.mjs, reflow.mjs, tables.mjs
 - [`feel/`](feel/README.md): 1 script — trace.cjs
 - [`flora/`](flora/README.md): 5 scripts — bush-sheet.mjs, leaf-jitter-shots.cjs, species-sheet.mjs, tuft-sheet.mjs, vignette.mjs
 - [`forest/`](forest/README.md): 3 scripts — border-map.mjs, border-stats.mjs, border.cjs
