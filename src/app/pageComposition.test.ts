@@ -1,4 +1,4 @@
-// A4 boundary regressions: night replacement and renderer exceptions must keep their original page semantics.
+// The page modules' boundaries: a retained callback reads the night on now, a manual loop steps nothing, a draw error keeps its parts counted.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PageHost } from '../main';
 import { frameBody } from './pageFrame';
