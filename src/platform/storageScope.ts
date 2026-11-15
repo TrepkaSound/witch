@@ -137,8 +137,6 @@ export const localStore = (): Storage | null => storageScope().local();
 export const sessionStore = (): Storage | null => storageScope().session();
 /** This page's IndexedDB (a fresh game's namespace), or undefined where there's none. */
 export const pageIdb = (): IDBFactory | undefined => storageScope().idb();
-/** Whether this page plays a fresh game (?fresh=). */
-export const freshGame = (): boolean => storageScope().fresh !== null;
 
 /** A link this page goes to, its ?fresh=<token> carried (a fresh game's reload, sail or save switch stays in it), and its ?cold=1
  *  (a cold load's reload or sail is cold too); as it was otherwise. */

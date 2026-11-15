@@ -10,7 +10,7 @@ import { HAT_SPELLS, ownsHat, setLoadout } from "./spells";
 import { hatButton, leaveHat, wearing } from "./hat";
 import type { Witch } from "./game";
 import type { LeashEvent } from "./leash";
-import { field, inRoom, nearestFloor, nearestInRoom, roomAt as shapeRoomAt } from "../../config/house/shape.js";
+import { field, nearestFloor, roomAt as shapeRoomAt } from "../../config/house/shape.js";
 import { applyEdLayout, objectOffset, rotatePlacement, setEdLayoutActive, type ObjectPlacement } from "./housePlacement";
 import { reconcileHatPoints, spawnAtLowestEmpty } from "./hatFloorPoints";
 
@@ -90,21 +90,6 @@ export function floorRects(at: At, inset = 0, H = HOUSE_ROOMS): RoomFloor {
 export function roomAccessFor(floor: RoomFloor, _player: number, _assignment?: { player: number; room: string }): RoomFloor {
   return floor;
 }
-/** The nearest point of a floor shape to (x, z) on the plan, and how far (0 inside). */
-export function nearestIn(r: Rect, x: number, z: number): { x: number; z: number; d: number } {
-  if (r.r) { const cx = (r.x0 + r.x1) / 2, cz = (r.z0 + r.z1) / 2, d = Math.hypot(x - cx, z - cz); return d <= r.r ? { x, z, d: 0 } : { x: cx + ((x - cx) * r.r) / d, z: cz + ((z - cz) * r.r) / d, d: d - r.r }; }
-  if (r.pts) {
-    let best = { x, z, d: Infinity }; const h = (r.w ?? 3) / 2;
-    for (let i = 1; i < r.pts.length; i++) {
-      const [ax, az] = r.pts[i - 1], [bx, bz] = r.pts[i], dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / Math.max(1e-9, dx * dx + dz * dz)));
-      const px = ax + dx * t, pz = az + dz * t, d = Math.hypot(x - px, z - pz);
-      if (d - h < best.d) best = d <= h ? { x, z, d: 0 } : { x: px + ((x - px) * h) / d, z: pz + ((z - pz) * h) / d, d: d - h };
-    }
-    return best;
-  }
-  const px = Math.min(r.x1, Math.max(r.x0, x)), pz = Math.min(r.z1, Math.max(r.z0, z));
-  return { x: px, z: pz, d: Math.hypot(px - x, pz - z) };
-}
 /** How far (x, z) in the world is past the edge of what she walks (negative: inside, by that much), on the shape (config/house/shape.js). */
 export const floorDistance = (f: RoomFloor, x: number, z: number): number => { const p = toPlan(f.at, x, z, f.turn); return field(f.shape, p.x, p.z, true); };
 /** On the house's floor (`pad` metres past its keep-in), standing at (x, z) in the world. */
@@ -118,14 +103,6 @@ export function nearestRoomFloor(f: RoomFloor, x: number, z: number): { x: numbe
 export function roomAt(at: At, x: number, z: number, H = HOUSE_ROOMS): HouseRoom | null {
   const p = toPlan(at, x, z, H.turn ?? 0), r = shapeRoomAt(H.shape, p.x, p.z) as { id: string } | null;
   return r ? H.rooms.find(q => q.id === r.id) ?? null : null;
-}
-/** A room's own floor (its outline alone), kept to it: (x, z) in the world, put back inside it `inset` metres in; null without it. */
-export function keepInRoom(at: At, room: string, x: number, z: number, inset = 0, H = HOUSE_ROOMS): { x: number; z: number; inside: boolean } | null {
-  if (!H.rooms.some(q => q.id === room)) return null;
-  const p = toPlan(at, x, z, H.turn ?? 0);
-  if (inRoom(H.shape, room, p.x, p.z) <= -inset) return { x, z, inside: true };
-  const n = nearestInRoom(H.shape, room, p.x, p.z, inset);
-  return { ...fromPlan(at, n.x, n.z, H.turn ?? 0), inside: false };
 }
 /** Where on the plan's (x, z) an object's middle is, in the world (or any point given on the plan relative to it: dx along its w, dz along its d). */
 export const objectWorld = (o: HouseObject, at: At, dx = 0, dz = 0, H = HOUSE_ROOMS): { x: number; z: number } => { const p = objectOffset(o, dx, dz); return fromPlan(at, o.x + p.x, o.z + p.z, H.turn ?? 0); };
