@@ -1,0 +1,9 @@
+{
+ "name": "playtest",
+ "values": [
+  "download"
+ ],
+ "does": "Saves the playtest log at load (as L does).",
+ "group": "debug",
+ "since": "2026-10-04"
+}

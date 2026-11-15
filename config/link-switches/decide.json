@@ -1,0 +1,7 @@
+{
+ "name": "decide",
+ "values": [],
+ "does": "Opens Ed's decisions panel (F2 too).",
+ "group": "debug",
+ "since": "2026-10-06"
+}

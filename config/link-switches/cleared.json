@@ -1,0 +1,9 @@
+{
+ "name": "cleared",
+ "values": [
+  "<cx>_<cy>,…"
+ ],
+ "does": "The repro link: these areas start cleared.",
+ "group": "debug",
+ "since": "2026-10-14"
+}

@@ -1,0 +1,8 @@
+{
+ "name": "subpixel",
+ "values": [
+  "0"
+ ],
+ "broughtBack": "the camera's whole-art-pixel steps",
+ "stays": "the glide"
+}

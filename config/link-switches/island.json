@@ -1,0 +1,11 @@
+{
+ "name": "island",
+ "values": [
+  "<kind>",
+  "home",
+  "<n>"
+ ],
+ "does": "Play this kind's island, home, or a random island of n areas.",
+ "group": "run",
+ "since": "2026-10-11"
+}

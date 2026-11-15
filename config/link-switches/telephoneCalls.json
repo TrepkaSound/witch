@@ -1,0 +1,9 @@
+{
+ "name": "telephoneCalls",
+ "values": [
+  "1"
+ ],
+ "does": "Explicit two-client proof only: admits calls only when telephone=1 is also supplied. Ordinary calls remain off until canonical GO.",
+ "group": "debug",
+ "since": "2026-11-01"
+}

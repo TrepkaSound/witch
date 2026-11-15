@@ -1,0 +1,14 @@
+{
+ "name": "reveal",
+ "values": [
+  "legend",
+  "runestone",
+  "find",
+  "flask",
+  "all",
+  "none"
+ ],
+ "does": "Which places she stands in are kept clear of the canopy (a comma list).",
+ "group": "view",
+ "since": "2026-10-26"
+}

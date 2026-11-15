@@ -1,0 +1,10 @@
+{
+ "name": "tilt",
+ "values": [
+  "off",
+  "<strength>,<band>"
+ ],
+ "does": "The treetops' tilt-shift off, or tried at these values.",
+ "group": "view",
+ "since": "2026-10-07"
+}

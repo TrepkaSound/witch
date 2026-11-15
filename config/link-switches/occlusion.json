@@ -1,0 +1,9 @@
+{
+ "name": "occlusion",
+ "values": [
+  "off"
+ ],
+ "does": "The occlusion probes off.",
+ "group": "debug",
+ "since": "2026-10-19"
+}

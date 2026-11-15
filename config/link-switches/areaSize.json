@@ -1,0 +1,9 @@
+{
+ "name": "areaSize",
+ "values": [
+  "<m>"
+ ],
+ "does": "Each area's size in metres for this load only (never remembered: it changes the balance).",
+ "group": "run",
+ "since": "2026-10-07"
+}

@@ -1,0 +1,10 @@
+{
+ "name": "dodgeEchoes",
+ "values": [
+  "0",
+  "1"
+ ],
+ "does": "Brief dodge silhouettes at actual departure and arrival poses (on by default; 0 switches them off).",
+ "group": "view",
+ "since": "2026-10-31"
+}

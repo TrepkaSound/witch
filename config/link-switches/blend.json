@@ -1,0 +1,10 @@
+{
+ "name": "blend",
+ "values": [
+  "off",
+  "<warp>,<fine>,<band>"
+ ],
+ "does": "Neighbouring floors meet on a plain edge, or tuned.",
+ "group": "view",
+ "since": "2026-10-07"
+}

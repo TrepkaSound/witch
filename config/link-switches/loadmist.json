@@ -1,0 +1,10 @@
+{
+ "name": "loadmist",
+ "values": [
+  "1",
+  "0"
+ ],
+ "does": "The loading mist (render/loadingMist.ts) on or off for this load, whatever the tuning and `quick=1` say (it's off under `quick=1`).",
+ "group": "debug",
+ "since": "2026-10-24"
+}

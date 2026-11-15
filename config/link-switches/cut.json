@@ -1,0 +1,10 @@
+{
+ "name": "cut",
+ "values": [
+  "pixel",
+  "whole"
+ ],
+ "does": "The canopy cut away round her pixel by pixel, or each crown whole (performance suspects).",
+ "group": "compare",
+ "since": "2026-10-14"
+}

@@ -1,0 +1,9 @@
+{
+ "name": "set",
+ "values": [
+  "<path>=<value>;…"
+ ],
+ "does": "Any tuning settings for one load (the repro link's: every setting changed from the build's).",
+ "group": "debug",
+ "since": "2026-10-14"
+}

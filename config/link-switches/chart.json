@@ -1,0 +1,10 @@
+{
+ "name": "chart",
+ "values": [
+  "",
+  "all"
+ ],
+ "does": "Opens the sea chart page instead of the game; all shows every island.",
+ "group": "run",
+ "since": "2026-10-11"
+}

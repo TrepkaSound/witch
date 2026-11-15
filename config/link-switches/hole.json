@@ -1,0 +1,10 @@
+{
+ "name": "hole",
+ "values": [
+  "off",
+  "all"
+ ],
+ "does": "The canopy's hole round her off, or as big as the screen.",
+ "group": "view",
+ "since": "2026-10-13"
+}

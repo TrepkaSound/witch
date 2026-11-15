@@ -1,0 +1,9 @@
+{
+ "name": "pack",
+ "values": [
+  "wolf*4@2,…"
+ ],
+ "does": "The Fight Arena's pack, written as an arena, instead of a rolled one.",
+ "group": "debug",
+ "since": "2026-10-27"
+}

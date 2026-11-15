@@ -1,0 +1,9 @@
+{
+ "name": "cauldron",
+ "values": [
+  "0"
+ ],
+ "does": "Mushroom collecting and the kitchen cauldron (two home mushroom clusters, shared baskets and pot, and the BBB Mirror Floor trip) are on by default; 0 turns them off.",
+ "group": "debug",
+ "since": "2026-10-30"
+}

@@ -1,0 +1,10 @@
+{
+ "name": "spawnfind",
+ "values": [
+  "<kind>:<item>",
+  "tonight"
+ ],
+ "does": "That find spawned once where she first stands on open ground, for shots.",
+ "group": "debug",
+ "since": "2026-10-23"
+}

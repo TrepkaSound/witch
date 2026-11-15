@@ -1,0 +1,11 @@
+{
+ "name": "precision",
+ "values": [
+  "high",
+  "medium",
+  "low"
+ ],
+ "does": "Every shader's float precision.",
+ "group": "debug",
+ "since": "2026-10-14"
+}

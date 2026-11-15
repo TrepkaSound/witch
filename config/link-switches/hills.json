@@ -1,0 +1,10 @@
+{
+ "name": "hills",
+ "values": [
+  "0",
+  "<m>"
+ ],
+ "does": "The rolling ground flat, or this tall.",
+ "group": "view",
+ "since": "2026-10-07"
+}

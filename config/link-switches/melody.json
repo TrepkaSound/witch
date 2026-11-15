@@ -1,0 +1,12 @@
+{
+ "name": "melody",
+ "values": [
+  "old",
+  "lyrical",
+  "dance"
+ ],
+ "does": "The music's melodies and basslines by the old rules (old: the seeded walk and the one-bar basslines), the composer's planned phrases (lyrical; new the same) or its riffs and hooks (dance, the default), to A/B. Sets tuning music.melody.",
+ "group": "compare",
+ "since": "2026-11-08",
+ "decision": "The composer writes the melodies and basslines (Ed, 2026-11-08: \"smarter rules\"), dancing (Ed, the same day: \"more lyrical but not very dancey\"); the lyrical way and the old rules kept to A/B"
+}

@@ -1,0 +1,9 @@
+{
+ "name": "relay",
+ "values": [
+  "<WebSocket URL>"
+ ],
+ "does": "The separate online prototype page connects to this relay (ws://localhost:8787 by default).",
+ "group": "debug",
+ "since": "2026-10-30"
+}

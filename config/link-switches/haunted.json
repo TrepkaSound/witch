@@ -1,0 +1,11 @@
+{
+ "name": "haunted",
+ "values": [
+  "0",
+  "1"
+ ],
+ "does": "The haunted treatment in the quiet sections (breakdown, ether, whisper) and the legends' clearings off (0), the music as before, or on (1, the default), to A/B. Sets tuning music.haunted.",
+ "group": "compare",
+ "since": "2026-11-08",
+ "decision": "The haunted treatment is on (Ed, 2026-11-08: \"B, 1-6\"); off kept to A/B"
+}

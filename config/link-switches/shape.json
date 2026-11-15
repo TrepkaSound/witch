@@ -1,0 +1,11 @@
+{
+ "name": "shape",
+ "values": [
+  "square",
+  "circle"
+ ],
+ "does": "The map's shape (circle, the default since 2026-10-06).",
+ "group": "run",
+ "since": "2026-10-07",
+ "decision": "Circle is the default (2026-10-06)"
+}

@@ -1,0 +1,9 @@
+{
+ "name": "wind",
+ "values": [
+  "<strength>"
+ ],
+ "does": "The wind's sway (0 still).",
+ "group": "view",
+ "since": "2026-10-07"
+}
