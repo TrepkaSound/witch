@@ -26,6 +26,13 @@ import type { FlightEnd } from "../render/chart/seaChart";
 import { observePlaytestErrors } from "../platform/playtestLog";
 import { recordedStep, recordingFor } from "./recordingHooks";
 import { sceneryListing, scopeMissing } from "../render/view/scenery";
+import type { View } from "../render/view";
+import type { Night } from "./night";
+import type { StallLog } from "../platform/stallLog";
+import { SPRITE_UNIFORMS } from "../render/sprites";
+import { debugText, machineLines, precisionLines, reproLine, reproQuery, reproState, tuningDiff } from "./repro";
+import { currentValue, DECISION_LIST, valuesText } from "../ui/decisions";
+import { powerLines } from "./hud";
 
 export function decidePanel(pageHost: PageHost, open: boolean): void {
   if (pageHost.decide || pageHost.decideLoading) return;
@@ -95,7 +102,7 @@ function installBaseHooks(pageHost: PageHost): void {
     seed: pageHost.N().game.seed, borrowed: pageHost.N().spec.borrowed === true, worldReady: pageHost.N().flags.ready,
     viewSeed: pageHost.view.game.seed, viewUsesCanonicalMap: pageHost.view.game.map === pageHost.N().game.map,
     seedLabel: pageHost.seedEl.textContent,
-    draw: { dressed: pageHost.telephoneBatchProof(pageHost.view.witchBatch), bare: pageHost.telephoneBatchProof(pageHost.view.bareBatch), remote: pageHost.telephoneBatchProof(remoteBodyBatch(pageHost.view)) },
+    draw: { dressed: batchProof(pageHost.view, pageHost.view.witchBatch), bare: batchProof(pageHost.view, pageHost.view.bareBatch), remote: batchProof(pageHost.view, remoteBodyBatch(pageHost.view)) },
     players: pageHost.view.game.witches.map(w => ({ id: w.id, x: w.body.x, z: w.body.z, room: w.wake?.room,
       atRoom: roomAt(pageHost.N().game.map.treehouse, w.body.x, w.body.z)?.id ?? null,
       perched: !!w.body.perch, slept: w.house?.slept === true, wakeOpen: w.wake?.open,
@@ -213,4 +220,64 @@ function guardConsoleHooks(pageHost: PageHost): void {
     const guideStep = (hooks.guide as { step?: () => void } | undefined)?.step;
     if (guideStep) (hooks.guide as { step: () => void }).step = () => soloDiagnostic(pageHost.phone.active, pageHost.N().spec.borrowed === true, guideStep);
   }
+}
+
+/** A witch batch as drawn (the telephone proofs': its instances' feet and centres on the screen). */
+function batchProof(view: View, batch: View["witchBatch"] | null) {
+  if (!batch) return null;
+  const material = batch.mesh.material as { depthTest?: boolean; transparent?: boolean };
+  const up = SPRITE_UNIFORMS.uUp.value;
+  return { count: batch.count, visible: batch.mesh.visible, renderOrder: batch.mesh.renderOrder,
+    depthTest: material.depthTest, transparent: material.transparent, atlas: batch.atlas.albedo.uuid,
+    matchesDressedAtlas: batch.atlas === view.assets.witch, textureVersion: batch.atlas.albedo.version,
+    instances: batch.items.slice(0, 4).map(p => {
+      const height = (p.sy === undefined ? p.frame.h : Math.max(1, Math.round(p.frame.h * p.sy))) * batch.metresPerPixel * (p.scale ?? 1);
+      return { x: p.x, y: p.y, z: p.z, frame: batch.atlas.frames.indexOf(p.frame),
+        feet: view.screenOf(p.x, p.y, p.z, true),
+        centre: view.screenOf(p.x + up.x * height / 2, p.y + up.y * height / 2, p.z + up.z * height / 2, true) };
+    }) };
+}
+
+/** The stall nearest a moment (page seconds), for the playtest log's audio lines. */
+export function nearestStall(stalls: StallLog["stalls"], pageS: number): { off: number; ms: number } | undefined {
+  let best: { off: number; ms: number } | undefined;
+  for (const st of stalls) { const off = Math.round((st.at - pageS) * 10) / 10; if (!best || Math.abs(off) < Math.abs(best.off)) best = { off, ms: Math.max(st.gap, st.work) }; }
+  return best;
+}
+
+/** The measured output (platform/audio/outputMeter.ts): silence while the music should be heard goes in the playtest log with where
+ *  she was and the nearest stall; and each sample's audio carries the clock's account too (under-runs, coarse steps, a true clock). */
+export function watchSilence(pageHost: PageHost): void {
+  pageHost.meter.onSilence = e => {
+    const { game, playtest } = pageHost.N(), w = game.witch, ago = performance.now() / 1000 - e.start;
+    const r2 = (x: number) => Math.round(x * 100) / 100, { lastMix, music, audio } = pageHost.sound;
+    playtest.silence({ cause: pageHost.meter.reading.clock >= 0.9 ? "game" : "clock", t: Math.round((game.clock.time - ago) * 10) / 10, dur: Math.round(e.dur * 100) / 100, x: Math.round(w.x), z: Math.round(w.z), area: areaUnderWitch(game), mode: w.mode, mix: r2(lastMix?.volume ?? 0), gain: music ? r2((music.output as GainNode).gain.value) : 0, state: audio?.state ?? "none", clock: pageHost.meter.reading.clock, back: e.db, stall: nearestStall(pageHost.stallLog.stalls, e.start) });
+    console.warn(`audio: the output silent for ${e.dur.toFixed(2)} s while the music should be heard`);
+  };
+  // each playtest sample's audio carries the clock's account too: under-runs, coarse clock steps or a true clock
+  {
+    const log = pageHost.N().playtest, own = log.audioState, cw = pageHost.meter.clockWatch;
+    log.audioState = () => ({ ...(own?.() ?? { state: "none", volume: 0, distort: 0, distance: 0, mends: 0 }), clock: { slow: cw.slow, fast: cw.fast, drift: cw.drift, played: cw.outDrift, underruns: cw.underruns, underrunMs: cw.underrunMs, verdict: cw.verdict() } });
+  }
+}
+
+/** What a builder needs from a screenshot of the overlay (Ed, 2026-10-14; app/repro.ts): the link that rebuilds what she saw, the
+ *  machine, and every setting changed from the build's (read a second at most); all of it as text for the debug button and the log. */
+export function makeRepro({ night, built, build, view, canvas, overlay }: { night: () => Night; built: object; build: string; view: View; canvas: HTMLCanvasElement; overlay: () => string[] }) {
+  let machine: string[] | null = null, diff: [string, unknown][] = [], at = -Infinity;
+  const changed = () => { const now = performance.now(); if (now - at > 1000) { at = now; diff = tuningDiff(night().tuning, built); } return diff; };
+  const link = () => location.origin + location.pathname + reproQuery(reproState(night().game, changed()), night().params);
+  const gl = () => view.renderer.getContext();
+  const mach = () => (machine ??= (() => { try { return [...machineLines(gl(), canvas, night().tuning.pixelSize), ...precisionLines(gl())]; } catch { return ["gpu    (unknown)"]; } })());
+  const targets = () => { const z = view.post.sizes(), c = SPRITE_UNIFORMS.uCutout.value, d = { x: gl().drawingBufferWidth, y: gl().drawingBufferHeight }, f = (a: [number, number]) => a.join("×");
+    return [`rt     scene ${f(z.scene)}  effects ${f(z.fx)}  bloom ${f(z.bloom)}  out ${f(z.out)}  drawing buffer ${d.x}×${d.y}`, `hole   canopy cut-away at ${c.x.toFixed(0)}, ${c.y.toFixed(0)} px  radius ${c.z.toFixed(1)} px  edge ${c.w.toFixed(1)} px`]; };
+  /** All of it, for the button and the log: the link, the machine, the targets, the overlay's lines, every setting changed and every test slider. */
+  const full = () => debugText(`Witch debug info · ${build} · seed ${night().seed} · ${new Date().toISOString()}`, [
+    ["Link", [link()]],
+    ["Machine", [...mach(), ...targets()]],
+    ["Overlay", [...overlay(), ...powerLines(night().game)]],
+    ["Settings changed from the build's", changed().map(([p, v]) => `${p} = ${JSON.stringify(v)}`)],
+    ["Test sliders (the pause page)", valuesText(new Map(DECISION_LIST.map(d => [d.id, currentValue(d, night().tuning, night().params)])), "", night().seed).split("\n").slice(1)],
+  ]);
+  return { link, machine: mach, changed, full, line: () => reproLine(reproState(night().game, changed()), changed().length) };
 }

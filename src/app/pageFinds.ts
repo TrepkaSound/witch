@@ -1,5 +1,7 @@
 // Tonight's find: lent till she sleeps, settled (and her dream of it), her guidance pin, the finds' keepers, and spawning one near her.
 import type { PageHost } from "../main";
+import type { View } from "../render/view";
+import type { Game } from "../rules/game";
 
 import { chartOpen } from "../ui/chartOverlay";
 import { endDream } from "../rules/wakeUp";
@@ -22,7 +24,7 @@ export function lendFind(pageHost: PageHost, kind: FindKindId, id: string): void
   const { game } = pageHost.N();
   pageHost.loan = lend(kind, id, { look: (pageHost.page.look() ?? pageHost.creator.genome()) as Record<string, unknown> | null, hat: game.spells.hat, parts: game.witches[0].spells.parts });
   if (kind === "wearable" || kind === "bag") findsCtx(pageHost).owned().add(id); // (in what she owns tonight, not in her save)
-  pageHost.view.partsFound = partsNow(pageHost);
+  pageHost.view.partsFound = partsNow(pageHost.loan);
   // (new in the treehouse: her guidance pin over where it is till she's been there, rules/guidance.ts)
   const at = kind === "part" ? partStation(id) : kind === "hat" ? "hats" : stationsShowing(shelfOf(id)?.id ?? "")[0];
   if (at) { addNew(pageHost.guide, { kind: kind === "part" || kind === "hat" ? kind : "wearable", id, at }); storeGuide(pageHost.guide); }
@@ -45,7 +47,7 @@ export function settleLoanNow(pageHost: PageHost, won: boolean): { loan: Loan; w
   });
   if (woke && woke !== look) { pageHost.creator.adopt(woke); pageHost.lookNow = JSON.stringify(woke); }
   if (!won) { pageHost.owned = null; dropNew(pageHost.guide, l.id); storeGuide(pageHost.guide); } // (read afresh from her save, the loan not in it; gone back to the sky, no longer new)
-  pageHost.view.partsFound = partsNow(pageHost);
+  pageHost.view.partsFound = partsNow(pageHost.loan);
   return { loan: l, won };
 }
 
@@ -53,7 +55,7 @@ export function settleLoanNow(pageHost: PageHost, won: boolean): { loan: Loan; w
 export function startDream(pageHost: PageHost, s: { loan: Loan; won: boolean }, veil = false): void {
   pageHost.dream?.dispose();
   const of = { item: s.loan.id, name: loanName(s.loan), piece: findKind(s.loan.kind).piece(s.loan.id), won: s.won, home: homeOf(s.loan, id => stationsShowing(shelfOf(id)?.id ?? "")) };
-  pageHost.dream = new DreamView(of, dreamArt(of, pageHost.view.assets.style), veil, () => herHead(pageHost)).play(veil && pageHost.params.has("shot"));
+  pageHost.dream = new DreamView(of, dreamArt(of, pageHost.view.assets.style), veil, () => herHead(pageHost.view, pageHost.canvas, pageHost.N().game)).play(veil && pageHost.params.has("shot"));
   pageHost.dreamAsleep = !veil; // (asleep: its end rings the next night's alarm; shown over a night, ?dream= or the dev panel, nothing)
   pageHost.dream.onOver = () => { const n = pageHost.page.night; if (!pageHost.phone.active && !n?.spec.borrowed && pageHost.dreamAsleep && n?.game.wake) pageHost.mutate("wake: dream dismissed", () => endDream(n.game, n.game.herTime)); };
   (window as unknown as { __dream?: DreamView }).__dream = pageHost.dream; // (the shot tools draw it at a time: tools/loan/shots.cjs)
@@ -61,10 +63,10 @@ export function startDream(pageHost: PageHost, s: { loan: Loan; won: boolean }, 
 
 /** Her head's top on the page (CSS px) as last drawn (render/view/witch.ts herHead), for her dream's cloud to rise from; null
  *  before she's drawn. */
-export function herHead(pageHost: PageHost): { x: number; y: number } | null {
-  const H = pageHost.view.herHouseHead, w = pageHost.N().game.witch;
+export function herHead(view: View, canvas: HTMLCanvasElement, game: Game): { x: number; y: number } | null {
+  const H = view.herHouseHead, w = game.witch;
   if (w.perch && H.at > 0) return { x: H.x, y: H.y }; // (in the house: as its labels are placed; kept while the next island is made)
-  const h = pageHost.view.herHead, r = pageHost.canvas.getBoundingClientRect();
+  const h = view.herHead, r = canvas.getBoundingClientRect();
   return h.on ? { x: r.left + h.x * r.width, y: r.top + (1 - h.y) * r.height } : null;
 }
 
@@ -78,7 +80,7 @@ export function stepGuide(pageHost: PageHost, now: number): void {
 }
 
 /** The broom parts she has tonight: those she's found, and a part on loan. */
-export function partsNow(pageHost: PageHost): Set<string> { return withLoan("part", new Set(loadBroom().found), pageHost.loan); }
+export function partsNow(loan: Loan | null): Set<string> { return withLoan("part", new Set(loadBroom().found), loan); }
 
 /** What the finds' keepers work on (app/finds.ts): tonight's spells and what she owns to wear, kept. */
 export function findsCtx(pageHost: PageHost): FindsCtx { return ({ spells: pageHost.N().game.spells, owned: () => (pageHost.owned ??= withLoan("wearable", loadOwned((pageHost.page.look() ?? pageHost.creator.genome()) as Record<string, unknown>), pageHost.loan)) }); }

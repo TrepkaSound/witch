@@ -4,25 +4,16 @@ import { browserSaveSlots, deleteSave, slotStorage, switchSave } from "./app/sav
 
 import { keycapCanvas } from "./ui/keyHint";
 import { fillControls } from "./ui/controlsText";
-import { bagOf, setBag } from "./rules/bags";
 import { bindings } from "./platform/bindings";
 import { Rumble } from "./platform/rumble";
-import { telephoneStation } from "./app/telephoneStation";
 import { installTelephone, telephoneEnabled, telephoneCallsEnabled } from "./app/telephoneSwitch";
-import { visitHome } from "./app/visitHome";
 import { telephoneCues } from "./app/telephoneCues";
 import { telephoneFaces } from "./app/telephoneFaces";
 import { telephoneFaceCanvas } from "./render/telephoneFace";
 import { TelephonePresence } from "./ui/telephonePresence";
-import { telephoneNotice, telephoneTrouble } from "./ui/telephone";
 import { guestArrival } from "./platform/online/guestArrival";
-import { guestAccess } from "./platform/online/guestAccess";
-import { visitSaves } from "./app/visitSaves";
-import { visitLifecycle, synchronizeVisit } from "./app/visitLifecycle";
 import { visitUnlocks } from "./app/visitUnlocks";
-import { stationAuthority } from "./platform/online/stationAuthority";
 import { remoteWitchAppearance } from "./platform/online/remoteAppearance";
-import { appearance } from "./platform/online/appearance";
 
 import { localHouseAction } from "./app/houseActions";
 import { continueSharedNight } from "./app/sharedNight";
@@ -34,8 +25,7 @@ import { chartDeparture } from "./app/chartDeparture";
 import { overlayPause } from "./app/overlayPause";
 import { introFocus } from "./app/introFocus";
 
-import { won } from "./rules/win";
-import { sharedFindLoan, withSharedFind } from "./app/sharedFindLoan";
+import { sharedFindLoan } from "./app/sharedFindLoan";
 import { chartOpen, prepareChart } from "./ui/chartOverlay";
 import { opensDirectly, opensInBedroom, opensWithCreator } from "./app/opening";
 
@@ -52,12 +42,10 @@ import "./platform/tuningPreset"; // (first: ?tuning=pre-overnight writes the ol
 import { FrameStats } from "./platform/frameStats";
 import { gpuName, QualityLadder } from "./app/ladder";
 
-import { areaUnderWitch, newWitchPlayer, type Game } from "./rules/game";
+import { newWitchPlayer, type Game } from "./rules/game";
 
 import { TUNING } from "./rules/tuning";
 
-import { debugText, machineLines, precisionLines, reproLine, reproQuery, reproState, tuningDiff } from "./app/repro";
-import { currentValue, DECISION_LIST, valuesText } from "./ui/decisions";
 
 import { parseSeed } from "./rules/map";
 import { Input } from "./platform/input";
@@ -69,28 +57,26 @@ import { frameGpuCounts, renderProgramCounts } from "./platform/renderProgramCou
 import { Freeze } from "./platform/freeze";
 import { StudioPlayer } from "./app/studio";
 import { StudioPanel } from "./ui/studioPanel";
-import { Creator, loadGenome, saveGenome, classicPalette } from "./ui/creator";
+import { Creator, loadGenome } from "./ui/creator";
 import { BOT_KINDS, type BotKind } from "./rules/botKinds";
 import type { Bot } from "./rules/bot";
 import type { BotTag } from "./ui/botGame";
 
 import type { DecidePanel } from "./ui/decide";
-import { saveLoadout } from "./app/loadout";
 import { setParts } from "./rules/spells";
-import { changeLoadout } from "./rules/hatSpells";
-import { syncFloorHats, installEdLayout } from "./rules/houseRooms";
+import { installEdLayout } from "./rules/houseRooms";
 
 import { setEdLayoutActive } from "./rules/housePlacement";
 import { usesEdLayout } from "./app/houseLayout";
 
 
 import { FIND_KINDS, type FindKindId } from "./rules/finds";
-import { fitBroom, migrateBroom } from "./app/broomSave";
+import { migrateBroom } from "./app/broomSave";
 import { bareBroom } from "./rules/broomParts";
 import { loadOwned } from "./app/owned";
-import { ownedToChoose, unlockAll } from "./app/debugUnlock";
+import { ownedToChoose } from "./app/debugUnlock";
 
-import { hatWithoutLoan, lend, loanName, lookWithoutLoan, partsWithoutLoan, type Loan } from "./app/loan";
+import { lend, loanName, lookWithoutLoan, type Loan } from "./app/loan";
 import { DreamView } from "./render/dream";
 import { LoanIcon } from "./render/loanIcon";
 import { FindsPanel } from "./ui/findsPanel";
@@ -101,7 +87,7 @@ import { StationPanel } from "./ui/stationPanel";
 import { DjBooth } from "./ui/djBooth";
 
 import { BrushSparkle } from "./ui/brushSparkle";
-import { chooseRecord, ownedRecords } from "./app/recordSave";
+import { ownedRecords } from "./app/recordSave";
 import { ZooOverlay, domZooHost, zooUrl } from "./app/zooOverlay";
 
 import { TelescopeView } from "./app/telescope";
@@ -112,10 +98,8 @@ import { loadGuide } from "./app/guideSave";
 import { GuidePin } from "./render/view/guidance";
 import { stopWarmChart, warmChart } from "./app/chartWarm";
 import { ChartWarmSchedule } from './app/chartWarmSchedule';
-import { powerLines } from "./app/hud";
 import { latestBuildLink, NewBuildNotice } from "./app/newBuild";
 import { freshHref, localStore, storageScope } from "./platform/storageScope";
-import { SPRITE_UNIFORMS } from "./render/sprites";
 import { setupKnobs } from "./app/knobs";
 import { Sound } from "./app/sound";
 import { OutputMeter } from "./platform/audio/outputMeter";
@@ -133,7 +117,7 @@ import { installPixelUi } from "./ui/pixelUi";
 
 import { hydrateMs, prepUsed, startBootMapPrep } from "./app/mapPrep";
 import { startNight, wearHat as wear, type Night, type Page } from "./app/night";
-import { BackGuard, nightFromHref, nightHref } from "./app/sail";
+import { BackGuard } from "./app/sail";
 import { hudFade } from "./app/arrive";
 import { forgetArrival } from "./app/arrival";
 import { shotParams } from "./app/shot";
@@ -145,17 +129,18 @@ import { Breadcrumbs, browserCommentStore, CommentBook } from "./app/playtestCom
 
 import { logCaughtError } from "./platform/playtestLog";
 import { currentJournal, journalEntry, notable } from "./platform/playtestJournal";
-import { pageMutation, pageFocus, recordedStep } from "./app/recordingHooks";
+import { pageMutation, pageFocus } from "./app/recordingHooks";
 
 
 import { nightSaveNotice } from "./ui/resumeNight";
 import { restoreSettingsBase } from "./app/playerSettings";
 
-import { installFreezeHooks, watchAudio } from "./app/pagePause";
-import { reconcilePickers, workshopNow, wireCreator, wireStations, wireDjBooth, wireTelescope } from "./app/pageStations";
-import { botGame, keepNightie, personalKit, hostCollections, traceVisit, revealArt, bedFirst, start, startDirect, dressCreator, wakeFirst, nightInPlace, armGesture, queueCast } from "./app/pageNight";
+import { installFreezeHooks, reportHost, watchAudio } from "./app/pagePause";
+import { wireCreator, wireStations, wireDjBooth, wireTelescope } from "./app/pageStations";
+import { botGame, keepNightie, hostCollections, revealArt, bedFirst, start, startDirect, dressCreator, wakeFirst, armGesture, queueCast } from "./app/pageNight";
 import { findsCtx, settleLoan, startDream, herHead, partsNow, spawnHere } from "./app/pageFinds";
-import { decidePanel, installErrorBreadcrumbs, installDebugButtons, installPlaytestLog, installConsoleHooks } from "./app/pageDebug";
+import { makeOrdinaryVisit, makeTelephone } from "./app/pageVisit";
+import { decidePanel, makeRepro, watchSilence, installErrorBreadcrumbs, installDebugButtons, installPlaytestLog, installConsoleHooks } from "./app/pageDebug";
 import { frame, overlayHead } from "./app/pageFrame";
 
 const pageHost = {
@@ -177,6 +162,13 @@ const pageHost = {
   get botTag(): typeof botTag { return botTag; }, set botTag(value: typeof botTag) { botTag = value; },
   get breadcrumbs(): typeof breadcrumbs { return breadcrumbs; },
   get canvas(): typeof canvas { return canvas; },
+  get callArrival(): typeof callArrival { return callArrival; },
+  get completedGuestNights(): typeof completedGuestNights { return completedGuestNights; },
+  get hostedUnlocks(): typeof hostedUnlocks { return hostedUnlocks; }, set hostedUnlocks(value: typeof hostedUnlocks) { hostedUnlocks = value; },
+  get returnedUnlocks(): typeof returnedUnlocks { return returnedUnlocks; }, set returnedUnlocks(value: typeof returnedUnlocks) { returnedUnlocks = value; },
+  get shownLook(): typeof shownLook { return shownLook; }, set shownLook(value: typeof shownLook) { shownLook = value; },
+  get phoneFace(): typeof phoneFace { return phoneFace; },
+  get phoneFaces(): typeof phoneFaces { return phoneFaces; },
   get captureRecording(): typeof captureRecording { return captureRecording; },
   get chartAt(): typeof chartAt { return chartAt; }, set chartAt(value: typeof chartAt) { chartAt = value; },
   get chartDepartureBoundary(): typeof chartDepartureBoundary { return chartDepartureBoundary; },
@@ -242,7 +234,6 @@ const pageHost = {
   get musicLabLoading(): typeof musicLabLoading { return musicLabLoading; }, set musicLabLoading(value: typeof musicLabLoading) { musicLabLoading = value; },
   get musicLabPanel(): typeof musicLabPanel { return musicLabPanel; }, set musicLabPanel(value: typeof musicLabPanel) { musicLabPanel = value; },
   get mutate(): typeof mutate { return mutate; },
-  get nearestStall(): typeof nearestStall { return nearestStall; },
   get newBuild(): typeof newBuild { return newBuild; },
   get openPrev(): typeof openPrev { return openPrev; }, set openPrev(value: typeof openPrev) { openPrev = value; },
   get ordinaryVisit(): typeof ordinaryVisit { return ordinaryVisit; },
@@ -262,7 +253,6 @@ const pageHost = {
   get playerPick(): typeof playerPick { return playerPick; },
   get potionLab(): typeof potionLab { return potionLab; }, set potionLab(value: typeof potionLab) { potionLab = value; },
   get remoteArt(): typeof remoteArt { return remoteArt; },
-  get reportHost(): typeof reportHost { return reportHost; },
   get repro(): typeof repro { return repro; },
   get rumble(): typeof rumble { return rumble; },
   get sailFail(): typeof sailFail { return sailFail; }, set sailFail(value: typeof sailFail) { sailFail = value; },
@@ -296,7 +286,6 @@ const pageHost = {
   get studio(): typeof studio { return studio; },
   get studioPanel(): typeof studioPanel { return studioPanel; },
   get style(): typeof style { return style; },
-  get telephoneBatchProof(): typeof telephoneBatchProof { return telephoneBatchProof; },
   get telescope(): typeof telescope { return telescope; },
   get tuningMutation(): typeof tuningMutation { return tuningMutation; },
   get usedAt(): typeof usedAt { return usedAt; },
@@ -429,7 +418,7 @@ function showLook(): void {
   const look = JSON.parse(lookNow) as unknown;
   if (view.houseRooms) view.houseRooms.outfit = look;
   shownLook = key; view.setWitch(wornGenome(look as never, pile, lying), morningAhead ? { hatOff: lying } : undefined); // (a morning ahead: her whole set at once, urgent)
-  keepNightie(pageHost, look);
+  keepNightie(view.assets, look);
 }
 // The page and the night (app/night.ts; docs/plans/sail-without-reload.md B): the page made once, the night (its link, tuning,
 // game, playtest run, HUD, arrival and flags) held in `page.night`, read there by everything that needs it, never captured.
@@ -493,7 +482,7 @@ view.setIntroFocus = (game, focus) => introFocus(game, N().game, focus, onlineFo
 const loading = (window as unknown as { witchLoading?: { view: unknown; finish(wake: () => void): void; cancel(): void } }).witchLoading;
 if (loading) loading.view = view;
 loadTimes.view = performance.now();
-view.partsFound = partsNow(pageHost); // (the Workshop's pegboard hangs them: render/workshopArt.ts)
+view.partsFound = partsNow(loan); // (the Workshop's pegboard hangs them: render/workshopArt.ts)
 performance.mark("witch:view");
 viewFromLink(view, params); // (app/viewParams.ts)
 void installPixelUi(); // (the pixel font, for the HUD's edge cues' labels too: render/indicator.ts)
@@ -607,87 +596,7 @@ const phoneFaces = telephoneFaces(phoneEnabled ? localStore() : null);
 const phoneFace = (number: string) => { const face = phoneFaces.get(number); return face ? telephoneFaceCanvas(face) : null; };
 const visitPreparation = { stage: "not-started", at: 0, advancedAt: 0, progress: 0, failure: "" };
 const lifecycleEvidence = params.has("shot") ? (proof: Record<string, unknown>) => { window.dispatchEvent(new CustomEvent("witch-lifecycle-evidence", { detail: proof })); } : undefined;
-const phone = telephoneStation({ lifecycleEvidence, enabled: phoneEnabled, callsEnabled: phoneCallsEnabled, face: phoneFace, trouble: telephoneTrouble, clearFaces: () => { phoneFaces.clear(); phonePresence.refresh(); }, digit: digit => { if (phone.state.status !== "preparing") phoneSounds.digit(digit); }, storage: localStore(), session: {
-  lifecycleEvidence,
-  build: BUILD, hostGame: () => N().game,
-  trace: (stage, detail) => traceVisit(pageHost, stage, detail),
-  predictionEvidence: params.has("shot") ? proof => { window.dispatchEvent(new CustomEvent("witch-prediction-evidence", { detail: proof })); } : undefined,
-  protocolEvidence: params.has("shot") ? proof => { window.dispatchEvent(new CustomEvent("witch-protocol-evidence", { detail: proof })); } : undefined,
-  appearance: () => { sharedLoans.begin(personalKit(pageHost), loan); if (!phone.visiting) sharedLoans.observe(N().game, personalKit(pageHost)); return appearance(page.look()) ?? appearance({}); },
-  attach: game => { if (!guestAccess.ready) throw new Error("The guest room isn't ready yet."); callArrival.attach(game); if (remoteArt.has(1)) void remoteArt.start(game, 0).catch(error => { logCaughtError(error, "host remote appearance"); phone.hangUp(); }); },
-  detach: game => callArrival.detach(game),
-  continuedHost: (previous, next) => {
-    callArrival.continued(previous, next);
-    if (remoteArt.has(1)) void remoteArt.start(next, 0).catch(error => { logCaughtError(error, "host continued remote appearance"); phone.hangUp(); });
-  },
-  prepareGuest: (game, signal, advanced, continuing) => {
-    if (!ordinaryVisit) { traceVisit(pageHost, "save-boundary:unavailable"); return Promise.reject(new Error("This browser isn't ready to protect your saved night.")); }
-    if (continuing) { completedGuestNights.push(visitUnlocks(N().game, 1)); return ordinaryVisit.nextNight(game, signal, advanced); }
-    completedGuestNights.length = 0;
-    return ordinaryVisit.prepare(game, signal, advanced);
-  },
-  synchronized: game => { if (ordinaryVisit) void synchronizeVisit(ordinaryVisit, game, error => { logCaughtError(error, "visit confirmation"); phone.hangUp(); }); },
-  ended: (role, game) => {
-    if (role === "host") phone.hangUp("host-session-ended"); // Close the role-bearing socket on departure, not only its game session.
-    remoteArt.clear();
-    if (role === "guest") {
-      try { returnedUnlocks = game && game.witches.some(w => w.id === 1) ? visitUnlocks(game, 1) : null; }
-      catch (error) { returnedUnlocks = null; logCaughtError(error, "visit unlock capture"); }
-      sharedLoans.finish(false, personalKit(pageHost), true);
-      void ordinaryVisit?.end().catch(error => logCaughtError(error, "visit return"));
-    } else if (game) {
-      try { hostedUnlocks = visitUnlocks(game, 0); }
-      catch (error) { hostedUnlocks = null; logCaughtError(error, "host unlock capture"); }
-      const success = won(game), kit = personalKit(pageHost, game);
-      if (success && kit.hats) kit.hats = [...withSharedFind(game, "hat", new Set(kit.hats))];
-      const restored = sharedLoans.finish(success, kit); loan = restored.loan;
-      const W = game.witches[0]; changeLoadout(W, restored.kit.hat); setParts(W.spells, { ...restored.kit.parts }); setBag(W.spells, bagOf(restored.kit.look)); W.spells.hats = restored.kit.hats; syncFloorHats(W);
-      lookNow = JSON.stringify(restored.kit.look); creator.adopt(restored.kit.look); shownLook = ""; owned = null;
-      if (success && hostedUnlocks) {
-        const collection = loadOwned(lookWithoutLoan(restored.kit.look, loan));
-        hostedUnlocks.apply(browserSaveSlots(), { spells: W.spells, owned: () => collection }); hostedUnlocks = null;
-        saveGenome(lookWithoutLoan(restored.kit.look, loan) as never); saveLoadout({ hat: hatWithoutLoan(W.spells.hat, loan) as typeof W.spells.hat }); fitBroom(partsWithoutLoan(W.spells.parts, loan));
-      }
-      creator.hats = unlockAll() ? undefined : W.spells.hats; creator.loadout = { hat: W.spells.hat }; view.partsFound = partsNow(pageHost);
-      stations.reconcile(restored.kit.look as never, ownedToChoose(findsCtx(pageHost).owned()), workshopNow(pageHost)); booth.refresh(ownedRecords());
-    }
-  },
-  failed: error => { visitPreparation.failure = error.message; logCaughtError(error, "telephone session"); phone.hangUp("session-error"); telephoneNotice(error.message); },
-  advanceHost: (game, controls, dt) => recordedStep(game, controls, dt, BUILD, captureRecording),
-  authorizeStation: stationAuthority(game => hostCollections(pageHost, game)),
-  wardrobe: () => hostCollections(pageHost, N().game).wardrobe,
-  catalogue: () => { const shared = hostCollections(pageHost, N().game); return { wardrobe: [...shared.wardrobe], parts: [...shared.parts], hats: [...shared.hats], records: [...shared.records] }; },
-  catalogueApplied: catalogue => { creator.hats = catalogue.hats as typeof creator.hats; view.partsFound = new Set(catalogue.parts); reconcilePickers(pageHost); },
-  stationResolved: (player, choice, accepted) => {
-    if (player !== (phone.visiting ? 1 : 0)) return;
-    reconcilePickers(pageHost);
-    if (accepted) return;
-    const others = N().game.witches.filter(w => w.id !== player);
-    if (choice.kind === "hat" && choice.id !== "none" && others.some(w => w.spells.hat === choice.id)) telephoneNotice("Your friend is using that hat.");
-    if (choice.kind === "broom" && others.some(w => Object.values(choice.fitted).some(id => id !== null && Object.values(w.spells.parts ?? {}).includes(id)))) telephoneNotice("Your friend is using that broom part.");
-  },
-  stationPalette: () => classicPalette(style),
-  stationApplied: (player, choice) => {
-    if (choice.kind === "party") { booth.close(); if (!phone.visiting && ownedRecords().includes(choice.id)) chooseRecord(choice.id); }
-    if (player !== (phone.visiting ? 1 : 0)) return;
-    const witch = N().game.witches[player]; if (!witch) return;
-    if (choice.kind === "hat") {
-      creator.loadout = { hat: witch.spells.hat };
-      if (!phone.visiting) saveLoadout({ hat: sharedLoans.forSave(personalKit(pageHost)).hat as typeof witch.spells.hat });
-    } else if (choice.kind === "broom" && !phone.visiting) fitBroom(sharedLoans.forSave(personalKit(pageHost)).parts);
-  },
-  appearanceApplied: (player, look) => {
-    if (player !== (phone.visiting ? 1 : 0) && phone.state.peer) { phoneFaces.remember(phone.state.peer, look); phonePresence.refresh(); }
-    if (player === (phone.visiting ? 1 : 0)) {
-      lookNow = JSON.stringify(look); creator.adopt(look as never); showLook();
-      if (!phone.visiting) saveGenome(sharedLoans.forSave(personalKit(pageHost)).look as never);
-      return; // The local witch uses the normal artwork; only approved host wardrobe changes persist.
-    }
-    void remoteArt.look(player, look).then(() => {
-      if (phone.active && !phone.visiting && N().game.witches.length === 2) return remoteArt.start(N().game, 0);
-    }).catch(error => { logCaughtError(error, "remote appearance"); phone.hangUp(); });
-  },
-} });
+const phone = makeTelephone(pageHost, lifecycleEvidence);
 let guestAudioGame: Game | null = null;
 const phonePresence = new TelephonePresence(phoneFace, () => { if (phone.open) phone.hangUp(); });
 onlineFocus = () => phone.active;
@@ -757,7 +666,7 @@ const menuRecords = () => phone.active ? phone.catalogue?.records ?? [] : ownedR
 const booth = new DjBooth();
 wireDjBooth(pageHost);
 // (the Teeth button's sparkles: app/pageStations.ts wireStations)
-const sparkle = new BrushSparkle(() => herHead(pageHost));
+const sparkle = new BrushSparkle(() => herHead(view, canvas, N().game));
 /** Her guidance (rules/guidance.ts): what's kept of it on this browser (app/guideSave.ts), her pin, and the islands found (the
  *  chart's save, read a second at most). */
 const guide = loadGuide(), guidePin = new GuidePin(view);
@@ -869,57 +778,7 @@ const autosave = visitNightSaves ? new NightAutosave(visitNightSaves.store, () =
   return captureNight(n.game, { build: BUILD, params: n.params.toString(), look: page.look() as Record<string, unknown> | null, loan,
     flags: { chartRecorded: n.flags.chartRecorded, overRecorded: n.flags.overRecorded } });
 }, error => { if (!nightWriteReported) { nightWriteReported = true; logCaughtError(error, "save slot: write night"); } nightSaveNotice("Your night could not be saved. Keep this page open to continue playing."); }) : null;
-const ordinaryVisit = visitNightSaves ? visitLifecycle({
-  saves: visitSaves(browserSaveSlots(), visitNightSaves),
-  own: () => ({ night: N(), href: location.href, look: page.look() as Record<string, unknown> | null, loan: structuredClone(loan) }),
-  adoptBorrowed: async (game, signal, advanced) => {
-    visitPreparation.progress = 0; visitPreparation.failure = "";
-    const reportAdvance = () => { visitPreparation.progress++; visitPreparation.advancedAt = performance.now(); advanced(); };
-    signal.throwIfAborted(); sailing = true; input.release(); input.clearPresses();
-    loan = null; owned = null; // Own private loan is retained in the lifecycle snapshot, never reused as a host-world loan.
-    const p = new URLSearchParams(N().params); p.delete("arrive");
-    await startNight(page, { how: "bed", island: game.tuning.map?.island ?? "home", seed: game.seed, world: game.tuning.map?.world, params: p, resume: game, borrowed: true });
-    seedEl.innerHTML = `seed <a href="?seed=${N().seed}">${N().seed}</a>`;
-    reportAdvance(); signal.throwIfAborted();
-    if (remoteArt.has(0)) { await remoteArt.start(game, 1, signal); reportAdvance(); }
-    const markAt = performance.now(), timingAt = view.assets.timings.length;
-    const landedAt = new Set([...view.assets.typeLog].filter(([, v]) => v.landed !== undefined).map(([id]) => id)); let best = 0;
-    const progress = () => {
-      const completed = performance.getEntriesByType("mark").filter(m => m.startTime >= markAt && (m.name.startsWith("witch:prep-") || m.name.startsWith("witch:build-"))).length
-        + Math.max(0, view.assets.timings.length - timingAt) + [...view.assets.typeLog].filter(([id, v]) => !landedAt.has(id) && v.landed !== undefined).length;
-      if (completed > best) { best = completed; reportAdvance(); }
-    };
-    const timer = setInterval(progress, 500), clear = () => clearInterval(timer);
-    signal.addEventListener("abort", clear, { once: true });
-    try { await view.prepare(); signal.throwIfAborted(); reportAdvance(); }
-    finally { clear(); signal.removeEventListener("abort", clear); }
-  },
-  playing: game => {
-    if (page.night?.game !== game) throw new Error("The prepared visit was replaced.");
-    page.night.flags.ready = page.night.flags.landed = true; page.night.flags.last = 0;
-    startedNights.add(game); input.clearPresses(); sailing = false;
-  },
-  adoptOwn: async (own, fresh) => {
-    loan = structuredClone(own.loan); owned = null;
-    lookNow = JSON.stringify(own.look); creator.adopt(own.look as never); shownLook = "";
-    creator.hats = unlockAll() ? undefined : own.night.game.spells.hats; view.partsFound = partsNow(pageHost);
-    if (fresh) {
-      const ownCollection = loadOwned(lookWithoutLoan(own.look, own.loan));
-      for (const outcome of completedGuestNights) outcome.apply(browserSaveSlots(), { spells: own.night.game.spells, owned: () => ownCollection });
-      completedGuestNights.length = 0;
-      returnedUnlocks?.apply(browserSaveSlots(), { spells: own.night.game.spells, owned: () => ownCollection });
-      returnedUnlocks = null; owned = null;
-      const href = nightHref("bed", own.href); await nightInPlace(pageHost, nightFromHref("bed", href), href); syncFloorHats(N().game.witches[0]);
-      const homePhone = visitHome(N().game); input.release(); input.clearPresses();
-      if (homePhone) await phone.returnHome(N().game, homePhone);
-    } else {
-      returnedUnlocks = null;
-      const restored = await startNight(page, { ...own.night.spec, how: "bed", resume: own.night.game, borrowed: false });
-      seedEl.innerHTML = `seed <a href="?seed=${restored.seed}">${restored.seed}</a>`;
-      syncFloorHats(restored.game.witches[0]); await view.prepare(); Object.assign(restored.flags, own.night.flags, { last: 0 }); sailing = false; input.clearPresses();
-    }
-  },
-}) : null;
+const ordinaryVisit = visitNightSaves ? makeOrdinaryVisit(pageHost, visitNightSaves) : null;
 const chartDepartureBoundary = chartDeparture({
   role: () => phone.active ? phone.visiting ? "guest" : "host" : null,
   borrowed: () => N().spec.borrowed === true,
@@ -989,30 +848,13 @@ const frameGpu = frameGpuCounts(() => view.renderer.info.programs, () => view.re
 const shotProgramCounts = params.has("shot") ? renderProgramCounts(() => view.renderer.info.programs, view.renderer.extensions.has("KHR_parallel_shader_compile")) : null;
 // What a builder needs from a screenshot of the overlay (Ed, 2026-10-14; app/repro.ts): the link that rebuilds what she saw, the
 // machine, and every setting changed from the build's; the same in the playtest log (the pause page's Download log).
-const repro = (() => {
-  let machine: string[] | null = null, diff: [string, unknown][] = [], at = -Infinity;
-  const changed = () => { const now = performance.now(); if (now - at > 1000) { at = now; diff = tuningDiff(N().tuning, BUILT); } return diff; };
-  const link = () => location.origin + location.pathname + reproQuery(reproState(N().game, changed()), N().params);
-  const gl = () => view.renderer.getContext();
-  const mach = () => (machine ??= (() => { try { return [...machineLines(gl(), canvas, N().tuning.pixelSize), ...precisionLines(gl())]; } catch { return ["gpu    (unknown)"]; } })());
-  const targets = () => { const z = view.post.sizes(), c = SPRITE_UNIFORMS.uCutout.value, d = { x: gl().drawingBufferWidth, y: gl().drawingBufferHeight }, f = (a: [number, number]) => a.join("×");
-    return [`rt     scene ${f(z.scene)}  effects ${f(z.fx)}  bloom ${f(z.bloom)}  out ${f(z.out)}  drawing buffer ${d.x}×${d.y}`, `hole   canopy cut-away at ${c.x.toFixed(0)}, ${c.y.toFixed(0)} px  radius ${c.z.toFixed(1)} px  edge ${c.w.toFixed(1)} px`]; };
-  /** All of it, for the button and the log: the link, the machine, the targets, the overlay's lines, every setting changed and every test slider. */
-  const full = () => debugText(`Witch debug info · ${BUILD} · seed ${N().seed} · ${new Date().toISOString()}`, [
-    ["Link", [link()]],
-    ["Machine", [...mach(), ...targets()]],
-    ["Overlay", [...overlayHead(pageHost), ...powerLines(N().game)]],
-    ["Settings changed from the build's", changed().map(([p, v]) => `${p} = ${JSON.stringify(v)}`)],
-    ["Test sliders (the pause page)", valuesText(new Map(DECISION_LIST.map(d => [d.id, currentValue(d, N().tuning, N().params)])), "", N().seed).split("\n").slice(1)],
-  ]);
-  return { link, machine: mach, changed, full, line: () => reproLine(reproState(N().game, changed()), changed().length) };
-})();
+const repro = makeRepro({ night: N, built: BUILT, build: BUILD, view, canvas, overlay: () => overlayHead(pageHost) });
 // The finds' dev control (ui/findsPanel.ts; Ed, 2026-10-23): from the debug overlay's buttons, or ?dev=finds.
 // Spawning a find near her (Ed, 2026-10-23: "a way to spawn the collectible near the player, perhaps from the pause menu";
 // rules/finds.ts spawnSpot, spawnFind): a kind's item, or tonight's own find (kind null), on clear ground a few metres in front
 // of her, as tonight's find: the constellation, the telescope and E at it go by it, and taking it is the real claim.
 // (it redraws after each give or take, asking again: the pegboard's parts kept up with it)
-const findsPanel = new FindsPanel(() => { view.partsFound = partsNow(pageHost); return findsCtx(pageHost); }, (kind, item) => spawnHere(pageHost, kind, item), {
+const findsPanel = new FindsPanel(() => { view.partsFound = partsNow(loan); return findsCtx(pageHost); }, (kind, item) => spawnHere(pageHost, kind, item), {
   now: () => (loan ? loanName(loan) : null),
   keep: () => { if (phone.active) return; const s = settleLoan(pageHost, true); if (s) startDream(pageHost, s, true); },
   back: () => { if (phone.active) return; const s = settleLoan(pageHost, false); if (s) startDream(pageHost, s, true); },
@@ -1029,15 +871,7 @@ if (devFinds) findsPanel.toggle(true);
 let spawnWanted = new URLSearchParams(location.search).get("spawnfind");
 // The pause page's Report (ui/visualReport.ts): the frame drawn with each neutral pair, where they differ, the GPU, her place, the
 // camera and the repro link. window.__neutralCheck: the same pairs' numbers for the smoke test (tools/smoke/smoke.cjs "neutral").
-const reportHost = () => {
-  const { game } = N(), version = BUILD, w = game.witch, c = game.camera;
-  return {
-    canvas, gl: view.renderer.getContext(), tuning: game.tuning, seed: game.seed, version, link: repro.link, changed: repro.changed,
-    witch: (): [number, number] | null => { const u = SPRITE_UNIFORMS.uWitch.value, low = view.post.lowSize; return low.x > 0 ? [u.x * canvas.width / low.x, (low.y - u.y) * canvas.height / low.y] : null; },
-    world: () => ({ x: w.x, z: w.z, mode: w.mode, lift: w.lift, area: game.map.areaAt(w.x, w.z).type, camera: { zoomStep: c.zoomStep, zoom: c.zoom, tx: c.tx, ty: c.ty, tz: c.tz }, ...(view.houseRooms ? { house: view.houseRooms.reportState(view) } : {}), ...(houseAtPause ? { houseAtPause } : {}) }),
-  };
-};
-(window as unknown as { __neutralCheck: () => Promise<unknown> }).__neutralCheck = () => import("./ui/visualReport").then(({ neutralCheck }) => neutralCheck(reportHost()));
+(window as unknown as { __neutralCheck: () => Promise<unknown> }).__neutralCheck = () => import("./ui/visualReport").then(({ neutralCheck }) => neutralCheck(reportHost(pageHost)));
 // The comparability key (app/compareKey.ts; Ed, 2026-10-26: "only compare like with like"): with the playtest log's run and its
 // samples' scenes, and for the browser tools (window.witch.compareKey(spot): tools/bench/comparable.cjs pageKey).
 // The measured output (Ed, round 16: "Is there a way for the game to know if anything is being sent to the speakers or not?";
@@ -1045,22 +879,7 @@ const reportHost = () => {
 // should be heard goes in the playtest log (the pause page's Download log) with where she was and the nearest stall. ?micCheck=1 (debug only) also
 // listens to the microphone for dropouts after the game. It measures what the game sends: not the device's volume.
 const meter = new OutputMeter();
-const nearestStall = (pageS: number): { off: number; ms: number } | undefined => {
-  let best: { off: number; ms: number } | undefined;
-  for (const st of stallLog.stalls) { const off = Math.round((st.at - pageS) * 10) / 10; if (!best || Math.abs(off) < Math.abs(best.off)) best = { off, ms: Math.max(st.gap, st.work) }; }
-  return best;
-};
-meter.onSilence = e => {
-  const { game, playtest } = N(), w = game.witch, ago = performance.now() / 1000 - e.start;
-  const r2 = (x: number) => Math.round(x * 100) / 100, { lastMix, music, audio } = sound;
-  playtest.silence({ cause: meter.reading.clock >= 0.9 ? "game" : "clock", t: Math.round((game.clock.time - ago) * 10) / 10, dur: Math.round(e.dur * 100) / 100, x: Math.round(w.x), z: Math.round(w.z), area: areaUnderWitch(game), mode: w.mode, mix: r2(lastMix?.volume ?? 0), gain: music ? r2((music.output as GainNode).gain.value) : 0, state: audio?.state ?? "none", clock: meter.reading.clock, back: e.db, stall: nearestStall(e.start) });
-  console.warn(`audio: the output silent for ${e.dur.toFixed(2)} s while the music should be heard`);
-};
-// each playtest sample's audio carries the clock's account too: under-runs, coarse clock steps or a true clock
-{
-  const log = N().playtest, own = log.audioState, cw = meter.clockWatch;
-  log.audioState = () => ({ ...(own?.() ?? { state: "none", volume: 0, distort: 0, distance: 0, mends: 0 }), clock: { slow: cw.slow, fast: cw.fast, drift: cw.drift, played: cw.outDrift, underruns: cw.underruns, underrunMs: cw.underrunMs, verdict: cw.verdict() } });
-}
+watchSilence(pageHost);
 // each sample's frames too (Ed's overlay, 2026-10-13: a GPU-bound night; the L log shows which it was)
 // What the GPU holds (render/gpuLedger.ts, view/gpuBudget.ts): each sample's, the pause page's and the overlay's line, and its
 // trouble kept in the log. A lost GL context can't be mended in place (the atlases let their pixels go once uploaded, and the
@@ -1115,20 +934,6 @@ let measuredParts: Record<string, number> = {};
 requestAnimationFrame(t => frame(pageHost, t));
 
 
-const telephoneBatchProof = (batch: typeof view.witchBatch | null) => {
-  if (!batch) return null;
-  const material = batch.mesh.material as { depthTest?: boolean; transparent?: boolean };
-  const up = SPRITE_UNIFORMS.uUp.value;
-  return { count: batch.count, visible: batch.mesh.visible, renderOrder: batch.mesh.renderOrder,
-    depthTest: material.depthTest, transparent: material.transparent, atlas: batch.atlas.albedo.uuid,
-    matchesDressedAtlas: batch.atlas === view.assets.witch, textureVersion: batch.atlas.albedo.version,
-    instances: batch.items.slice(0, 4).map(p => {
-      const height = (p.sy === undefined ? p.frame.h : Math.max(1, Math.round(p.frame.h * p.sy))) * batch.metresPerPixel * (p.scale ?? 1);
-      return { x: p.x, y: p.y, z: p.z, frame: batch.atlas.frames.indexOf(p.frame),
-        feet: view.screenOf(p.x, p.y, p.z, true),
-        centre: view.screenOf(p.x + up.x * height / 2, p.y + up.y * height / 2, p.z + up.z * height / 2, true) };
-    }) };
-};
 // For the smoke test, the tools and for poking at in the console (app/hooks.ts, app/pageDebug.ts installConsoleHooks).
 installConsoleHooks(pageHost);
 // The frame check's run (app/frameCheckRun.ts): the loop stood still, play begun with no key and no sound, the scenes driven and timed.

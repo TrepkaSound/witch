@@ -18,6 +18,7 @@ import { browserNightStore } from "./nightSave";
 import { captureComment, parseCommentFile } from "./playtestComments";
 import { LOG_EXPANDED_BYTES } from "../platform/logCodec";
 import { replayRecording } from "../platform/inputRecording";
+import { SPRITE_UNIFORMS } from "../render/sprites";
 
 export async function openPotionLab(pageHost: PageHost): Promise<void> {
   if (pageHost.phone.active || pageHost.N().spec.borrowed) return;
@@ -91,7 +92,7 @@ export function installFreezeHooks(pageHost: PageHost): void {
     if (!on || pageHost.pauseLoading) return;
     pageHost.pauseLoading = true;
     void Promise.all([import("../ui/decide"), import("../ui/frameCheckPanel")]).then(([{ PauseSliders }, { frameCheckPanel }]) => {
-      const report = () => import("../ui/visualReport").then(({ report }) => report(pageHost.reportHost()));
+      const report = () => import("../ui/visualReport").then(({ report }) => report(reportHost(pageHost)));
       pageHost.pauseSliders = new PauseSliders({ resetAll: { run: () => pageHost.deleteSaves(null), shown: () => !pageHost.savesLocked() }, newBuild: { latest: () => pageHost.newBuild.latest, load: () => location.reload() }, mutate: pageHost.tuningMutation, saveComment: text => saveComment(pageHost, text), restoreComment: file => restoreComment(pageHost, file), downloadReadableLog: () => { void pageHost.N().playtest.download("text"); }, settings: () => pageHost.settingsPage.show(), get tuning() { return pageHost.phone.preferences(pageHost.N().game); }, get seed() { return pageHost.N().game.seed; }, version: pageHost.BUILD, live: pageHost.knobLive, report, potionLab: () => { void openPotionLab(pageHost); }, frameCheck: () => frameCheckPanel({ rung: () => (pageHost.ladder.state.mode === "off" ? "off" : String(pageHost.ladder.state.rung)), paused: () => pageHost.freeze.frozen, hold: on => { pageHost.loop.manual = on; }, store: localStore, key: FRAME_CHECK_KEY }), musicLab: () => openMusicLab(pageHost), audioTest: () => { window.open("audio-test/", "_blank", "noopener"); }, downloadLog: () => pageHost.N().playtest.download(), unlockAll: { get: () => unlockAll(), set: on => { if (pageHost.phone.active) return; pageHost.mutate("debug: unlock all", () => { setUnlockAll(on); if (on) stockMushroomBaskets(pageHost.N().game); for (const W of pageHost.N().game.witches) syncHatUnlock(W, on, pageHost.params); pageHost.creator.hats = pageHost.N().game.spells.hats; }); } }, defaults: { text: () => defaultsText(lookWithoutLoan((pageHost.page.look() ?? pageHost.creator.genome()) as Record<string, unknown> | null, pageHost.loan), partsWithoutLoan(pageHost.N().game.witches[0].spells.parts, pageHost.loan)), tryIt: () => { window.open(newWitchLink(location.href), "_blank", "noopener"); }, shown: () => pageHost.N().hud.debugOn || unlockAll() }, fightArena: () => { window.open(fightLink(newFightSeed()), "_blank", "noopener"); }, finds: () => pageHost.findsPanel.toggle(true), findsShown: () => pageHost.N().hud.debugOn || pageHost.devFinds, quality: { lines: () => pageHost.ladder.lines(), options: () => pageHost.ladder.options(), current: () => pageHost.ladder.current(), choose: v => { pageHost.ladder.choose(v); pageHost.ladder.apply(pageHost.phone.preferences(pageHost.N().game)); pageHost.viewRevision++; } } });
       requestAnimationFrame(() => pageHost.pauseSliders!.show(pageHost.freeze.frozen, pageHost.creator.open)); // (a frame shut first, so it slides in)
     }, () => { // (its files replaced under it: Ed, 2026-10-14, "the menu does not appear")
@@ -130,4 +131,15 @@ export async function restoreComment(pageHost: PageHost, file: File): Promise<vo
   await browserNightStore(location.pathname + ":comment-restore").write(comment.night);
   soloDiagnostic(pageHost.phone.active, pageHost.N().spec.borrowed === true, () => {});
   const url = new URL(location.href); url.search = "?restore=comment&resume=1"; location.href = freshHref(url.toString());
+}
+
+/** The pause page's Report (ui/visualReport.ts): the frame drawn with each neutral pair, where they differ, the GPU, her place, the
+ *  camera and the repro link (and window.__neutralCheck's numbers for the smoke test). */
+export function reportHost(pageHost: PageHost) {
+  const { game } = pageHost.N(), version = pageHost.BUILD, w = game.witch, c = game.camera;
+  return {
+    canvas: pageHost.canvas, gl: pageHost.view.renderer.getContext(), tuning: game.tuning, seed: game.seed, version, link: pageHost.repro.link, changed: pageHost.repro.changed,
+    witch: (): [number, number] | null => { const u = SPRITE_UNIFORMS.uWitch.value, low = pageHost.view.post.lowSize; return low.x > 0 ? [u.x * pageHost.canvas.width / low.x, (low.y - u.y) * pageHost.canvas.height / low.y] : null; },
+    world: () => ({ x: w.x, z: w.z, mode: w.mode, lift: w.lift, area: game.map.areaAt(w.x, w.z).type, camera: { zoomStep: c.zoomStep, zoom: c.zoom, tx: c.tx, ty: c.ty, tz: c.tz }, ...(pageHost.view.houseRooms ? { house: pageHost.view.houseRooms.reportState(pageHost.view) } : {}), ...(pageHost.houseAtPause ? { houseAtPause: pageHost.houseAtPause } : {}) }),
+  };
 }

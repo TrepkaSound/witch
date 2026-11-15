@@ -1,6 +1,7 @@
 // A night's way in and out: the first wake-up, the arrival after a sail, the sea chart and sailing, the bed's next night, the bot
 // game, and starting play.
 import type { PageHost } from "../main";
+import type { View } from "../render/view";
 import { findsCtx, partsNow, settleLoan, startDream } from "./pageFinds";
 import { drawFrame } from "./frameDraw";
 import { slotStorage } from "./saveSlots";
@@ -33,7 +34,6 @@ import { hudFade, showStill } from "./arrive";
 import { forgetArrival, type Arrival } from "./arrival";
 import type { FlightEnd } from "../render/chart/seaChart";
 import { logCaughtError } from "../platform/playtestLog";
-import { notable } from "../platform/playtestJournal";
 import { pageMutation } from "./recordingHooks";
 
 /** Her nightie for every morning after a night played (rules/wakeUp.ts morningAfter: her hat in the pile, so no hat-off frames: those
@@ -41,9 +41,9 @@ import { pageMutation } from "./recordingHooks";
  *  2026-11-03: "it's the same nightie on every island every morning. Why do we need to keep re-drawing it?"): the same genome
  *  each morning while her look is, so a sail or the bed puts it on at once. Drawn again only when her look changes (its genome
  *  carries her whole outfit, the hidden pieces too, so the art cache keys it anew). */
-export function keepNightie(pageHost: PageHost, look: unknown): void {
+export function keepNightie(assets: View["assets"], look: unknown): void {
   const after = morningAfter();
-  pageHost.view.assets.keepLook(wornGenome(look as never, after.pile, after.hatLying));
+  assets.keepLook(wornGenome(look as never, after.pile, after.hatLying));
 }
 
 export function personalKit(pageHost: PageHost, game: Game = pageHost.N().game, player = 0): PersonalKit {
@@ -53,15 +53,9 @@ export function personalKit(pageHost: PageHost, game: Game = pageHost.N().game, 
 
 export function hostCollections(pageHost: PageHost, game: Game) {
   const wardrobe = withSharedFind(game, "wearable", findsCtx(pageHost).owned());
-  return { wardrobe, bags: new Set(BAGS.filter(b => wardrobe.has(b.id)).map(b => b.id)), hats: withSharedFind(game, "hat", new Set(game.witches[0].spells.hats ?? HAT_SPELLS.filter(hat => hat.built).map(hat => hat.id))), parts: withSharedFind(game, "part", partsNow(pageHost)), records: withSharedFind(game, "record", new Set(ownedRecords())) };
+  return { wardrobe, bags: new Set(BAGS.filter(b => wardrobe.has(b.id)).map(b => b.id)), hats: withSharedFind(game, "hat", new Set(game.witches[0].spells.hats ?? HAT_SPELLS.filter(hat => hat.built).map(hat => hat.id))), parts: withSharedFind(game, "part", partsNow(pageHost.loan)), records: withSharedFind(game, "record", new Set(ownedRecords())) };
 }
 
-export function traceVisit(pageHost: PageHost, stage: string, detail?: unknown): void {
-  pageHost.visitPreparation.stage = stage; pageHost.visitPreparation.at = performance.now();
-  const message = (detail as { message?: unknown } | undefined)?.message;
-  if (typeof message === "string") pageHost.visitPreparation.failure = message.slice(0, 500);
-  notable("telephone-preparation", stage, detail);
-}
 
 export function aheadMorning(pageHost: PageHost, on: boolean): void {
   if (!on && !pageHost.morningAhead) return;

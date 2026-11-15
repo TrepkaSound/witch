@@ -1,6 +1,7 @@
 // The frame loop: each frame's step of the rules, the house's menus, the draw, the sound and the HUD's overlay.
 import type { PageHost } from "../main";
 import { updatePauseMenus } from "./pagePause";
+import { nearestStall } from "./pageDebug";
 import { shutStation, useHouse, workshopNow } from "./pageStations";
 import { findsCtx, lendFind, spawnHere, stepGuide } from "./pageFinds";
 import { arrived, chartOverNight, chartWorld, personalKit, sawMirror, wakeArrival, woke } from "./pageNight";
@@ -262,7 +263,7 @@ export function frameBody(pageHost: PageHost, now: number): void {
     if (shedS !== pageHost.lastShedS) { pageHost.lastShedS = shedS; const cw = pageHost.meter.clockWatch, why = pageHost.sound.shedCheck(shedS, cw.underruns, cw.drift); if (why) { playtest.audio(why); console.warn(`audio: ${why}`); } }
     if (pageHost.micWanted && !pageHost.meter.mic && pageHost.startedNights.has(game)) pageHost.meter.startMic(e => {
       const pageS = performance.now() / 1000;
-      pageHost.N().playtest.mic({ kind: e.kind, t: Math.round(pageHost.N().game.clock.time * 10) / 10, dur: Math.round(e.dur * 100) / 100, outDb: e.outDb, micDb: e.micDb, lag: Math.round(e.lag * 1000), stall: pageHost.nearestStall(pageS) });
+      pageHost.N().playtest.mic({ kind: e.kind, t: Math.round(pageHost.N().game.clock.time * 10) / 10, dur: Math.round(e.dur * 100) / 100, outDb: e.outDb, micDb: e.micDb, lag: Math.round(e.lag * 1000), stall: nearestStall(pageHost.stallLog.stalls, pageS) });
     });
   }
   const outside = { playtest: audio0 - log0, audio: performance.now() - audio0 }; // (for the stall log: not the view's own parts)

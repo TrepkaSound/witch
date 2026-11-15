@@ -39,7 +39,7 @@ export function shutStation(pageHost: PageHost, why: string): void {
 }
 
 /** What the Workshop's stations show (ui/stationPanel.ts): the parts found, her broom, tonight's part to find, her tuning. */
-export function workshopNow(pageHost: PageHost): WorkshopCtx { const { game, tuning } = pageHost.N(), t = game.trunk; return { found: pageHost.phone.active ? new Set(pageHost.phone.catalogue?.parts ?? []) : partsToChoose(partsNow(pageHost)), fitted: pageHost.phone.active ? { ...pageHost.phone.presented(game).spells.parts } : game.witches[0].spells.parts, tonight: t && t.kind === "part" && !t.found ? t.item : null, tuning }; }
+export function workshopNow(pageHost: PageHost): WorkshopCtx { const { game, tuning } = pageHost.N(), t = game.trunk; return { found: pageHost.phone.active ? new Set(pageHost.phone.catalogue?.parts ?? []) : partsToChoose(partsNow(pageHost.loan)), fitted: pageHost.phone.active ? { ...pageHost.phone.presented(game).spells.parts } : game.witches[0].spells.parts, tonight: t && t.kind === "part" && !t.found ? t.item : null, tuning }; }
 
 export function useHouse(pageHost: PageHost, obj: string): void { return pageHost.mutate("house: use", () => {
   const { game, tuning, flags: { chartRecorded, overRecorded } } = pageHost.N();
