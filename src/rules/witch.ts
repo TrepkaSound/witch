@@ -95,9 +95,7 @@ export function liftFor(height: number, t: Tuning): number {
 /** How much of the canopy shows: 0 in ground mode, 1 in treetop mode. */
 export const canopyShown = (w: WitchState) => smoothstep(w.lift);
 
-/** (`_load`: retired with the sigil weight, Ed 2026-11-03, "the weight system goes"; nothing pulls on her now but her chains,
- *  rules/chains.ts. The argument stayed so the step's call site, then being moved by #1609 (merged since), merged cleanly: rules/leashWeight.ts loadOf.) */
-export function stepWitch(w: WitchState, intent: Intent, dt: number, t: Tuning, bounds: Bounds, _load?: unknown, deck: Deck | null = null): WitchState {
+export function stepWitch(w: WitchState, intent: Intent, dt: number, t: Tuning, bounds: Bounds, deck: Deck | null = null): WitchState {
   if (w.seated) {
     if (!intent.toggleMode && Math.hypot(intent.moveX, intent.moveZ) < 0.1) return w;
     w = { ...w, seated: false };

@@ -47,8 +47,6 @@ export interface HouseConfig {
   rooms: HouseRoom[]; corridors: (Rect & { id: string })[]; shape: HouseShape; terrace: TerraceLayout;
   objects: HouseObject[]; bed: { hold: number };
   layout?: { id: "ed"; baseline: HouseConfig; hatPoints: { id: number; x: number; z: number }[]; decor?: { id: string; x: number; z: number; rotation: number }[] };
-  /** Rooms to come, their floor and their door kept clear on the plan; not walked or drawn. None now: it held the guests' bedrooms (Ed, 2026-10-21) till they were built (config/house/rooms/bedroom2.json, bedroom3.json). */
-  reserved?: (Rect & { id: string; label: string; door: Rect })[];
 }
 export const HOUSE_ROOMS = HOUSE as unknown as HouseConfig;
 /** Explicit main-page boot step, never module initialization or a worker-side URL inference. */

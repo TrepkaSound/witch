@@ -22,7 +22,6 @@ import { speakerCircle } from "../rules/departure";
 import * as THREE from "three";
 import { freeObjects } from "./free";
 import { HEIGHT_UNIFORMS, HEIGHT_VERT_GLSL } from "./height";
-import type { LeyTip } from "./leyHead";
 import { Sparkler } from "./sparkler";
 import { SPRITE_UNIFORMS, metresPerArtPixel } from "./sprites";
 import { LIGHT_UNIFORMS } from "./lighting";
@@ -34,6 +33,9 @@ import { leyRadius } from "../rules/leyroute";
 import type { ForestMap } from "../rules/map";
 import { bridgeNativeObject } from "./fx/native";
 import { COLD_GLSL, oldColours } from "./colourGrammar";
+
+/** Where the line's front is this frame: on the ground at (x, z), its colour, and how many stones it has passed (links drawn). */
+export interface LeyTip { x: number; z: number; colour: THREE.Vector3; links: number }
 
 export interface LeyTuning {
   on: boolean;

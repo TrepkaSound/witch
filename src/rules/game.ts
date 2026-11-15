@@ -55,7 +55,7 @@ export const ZOO_EDGE_PUSH = 0.5;
 import { keepInBedroom, stepWake, wakeOf, startWakeInLastBed, WAKE_DEFAULT, type WakeState } from "./wakeUp";
 import { wearPiece } from "./clothesPile";
 import { hatLetters, hatsDown, onHatPicked, onHatPut, stepHatSpells } from "./hatSpells";
-import { loadOf, groundedBy } from "./leashWeight";
+import { groundedBy } from "./leashWeight";
 import { pinWitch, type Pinned } from "./partyLegend";
 import { beginChains, chainLength, dragWitch } from "./chains";
 import { pullsOf, stepPop, stepTug, tautKnobs, yankFrom, type PopMeter } from "./tautChain";
@@ -78,7 +78,6 @@ import { batter, canPound, groundPound, hiddenWitch, leyJump, leyJumpTarget } fr
 import type { HouseState } from "./houseRooms";
 import { newPartyWitches, stepPartyWitches, type PartyWitches } from "./partyWitches";
 import { newBeachWitches, stepBeachWitches, type BeachWitches } from "./beach";
-import { newGrowth, type GrowthState } from "./growth";
 import type { Tuning } from "./tuning";
 import { newWitch, seaward, stepWitch, witchHeight, type Intent, type WitchState } from "./witch";
 import { deckOf, landsOn, onTreehouse } from "./treehouse";
@@ -175,8 +174,6 @@ export interface Game {
   readonly forest: Forest;
   /** Every creature made so far (ids are their places here): a night's all at its start (no growth: Ed, 2026-10-28); the zoo's bar adds more. */
   readonly creatures: Creature[];
-  /** The old wave-by-wave growth's counts (rules/growth.ts): never filled, growth is off (Ed, 2026-10-07, 2026-10-28). */
-  growth: GrowthState;
   readonly clock: Clock;
   /** Every player's witch; the first is this machine's (the camera follows her). */
   witches: Witch[];
@@ -356,7 +353,7 @@ export function newGame(seed: number, tuning: Tuning, players = 1, ready?: MapPr
     speakerBoot: map.dancefloor.speakers.map(() => null),
     beat: newBeatClock(tuning.beat.bpm), knockdowns: [] as { at: number; back: number }[], musicSet: set,
     floor: newFloor(), partyWitches: newPartyWitches(seed), beach: newBeachWitches(seed, map.bounds, tuning),
-    combat: newCombat(), koEvents: [] as KnockoutEvent[], friendly: new Set<string>(), wildEntry: new Map(), questEvents: [] as QuestEvent[], islandsTonight: [] as string[], waveEvents: [] as WaveEvent[], leashEvents: [] as LeashEvent[], loose: [] as LooseSigil[], relics: placeRelics(map, forest), trunk: null as Trunk | null, challenge: newChallenge(map, creatures), tally: { berries: 0, invites: 0, evolved: 0 }, growth: newGrowth(), partyOver: null as PartyOver | null, win: null as WinState | null,
+    combat: newCombat(), koEvents: [] as KnockoutEvent[], friendly: new Set<string>(), wildEntry: new Map(), questEvents: [] as QuestEvent[], islandsTonight: [] as string[], waveEvents: [] as WaveEvent[], leashEvents: [] as LeashEvent[], loose: [] as LooseSigil[], relics: placeRelics(map, forest), trunk: null as Trunk | null, challenge: newChallenge(map, creatures), tally: { berries: 0, invites: 0, evolved: 0 }, partyOver: null as PartyOver | null, win: null as WinState | null,
     acc: 0, alpha: 1, timeScale: 1, herTime: 0, pending: {}, prev: { witches: [], creatures: new Float64Array(creatures.length * 2), camera: null },
   };
   g.trunk = placeTrunk(map, forest, g.relics);
@@ -691,7 +688,7 @@ export function stepWitchLocomotion(g: Game, W: Witch, input: Controls, hdt: num
     if (effects && !(W.id === 1 && guestEffectsEnabled(g)) && W.spells.broom === "battering") batter(g, W.dash.fromX, W.dash.fromZ, W.dash.toX, W.dash.toZ, t); // (Battering: what's in her path is stunned)
   }
   const deck = guestDeck(deckOf(g.map, t), g, W), fallsOff = deck?.house && !hasBroom(W) ? { ...deck, house: { ...deck.house, fall: { ...deck.house.fall, on: true } } } : deck; // Movement-only guest floor; no broom still falls off the Terrace.
-  if (!potionPhase(g, W)) W.body = applyDash(W.dash, stepWitch(was, c, hdt, boost === 1 ? tw : { ...tw, groundSpeed: tw.groundSpeed * boost, treetopSpeed: tw.treetopSpeed * boost }, g.map.bounds, loadOf(W.leash.stack, g.creatures, was, t, pullOf(W.spells), !!W.leash.scatter), fallsOff)); // (her sigils' pull: rules/leashWeight.ts; the treehouse deck: rules/treehouse.ts)
+  if (!potionPhase(g, W)) W.body = applyDash(W.dash, stepWitch(was, c, hdt, boost === 1 ? tw : { ...tw, groundSpeed: tw.groundSpeed * boost, treetopSpeed: tw.treetopSpeed * boost }, g.map.bounds, fallsOff)); // (the treehouse deck: rules/treehouse.ts)
   // (the zoo: flying or walking on out against its edge, over the waterfall, takes her out of it, Ed 2026-10-26: "If you fly off the
   // edge of the map in the zoo you exit as well"): pushing on outward where the edge's soft hold has her (its last map.push metres,
   // as the beach's stargazing reckons it: rules/witch.ts), for ZOO_EDGE_PUSH seconds, on foot or flying

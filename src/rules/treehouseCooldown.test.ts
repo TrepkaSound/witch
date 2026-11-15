@@ -6,7 +6,6 @@ import { TUNING, type Tuning } from "./tuning";
 import { deckOf, flyOnto, onFloor, type Deck } from "./treehouse";
 import { fromPlan, HOUSE_ROOMS } from "./houseRooms";
 import { newWitch, NO_INTENT, stepWitch, type Intent, type WitchState } from "./witch";
-import { NO_LOAD } from "./leashWeight";
 import { rng } from "./random";
 
 const STEP = 1 / 60, COOL = TUNING.treehouse.landCooldown!, bounds = { minX: -10000, maxX: 10000, minZ: -10000, maxZ: 10000 };
@@ -14,10 +13,10 @@ const deck = (t: Tuning = TUNING) => deckOf({ treehouse: { x: 200, z: 300 } }, t
 const stands = (w: WitchState) => !!w.perch && w.mode === "ground";
 /** Steps of STEP for `secs`, `c` each step (or a function of the step's witch), `every` called after each. */
 function run(w: WitchState, secs: number, d: Deck, c: Partial<Intent> | ((w: WitchState) => Partial<Intent>) = {}, every?: (w: WitchState) => void, t: Tuning = TUNING): WitchState {
-  for (let i = 0; i < Math.round(secs / STEP); i++) { w = stepWitch(w, { ...NO_INTENT, ...(typeof c === "function" ? c(w) : c) }, STEP, t, bounds, NO_LOAD, d); every?.(w); }
+  for (let i = 0; i < Math.round(secs / STEP); i++) { w = stepWitch(w, { ...NO_INTENT, ...(typeof c === "function" ? c(w) : c) }, STEP, t, bounds, d); every?.(w); }
   return w;
 }
-const press = (w: WitchState, d: Deck, t: Tuning = TUNING) => stepWitch(w, { ...NO_INTENT, toggleMode: true }, STEP, t, bounds, NO_LOAD, d, );
+const press = (w: WitchState, d: Deck, t: Tuning = TUNING) => stepWitch(w, { ...NO_INTENT, toggleMode: true }, STEP, t, bounds, d, );
 const room = (d: Deck, id: string) => { const r = HOUSE_ROOMS.rooms.find(q => q.id === id)!; return { ...fromPlan(d, r.x, r.z), plan: r }; };
 /** A plan direction from a room's middle with only open air from just past its edge to `far` metres out: [start out there, unit
  *  direction in towards the room, in the world]. */
@@ -159,7 +158,7 @@ describe("the treehouse's landing cooldown (Ed, 2026-11-03)", () => {
         const far = Math.hypot(w.x - centre.x, w.z - centre.z) > 70, a = far ? Math.atan2(centre.z - w.z, centre.x - w.x) + (r() - 0.5) : r() * 2 * Math.PI;
         c = { moveX: Math.cos(a) * (r() < 0.15 ? 0 : 1), moveZ: Math.sin(a), toggleMode: r() < 0.25 };
       } else c = { ...c, toggleMode: false };
-      w = stepWitch(w, { ...NO_INTENT, ...c }, STEP, TUNING, bounds, NO_LOAD, d);
+      w = stepWitch(w, { ...NO_INTENT, ...c }, STEP, TUNING, bounds, d);
       expect(Number.isFinite(w.x) && Number.isFinite(w.z) && Number.isFinite(w.lift)).toBe(true);
       expect(w.perchCool ?? 0).toBeLessThanOrEqual(COOL);
       const now = stands(w);
