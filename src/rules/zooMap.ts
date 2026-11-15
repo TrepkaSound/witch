@@ -10,7 +10,7 @@
 // is its biome's lake. The zoo's partition (rules/partition.ts's contract, for rules/map.ts): an island's points its own cell's,
 // the streets' and the plaza's home's. No drawing here.
 import { coastSpec, islandOf, KIND_NAMES, worldOf } from "./rosters";
-import { islandCoast, type IslandSpec } from "./islandShape";
+import { islandCoast, type IslandSpec } from "./islandCoast";
 import type { CoastKnobs } from "./mapShape";
 import type { Cell, Partition } from "./partition";
 
