@@ -1,7 +1,8 @@
 // A4 boundary regressions: night replacement and renderer exceptions must keep their original page semantics.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PageHost } from '../main';
-import { drawFrame, frameBody } from './pageFrame';
+import { frameBody } from './pageFrame';
+import { drawFrame } from './frameDraw';
 import { queueCast } from './pageNight';
 import { buildHome } from '../render/view/houseFrame';
 import type { View, ViewInternals, ViewShared } from '../render/view';
@@ -31,11 +32,10 @@ describe('extracted page composition boundaries', () => {
 
   it('keeps scheduling manual frames without stepping or drawing', () => {
     const raf = vi.fn(); vi.stubGlobal('requestAnimationFrame', raf);
-    const frame = vi.fn();
-    const host = { loop: { manual: true }, frame } as unknown as PageHost;
+    const host = { loop: { manual: true }, view: { render: vi.fn() } } as unknown as PageHost;
     frameBody(host, 10);
-    expect(raf).toHaveBeenCalledExactlyOnceWith(frame);
-    expect(frame).not.toHaveBeenCalled();
+    expect(raf).toHaveBeenCalledOnce();
+    expect(host.view.render).not.toHaveBeenCalled();
   });
 
   it('preserves a draw error while accounting its completed render parts', () => {

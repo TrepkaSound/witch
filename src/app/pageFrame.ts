@@ -1,5 +1,10 @@
-// A4 mechanical extraction from src/main.ts; body identity is checked by tools/refactor/a4-split.mjs.
+// The frame loop: each frame's step of the rules, the house's menus, the draw, the sound and the HUD's overlay.
 import type { PageHost } from "../main";
+import { updatePauseMenus } from "./pagePause";
+import { shutStation, useHouse, workshopNow } from "./pageStations";
+import { findsCtx, lendFind, spawnHere, stepGuide } from "./pageFinds";
+import { arrived, chartOverNight, chartWorld, personalKit, sawMirror, wakeArrival, woke } from "./pageNight";
+import { drawFrame } from "./frameDraw";
 import { drew, holding } from "../render/impact";
 import { localHouseAction } from "./houseActions";
 import { fillNightTrunk } from "./nightFindBoundary";
@@ -46,18 +51,9 @@ export function updateChartWarm(pageHost: PageHost): void {
     // Cancellation is per frame; reading the save and checking the cache can wait.
     if (pageHost.view.assets.pending || performance.now() < pageHost.chartWarmNextCheck) return null;
     pageHost.chartWarmNextCheck = performance.now() + 1000;
-    const world = pageHost.chartWorld(), found = loadSave().found;
+    const world = chartWorld(pageHost), found = loadSave().found;
     return { world, found, ids: foundChartIslandIds(world, found) };
   })) pageHost.chartWarmNextCheck = 0;
-}
-
-export function drawFrame(pageHost: PageHost, time: number, repaintHeld: NonNullable<Parameters<PageHost["drawFrame"]>[1]>): void {
-  const start = performance.now(), previousParts = pageHost.view.ms;
-  try { pageHost.view.render(time, true, repaintHeld); }
-  finally {
-    pageHost.measuredDraw = (pageHost.measuredDraw ?? 0) + performance.now() - start;
-    if (pageHost.view.ms !== previousParts) for (const [name, ms] of Object.entries(pageHost.view.ms)) pageHost.measuredParts[`draw.${name}`] = (pageHost.measuredParts[`draw.${name}`] ?? 0) + ms;
-  }
 }
 
 export function frame(pageHost: PageHost, now: number): void {
@@ -65,9 +61,9 @@ export function frame(pageHost: PageHost, now: number): void {
   const programsBefore = pageHost.shotProgramCounts?.begin(), gpuBefore = pageHost.frameGpu?.begin();
   pageHost.lastObservedFrame = now; pageHost.measuredStep = pageHost.measuredDraw = undefined; pageHost.measuredParts = {};
   const n = pageHost.N(), phase = pageHost.sailing ? "sailing" : pageHost.landingSleep.holds(n.game) ? "landing-sleep" : !n.flags.ready ? "building" : n.arrival && !n.flags.landed ? "arrival" : "play";
-  try { pageHost.frameBody(now); }
+  try { frameBody(pageHost, now); }
   finally {
-    try { pageHost.updateChartWarm(); } catch (error) { pageHost.chartWarmer.pause(); logCaughtError(error, 'chart background scheduling'); }
+    try { updateChartWarm(pageHost); } catch (error) { pageHost.chartWarmer.pause(); logCaughtError(error, 'chart background scheduling'); }
     try {
       const programs = pageHost.shotProgramCounts && programsBefore ? pageHost.shotProgramCounts.end(programsBefore) : null;
       if (pageHost.params.has("shot") && (gap >= 100 || performance.now() - start >= 100)) {
@@ -83,7 +79,7 @@ export function frame(pageHost: PageHost, now: number): void {
 }
 
 export function frameBody(pageHost: PageHost, now: number): void {
-  requestAnimationFrame(pageHost.frame);
+  requestAnimationFrame(t => frame(pageHost, t));
   if (pageHost.loop.manual) return;
   if (pageHost.sailing) { pageHost.phone.close(); pageHost.sound.tickSail(); return; } // (the next island being made after a sail in place: nothing stepped or drawn, the sea and the wind heard)
   // The night on now, read afresh each frame (app/night.ts): its game, tuning, playtest run, HUD, arrival and flags.
@@ -104,9 +100,9 @@ export function frameBody(pageHost: PageHost, now: number): void {
   pageHost.frameHouseEvents = pageHost.phone.houseEvents(); // Guest drains captured replay steps once; solo/host keep their original transient events.
   if (pageHost.landingSleep.holds(game)) {
     pageHost.input.release(); pageHost.input.clearPresses(); game.clock.paused = true;
-    pageHost.updatePauseMenus(now);
+    updatePauseMenus(pageHost, now);
     if (!pageHost.freeze.frozen && pageHost.view.landingWakeReady() && pageHost.mutate("wake: landing release", () => pageHost.landingSleep.release(game, true))) {
-      pageHost.input.release(); pageHost.input.clearPresses(); mark('landing:alarm-ready'); pageHost.wakeArrival();
+      pageHost.input.release(); pageHost.input.clearPresses(); mark('landing:alarm-ready'); wakeArrival(pageHost);
       F.last = now; // discard the loading interval before the first normal simulation step
     } else {
       (pageHost.wakeCard ??= new WakeCard()).sleep();
@@ -114,7 +110,7 @@ export function frameBody(pageHost: PageHost, now: number): void {
       // Arrival readiness needs draws while the simulation sleeps. A player pause holds even this clock.
       if (!pageHost.freeze.frozen) {
         pageHost.view.landingPresentationMs += Math.min(50, Math.max(0, dt * 1000));
-        pageHost.drawFrame(game.clock.time);
+        drawFrame(pageHost, game.clock.time);
       }
       hud.clock(); pageHost.freeze.update(); return;
     }
@@ -131,7 +127,7 @@ export function frameBody(pageHost: PageHost, now: number): void {
   // button (E; the pad's back, ○, since Ed's layout of 2026-10-28; a tap on touch) closes it: that press is the close and nothing else, even when the thing
   // open closed itself on it a moment before (the chart and the instruments take E themselves), so it never opens it again.
   const raw = pageHost.input.read(), openNow = chartOpen() || pageHost.telescope.on || !!pageHost.studio.at || !!pageHost.stations.station || pageHost.booth.isOpen || pageHost.phone.open, shutTap = !pageHost.freeze.frozen && !!(raw.sigil || raw.place) && (openNow || pageHost.openPrev); // (E is `place`; the pad's back, ○, and a tap `sigil`; never under the pause)
-  if (shutTap) { if (pageHost.phone.open) pageHost.phone.close(); if (pageHost.booth.isOpen) pageHost.booth.close(); if (pageHost.stations.station) pageHost.shutStation("E"); if (pageHost.studio.at) pageHost.studio.leave(); if (pageHost.chartAt && chartOpen() && putChartDown()) pageHost.chartAt = null; } // (not once a sail's flight is committed: ui/chartOverlay.ts) // (the telescope: its own step, below)
+  if (shutTap) { if (pageHost.phone.open) pageHost.phone.close(); if (pageHost.booth.isOpen) pageHost.booth.close(); if (pageHost.stations.station) shutStation(pageHost, "E"); if (pageHost.studio.at) pageHost.studio.leave(); if (pageHost.chartAt && chartOpen() && putChartDown()) pageHost.chartAt = null; } // (not once a sail's flight is committed: ui/chartOverlay.ts) // (the telescope: its own step, below)
   const human = openNow || shutTap ? pageHost.stillControls(raw) : raw;
   pageHost.telescope.device = pageHost.input.device;
   if (pageHost.telescope.on) { if (pageHost.telescope.night !== game || game.witches[pageHost.phone.visiting ? 1 : 0]?.ko || chartOpen() || !tuning.telescope) pageHost.telescope.close(); else pageHost.telescope.step({ ...raw, sigil: !!(raw.sigil || raw.place) }, dt, tuning.telescope); } // Local knockout only; canonical night identity still closes replacement.
@@ -164,7 +160,7 @@ export function frameBody(pageHost: PageHost, now: number): void {
   if (!pageHost.phone.active && !pageHost.N().spec.borrowed && pageHost.params.get("cauldron") === "1" && !game.cauldron) pageHost.mutate("cauldron: enable legacy preview", () => enableCauldron(game, homeMushroomPickups(game))); // Solo compatibility preview only; never a visitor's replacement rules.
   const rulesDt = fightDt(dt * (pageHost.botTag?.speed ?? 1));
   if (!pageHost.phone.step(game, { ...c, pausePage: pageHost.freeze.frozen }, rulesDt) && !pageHost.N().spec.borrowed) recordedStep(game, c, rulesDt, pageHost.BUILD, pageHost.captureRecording); // A disconnected borrowed world waits for own return; it never becomes a solo simulation.
-  if (pageHost.phone.active && !pageHost.phone.visiting) pageHost.sharedLoans.observe(game, pageHost.personalKit(game));
+  if (pageHost.phone.active && !pageHost.phone.visiting) pageHost.sharedLoans.observe(game, personalKit(pageHost, game));
   for (const [kind, events] of [["ko", game.koEvents], ["quest", game.questEvents], ["spell", game.combat.spells?.events ?? []]] as const) for (const event of events) { pageHost.breadcrumbs.add(game, kind, event); if (kind !== "spell") notable(kind, `${kind} event`, event); }
   pageHost.rumble.update(game, currentSettings(), pageHost.input.device === "pad" && !document.hidden ? [pageHost.freeze.pad()] : [], now);
   // ?debug=attack: every 10 s, a few seconds of blows on the two soundsystems farthest from her (never felling one), so the
@@ -174,13 +170,13 @@ export function frameBody(pageHost: PageHost, now: number): void {
   pageHost.measuredStep = stepMs; pageHost.measuredParts["update.input-and-rules"] = stepMs;
   // E at the treehouse deck's map table (rules/treehouse.ts): the sea chart over the game, to sail from at any time (Ed, 2026-10-11:
   // "Sail anytime"); mid-night that ends the night unwon: played, nothing found (app/chartSave.ts), as a loss.
-  if (!pageHost.bot) for (const e of pageHost.frameHouseEvents?.leash ?? game.leashEvents) if (e.kind === "house" && e.obj && localHouseAction(e, pageHost.phone.active ? pageHost.phone.visiting ? 1 : 0 : null)) pageHost.useHouse(e.obj);
+  if (!pageHost.bot) for (const e of pageHost.frameHouseEvents?.leash ?? game.leashEvents) if (e.kind === "house" && e.obj && localHouseAction(e, pageHost.phone.active ? pageHost.phone.visiting ? 1 : 0 : null)) useHouse(pageHost, e.obj);
   // Tonight's find (rules/finds.ts): the night's one draw over everything she hasn't found, a wearable (the trunk) or a broom part
   // (a wreck), made once a night; taken, it's hers for the night, on loan till she sleeps (app/loan.ts; Ed, 2026-10-24): to wear
   // or use at once, never saved unless the night's won.
-  if (!pageHost.N().spec.borrowed && !pageHost.phone.visiting && game.trunk && game.trunk.item === null) pageHost.mutate("finds: fill trunk", () => fillNightTrunk(game, pageHost.phone.active ? "host" : "solo", () => foundAll(pageHost.findsCtx()), () => pageHost.phone.changed()));
+  if (!pageHost.N().spec.borrowed && !pageHost.phone.visiting && game.trunk && game.trunk.item === null) pageHost.mutate("finds: fill trunk", () => fillNightTrunk(game, pageHost.phone.active ? "host" : "solo", () => foundAll(findsCtx(pageHost)), () => pageHost.phone.changed()));
   for (const e of game.leashEvents) if (!pageHost.phone.active && !pageHost.N().spec.borrowed && e.kind === "found" && e.obj && e.find) {
-    pageHost.mutate("finds: loan", () => pageHost.lendFind(e.find!, e.obj!));
+    pageHost.mutate("finds: loan", () => lendFind(pageHost, e.find!, e.obj!));
     if (e.find === "part") hud.found(`found: ${partById(e.obj)?.name.toLowerCase() ?? e.obj} · at the Workshop`); // (not fitted: its slot's modding station fits it)
     else if (e.find === "hat") hud.found(`found: the ${hatSpell(e.obj)?.name.toLowerCase() ?? e.obj} hat · on the hats' floor`); // (the rules laid it there: rules/houseRooms.ts addFloorHat)
     else { const it = itemById(e.obj), at = stationsShowing(shelfOf(e.obj)?.id ?? "")[0], where = HOUSE_ROOMS.objects.find(q => q.id === at)?.label.toLowerCase(); hud.found(`found: ${it?.name.toLowerCase() ?? e.obj}${where ? ` · at the ${where}` : ""}`); }
@@ -189,7 +185,7 @@ export function frameBody(pageHost: PageHost, now: number): void {
   for (const e of game.challenge?.events ?? []) hud.found(challengeWords(e));
   if (pageHost.spawnWanted && !game.witch.perch && game.witch.mode === "ground" && !game.witch.seated) {
     const [k, i] = pageHost.spawnWanted.includes(":") ? pageHost.spawnWanted.split(":") : [null, null];
-    const said = pageHost.spawnHere(k as FindKindId | null, i);
+    const said = spawnHere(pageHost, k as FindKindId | null, i);
     if (!said.startsWith("no clear ground")) { console.log(`spawnfind: ${said}`); pageHost.spawnWanted = null; }
   }
   // The station she's at (lit, E over it: render/houseRooms.ts); E there slides its panel in (Ed's playtest, 2026-10-26: "Menus should
@@ -198,9 +194,9 @@ export function frameBody(pageHost: PageHost, now: number): void {
   const houseGame = pageHost.phone.presented(game);
   const station = pageHost.bot || pageHost.creator.open || charting ? null : stationOf(houseGame, pageHost.stations.station), shelves = station ? shelvesAt(station.id) : null;
   pageHost.stations.setLoaned(pageHost.loan?.id ?? null); // (its card sparkles: ui/stationPanel.ts)
-  if (pageHost.stations.station && station?.id !== pageHost.stations.station) pageHost.shutStation(`off it (${station?.id ?? "none"}${charting ? ", charting" : ""}${pageHost.creator.open ? ", creator" : ""})`); // (she's somehow off it: a knockout, a new night; E closes it above)
-  if (station && shelves && station.id !== pageHost.stations.station && pageHost.usedAt(game) === station.id) { const g = (pageHost.page.look() ?? pageHost.creator.genome()) as Record<string, unknown>; pageHost.stations.open(station.id, shelves, g as never, pageHost.menuWardrobe(), houseGame.wake && pageHost.firstEver && !houseGame.wake.yesterday && station.id === "dressingTable" ? "First night · pick your look here, and at the wardrobe, cloak pegs and shoe rack" : "", shelves.some(q => q.slot || q.board) ? pageHost.workshopNow() : null, awaitingShelves(houseGame.wake?.pile, station.id, shelves.map(q => q.id))); }
-  else if (!shelves && pageHost.stations.station) pageHost.shutStation("no shelves");
+  if (pageHost.stations.station && station?.id !== pageHost.stations.station) shutStation(pageHost, `off it (${station?.id ?? "none"}${charting ? ", charting" : ""}${pageHost.creator.open ? ", creator" : ""})`); // (she's somehow off it: a knockout, a new night; E closes it above)
+  if (station && shelves && station.id !== pageHost.stations.station && pageHost.usedAt(game) === station.id) { const g = (pageHost.page.look() ?? pageHost.creator.genome()) as Record<string, unknown>; pageHost.stations.open(station.id, shelves, g as never, pageHost.menuWardrobe(), houseGame.wake && pageHost.firstEver && !houseGame.wake.yesterday && station.id === "dressingTable" ? "First night · pick your look here, and at the wardrobe, cloak pegs and shoe rack" : "", shelves.some(q => q.slot || q.board) ? workshopNow(pageHost) : null, awaitingShelves(houseGame.wake?.pile, station.id, shelves.map(q => q.id))); }
+  else if (!shelves && pageHost.stations.station) shutStation(pageHost, "no shelves");
   pageHost.stations.update(performance.now() / 1000); pageHost.booth.update(performance.now() / 1000);
   { const up = pageHost.stations.station === "broomLift"; if (up !== pageHost.liftUp) { pageHost.liftUp = up; pageHost.sound.sfx?.hiss(up); } } // (the lift up while its panel's open, down after: render/houseFurniture.ts; Ed, 2026-11-07, "It can hiss up and down when she uses it")
   // The telescope: E at it looks (useHouse); E or ○ shuts it (its own step; Esc pauses over it); and should she somehow be off it, it shuts.
@@ -224,14 +220,14 @@ export function frameBody(pageHost: PageHost, now: number): void {
   // The on-loan icon, top left (render/loanIcon.ts): tonight's find once she's taken it, till she sleeps.
   { const lf = loanFind(game, game.map.treehouse.x, game.map.treehouse.z); pageHost.loanIcon.set(pageHost.bot ? null : lf?.item ?? null, () => (lf ? findCanvas(findKind(lf.kind).piece(lf.item), pageHost.view.assets.style) : null)); pageHost.loanIcon.draw(now / 1000); }
   if (houseGame.wake) {
-    for (const e of pageHost.frameHouseEvents?.wake ?? houseGame.wake.events) { mark(`opening:${e}`); if (e === "up") pageHost.woke(); if (e === "mirror") pageHost.sawMirror(); if (e === "dressed") pageHost.sound.sfx?.spell("rustle", 0.6); if (e === "booth") pageHost.booth.open(pageHost.menuRecords(), lastRecord()); } // Local assigned wake only; no remote player's booth/menu events.
+    for (const e of pageHost.frameHouseEvents?.wake ?? houseGame.wake.events) { mark(`opening:${e}`); if (e === "up") woke(pageHost); if (e === "mirror") sawMirror(pageHost); if (e === "dressed") pageHost.sound.sfx?.spell("rustle", 0.6); if (e === "booth") pageHost.booth.open(pageHost.menuRecords(), lastRecord()); } // Local assigned wake only; no remote player's booth/menu events.
     if (pageHost.creator.open || pageHost.stations.station) pageHost.wakeCard?.hide(); // (at the mirror: its panel over it)
     else (pageHost.wakeCard ??= new WakeCard()).update(houseGame, houseGame.herTime, dt, () => pageHost.sound.sfx?.alarm());
   } else if (!pageHost.sailing && !pageHost.bootAsleep) pageHost.wakeCard?.hide(); // (asleep while the next night's made: kept up)
-  if (!pageHost.bot) pageHost.stepGuide(now);
+  if (!pageHost.bot) stepGuide(pageHost, now);
   // The tables (the map table's sea chart): E at one brings its chart up, as the stations' panels (Ed's playtest, 2026-10-26).
   const table = pageHost.bot || pageHost.creator.open || pageHost.sailing || F.ready === false ? null : tableOf(houseGame, pageHost.chartAt);
-  if (table && table.use.kind === "chart" && !chartOpen() && (pageHost.frameHouseEvents?.leash ?? game.leashEvents).some(e => e.kind === "chart" && localHouseAction(e, pageHost.phone.active ? pageHost.phone.visiting ? 1 : 0 : null))) pageHost.chartOverNight(table.id);
+  if (table && table.use.kind === "chart" && !chartOpen() && (pageHost.frameHouseEvents?.leash ?? game.leashEvents).some(e => e.kind === "chart" && localHouseAction(e, pageHost.phone.active ? pageHost.phone.visiting ? 1 : 0 : null))) chartOverNight(pageHost, table.id);
   // The night's end (Ed, 2026-10-26: "Remove the end cards"): no card, won or lost; the guidance pins lead her home (rules/guidance.ts).
   // The night won (rules/win.ts): the islands its woken legends showed recorded on the sea chart (app/chartSave.ts), once, as its
   // finale settles; the enraged legends' (win.lost) not.
@@ -284,16 +280,16 @@ export function frameBody(pageHost: PageHost, now: number): void {
   if (game.zooExit !== undefined && !pageHost.zooLeaving) { pageHost.zooLeaving = true; leaveZoo(); } // (her way out of the zoo: its little treehouse, or its edge; app/zooExit.ts)
   // (arriving: the flight's shot on the view, every frame; landed, the night starts)
   const flying = !!arrival && !F.landed && F.ready;
-  if (flying && arrival!.frame(pageHost.view, game, now)) pageHost.arrived();
+  if (flying && arrival!.frame(pageHost.view, game, now)) arrived(pageHost);
   // The pad on the pause page and Settings: before the chart's or the zoo's early return, so it works paused over the chart too.
-  pageHost.updatePauseMenus(now);
+  updatePauseMenus(pageHost, now);
   if (pageHost.chartHeld || pageHost.zooHeld) return; // (the sea chart or the zoo over the night: its last frame kept, nothing drawn)
   const paused = pageHost.freeze.frozen || (game.clock.paused && !flying);
   const title = paused && !pageHost.freeze.frozen && !pageHost.startedNights.has(game);
   if (title) pageHost.view.assets.work(4); // progress the workerless queue without submitting the world
   const art = pageHost.view.assets.done + pageHost.view.assets.version;
   if (!pageHost.worldDraw.shouldDraw(false, paused, title, art, pageHost.viewRevision, game.clock.time)) {
-    pageHost.freeze.update(); hud.overlay(now, pageHost.overlayHead); return;
+    pageHost.freeze.update(); hud.overlay(now, () => overlayHead(pageHost)); return;
   }
   // Drawn between the last two fixed steps (game time: party transitions, sigils and waves are stamped in it).
   pageHost.frameStats.beginGpu();
@@ -301,7 +297,7 @@ export function frameBody(pageHost: PageHost, now: number): void {
   const held = holding(performance.now());
   if (!held) {
     if (!paused || pageHost.displayedStep !== game.clock.time) pageHost.displayedTime = Math.max(0, game.clock.time - (1 - game.alpha) * STEP * game.timeScale);
-    interpolated(game, () => pageHost.drawFrame(pageHost.displayedTime, paused && !title && pageHost.displayedStep === game.clock.time));
+    interpolated(game, () => drawFrame(pageHost, pageHost.displayedTime, paused && !title && pageHost.displayedStep === game.clock.time));
     pageHost.displayedStep = game.clock.time;
     pageHost.worldDraw.drawn(art, pageHost.viewRevision, pageHost.displayedStep);
   } // (the world's step is STEP x timeScale: rules/slowTime.ts)
@@ -314,9 +310,10 @@ export function frameBody(pageHost: PageHost, now: number): void {
   pageHost.shake.apply();
   pageHost.freeze.update();
   // The overlay (app/hud.ts), four times a second.
-  hud.overlay(now, pageHost.overlayHead);
+  hud.overlay(now, () => overlayHead(pageHost));
 }
 
+/** The overlay's lines (the power meter's are hud.ts's), shared with the debug info's copied text. */
 export function overlayHead(pageHost: PageHost): string[] {
   const { game, seed } = pageHost.N(), w = game.witch, s = pageHost.view.stats;
   return [

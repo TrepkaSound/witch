@@ -1,5 +1,7 @@
-// A4 mechanical extraction from src/main.ts; body identity is checked by tools/refactor/a4-split.mjs.
+// Debug and the tools: what the playtest log's samples read, the debug overlay's buttons, the decisions panel and window.witch.
 import type { PageHost } from "../main";
+import { chartOverNight, chartWorldArg, sailFromChart, start } from "./pageNight";
+import { lendFind, startDream, stepGuide } from "./pageFinds";
 import { soloDiagnostic } from "./soloDiagnostic";
 
 import { chartOpen } from "../ui/chartOverlay";
@@ -8,14 +10,11 @@ import { startWake } from "../rules/wakeUp";
 import { areaUnderWitch } from "../rules/game";
 import { compareKey, rendererOf, sceneMode } from "./compareKey";
 
-import { type BotKind } from "../rules/botKinds";
 
-import { pleasingWitch } from "../ui/looks";
 
 import { HOUSE_ROOMS, addFloorHat, objectFront, roomAt, fromObject } from "../rules/houseRooms";
 import { remoteBodyBatch } from "../platform/online/otherWitches";
-import { FIND_KINDS, fillTrunk, spawnFind, spawnSpot, type FindKindId } from "../rules/finds";
-import { foundAll } from "./finds";
+import { FIND_KINDS, type FindKindId } from "../rules/finds";
 import { lend } from "./loan";
 import { GUIDANCE_HOOKS } from "../rules/guidance";
 import { freshHref } from "../platform/storageScope";
@@ -24,69 +23,9 @@ import { gpuSample } from "../render/view/gpuBudget";
 import { endNight, startNight } from "./night";
 import { sailHref } from "./sail";
 import type { FlightEnd } from "../render/chart/seaChart";
-import { restoreGame } from "../rules/nightSnapshot";
-import { browserNightStore } from "./nightSave";
-import { captureComment, parseCommentFile } from "./playtestComments";
-import { LOG_EXPANDED_BYTES } from "../platform/logCodec";
 import { observePlaytestErrors } from "../platform/playtestLog";
 import { recordedStep, recordingFor } from "./recordingHooks";
-import { replayRecording } from "../platform/inputRecording";
-import { snapshotGame } from "../rules/nightSnapshot";
 import { sceneryListing, scopeMissing } from "../render/view/scenery";
-
-export function botGame(pageHost: PageHost, kind: BotKind): void {
-  if (pageHost.phone.active || pageHost.N().spec.borrowed) return;
-  if (pageHost.botKind) return;
-  pageHost.botKind = kind;
-  const look = pleasingWitch(pageHost.N().seed);
-  pageHost.lookNow = JSON.stringify(look); pageHost.showLook(); pageHost.wearHat(look);
-  if (pageHost.creator.open) pageHost.creator.hide();
-  void Promise.all([import("../rules/bot"), import("../ui/botGame")]).then(([{ BOT_GAME, newBot }, { BotTag }]) => {
-    pageHost.bot = newBot(kind, BOT_GAME[kind]); // (the skilled one questing, bringing relics and feeding: rules/bot.ts BOT_GAME)
-    pageHost.botTag = new BotTag(kind, () => pageHost.newNight("bot")); // (back to the start: a night in place on this link without ?bot)
-    if (pageHost.N().flags.ready) pageHost.startDirect(); // (else the forest's ready starts it)
-  });
-}
-
-export async function saveComment(pageHost: PageHost, text: string): Promise<string> {
-  const n = pageHost.N();
-  const comment = captureComment(n.game, text, { build: pageHost.BUILD, params: n.params.toString(), look: pageHost.page.look() as Record<string, unknown> | null, loan: pageHost.loan,
-    flags: { chartRecorded: n.flags.chartRecorded, overRecorded: n.flags.overRecorded } }, pageHost.repro.link(), Object.fromEntries(pageHost.repro.changed()), pageHost.breadcrumbs.recent(n.game), Date.now(), recordingFor(n.game, pageHost.BUILD, pageHost.captureRecording).export());
-  const kept = await pageHost.commentBook.add(comment);
-  const state = pageHost.commentBook.status();
-  let status = kept ? "Written comment kept in the playtest log." : `Comment kept on this page only: ${state.error ?? "browser storage is unavailable"}. Download the log before closing.`;
-  if (state.omitted) status += ` ${state.omitted} written report(s) have no saved moment or input replay; their text and context are kept in downloads. ${state.omissionReasons.join(" ")}`;
-  return comment.recording?.complete ? status : `${status} Exact input replay is incomplete: ${comment.recording?.failure ?? "unavailable"}.`;
-}
-
-export async function restoreComment(pageHost: PageHost, file: File): Promise<void> {
-  soloDiagnostic(pageHost.phone.active, pageHost.N().spec.borrowed === true, () => {});
-  if (file.size > LOG_EXPANDED_BYTES) throw Error("This log file is too large.");
-  const comment = await parseCommentFile(await file.text(), pageHost.BUILD);
-  // Validate the full graph before writing or navigating. Importing JSON never executes code.
-  const replayed = comment.recording ? replayRecording(comment.recording, pageHost.BUILD) : restoreGame(comment.night.game);
-  if (JSON.stringify(snapshotGame(replayed)) !== JSON.stringify(comment.night.game)) throw Error("Input replay differs from the saved comment moment. The log is kept; report this replay failure.");
-  soloDiagnostic(pageHost.phone.active, pageHost.N().spec.borrowed === true, () => {});
-  await browserNightStore(location.pathname + ":comment-restore").write(comment.night);
-  soloDiagnostic(pageHost.phone.active, pageHost.N().spec.borrowed === true, () => {});
-  const url = new URL(location.href); url.search = "?restore=comment&resume=1"; location.href = freshHref(url.toString());
-}
-
-export function spawnHere(pageHost: PageHost, kind: FindKindId | null, item: string | null): string {
-  if (pageHost.phone.active) return "Find spawning is unavailable during a call.";
-  return pageHost.mutate("debug: spawn find", () => pageHost.spawnHereNow(kind, item));
-}
-
-export function spawnHereNow(pageHost: PageHost, kind: FindKindId | null, item: string | null): string {
-  const g = pageHost.N().game, at = spawnSpot(g);
-  if (!at) return "no clear ground within 12 m of her (in the treehouse? step out onto the island)";
-  if (kind && item) return spawnFind(g, kind, item, at) ? `${kind} ${item} spawned ${Math.round(Math.hypot(at.x - g.witch.x, at.z - g.witch.z))} m from her` : `no ${kind} ${item}`;
-  if (g.trunk && g.trunk.item === null) fillTrunk(g, foundAll(pageHost.findsCtx()));
-  if (!g.trunk?.item || g.trunk.found) return "no find tonight (all found, or taken)";
-  const c = g.map.cellSafe(at.x, at.z).cell;
-  Object.assign(g.trunk, { x: at.x, z: at.z, cell: [c[0], c[1]] });
-  return `tonight's ${g.trunk.kind} ${g.trunk.item} moved next to her`;
-}
 
 export function decidePanel(pageHost: PageHost, open: boolean): void {
   if (pageHost.decide || pageHost.decideLoading) return;
@@ -119,7 +58,7 @@ export function installPlaytestLog(pageHost: PageHost): void {
   pageHost.N().playtest.inputRecording = () => recordingFor(pageHost.N().game, pageHost.BUILD, pageHost.captureRecording).export();
   pageHost.N().playtest.debugText = () => pageHost.repro.full();
   pageHost.N().playtest.viewState = () => { const { game } = pageHost.N(), w = game.witch; return { x: Math.round(w.x), z: Math.round(w.z), mode: w.mode, area: areaUnderWitch(game), zoom: game.camera.zoomStep, timeScale: Math.round((game.timeScale ?? 1) * 100) / 100 }; };
-  pageHost.N().playtest.keyState = () => pageHost.keyNow();
+  pageHost.N().playtest.keyState = () => keyNow(pageHost);
   pageHost.N().playtest.sceneState = () => sceneMode(pageHost.N().game);
   pageHost.N().playtest.gpuState = () => gpuSample(pageHost.view);
   pageHost.view.onGpuEvent = what => pageHost.N().playtest.gpuEvent(what, Math.round(pageHost.view.ledger.total / 1048576));
@@ -172,7 +111,7 @@ function installBaseHooks(pageHost: PageHost): void {
 
 /** witch.compareKey, witch.take (tonight's find taken where she stands, for tools/loan/shots.cjs), witch.wakeUp, witch.stationShuts, witch.guide and witch.dream. */
 function installFindHooks(pageHost: PageHost): void {
-  (window as unknown as { witch: Record<string, unknown> }).witch.compareKey = pageHost.keyNow;
+  (window as unknown as { witch: Record<string, unknown> }).witch.compareKey = (spot?: string) => keyNow(pageHost, spot);
   // witch.take(kind, item): tonight's find taken where she stands, as E at it takes it (the kind's claim, the hats' floor, the loan):
   // for the tools (tools/loan/shots.cjs) to look at a night with a find on loan without walking to it.
   (window as unknown as { witch: Record<string, unknown> }).witch.take = (kind: FindKindId, id: string): boolean => {
@@ -182,7 +121,7 @@ function installFindHooks(pageHost: PageHost): void {
     game.trunk = { x: game.witch.x, z: game.witch.z, cell: [c[0], c[1]], kind, item: id, found: true };
     k.claim?.(W.spells, id);
     if (kind === "hat") addFloorHat(W, id);
-    pageHost.lendFind(kind, id);
+    lendFind(pageHost, kind, id);
     return true;
   };
   // window.witch.wakeUp(yesterday): a wake-up in her bed as the game starts one (rules/wakeUp.ts startWake), with or without a night
@@ -193,12 +132,12 @@ function installFindHooks(pageHost: PageHost): void {
   (window as unknown as { witch: Record<string, unknown> }).witch.stationShuts = pageHost.stationShuts;
   // window.witch.guide: her guidance pin's state, what's kept of it (what's new, the islands seen) the pickups' hooks, and a step of it
   // (window.witch.frame's manual frames don't run the page's loop: shots).
-  (window as unknown as { witch: Record<string, unknown> }).witch.guide = { save: pageHost.guide, pin: () => pageHost.guidePin.state, hooks: GUIDANCE_HOOKS, step: () => pageHost.stepGuide(performance.now()) };
+  (window as unknown as { witch: Record<string, unknown> }).witch.guide = { save: pageHost.guide, pin: () => pageHost.guidePin.state, hooks: GUIDANCE_HOOKS, step: () => stepGuide(pageHost, performance.now()) };
   // witch.dream("won" | "lost", kind, item): her dream of such a loan over the night, its own dark under it (as ?dream=); under ?shot=
   // drawn only when asked, window.__dream.draw(seconds) (tools/loan/shots.cjs).
   (window as unknown as { witch: Record<string, unknown> }).witch.dream = (v: string, kind: FindKindId, id: string): boolean => {
     if (!FIND_KINDS.some(q => q.id === kind && q.items.includes(id))) return false;
-    pageHost.startDream({ loan: lend(kind, id, { look: null, hat: "none", parts: pageHost.N().game.witches[0].spells.parts }), won: v === "won" }, true);
+    startDream(pageHost, { loan: lend(kind, id, { look: null, hat: "none", parts: pageHost.N().game.witches[0].spells.parts }), won: v === "won" }, true);
     return true;
   };
 }
@@ -220,7 +159,7 @@ function installSailHooks(pageHost: PageHost): void {
     await pageHost.view.prepare();
     n.flags.ready = true;
     pageHost.sailing = false;
-    pageHost.start();
+    start(pageHost);
     return n.seed;
   };
   // window.witch.land(): the tools' own way past a sail's dive (the smoke run, tools/sail/leak.cjs), straight to her bed as a dive whose
@@ -229,7 +168,7 @@ function installSailHooks(pageHost: PageHost): void {
   (window as unknown as { witch: Record<string, unknown> }).witch.land = (): boolean => { const a = pageHost.N().arrival; if (!a || a.done) return false; a.skip(); return true; };
   // window.witch.chart(): the sea chart over the night, as the map table opens it (tools/smoke/quick.cjs: choosing her own island);
   // window.witch.chart("mapTable"), as the table's own, sailing on a hold (tools/sail/hold.cjs).
-  (window as unknown as { witch: Record<string, unknown> }).witch.chart = (table?: string) => pageHost.chartOverNight(table);
+  (window as unknown as { witch: Record<string, unknown> }).witch.chart = (table?: string) => chartOverNight(pageHost, table);
   // The bestiary book's zoo over the night, for the tools (tools/zoo/perf.cjs): open and close it as the book and its × do.
   (window as unknown as { witch: Record<string, unknown> }).witch.zooOverlay = pageHost.zoo;
   // The Studio's instruments for the tools (tools/studio/check.cjs): where she's at and what it plays (its meter).
@@ -252,8 +191,8 @@ function installSailHooks(pageHost: PageHost): void {
   // (?debug=sail only) the sail in place made to throw, to see the fallback. Resolves once the night's start is ready.
   (window as unknown as { witch: Record<string, unknown> }).witch.sail = (island: string, seed: number, o: { end?: FlightEnd | null; fail?: boolean } = {}): Promise<boolean> => {
     pageHost.sailFail = !!o.fail && pageHost.params.get("debug") === "sail";
-    const world = pageHost.chartWorldArg(), end = o.end === null ? undefined : o.end ?? { cam: { x: 0, z: 700, height: 260, pitch: 0.45, fov: 40, speed: 60 }, still: "" };
-    return pageHost.sailFromChart(sailHref(island, seed, world, location.href), { island, seed, world, end });
+    const world = chartWorldArg(pageHost), end = o.end === null ? undefined : o.end ?? { cam: { x: 0, z: 700, height: 260, pitch: 0.45, fov: 40, speed: 60 }, still: "" };
+    return sailFromChart(pageHost, sailHref(island, seed, world, location.href), { island, seed, world, end });
   };
 }
 
