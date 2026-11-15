@@ -155,20 +155,20 @@ async function runSail(w: FrameCheckHooks, o: RunOptions, notes: string[], say: 
   });
   if (!flew) key("keyup", "Enter", "Enter");
   if (!r) return null;
-  if (!r.ok) { notes.push(flew ? `sail: the flight never handed over to ${S.island} (night seed ${w.game.seed}, wanted ${S.seed}); the rest left out` : "sail: the chart never flew (Enter held on the island); the rest left out"); rows.pop(); closeChart(); return rows; }
+  if (!r.ok) { notes.push(flew ? `sail: the flight never handed over to ${S.island} (night seed ${w.game.seed}, wanted ${S.seed}); the rest left out` : "sail: the chart never flew (Enter held on the island); the rest left out"); if (!flew) rows.pop(); closeChart(); return rows; }
   // 3. the dive, till she's landed in her bed
   r = await timed(P[2], 1, () => marked("game:arrived", since));
   if (!r) return null;
   if (!r.ok) { notes.push("sail: the dive never landed; the wake-up and take-off left out"); return rows; }
   // 4. D pressed till she's up (pressed again each half second: her sleep lets every key go), then the house, forest and tufts waited for
-  let up = false, down = false;
-  r = await timed(P[3], Math.ceil(o.frames / 4), n => {
+  let up = false, down = false, pressed = -Infinity;
+  r = await timed(P[3], 1, (n, ms) => {
     if (!up) {
       if (w.game.wake?.open) { up = true; if (down) key("keyup", "KeyD", "d"); }
-      else if (n % 30 === 1) { if (down) key("keyup", "KeyD", "d"); key("keydown", "KeyD", "d"); down = true; }
+      else if (ms - pressed >= 500) { if (down) key("keyup", "KeyD", "d"); key("keydown", "KeyD", "d"); down = true; pressed = ms; }
       return false;
     }
-    return marked("landing:house-complete", since) && marked("witch:tufts-in", since);
+    return n >= Math.ceil(o.frames / 4) && marked("landing:house-complete", since) && marked("witch:tufts-in", since);
   });
   if (down && !up) key("keyup", "KeyD", "d");
   if (!r) return null;
