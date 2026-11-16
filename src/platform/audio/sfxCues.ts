@@ -293,8 +293,8 @@ export class SfxCues {
       const ko = me.ko;
       if (ko && this.cutOf !== ko.at && typeof ko.inAt === "number" && g.herTime >= ko.inAt) { this.cutOf = ko.at; this.sfx.trumpetOff(); }
     }
-    // eslint-disable-next-line no-dupe-else-if -- likely bug, left for Ed (no sound change in the lint step): this "ouch" sits under `if (this.primed)` above, so it never plays
-    else if (this.primed && hp < this.hp && !down) { this.sfx.ouch(1 - Math.max(0, hp - 1) / Math.max(1, g.tuning.witchHealth.hits - 1)); this.duck(O.duck, O.duckTime); }
+    // her "ouch!" on a hit (an `else` of the trumpet's `if (this.primed)` from 2026-10-07 to 2026-11-15, so it never played; Ed, 2026-11-15: "I want the ouch sound")
+    if (this.primed && hp < this.hp && !down) { this.sfx.ouch(1 - Math.max(0, hp - 1) / Math.max(1, g.tuning.witchHealth.hits - 1)); this.duck(O.duck, O.duckTime); }
     this.hp = hp; this.down = down;
   }
 
