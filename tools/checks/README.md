@@ -2,6 +2,15 @@
 
 <!-- written by tools/inventory.mjs; edit the scripts' header comments, then run it again -->
 
+## `art-types.mjs`
+
+The art type check. TypeScript reads art/'s JavaScript with tsconfig.art.json and the types in art/mesh/types.d.ts, and this fails on any error in a checked file.
+
+```
+node tools/checks/art-types.mjs            (npm run typecheck:art) the errors in checked files, and the left-out counts
+node tools/checks/art-types.mjs --all      every error, left-out files' too
+```
+
 ## `git-base.mjs`
 
 Shared by the guardrail checks: the change's base, files as they were there, and the escape trailers in its commits.

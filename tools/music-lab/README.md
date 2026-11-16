@@ -108,7 +108,7 @@ The voice effects' own cost: a sung line through VoiceFx with the style's settin
 
 ## `haunted.mjs`
 
-The haunted treatment's A/B: node tools/music-lab/haunted.mjs <out dir> [ab|circle|night] [seed...] Renders tools/music-lab/haunted.ts offline in headless Chromium with the game's singer and writes mp3s to <out dir>: ab breakdown-on.mp3 / breakdown-off.mp3…
+The haunted treatment's A/B: node tools/music-lab/haunted.mjs <out dir> [ab|circle|night|hush] [seed...] Renders tools/music-lab/haunted.ts offline in headless Chromium with the game's singer and writes mp3s to <out dir>: ab breakdown-on.mp3 /…
 
 ## `haunted.ts`
 

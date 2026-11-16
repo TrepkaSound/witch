@@ -47,6 +47,10 @@ glossary; these are the prototype's), by note.
 - Style bible
 - Bold sigils
 - The witch's poses
+- Type-checking the art
+- What's checked
+- The mesh types
+- Art files keep their code
 
 ### [Balance baselines — v5655 rules](balance-baselines.md)
 
