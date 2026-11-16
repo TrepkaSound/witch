@@ -222,6 +222,10 @@ export interface Creature {
    *  the home legend (Ed, 2026-11-15; unset with ?homelegends=old or from an older save: the ring post, defending her first);
    *  `posted`: it has reached its post, and from then stands where a fight leaves it, as the home legend does (rules/homeLegends.ts). */
   journey?: { stage: "back" | "guard"; x?: number; z?: number; home?: boolean; posted?: boolean };
+  /** How far along tonight's friendly route it has walked (rules/combat/legend.ts walkFriendlyRoute): `at` metres along the route
+   *  `key` names (its ley chain's), from where it last stood (x, z). Its own and kept with the night (it was a page-wide table keyed
+   *  by the creature, lost on a reload: docs/notes/module-state.md); moved or the route changed, it rejoins at the nearest point. */
+  routeWalk?: { key: number | string; at: number; x: number; z: number };
   /** One of the challenge circle's pack as a statue (rules/challengeStatues.ts; Ed, 2026-11-04: "grey statues, all facing the centre
    *  of the circle"): stone at its post, or walking back to it to turn to stone; either way out of everything (no roam, fight, 💌 or
    *  hit: rules/game.ts dormant). Unset: itself. */
@@ -395,6 +399,7 @@ export function makeCreature(map: ForestMap, cell: [number, number], level: Leve
     statue: undefined,
     shy: undefined,
     journey: undefined,
+    routeWalk: undefined,
   };
   if (level === LEGEND) { c.boss = true; c.legendState = "asleep"; c.stateAt = 0; }
   return c;
