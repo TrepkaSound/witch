@@ -2830,9 +2830,10 @@ Which areas have a legend (a happy one's reach is legends.friendRange).
   1. Ed, 2026-11-15: "Exactly like the home legend" (asked whether a returned route legend should keep its ring post, defend her first and take the party egg)
   2. Ed, 2026-11-15: "Both home legends and returned route legends should be invitable in this way." (the party egg)
   Code: `rules/homeLegends.ts`
-- **`legends.hardHits`**: A legend's attack hits a creature for legends.json's attack.damage (its kind's attack made big, and the old lob or beam) or charge.damage (a charging kind's trample), 50 each; false (?legendhits=old): 10 a hit, as before. A blow on her still costs one hit, and bombardment is legends.bombard.damage.
+- **`legends.hardHits`**: A legend's attack hits a creature for legends.json's attack.damage or charge.damage, 50 each; false (?legendhits=old): 10 a hit, as before.
   1. Ed, 2026-11-16: "50 a hit" (asked how hard a legend's attack should hit creatures, at 10 every 15 s against an adult's 160 health; the charging kinds' trample goes to 50 with it, so every legend attack hits the same)
   2. Ed, 2026-11-16: "Keep 150: one lob destroys one" (the bombardment of soundsystems (legends.bombard.damage) stays)
+  attack.damage is its kind's attack made big and the old lob or beam; charge.damage is a charging kind's trample. A blow on her still costs one hit, and bombardment is legends.bombard.damage.
   Code: `rules/combat/legendHits.ts`
 - **`legends.bombard`**: ("Legend bombards, but prioritises you"): an angry legend with no witch in its reach throws the first lob or beam of its volley at the nearest standing soundsystem within range metres, damage a hit (of combat.soundsystemHealth); a charging legend lobs at it rather than charge.
 - **`legends.stomp`**: A legend turning angry destroys its own area's soundsystem at once.

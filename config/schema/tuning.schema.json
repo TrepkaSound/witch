@@ -7671,7 +7671,7 @@
         },
         "hardHits": {
           "type": "boolean",
-          "description": "A legend's attack hits a creature for legends.json's attack.damage (its kind's attack made big, and the old lob or beam) or charge.damage (a charging kind's trample), 50 each; false (?legendhits=old): 10 a hit, as before."
+          "description": "A legend's attack hits a creature for legends.json's attack.damage or charge.damage, 50 each; false (?legendhits=old): 10 a hit, as before."
         }
       },
       "required": [
