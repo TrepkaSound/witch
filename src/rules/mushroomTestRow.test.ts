@@ -37,4 +37,13 @@ describe('optional mushroom light test row', () => {
     tuning.mushroomLight.testRow = false; syncMushroomTestRow(g); expect(mushrooms.patches).toEqual([]);
     tuning.mushroomLight.testRow = true; syncMushroomTestRow(g); expect(mushrooms.patches[0]).toBe(row[0]); expect(row[0].picked).toBe(true);
   });
+  it('keeps a picked sample picked through a saved night: the row switched off, saved, loaded and switched back on (docs/notes/module-state.md)', () => {
+    const map = generateMap(123, TUNING), forest = new Forest(map), tuning = {...TUNING, mushroomLight: {...MUSHROOM_LIGHT_DEFAULTS, testRow: true}};
+    const g = {map, forest, mushrooms: {patches: []} as unknown as MushroomState, tuning};
+    syncMushroomTestRow(g); g.mushrooms.patches[0].picked = true;
+    tuning.mushroomLight.testRow = false; syncMushroomTestRow(g);
+    const loaded = {...g, mushrooms: JSON.parse(JSON.stringify(g.mushrooms)) as MushroomState}; // (as a saved night holds it)
+    tuning.mushroomLight.testRow = true; syncMushroomTestRow(loaded);
+    expect(loaded.mushrooms.patches.map(p => p.picked)).toEqual([true, ...Array(8).fill(false)]);
+  });
 });

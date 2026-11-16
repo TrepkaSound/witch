@@ -44,6 +44,9 @@ export interface MushroomState {
   trips: Record<number, PotionTrip>;
   nextUnload: Record<number, number>;
   serial: number;
+  /** The tuning's test row of samples (mushroomLight.testRow; syncMushroomTestRow), kept while it's switched off so picked ones
+   *  stay picked when it's back; with the night (it was a page-wide table: docs/notes/module-state.md). Absent: never shown. */
+  testRow?: MushroomPatch[];
 }
 export const emptyBaskets = (): Record<MushroomColour, number> => Object.fromEntries(MUSHROOM_COLOURS.map(c => [c, 0])) as Record<MushroomColour, number>;
 export const recipeKey = (colours: readonly MushroomColour[]): string => [...colours].sort().join('+');
@@ -116,18 +119,17 @@ export function placeMushrooms(map: ForestMap, forest: Forest, bushes: readonly 
 export function newMushrooms(map: ForestMap, forest: Forest, bushes: readonly { x: number; z: number }[] = []): MushroomState {
   return { patches: placeMushrooms(map, forest, bushes), baskets: emptyBaskets(), carried: {}, flights: [], puffs: [], plops: [], ingredients: [], smoke: null, affected: {}, trips: {}, nextUnload: {}, serial: 0 };
 }
-const testRows = new WeakMap<MushroomState, MushroomPatch[]>();
 /** Optional samples use the ordinary pickup/inventory path; disabling removes only their visible patches. */
 export function syncMushroomTestRow(g: Pick<Game, 'mushrooms' | 'map' | 'forest' | 'tuning'>): void {
   const s = g.mushrooms, prefix = 'light-test:';
   if (!g.tuning.mushroomLight?.testRow) {
     const existing = s.patches.filter(p => p.id.startsWith(prefix));
-    if (existing.length) testRows.set(s, existing); // Also retain picked state after a saved night is restored.
+    if (existing.length) s.testRow = existing; // Also retain picked state after a saved night is restored.
     if (s.patches.some(p => p.id.startsWith(prefix))) s.patches = s.patches.filter(p => !p.id.startsWith(prefix));
     return;
   }
   if (s.patches.some(p => p.id.startsWith(prefix))) return;
-  let patches = testRows.get(s);
+  let patches = s.testRow;
   if (!patches) {
     const map = g.map, f = g.forest;
     const near = (items: {x: number; z: number}[], x: number, z: number, r: number) => items.some(p => Math.hypot(p.x - x, p.z - z) < r);
@@ -137,7 +139,7 @@ export function syncMushroomTestRow(g: Pick<Game, 'mushrooms' | 'map' | 'forest'
       !near(f.wallsNear(x, z, 9), x, z, 8) && !near(f.bedsNear(x, z, 9), x, z, 8) &&
       !near(f.setPiecesNear(x, z, 13), x, z, 12) && !near(f.relicsNear(x, z, 13), x, z, 12));
     patches = row?.map((p, i) => ({...p, id: `${prefix}${MUSHROOM_COLOURS[i]}`, type: MUSHROOM_COLOURS[i], seed: Math.floor(hash2(i, 1643, map.seed) * 0xffffffff), picked: false})) ?? [];
-    testRows.set(s, patches);
+    s.testRow = patches;
   }
   s.patches.push(...patches);
 }
