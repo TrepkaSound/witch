@@ -36,4 +36,4 @@ const raven = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: today's drawn heights, Ed, 2026-11-12, "keep
  *  the sizes"); plans, each level's build. */
-export const MESH = { id: "raven", heights: [43, 62, 90, 286], gait: "walk", plans: raven };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "raven", heights: [43, 62, 90, 286], gait: "walk", plans: raven });

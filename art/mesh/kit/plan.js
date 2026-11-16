@@ -5,7 +5,14 @@
 
 /** A plan from its parts: the torso's rings and the head's joined into one skin, every part's bones, lofts and cones, the gait.
  *  extra: { cones, armour }: armour is a list of plates laid on the skin (art/mesh/shape.js `armour`: from and to count the skin's
- *  rings, 0 rump tip, 1 hips, 2 loin, 3 ribs, 4 shoulders, 5 neck, 6 throat; round [a0, a1] the angle from the spine they cover). */
+ *  rings, 0 rump tip, 1 hips, 2 loin, 3 ribs, 4 shoulders, 5 neck, 6 throat; round [a0, a1] the angle from the spine they cover).
+ *  @param {string} name
+ *  @param {import("../types").Body} body
+ *  @param {import("../types").Skull} skull
+ *  @param {import("../types").Pieces[]} parts
+ *  @param {import("../types").Gait} gait
+ *  @param {{ cones?: import("../types").Cone[], armour?: import("../types").Armour[] }} [extra]
+ *  @returns {import("../types").Plan} */
 export function plan(name, body, skull, parts, gait, extra = {}) {
   return { name,
     bones: [...body.bones, ...skull.bones, ...parts.flatMap(p => p.bones)],

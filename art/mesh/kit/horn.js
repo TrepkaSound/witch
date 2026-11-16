@@ -15,5 +15,5 @@ export function horn(P, o = {}) {
   const lofts = [sweep(bone, pts, { r: fat, flat: 1.12, colour: t => (glow && t > 0.8 ? glow : tip && t > 0.7 ? tip : root && t < 0.1 ? root : colour), glow: t => !!glow && t > 0.8, sides, up: [1, 0, 0] })];
   for (const t of bands?.at ?? []) { const i = Math.max(1, Math.min(n - 1, Math.round(t * n)));
     lofts.push(sweep(bone, [pts[i - 1], pts[i], pts[i + 1]].map(p => p.map((v, c) => pts[i][c] + (v - pts[i][c]) * 0.3)), { r: fat(i / n) * 1.25, flat: 1.12, colour: bands.colour, sides, up: [1, 0, 0] })); }
-  return { bones: [], lofts, cones: [], end: pts[n] };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], lofts, cones: [], end: pts[n] });
 }

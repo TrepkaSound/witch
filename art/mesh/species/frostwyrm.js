@@ -35,4 +35,4 @@ const frostwyrm = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs frostwyrm`: Ed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. It coils to sleep at every level (kit/serpent.js `coil`). */
-export const MESH = { id: "frostwyrm", heights: [102, 139, 215, 293], gait: "glide", plans: frostwyrm };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "frostwyrm", heights: [102, 139, 215, 293], gait: "glide", plans: frostwyrm });

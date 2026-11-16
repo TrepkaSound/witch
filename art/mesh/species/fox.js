@@ -88,4 +88,4 @@ function legend() {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. */
-export const MESH = { id: "fox", heights: [53, 81, 137, 387], gait: "trot", plans: { baby, young, adult, legend } };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "fox", heights: [53, 81, 137, 387], gait: "trot", plans: { baby, young, adult, legend } });

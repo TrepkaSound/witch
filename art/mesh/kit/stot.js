@@ -10,4 +10,4 @@ import { bound, pace } from "./gaits.js";
  *  o as kit/gaits.js's gaits: { tails, lively, walk: its slow pace's own numbers, run: its fast pace's }. */
 export const stots = (o = {}) => { const { walk: w = {}, run: r = {}, ...rest } = o;
   const run = pace("bound", { seconds: 0.55, duty: 0.26, reach: 0.8, leap: 0.36, legs: bound(), ...r, body: { pitch: 0.07, flex: 0.07, bob: 0.06, ...r.body } });
-  return { type: run.type, seconds: run.seconds, legs: run.legs, ...rest, paces: { walk: pace("amble", w), run } }; };
+  return /** @satisfies {import("../types").Gait} */ ({ type: run.type, seconds: run.seconds, legs: run.legs, ...rest, paces: { walk: pace("amble", w), run } }); };

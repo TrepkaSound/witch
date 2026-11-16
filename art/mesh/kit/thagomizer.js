@@ -19,5 +19,5 @@ export function thagomizer(t, o = {}) {
     cones.push({ at: base, rx: r, ry: r, tip: along(1), bone: st.bone, colour, tipColour: short ? colour : tip ?? colour, split: short ? 0.92 : 0.6, up: [0, 0, 1], sides: 5 });
     if (band && !short) lofts.push(sweep(st.bone, [0.2, 0.27, 0.34].map(along), { r: r * 0.98, colour: band, sides: 5, up: [0, 0, 1] }));
   }
-  return { bones: [], lofts, cones };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], lofts, cones });
 }

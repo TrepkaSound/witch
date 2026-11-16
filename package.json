@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
+    "typecheck:art": "node tools/checks/art-types.mjs",
     "smoke": "node tools/smoke/smoke.cjs",
     "smoke:quick": "node tools/smoke/quick.cjs",
     "shot": "node tools/shot/shot.cjs",

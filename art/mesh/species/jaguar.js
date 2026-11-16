@@ -52,4 +52,4 @@ const jaguar = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs jaguar`: Ed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. */
-export const MESH = { id: "jaguar", heights: [55, 84, 120, 250], gait: "trot", plans: jaguar };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "jaguar", heights: [55, 84, 120, 250], gait: "trot", plans: jaguar });

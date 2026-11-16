@@ -247,25 +247,31 @@ Read **Mesh creature** above first.
    Each level is its own build, not the last one enlarged (Ed, 2026-10-05: "the evolved design per stage (not just being larger)"): change proportions, add the signature, and make the legend its animal grown strange.
 4. **Kit parts** are one a file in `art/mesh/kit/`: `torso`, `leg` (and `fourLegs`), `head`, `tail`, `tufts`, `band`, `ball`, `dome`, `plate`, `whiskers`, `quad` (a four-legged build in one go), `weasel`, `gaits`, `plan`, `bib`, `paint` (a mask on a face, bands across a back), `ringtail` (a thick tail ringed dark and light), `rudder` (an otter's tapering tail).
    A part your batch needs and the kit lacks (hooves, antlers, a wing, a trunk) is a new file there, imported by the kinds that use it; don't add it to another part's file.
-5. **The list.**
+5. **Types** (Ed's go, 2026-11-15, quality plan item f; `docs/notes/art-checks.md`, **Type-checking the art**): `npm run typecheck:art` checks the kit and every species against `art/mesh/types.d.ts`, about 10 s.
+   Write the kind's last line as `export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id, heights, gait, plans });`: a missing level, three heights or a gait spelled `"trott"` then fails at that line.
+   A plan built without `plan()` (the insects', the snail's) ends `return /** @satisfies {import("../types").Plan} */ ({ name, bones, ... });`.
+   A new kit part marks what it returns, `return /** @satisfies {import("../types").Pieces} */ ({ bones, lofts, cones, chain });` (`Pieces` allows the extras and `@satisfies` keeps their types), and a list it builds up starts typed: `const cones = /** @type {import("../types").Cone[]} */ ([]);` (`@type` only for an empty list or one later code adds fields to; `@satisfies` elsewhere, as it checks).
+   Plain JavaScript reads `[[1, "L"], [-1, "R"]]` as a list of `(string | number)[]`, so `s * x` fails: write `/** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])`, and likewise for any table of mixed rows (`kit/leg.js` `R`).
+   Only comments and parentheses: the drawing can't change.
+6. **The list.**
    `node tools/creature-mesh/index.mjs` rewrites `art/mesh/species/index.js` from the folder (`--check` in the test).
    Never edit it by hand.
    A kind in the list is drawn as its mesh at once (`hasMesh`), in the game and on the sheet, so the batch's branch is combined only when Ed has passed its models.
    A batch whose models wait for Ed keeps them off by parking their files in `art/mesh/pending/` (the tool lists only `species/`): to draw the sheet or switch them on, `git mv art/mesh/pending/*.js art/mesh/species/` and run the tool (batch A, 2026-11-13).
    Then `node tools/creature-mesh/lengths.mjs` rewrites `config/mesh-lengths.json`, each mesh kind's drawn length at each level, which her line of followers is spaced by (Ed, 2026-11-13; `src/render/meshLengths.test.ts` fails while it is stale): run it again whenever a kind is added or its size or shape changes.
-6. **Pictures.**
+7. **Pictures.**
    `node tools/creature-mesh/sheet.mjs <kind>...` writes one sheet for the batch (`previews/creature-mesh/sheet-<kinds>.png`): each kind's four sizes beside today's drawing at the same scale, its legend turned away (its armour), its adult and legend asleep, and its adult's walk frame by frame with its gait and stride.
    Publish it with `node tools/shots/push.mjs`, then stop for Ed.
-7. **Others untouched.**
+8. **Others untouched.**
    `node tools/creature-mesh/frames.mjs --out before.json` before you start and `--compare before.json` after: every other kind's frames must be identical (`--levels 0,1,2` leaves out the legends, which are most of the time).
-8. **The cats' parts** (batch B, 2026-11-13): `kit/feline.js` (a cat's build, tail and plan, and how cats go: `stalks`, a prowl and a trot, `springs` and `sprints`, a prowl and a bound;
+9. **The cats' parts** (batch B, 2026-11-13): `kit/feline.js` (a cat's build, tail and plan, and how cats go: `stalks`, a prowl and a trot, `springs` and `sprints`, a prowl and a bound;
    asleep a cat of any age curls), `kit/mane.js` (rows of locks round the neck and a crown of them on the head) and `kit/markings.js` (`marked` gives the skin more rings and paints `stripes`, `spots` or `tears` on them, keeping armour and anchors where they were;
    `ringed` for a tail's rings and a leg's bars).
    A kind says how it goes in its own file: its `MESH`'s `gait` (and `legs`, where it doesn't stand on four), which `src/render/meshCreatures.test.ts` checks its plans against (no shared list to add to: Ed, 2026-11-15).
-9. **The heavy and the gnawing kinds' parts** (batch D, 2026-11-13): `kit/trunk.js` (an elephant's trunk on a chain of its own bones off the head;
+10. **The heavy and the gnawing kinds' parts** (batch D, 2026-11-13): `kit/trunk.js` (an elephant's trunk on a chain of its own bones off the head;
    hand its `chain` to the gait's `tails` and it swings behind the walk and lies along the ground asleep), `kit/horn.js` (one horn on the middle of the nose, with a legend's bands and lit point), `kit/flattail.js` (`kit/tail.js`'s tail as a paddle: a beaver's scaled one, a flying squirrel's feather) and `kit/glideskin.js` (a sheet down each flank from wrist to ankle, its ends riding the legs).
    What stands or hangs off a head points at the ground when the head goes down to sleep, and a sleeper rests on the lowest point of all of it (`shape.js` `grounded`): the rhino and the elephant sleep `"curl"` with a small `MESH.curl.turn` (over on their sides, bent a little), which lays the head level.
-10. **The cold-blooded kinds' parts** (batch E, 2026-11-13): `kit/sprawl.js` (`sprawlLeg`, a leg that goes out sideways from the flank and down to a flat foot, with the kit's own bone names so the kit's leg timings plant it;
+11. **The cold-blooded kinds' parts** (batch E, 2026-11-13): `kit/sprawl.js` (`sprawlLeg`, a leg that goes out sideways from the flank and down to a flat foot, with the kit's own bone names so the kit's leg timings plant it;
     `sprawler`, a low broad build on four of them;
     `sprawls`, how a sprawler goes: a creep one foot after another and a scuttle on diagonal pairs, its hips and shoulders swinging opposite ways, type "trot";
     `tucked`, its legs laid back along its sides asleep), `kit/scutes.js` (a row of scutes, stones or flames standing along a back) and `kit/serpent.js` (`serpent`, a whole legless plan: one tube with a bone a ring, its forepart reared, a rattle if asked;
@@ -273,7 +279,7 @@ Read **Mesh creature** above first.
     and `coil`, how it sleeps).
     A kind whose body the three sleeping poses don't fit gives its gait a `nap`: `art/mesh/gear.js` `napping` hands it the pose made so far (`{ plan, how, rots, poss }`) to change.
     A long sprite: seven kinds were too many for one sheet (the PNG encoder stops at 16.7 million pixels), so the batch drew two.
-11. **The winged kinds' parts** (batch F, 2026-11-13): `kit/bird.js` (`bird`, a whole bird as a plan: a body carried at a slope on two legs, a neck with an S in it if asked, a head, beak, eyes, a fan of a tail, two wings shut along its sides;
+12. **The winged kinds' parts** (batch F, 2026-11-13): `kit/bird.js` (`bird`, a whole bird as a plan: a body carried at a slope on two legs, a neck with an S in it if asked, a head, beak, eyes, a fan of a tail, two wings shut along its sides;
     it goes on the ground by its `walk`, a walk or a two-footed hop on planted feet, and its fast pace flies: that pace has no legs and says `aloft`, so `shape.js` `grounded` carries it that much higher than it stands and leaves its wings free;
     with `run` it keeps to its feet, as the penguin does.
     Its gait's own `legs` is empty because its paces differ, each saying its own;
@@ -284,14 +290,14 @@ Read **Mesh creature** above first.
     A bird's wings beat from level upward and it flies low: a frame's sprite stands on its bottom row, so anything drawn below a walking bird's feet (a near wing on its downstroke) would lift the walker off the ground, and the test allows no more than 15% of the sprite's height of air under any frame; check a new bird at all four levels, both headings.
     `gear.js` `napping` calls a gait's `nap` after a flyer's wings are folded, so a flyer may fold its own.
     `sheet.mjs --fast` adds a strip of the fast pace's frames (a flight).
-12. **The many-legged kinds' parts** (batch G, 2026-11-13): `kit/jointleg.js` (`jointLeg`, an insect's, spider's or crab's leg: out from the body and up to a knee, down to a pointed tip, on four bones of its own names, leg, shin, foot and toe, which `shape.js` `strides` plants as it does a paw), `kit/manylegs.js` (`legPairs`, any number of pairs of them, the hindmost first, with `across: "z"` for a crab;
+13. **The many-legged kinds' parts** (batch G, 2026-11-13): `kit/jointleg.js` (`jointLeg`, an insect's, spider's or crab's leg: out from the body and up to a knee, down to a pointed tip, on four bones of its own names, leg, shin, foot and toe, which `shape.js` `strides` plants as it does a paw), `kit/manylegs.js` (`legPairs`, any number of pairs of them, the hindmost first, with `across: "z"` for a crab;
     the timings `sets`, alternating sets, so six legs go as two tripods and eight as two fours, and `ripple`, a woodlouse's fourteen one after another from the hindmost;
     `scuttles`, how they go: a crawl with most feet down and a scuttle, type "trot", or "walk" for a ripple, each pace's stance kept inside what a leg standing out sideways can reach, which `strides` itself doesn't work out;
     `folds`, a gait's `nap`: each leg folded flat at its side, with `also` for what else the kind does), `kit/pincers.js` (`pincer`: an arm, a hand and two fingers, one hinged on a bone of its own to snap), `kit/sting.js` (`stingTail`, a scorpion's tail of beads arched over its back to a bulb and sting, its `chain` for the gait's `tails`;
     `laidTail`, the same let down and laid round its side asleep) and `kit/turns.js` (the turns those poses are worked out with).
     None of the five has a back to curl, so all sleep `"sphinx"` at every level with a `nap` of their own: the woodlouse, a plate a bone, rolls into a ball. **The crab goes sideways**: the clip always goes along +z, so it is built facing across it (its face along -x, which the camera's two headings both look at) with its legs standing out fore and aft.
     `src/render/meshCreatures.test.ts` `LEGS` says how many feet a kind plants where it isn't four.
-13. **The wonders' parts** (batch H, 2026-11-13): `kit/necks.js` (`neck`, one more neck with a serpent's head on it, on a chain of its own bones off any bone: the hydra's side heads, standing from the shoulders of a `kit/serpent.js` body whose own reared forepart is its middle neck;
+14. **The wonders' parts** (batch H, 2026-11-13): `kit/necks.js` (`neck`, one more neck with a serpent's head on it, on a chain of its own bones off any bone: the hydra's side heads, standing from the shoulders of a `kit/serpent.js` body whose own reared forepart is its middle neck;
     it hands back `sways` for a gait's `extra` and `pose` for a still pose, "rear", "snap" or "watch";
     `crest`, the spines and frills a head wears), `kit/backplates.js` (`backPlates`, a stegosaurus's kites on edge in two rows, left and right in turn, at the stations `alongTail` and `alongBack` give;
     `vein` lights a line up each face) and `kit/thagomizer.js` (pairs of spikes near the end of a `kit/tail.js` tail, riding its bones). **Raised wings**: a legend that holds its wings spread (griffin, sphinx, feathered serpent) is drawn so, by `kit/featherwing.js`'s own `fold` with a negative `roll` (so it stands, walks and is sized with them up, as today's drawings are), and its gait's `nap` lets them down;
@@ -321,4 +327,4 @@ Read **Mesh creature** above first.
   Look at the sheet's two sleepers.
 - **Sizes** (Ed, 2026-11-12): "keep the sizes". `heights` from step 1, and the sheet shows mesh and today's drawing side by side.
 - **Nothing else**: no change to a kind's id, island, attack or numbers, nothing in `src/rules/`, no other batch's kinds.
-- **Checks**: `npm run typecheck`, `npx vitest run src/render/meshCreatures.test.ts`, `node tools/creatures.mjs check`, and the branch's bench declaration (`frames` only).
+- **Checks**: `npm run typecheck`, `npm run typecheck:art`, `npx vitest run src/render/meshCreatures.test.ts`, `node tools/creatures.mjs check`, and the branch's bench declaration (`frames` only).

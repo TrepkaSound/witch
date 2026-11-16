@@ -365,6 +365,10 @@ jobs:
         run: npm --prefix server ci && npm --prefix server test
       - run: npm run typecheck
         if: needs.build.outputs.reuse != 'true'
+      # The art's JavaScript, type-checked (Ed's go, 2026-11-15, quality plan item f; docs/notes/art-checks.md): about 10 s.
+      - name: Art type check
+        if: needs.build.outputs.reuse != 'true'
+        run: npm run typecheck:art
       # The guardrails (Ed's go, 2026-11-15; docs/notes/guardrails.md): no new import edge inside an import loop, and nothing
       # over the size limits grows, both against the PR's base (no baseline file); then ESLint over src/ and tools/.
       # (the checkout is the PR merged onto its base, so HEAD^1 is the base; the PR's own commits are fetched for their

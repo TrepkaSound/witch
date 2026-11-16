@@ -78,3 +78,18 @@ The switch is `leash.ranks.bold`, on since all 64 were drawn (Golf, 2026-10-29: 
 
 **The witch's poses** (2026-11-12, after the nightly check failed from 2026-11-08 on a fixed pose list missing inBed, bedStretch and brush): the `witch-poses` task checks every pose `WITCH_FOOT_POSES` (`art/witch.js`) defines, so a new pose is drawn and checked without editing the check.
 Its `pinned` table holds the frame counts other code relies on; a pinned pose that disappears or changes its count fails, a new one not pinned passes and is named in the report's "counts not pinned".
+
+**Type-checking the art** (Ed's go, 2026-11-15, quality plan item f: "Type-check the art code"; "Yes please").
+`npm run typecheck:art` (`tools/checks/art-types.mjs`, about 10 s; CI's check job runs it on every PR, and `node tools/checks/which.mjs` lists it when art's JavaScript changes) has TypeScript read art/'s JavaScript with `tsconfig.art.json`: `checkJs` on and `strict` off.
+Turning on `noImplicitAny` would give 7,600 "parameter has no type" errors, none of them useful.
+What it still catches: a property no object has, a wrong number of arguments, a bad import, a string used as a number, and wherever JSDoc types exist, a value that doesn't fit them.
+- **What's checked**: every `.js` and `.mjs` under art/ except the files on the script's `LEFT_OUT` list, each with its error count when it was left out (50 files on 2026-11-16, 531 errors, `art/preview.mjs` 130 of them).
+  TypeScript still reads a left-out file when a checked one imports it, but only the checked files' errors fail the check.
+  A left-out file that comes clean is reported, so it can come off the list; never add a file to the list to hide a new error.
+  The whole of `art/mesh/` is checked, and so are `art/creatures/`, `art/areas/` and most of `art/flora/`, `art/genome/` and `art/props/`.
+- **The mesh types**: `art/mesh/types.d.ts` (types only, nothing at run time reads it): `Ring`, `Loft`, `Cone`, `Bone`, `Pieces` (what a kit part returns), `Body`, `Skull`, `Ear`, `Motion`, `Gait`, `Plan` and `MeshSpecies` (a species' `MESH`).
+  The kit's parts mark their returns with `@satisfies`, `kit/plan.js` `plan()` takes typed parts, and every species' `MESH` is `@satisfies MeshSpecies`.
+  How to type a new part or kind: `docs/notes/creatures.md`, **Writing a mesh creature**, step 5.
+- **Art files keep their code**: types go in JSDoc comments and parentheses only, so a type never changes a drawing.
+  Comments are still bytes, though: an edit changes the file's art fingerprints (tools/art-check/affected.mjs, the game's per-kind art cache keys), so the art check runs again for what it reaches and players' browsers draw those sprites again once.
+  The PR that added it (2026-11-16) checked the code was unchanged: every changed art file minified by esbuild was byte for byte the base's, and every mesh species' plans, shapes and walk, nap and sleeping-legend pixels hashed the same before and after.

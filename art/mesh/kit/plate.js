@@ -8,7 +8,7 @@
  *  set in its middle; rim a second colour for its edge. */
 export function plate(bone, at, out, o) {
   const { r = 0.08, high = 0.04, colour, rim, gem, sides = 6, up = [0, 1, 0], ry = r } = o, l = Math.hypot(...out) || 1, d = out.map(v => v / l), top = at.map((v, i) => v + d[i] * high);
-  const cones = [{ at, rx: r, ry, tip: top, bone, colour: rim ?? colour, tipColour: colour, split: 0.35, up, sides }];
+  const cones = /** @type {import("../types").Cone[]} */ ([{ at, rx: r, ry, tip: top, bone, colour: rim ?? colour, tipColour: colour, split: 0.35, up, sides }]);
   if (gem) cones.push({ at: top.map((v, i) => v - d[i] * high * 0.35), rx: r * 0.28, ry: r * 0.28, tip: top.map((v, i) => v + d[i] * high * 0.5), bone, colour: gem.colour, glow: true, up, sides: 4 });
-  return { bones: [], lofts: [], cones };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], lofts: [], cones });
 }

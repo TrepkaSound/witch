@@ -6,5 +6,5 @@
 /** A ball on `bone` at `c`: r, colour, glow (a lit stone, a moon, a berry). */
 export function ball(bone, c, o) {
   const { r = 0.04, colour, glow = false, sides = 7, squash = 1 } = o;
-  return { bones: [], cones: [], lofts: [{ sides, up: [0, 0, 1], rings: [[-1, 0.12], [-0.62, 0.78], [0, 1], [0.62, 0.78], [1, 0.12]].map(([y, f]) => ({ at: [c[0], c[1] + y * r * squash, c[2]], rx: r * f, ry: r * f, bone, colour, glow, up: [0, 0, 1] })) }] };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], cones: [], lofts: [{ sides, up: [0, 0, 1], rings: [[-1, 0.12], [-0.62, 0.78], [0, 1], [0.62, 0.78], [1, 0.12]].map(([y, f]) => ({ at: [c[0], c[1] + y * r * squash, c[2]], rx: r * f, ry: r * f, bone, colour, glow, up: [0, 0, 1] })) }] });
 }

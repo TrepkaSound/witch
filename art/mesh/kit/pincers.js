@@ -17,7 +17,7 @@ export function pincer(tag, at, o) {
     { sides, up: g, rings: [[-0.05, 0.4], [0.2, 0.85], [0.5, 1], [0.8, 0.9], [1, 0.6]].map(([f, k]) => ({ at: add(E, d2, l2 * f), rx: R * k, ry: R * k * 0.8, bone: b[1], colour: C.hand ?? C.arm, up: g })) }];
   // its fingers: the fixed one on from the hand's lower half, the hinged one from its upper, lifted open
   const F = finger * l2, hinge = add(W, g, R * 0.35), base = add(W, g, -R * 0.3), lift = [d2[0] * Math.cos(open) + g[0] * Math.sin(open), d2[1] * Math.cos(open) + g[1] * Math.sin(open), d2[2] * Math.cos(open) + g[2] * Math.sin(open)];
-  const cones = [{ at: base, rx: R * 0.5, ry: R * 0.38, tip: add(add(base, d2, F), g, R * 0.25), bend: g.map(v => -v * F * 0.12), bulge: 0.65, bone: b[1], colour: C.finger ?? C.hand ?? C.arm, tipColour: C.tip ?? C.finger ?? C.hand ?? C.arm, glow: glow ? "tip" : false, up: side, sides: 4 },
-    { at: hinge, rx: R * 0.45, ry: R * 0.34, tip: add(add(hinge, lift, F * 0.95), g, -R * 0.1), bend: g.map(v => v * F * 0.14), bulge: 0.65, bone: b[2], colour: C.finger ?? C.hand ?? C.arm, tipColour: C.tip ?? C.finger ?? C.hand ?? C.arm, glow: glow ? "tip" : false, up: side, sides: 4 }];
-  return { bones: [[b[0], at, parent], [b[1], E, b[0]], [b[2], hinge, b[1]]], lofts, cones, names: b, side };
+  const cones = /** @satisfies {import("../types").Cone[]} */ ([{ at: base, rx: R * 0.5, ry: R * 0.38, tip: add(add(base, d2, F), g, R * 0.25), bend: g.map(v => -v * F * 0.12), bulge: 0.65, bone: b[1], colour: C.finger ?? C.hand ?? C.arm, tipColour: C.tip ?? C.finger ?? C.hand ?? C.arm, glow: glow ? "tip" : false, up: side, sides: 4 },
+    { at: hinge, rx: R * 0.45, ry: R * 0.34, tip: add(add(hinge, lift, F * 0.95), g, -R * 0.1), bend: g.map(v => v * F * 0.14), bulge: 0.65, bone: b[2], colour: C.finger ?? C.hand ?? C.arm, tipColour: C.tip ?? C.finger ?? C.hand ?? C.arm, glow: glow ? "tip" : false, up: side, sides: 4 }]);
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [[b[0], at, parent], [b[1], E, b[0]], [b[2], hinge, b[1]]], lofts, cones, names: b, side });
 }

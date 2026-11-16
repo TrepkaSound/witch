@@ -31,7 +31,7 @@ function bee(name, o) {
   lofts.push({ name: "abdomen", sides: 8, up: [0, 1, 0.3], rings: R.flatMap((r, i) => (i === 0 ? [r, ring(i, half)] : i === n - 1 ? [ring(i, -half), r] : [ring(i, -half), ring(i, half)])) });
   const end = R[n - 1].at; cones.push({ at: end, rx: 0.014 * k, ry: 0.014 * k, tip: [end[0], end[1] - 0.03 * k * sting, end[2] - 0.09 * k * sting], bone: "abd2", colour: C.sting ?? dark, up: [0, 1, 0], sides: 4 });
   // wings: a fore and a hind pair, flat blades from the thorax's top
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) for (const [pair, len, wide, back] of [["f", 0.3, 0.075, 0.25], ["h", 0.2, 0.06, 0.75]]) {
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) for (const [pair, len, wide, back] of /** @satisfies {[string, number, number, number][]} */ ([["f", 0.3, 0.075, 0.25], ["h", 0.2, 0.06, 0.75]])) {
     const b = `wing${pair}${tag}`, root = P(0.035 * s, 0.13, 0.02 - (pair === "h" ? 0.035 : 0)); bones.push([b, root, "thorax"]);
     const d = [s * Math.cos(back) * 0.92, 0.38, -Math.sin(back)], at = t => root.map((v, j) => v + d[j] * len * wing * k * t);
     // (an old queen's wings, o.ornate: { frame, cells: [colours] }; Ed, 2026-11-12, of a drawing of a ragged fairy wing: "the bee
@@ -49,7 +49,7 @@ function bee(name, o) {
     if (C.vein) lofts.push({ sides: 3, up: [0, 1, 0], rings: [0.05, 0.4, 0.75, 0.97].map(t => ({ at: at(t).map((v, j) => v + (j === 1 ? 0.006 * k : 0)), rx: 0.006 * k, ry: 0.006 * k, bone: b, colour: C.vein, glow: true, up: [0, 1, 0] })) });
   }
   // six legs hanging, the hind pair longest
-  [[0.08, 0.14, 0.9], [0.02, 0.17, 1], [-0.04, 0.2, 1.15]].forEach(([z, len, f], i) => { for (const [s, tag] of [[1, "L"], [-1, "R"]]) {
+  [[0.08, 0.14, 0.9], [0.02, 0.17, 1], [-0.04, 0.2, 1.15]].forEach(([z, len, f], i) => { for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) {
     const b = `leg${i}${tag}`, top = P(0.05 * s, 0.0, z); bones.push([b, top, "thorax"]);
     const knee = [top[0] + 0.06 * k * s, top[1] - len * 0.45 * k, top[2] - 0.01 * k], foot = [top[0] + 0.04 * k * s, top[1] - len * f * k, top[2] - 0.05 * k];
     lofts.push({ sides: 4, up: [0, 0, 1], rings: [{ at: top, rx: 0.014 * k, ry: 0.014 * k, bone: b, colour: dark }, { at: knee, rx: 0.011 * k, ry: 0.011 * k, bone: b, colour: dark }, { at: foot, rx: 0.006 * k, ry: 0.006 * k, bone: b, colour: dark }] });
@@ -92,4 +92,4 @@ const bees = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes") (in the marten's place on home since 2026-11-12: the marten's order of size, not yet looked at in play); plans, each level's build. */
-export const MESH = { id: "bee", heights: [45, 69, 97, 280], gait: "fly", plans: bees };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "bee", heights: [45, 69, 97, 280], gait: "fly", plans: bees });

@@ -57,4 +57,4 @@ const otter = {
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build;
  *  curl, how it curls up to sleep where it differs from the rest (art/mesh/gear.js `napping` reads gait.curl): long, it turns further, as the stoat does, so its ring closes. */
-export const MESH = { id: "otter", heights: [48, 73, 104, 250], gait: "bound", curl: { turn: 4.5 }, plans: otter };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "otter", heights: [48, 73, 104, 250], gait: "bound", curl: { turn: 4.5 }, plans: otter });

@@ -22,5 +22,5 @@ export function horns(P, o = {}) {
     for (const t of bands?.at ?? []) { const i = Math.round(t * N); if (i < 1 || i >= pts.length - 1) continue;
       lofts.push(sweep(bone, [pts[i - 1], pts[i], pts[i + 1]].map((p, j) => p.map((v, c) => pts[i][c] + (v - pts[i][c]) * 0.3)), { r: fat(i) * 1.32, flat: 1.1, colour: bands.colour, sides: 6, up: [1, 0, 0] })); }
   }
-  return { bones: [], lofts, cones: [] };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], lofts, cones: [] });
 }
