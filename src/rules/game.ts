@@ -1,5 +1,5 @@
 // The whole game state, and one step of it. No drawing here: the Three.js layer reads this.
-import { creaturesAshore, lakeKnobs, onLake, roundLakes } from "./lakes";
+import { lakeKnobs, onLake, roundLakes } from "./lakes";
 import { guestDeck } from "./guestDeck";
 import { newMushrooms, potionPhase, stepMushrooms, type MushroomState } from "./mushrooms";
 import { runawaySpot, runOff } from "./runaway";
@@ -19,8 +19,9 @@ import { MAX_STEP, newClock, type Clock } from "./clock";
 import { guardsHome, healBy, heldByCombat, keepsToCircle, napping, spawnCreatures, stepCreaturesNear, stepNotice, wanderRange, type Creature, type NapRules } from "./creatures";
 import { Forest } from "./forest";
 import { inviteCreature, leashPoint, newLeash, type LeashControls, type LeashEvent, type LeashState } from "./leash";
-import { stepTravel, updateModes } from "./travel";
+import { stepTravel } from "./travel";
 import { leashView } from "./houseGuard";
+import { dragByChains, keepInPlace, noteLeashModes, stepBeaches } from "./gameSteps";
 import { cheer, LEGENDS, placeRelics, stepLegendStates, type Relic } from "./legends";
 import { placeTrunk, type Trunk } from "./finds";
 import { befriend, danceAt, huntsWitch, invitableNow, stateOf, STATES, type State } from "./creatureStates";
@@ -34,7 +35,7 @@ import { bootShare, stoneTurned } from "./bootRing";
 import { AREA_TYPES, areaCellAt, generateMap, hydrateMap, type ForestMap, type MapPrep } from "./map";
 import { areaOf, homeArea } from "./homeArea";
 import { beachOf, exitPoint, isInside } from "./mapShape";
-import { calmRingAt, keepEnragedOut, leavesCalmRing, stepTimeScale } from "./slowTime";
+import { calmRingAt, leavesCalmRing, stepTimeScale } from "./slowTime";
 import { isHomeKey, nextSpeakerState, speakerIndex, speakerKey, speakerRadius, speakerStateOf, type SpeakerState } from "./speakers";
 import { moonState } from "./moon";
 import { floorEvent, floorLevel, islandKinds, islandSigilOf, neon, newFloor, stepFloor, switchOn, tileOf, type FloorInputs, type FloorState } from "./dancefloor";
@@ -58,8 +59,7 @@ import { hatLetters, hatsDown, onHatPicked, onHatPut, stepHatSpells } from "./ha
 import { groundedBy } from "./leashWeight";
 import { newGrowth, type GrowthState } from "./growth";
 import { pinWitch, type Pinned } from "./partyLegend";
-import { beginChains, chainLength, dragWitch } from "./chains";
-import { pullsOf, stepPop, stepTug, tautKnobs, yankFrom, type PopMeter } from "./tautChain";
+import type { PopMeter } from "./tautChain";
 // (her follower buffs on her speed and her 💌s: rules/buffs.ts, in place of spells.ts speedMultiplier and invites.ts stepInvites)
 import { buffsOf, dashBuff, drainPips, setBuffs, speedMultiplierBuffed as speedMultiplier, stepInvitesBuffed as stepInvites } from "./buffs";
 import { castOf, castOn, circleSpot, friendSigils, looseAt, scatterSpots, stoneOpen, tetherWitch, type LooseSigil } from "./stoneStacks";
@@ -73,15 +73,15 @@ import { affection, blocksLetters, hit as hitAffection } from "./affection";
 import { knockWitch, newKnock, stepWitchKnock, stunned, type Blow, type Knock } from "./knock";
 import { applyDash, dashing, newDash, rechargeDash, startDash, type DashState } from "./dash";
 import { coolReady, coolRoom, coolSpend, coolWait, newCool, stepCool, type CoolState } from "./cooldown";
-import { castSpell, newSpells, pullOf, revealed, stepHealingRing, type SpellState } from "./spells";
+import { castSpell, newSpells, revealed, stepHealingRing, type SpellState } from "./spells";
 import { broomTuning } from "./broomParts";
 import { batter, canPound, groundPound, hiddenWitch, leyJump, leyJumpTarget } from "./brooms";
 import type { HouseState } from "./houseRooms";
 import { newPartyWitches, stepPartyWitches, type PartyWitches } from "./partyWitches";
-import { newBeachWitches, stepBeachWitches, type BeachWitches } from "./beach";
+import { newBeachWitches, type BeachWitches } from "./beach";
 import type { Tuning } from "./tuning";
 import { newWitch, seaward, stepWitch, witchHeight, type Intent, type WitchState } from "./witch";
-import { deckOf, landsOn, onTreehouse } from "./treehouse";
+import { deckOf, onTreehouse } from "./treehouse";
 import { homeDown, startPartyOver, stepPartyOver, stepWorldAsleep, worldAsleep, type PartyOver } from "./partyOver";
 import { stepWin, winFlare, won, type WinState } from "./win";
 import { newChallenge, spawnPack, stepChallenge, stepReveal, type ChallengeState } from "./challenge";
@@ -716,7 +716,12 @@ export function stepWitchLocomotion(g: Game, W: Witch, input: Controls, hdt: num
   return { W, c, ht, was, deck, perchTurn, firing, LV: null as ReturnType<typeof leashView> | null };
 }
 
-function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonly Controls[] = []): void {
+/** One witch's step of her own (stepWitchLocomotion's): her controls, her body before and after, her clock, her deck, her leash. */
+export type Motion = ReturnType<typeof stepWitchLocomotion>;
+
+/** The clocks advanced (the world's at timeScale, hers at full speed), and an online guest's backlog drained, each older quantum
+ *  one whole step of her clock and locomotion (guestWas: her body before it; guestTurn: the decks crossed meanwhile). */
+function stepClocks(g: Game, guestCatchUp: readonly Controls[]): { dt: number; hdt: number; guestWas: WitchState; guestTurn: number } {
   // Two clocks (rules/slowTime.ts): the world's runs at timeScale (slowed in a sleeping legend's circle), hers at full speed.
   stepTimeScale(g, STEP);
   const dt = STEP * g.timeScale, hdt = STEP;
@@ -732,51 +737,23 @@ function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonl
     guestTurn += stepWitchLocomotion(g, W, c, hdt).perchTurn;
   }
   for (const W of g.witches) if (W.time !== undefined && (W !== g.witches[1] || guestMotionReady(g))) W.time += hdt;
-  // Explicit legacy cauldron preview owns its own inventory/inputs while enabled.
-  if (!g.cauldron) stepMushrooms(g);
-  const wave = g.party.wave;
-  const anchorFrom = g.witches.map(W => ({ x: W.body.x, z: W.body.z })); // (where each stood before her step: the chains, below)
-  for (const W of g.witches) { drainPips(g.berries, W.leash.stack, g.creatures, dt, g.tuning); setBuffs(W, buffsOf(W.leash.stack, g.creatures, g.berries, g.tuning).stacks); } // (her follower buffs this step: rules/buffs.ts)
-  const legends = (g.legendIds ??= g.creatures.filter(k => k.boss).map(k => k.id));
-  const t = g.tuning;
+  return { dt, hdt, guestWas, guestTurn };
+}
+
+/** Each witch's own step (stepWitchLocomotion), the guest's backlog folded in, and the cauldron's night routing their controls. */
+function witchMotions(g: Game, controls: readonly Controls[], hdt: number, guestCatchUp: readonly Controls[], guestWas: WitchState, guestTurn: number): Motion[] {
   const motions = g.witches.map((W, i) => stepWitchLocomotion(g, W, controls[i], hdt));
   if (guestCatchUp.length) { const m = motions[1]; m.was = guestWas; m.perchTurn = Math.sign(guestTurn + m.perchTurn); } // (a fall or a deck crossed in either step)
   if (g.cauldron) {
     const routed = stepCauldronNight(g, motions.map(m => m.c), hdt);
     motions.forEach((m, i) => { m.c = routed[i]; });
   }
-  // Her chains (Ed, 2026-11-03; rules/chains.ts): every creature on her leash at leash.chain.length; past it, moving away, she drags it,
-  // slowed by the heaviest taut one (a legend's stops her), and it's pulled after her; sliding round the chain's end. Each witch by her
-  // own; replaces the old 30 m anchor (and, on the ground, the sigils' pull: rules/witch.ts). Walking, blinking, flying or thrown; not
-  // while she's knocked out, up in the treehouse (her followers guard home then: rules/houseGuard.ts), or in the zoo.
-  // The taut chain (Ed, 2026-11-12; rules/tautChain.ts, one switch: leash.chain.taut): up in the treetops pulling past a chain's end
-  // tugs her down, and pulled on far enough she comes down (never over a lake's water or onto a treehouse floor that way); on foot,
-  // pulling a youth's or adult's chain slides its sigil out of her stack, and pulled on it's put down (rules/sigilButton.ts, below,
-  // W.popDue); past a legend's she's yanked back toward it. A blow's throw, or a yank, isn't her pulling.
-  beginChains();
-  g.witches.forEach((W, i) => {
-    if (chainLength(t) > 0 && !g.map.bounds.fence && !W.ko && !W.body.perch && !potionPhase(g, W)) {
-      const r = dragWitch(W.body, anchorFrom[i], W.leash.stack, g.creatures, t, hdt, pullOf(W.spells)), B = r.body, { deck, ht } = motions[i], P = pullsOf(r.pulls);
-      const hold = (!!g.map.bounds.lakes && onLake(g.map.bounds, B.x, B.z, lakeKnobs(t).pad)) || (!!deck && landsOn(deck, B.x, B.z));
-      const thrown = !!W.knock && (!!W.knock.kx || !!W.knock.kz), pull = pullOf(W.spells);
-      const T = stepTug(B, W.tug ?? 0, r.strain, hdt, t, pull, { hold, free: thrown }, W.tugRate ?? 0);
-      W.body = T.body;
-      if (T.tug > 0) W.tug = T.tug; else if (W.tug !== undefined) delete W.tug;
-      if (T.rate > 0) W.tugRate = T.rate; else if (W.tugRate !== undefined) delete W.tugRate;
-      const onFoot = W.body.mode === "ground" && !W.body.seated && !W.body.perch;
-      const Pm = stepPop(W.pop ?? null, P, hdt, t, onFoot, pull, thrown);
-      if (Pm.meter) W.pop = Pm.meter; else if (W.pop) delete W.pop;
-      if (Pm.pop !== null) W.popDue = Pm.pop;
-      const y = yankFrom(P, hdt, t, ht, W.yankAt, thrown);
-      if (y !== null) {
-        const Lg = g.creatures[y], dx = Lg.x - W.body.x, dz = Lg.z - W.body.z, d = Math.hypot(dx, dz) || 1, v = tautKnobs(t)!.yank.metres * t.witch.knock.ease;
-        const k = (W.knock ??= newKnock()); k.kx = (dx / d) * v; k.kz = (dz / d) * v; k.at = ht; W.yankAt = ht; // (the knock's easing throw, no stagger)
-        g.leashEvents.push({ kind: "yanked", id: y, x: W.body.x, z: W.body.z, at: ht });
-      }
-    } else { if (W.tug !== undefined) delete W.tug; if (W.tugRate !== undefined) delete W.tugRate; if (W.pop) delete W.pop; }
-  });
-  const c = motions[0].c;
-  g.camera = stepCamera(g.camera, c.zoom, { x: g.witch.x, y: witchHeight(g.witch, g.tuning), z: g.witch.z }, { x: g.witch.vx, z: g.witch.vz }, g.witch.lift, hdt, g.tuning, !!g.witch.seated, g.introFocus, coastOf(g), g.tuning.camera.circle?.on ? legendCircleNear(g, g.witch)?.legend ?? null : null, onTreehouse(g), !!c.framing && onTreehouse(g), c.framePart ?? null); // (in a legend's circle: the lower view, camera.circle; indoors, camera.house; choosing at a station, camera.station)
+  return motions;
+}
+
+/** The waves (paused, called in, or on their clock) and the legends, unless the night is calm or the world asleep. */
+function stepWaves(g: Game, c: Controls, dt: number, legends: number[]): { over: boolean; still: boolean } {
+  const t = g.tuning;
   // The afterparty (rules/partyOver.ts): the waves have stopped for good.
   // The world before the party is the afterparty's (Ed, 2026-10-26): asleep in bed, or got up as the spell's cast.
   stepWorldAsleep(g, g.clock.time);
@@ -788,6 +765,12 @@ function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonl
   if (c.nextWave && !calm && !lapping) { spreadWave(g.party, g.map, g.clock.time, celebrate); resetPulse(g.party, g.map, g.clock.time); } // (the pulse on from the stone it brought on)
   if (!calm && !lapping) stepParty(g.party, g.map, g.clock.time, dt, g.witches.every(W => !!W.body.seated), celebrate, tempoRate(g.beat, t));
   if (!still) stepLegends(g, legends, !!c.happyNearest);
+  return { over, still };
+}
+
+/** Each witch knocked out getting up (or carried to her decks), her health repairing, the Healing ring by her hat. */
+function stepWitchHealth(g: Game, motions: Motion[]): void {
+  const t = g.tuning;
   for (const { W, ht } of motions) {
     if (W.ko) {
       const wasMoved = W.ko.moved, r = stepKnockout(W.ko, W.body, W.leash, g.creatures, g.map, ht, k => g.party.areas.has(k), g.koEvents, () => [...g.witches.flatMap(o => o.leash.placed), ...g.loose], (x, z) => sigilBarred(g, x, z, t));
@@ -801,65 +784,52 @@ function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonl
     // The Healing ring (rules/spells.ts): by her hat where it lies, on the ground, she heals a hit every few seconds.
     if (stepHealingRing(W.spells, W.health, W.body.mode === "ground" ? hatsDown(W) : [], W.body.x, W.body.z, ht, t)) g.koEvents.push({ kind: "healed", at: ht, x: W.body.x, z: W.body.z });
   }
-  const B = g.berries, busy = (id: number) => B.feeding.has(id) || B.evolving.has(id);
-  // (No growth on a clock: every area is peopled from the start by its place on the route, Ed 2026-10-07; rules/creatures.ts.)
-  if (!still && !castOn(t)) stepClear(g); // (with the stacks on, a stone converts only by her spell or its wave: rules/stoneStacks.ts)
-  // (in the treehouse her followers guard home as if their sigils were placed there, her stack unchanged: rules/houseGuard.ts)
-  for (const motion of motions) {
-    const { W } = motion;
-    const LV = leashView(W, g.creatures, g.map, t);
-    updateModes(LV.stack, LV.placed, g.creatures, W.body, W.body.mode === "ground" && !W.body.seated && !W.body.perch && !W.ko, g.map, g.clock.time); // (posse or travelling: rules/travel.ts)
-    motion.LV = LV;
-  }
-  g.lod = newLodCounts();
-  stepReveal(g); // (the challenge circle hidden before the party and after a lost one, fading in and out: rules/challenge.ts)
-  stepStatues(g); // (the challenge circle's statues waking as she sets foot on its floor, stone again once it's left: rules/challengeStatues.ts)
-  if (!still) stepWildWatch(g, t); // (before the fights: those just watching her hold off this very step)
-  if (!still) stepHunts(g, t); // (then the woken areas' own hunt her: rules/hunt.ts)
-  if (!still) stepFights(g, t, dt, busy);
-  else if (over) stepPartyOver(g, dt); // (nothing fights: everyone walks home to bed, rules/partyOver.ts)
-  // Noticing her (before they step, so a curious baby sets off this step).
-  {
-    const near: Creature[] = [], byArea = (g.byArea ??= indexByArea(g.creatures)), seen = new Set<string>();
-    for (const w of g.witches) { if (w.body.mode !== "ground") continue; const k = cellKey(areaCellAt(g.map, w.body.x, w.body.z)); for (const a of [k, ...(g.map.neighbours.get(k) ?? [])]) if (!seen.has(a)) { seen.add(a); near.push(...(byArea.get(a) ?? [])); } }
-    const T = COMBAT.temperament;
-    stepNotice(near, g.witches.map(w => ({ x: w.body.x, z: w.body.z, onGround: w.body.mode === "ground" && !w.body.seated && !w.body.perch && !w.ko })), sp => (T.curious.includes(sp) ? "curious" : T.skittish.includes(sp) ? "skittish" : null), t);
-  }
+}
+
+/** Noticing her (before they step, so a curious baby sets off this step); then the creatures near her step, and those walking. */
+function stepCreatureMoves(g: Game, dt: number): void {
+  const t = g.tuning;
+  const near: Creature[] = [], byArea = (g.byArea ??= indexByArea(g.creatures)), seen = new Set<string>();
+  for (const w of g.witches) { if (w.body.mode !== "ground") continue; const k = cellKey(areaCellAt(g.map, w.body.x, w.body.z)); for (const a of [k, ...(g.map.neighbours.get(k) ?? [])]) if (!seen.has(a)) { seen.add(a); near.push(...(byArea.get(a) ?? [])); } }
+  const T = COMBAT.temperament;
+  stepNotice(near, g.witches.map(w => ({ x: w.body.x, z: w.body.z, onGround: w.body.mode === "ground" && !w.body.seated && !w.body.perch && !w.ko })), sp => (T.curious.includes(sp) ? "curious" : T.skittish.includes(sp) ? "skittish" : null), t);
   stepCreaturesNear(g.creatures, g.witch.x, g.witch.z, simRadius(g), dt, g.clock.time, g.map, c => !!c.partyLegend || !!c.bed || c.finale !== undefined || dormant(g, c), { ...g.tuning.simLod, full: fullRadius(g.tuning, g.witch.mode) }, g.lod, napRules(g), t.wildWatch?.on ? t.wildWatch : undefined, g.witches.length > 1 ? g.witches.map(W => ({ x: W.body.x, z: W.body.z, radius: simRadius(g), full: fullRadius(t, W.body.mode) })) : undefined);
   if (stepWanderers([...g.combat.busy].map(id => g.creatures[id]), g.map, dt)) g.byArea = null; // (those walking home are among combat's busy)
   stepWildBabies(g, dt); // (wild babies run from fights, as her leashed ones scatter: rules/wildBabies.ts; Ed, 2026-11-13)
   stepWonAway(g, dt); // (her won ones waiting for their stone's spell roam out of her fights' way: rules/wonKeepAway.ts)
   stepStatueWalk(g, dt); // (the challenge's un-won walking back to their posts, the stone ones facing its middle: rules/challengeStatues.ts)
-  // (A party animal in a fight is moved by combat, not its leash.)
-  // Far from her on the ground, or from its sigil, a party animal travels (rules/travel.ts): quiet, along area borders.
-  for (const motion of motions) {
-    const { W, c, ht, was, deck, perchTurn, firing } = motion;
-    const LV = g.witches.length > 1 ? leashView(W, g.creatures, g.map, t) : motion.LV!;
-    motion.LV = LV;
-    stepTravel(LV.stack, LV.placed, g.creatures, W.body, g.map, dt, t, id => busy(id) || heldByCombat(g.creatures[id]));
-    stepSigilButton(g, c, W, t, ht, hdt, legends, busy, STEP, LV.guards);
-    if (perchTurn) W.leash.events.push({ kind: "perch", id: W.id, x: W.body.x, z: W.body.z, at: ht, on: perchTurn > 0 });
-    const ground = deck?.house?.fall.time ?? Infinity; // (her fall hits the ground then, unseen below: a thud; Ed, 2026-10-26)
-    if (was.falling !== undefined && was.falling < ground && (W.body.falling === undefined || W.body.falling >= ground)) W.leash.events.push({ kind: "thud", id: W.id, x: was.x, z: was.z, at: ht });
-    if (was.falling !== undefined && W.body.falling === undefined) W.leash.events.push({ kind: "fell", id: W.id, x: W.body.x, z: W.body.z, at: ht }); // (off the balcony with no broom: back at the circle)
-    // Her hat's spell on putting it down or picking it up (rules/hatSpells.ts: Harvest, Dowsing, Gathering).
-    // Stealth (rules/brooms.ts): throwing 💌s, or putting down or picking up anything, gives her away for a moment.
-    if (firing || W.leash.events.some(e => e.at === ht && (e.kind === "placed" || e.kind === "picked" || e.kind === "hatPut" || e.kind === "hatPicked" || e.kind === "relicPicked" || e.kind === "flaskDrunk" || e.kind === "relicPlaced"))) revealed(W.spells, ht, t);
-    for (const e of W.leash.events.slice()) if (e.at === ht && e.id === W.id) {
-      if (e.kind === "hatPut" && W.hat.down) onHatPut(g, W, W.hat.down.x, W.hat.down.z, ht, t);
-      else if (e.kind === "hatPicked") { onHatPicked(g, W, e.x, e.z, ht, t); const waking = wakeOf(g, W); if (waking) wearPiece(waking, "hat"); } // (a hat on her head: out of last night's pile, so she's drawn in it; rules/clothesPile.ts)
-    }
-    // The 💌s (issue #87): on the ground, off her seat, not knocked out.
-    if (W.id === 1 && guestEffectsEnabled(g)) applyGuestEffects(g);
-    stepInvites(W.invites, W.ko ? {} : confusedAim(W, W.id === 1 && guestEffectsEnabled(g) ? { ...c, fire: false } : c, ht), { ...W.body }, t.invites.on && hasInvites(W) && W.body.mode === "ground" && !W.body.seated && !W.ko && !(g.witches.length > 1 && W.house?.slept), g.creatures, affectionOf(g, W), ht, hdt, bagTuning(t, W.spells.bag), g.tuning.legendCircle?.slow.on === false ? undefined : leavesCalmRing(g, W.body), hasInvites(W) ? hatLetters(hatsDown(W), t) : undefined, g.combat.mirages?.length || g.combat.decoys?.length ? mirageDecoys(g, g.clock.time) : undefined);
-    if (!worldAsleep(g)) wakeOnInvites(g, W.invites.events, t); // (a 💌 landing on a wild one wakes its area: rules/inviteWakes.ts)
-    questsFromPlaced(g, ht, W);
-    if (c.feedNearest) feedNearest(B, g.creatures, W.body.x, W.body.z, g.clock.time, t, g.beat);
+}
+
+/** Each witch's own doings this step: her animals travelling, her sigil button, her perch, her falls, her hat's spells, her 💌s. */
+function stepWitchActions(g: Game, motion: Motion, dt: number, hdt: number, legends: number[], busy: (id: number) => boolean): void {
+  const t = g.tuning, B = g.berries;
+  const { W, c, ht, was, deck, perchTurn, firing } = motion;
+  const LV = g.witches.length > 1 ? leashView(W, g.creatures, g.map, t) : motion.LV!;
+  motion.LV = LV;
+  stepTravel(LV.stack, LV.placed, g.creatures, W.body, g.map, dt, t, id => busy(id) || heldByCombat(g.creatures[id]));
+  stepSigilButton(g, c, W, t, ht, hdt, legends, busy, STEP, LV.guards);
+  if (perchTurn) W.leash.events.push({ kind: "perch", id: W.id, x: W.body.x, z: W.body.z, at: ht, on: perchTurn > 0 });
+  const ground = deck?.house?.fall.time ?? Infinity; // (her fall hits the ground then, unseen below: a thud; Ed, 2026-10-26)
+  if (was.falling !== undefined && was.falling < ground && (W.body.falling === undefined || W.body.falling >= ground)) W.leash.events.push({ kind: "thud", id: W.id, x: was.x, z: was.z, at: ht });
+  if (was.falling !== undefined && W.body.falling === undefined) W.leash.events.push({ kind: "fell", id: W.id, x: W.body.x, z: W.body.z, at: ht }); // (off the balcony with no broom: back at the circle)
+  // Her hat's spell on putting it down or picking it up (rules/hatSpells.ts: Harvest, Dowsing, Gathering).
+  // Stealth (rules/brooms.ts): throwing 💌s, or putting down or picking up anything, gives her away for a moment.
+  if (firing || W.leash.events.some(e => e.at === ht && (e.kind === "placed" || e.kind === "picked" || e.kind === "hatPut" || e.kind === "hatPicked" || e.kind === "relicPicked" || e.kind === "flaskDrunk" || e.kind === "relicPlaced"))) revealed(W.spells, ht, t);
+  for (const e of W.leash.events.slice()) if (e.at === ht && e.id === W.id) {
+    if (e.kind === "hatPut" && W.hat.down) onHatPut(g, W, W.hat.down.x, W.hat.down.z, ht, t);
+    else if (e.kind === "hatPicked") { onHatPicked(g, W, e.x, e.z, ht, t); const waking = wakeOf(g, W); if (waking) wearPiece(waking, "hat"); } // (a hat on her head: out of last night's pile, so she's drawn in it; rules/clothesPile.ts)
   }
-  stepBerries(B, g.creatures, id => {
-    for (const { W, LV } of motions) { const p = LV!.placed.find(q => q.id === id); if (p) return { x: p.x, z: p.z }; if (W.leash.stack.includes(id)) return leashPoint(W.leash, id, W.body.x, W.body.z); }
-    return leashPoint(g.leash, id, g.witch.x, g.witch.z);
-  }, g.clock.time, dt, t, g.beat);
+  // The 💌s (issue #87): on the ground, off her seat, not knocked out.
+  if (W.id === 1 && guestEffectsEnabled(g)) applyGuestEffects(g);
+  stepInvites(W.invites, W.ko ? {} : confusedAim(W, W.id === 1 && guestEffectsEnabled(g) ? { ...c, fire: false } : c, ht), { ...W.body }, t.invites.on && hasInvites(W) && W.body.mode === "ground" && !W.body.seated && !W.ko && !(g.witches.length > 1 && W.house?.slept), g.creatures, affectionOf(g, W), ht, hdt, bagTuning(t, W.spells.bag), g.tuning.legendCircle?.slow.on === false ? undefined : leavesCalmRing(g, W.body), hasInvites(W) ? hatLetters(hatsDown(W), t) : undefined, g.combat.mirages?.length || g.combat.decoys?.length ? mirageDecoys(g, g.clock.time) : undefined);
+  if (!worldAsleep(g)) wakeOnInvites(g, W.invites.events, t); // (a 💌 landing on a wild one wakes its area: rules/inviteWakes.ts)
+  questsFromPlaced(g, ht, W);
+  if (c.feedNearest) feedNearest(B, g.creatures, W.body.x, W.body.z, g.clock.time, t, g.beat);
+}
+
+/** Her leash's events this step tallied, marked at a stone, joined to a party; then everyone's gathered for the view. */
+function tallyLeashEvents(g: Game, motions: Motion[]): void {
+  const t = g.tuning;
   for (const { W } of motions) {
     for (const e of W.leash.events) if (e.kind === "invited" || e.kind === "befriended") g.tally.invites++;
     // Made happy in an area whose stone still stands (rules/stoneStacks.ts; Ed, 2026-10-28): its sigil turns friend-coloured in the
@@ -869,6 +839,46 @@ function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonl
     for (const e of W.leash.events) if (e.kind === "befriended") { const c = g.creatures[e.id], a = g.party.areas.get(cellKey(c.cell)); if (a?.soundsystem && g.combat.sounds.has(cellKey(c.cell))) joinParty(g, c, a.soundsystem, a.cell); }
     g.leashEvents.push(...W.leash.events);
   }
+}
+
+function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonly Controls[] = []): void {
+  // Two clocks (rules/slowTime.ts): the world's runs at timeScale (slowed in a sleeping legend's circle), hers at full speed.
+  const { dt, hdt, guestWas, guestTurn } = stepClocks(g, guestCatchUp);
+  // Explicit legacy cauldron preview owns its own inventory/inputs while enabled.
+  if (!g.cauldron) stepMushrooms(g);
+  const wave = g.party.wave;
+  const anchorFrom = g.witches.map(W => ({ x: W.body.x, z: W.body.z })); // (where each stood before her step: the chains, below)
+  for (const W of g.witches) { drainPips(g.berries, W.leash.stack, g.creatures, dt, g.tuning); setBuffs(W, buffsOf(W.leash.stack, g.creatures, g.berries, g.tuning).stacks); } // (her follower buffs this step: rules/buffs.ts)
+  const legends = (g.legendIds ??= g.creatures.filter(k => k.boss).map(k => k.id));
+  const t = g.tuning;
+  const motions = witchMotions(g, controls, hdt, guestCatchUp, guestWas, guestTurn);
+  dragByChains(g, motions, anchorFrom, hdt); // (her chains: rules/chains.ts, the taut chain: rules/tautChain.ts)
+  const c = motions[0].c;
+  g.camera = stepCamera(g.camera, c.zoom, { x: g.witch.x, y: witchHeight(g.witch, g.tuning), z: g.witch.z }, { x: g.witch.vx, z: g.witch.vz }, g.witch.lift, hdt, g.tuning, !!g.witch.seated, g.introFocus, coastOf(g), g.tuning.camera.circle?.on ? legendCircleNear(g, g.witch)?.legend ?? null : null, onTreehouse(g), !!c.framing && onTreehouse(g), c.framePart ?? null); // (in a legend's circle: the lower view, camera.circle; indoors, camera.house; choosing at a station, camera.station)
+  const { over, still } = stepWaves(g, c, dt, legends); // (the afterparty, the night won, the world asleep: no waves, no fights)
+  stepWitchHealth(g, motions);
+  const B = g.berries, busy = (id: number) => B.feeding.has(id) || B.evolving.has(id);
+  // (No growth on a clock: every area is peopled from the start by its place on the route, Ed 2026-10-07; rules/creatures.ts.)
+  if (!still && !castOn(t)) stepClear(g); // (with the stacks on, a stone converts only by her spell or its wave: rules/stoneStacks.ts)
+  // (in the treehouse her followers guard home as if their sigils were placed there, her stack unchanged: rules/houseGuard.ts)
+  noteLeashModes(g, motions);
+  g.lod = newLodCounts();
+  stepReveal(g); // (the challenge circle hidden before the party and after a lost one, fading in and out: rules/challenge.ts)
+  stepStatues(g); // (the challenge circle's statues waking as she sets foot on its floor, stone again once it's left: rules/challengeStatues.ts)
+  if (!still) stepWildWatch(g, t); // (before the fights: those just watching her hold off this very step)
+  if (!still) stepHunts(g, t); // (then the woken areas' own hunt her: rules/hunt.ts)
+  if (!still) stepFights(g, t, dt, busy);
+  else if (over) stepPartyOver(g, dt); // (nothing fights: everyone walks home to bed, rules/partyOver.ts)
+  // Noticing her (before they step, so a curious baby sets off this step).
+  stepCreatureMoves(g, dt);
+  // (A party animal in a fight is moved by combat, not its leash.)
+  // Far from her on the ground, or from its sigil, a party animal travels (rules/travel.ts): quiet, along area borders.
+  for (const motion of motions) stepWitchActions(g, motion, dt, hdt, legends, busy);
+  stepBerries(B, g.creatures, id => {
+    for (const { W, LV } of motions) { const p = LV!.placed.find(q => q.id === id); if (p) return { x: p.x, z: p.z }; if (W.leash.stack.includes(id)) return leashPoint(W.leash, id, W.body.x, W.body.z); }
+    return leashPoint(g.leash, id, g.witch.x, g.witch.z);
+  }, g.clock.time, dt, t, g.beat);
+  tallyLeashEvents(g, motions);
   for (const e of B.events) if (e.kind === "ate") g.tally.berries++; else if (e.kind === "evolved") g.tally.evolved++;
   stepSpeakerBoot(g);
   stepDancefloor(g, wave);
@@ -877,20 +887,10 @@ function fixedStep(g: Game, controls: readonly Controls[], guestCatchUp: readonl
   stepWitchParty(g, motions.map(m => m.c), dt);
   // Her hat's lasting spells where it lies (rules/hatSpells.ts: Bramble, Nursing, the Cyclone), after everything else has moved.
   for (const w of g.witches) stepHatSpells(g, w, hatsDown(w), dt, t);
-  if (g.beach) for (const s of g.beach) stepBeachWitches(s, motions.map(({ W, c }) => { const w = W.body; return { x: w.x, z: w.z, onFoot: w.mode === "ground" && !w.seated, moving: !w.stargazing && (Math.hypot(c.moveX, c.moveZ) > 0.05 || Math.hypot(w.vx, w.vz) > 0.3) || !!c.toggleMode }; }), g.clock.time, dt, g.tuning);
+  stepBeaches(g, motions, dt);
   // Last, everyone in view eases apart from anyone closer than their sizes like (Ed, 2026-10-05).
   stepSpacing(g, dt);
-  // Enraged creatures stay out of a sleeping or restless legend's circle (Ed, 2026-10-06).
-  if (g.tuning.legendCircle?.slow.on !== false) keepEnragedOut(g);
-  // And everyone on foot stays ashore of the lakes (rules/lakes.ts).
-  if (g.map.bounds.lakes) creaturesAshore(g.creatures, g.map.bounds, lakeKnobs(t).pad);
-  // And in the zoo every creature stays inside its island's fence, whatever moved it (rules/zooMap.ts); hers go where she goes.
-  const F = g.map.bounds.fence;
-  if (F) for (const c of g.creatures) {
-    if (c.gone || c.leashed) continue;
-    const I = F.ofCell(c.cell[0], c.cell[1]);
-    if (I) { const p = F.keepIn(I, c.x, c.z); c.x = p.x; c.z = p.z; }
-  }
+  keepInPlace(g); // (out of a sleeping legend's circle, ashore of the lakes, inside the zoo's fences)
   // Last boundary guard, including afterparty/knockback/lake corrections: the home legend never leaves home.
   const H = homeArea(g.map);
   for (const id of legends) {
