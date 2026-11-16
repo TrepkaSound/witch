@@ -516,6 +516,7 @@
       "max": 25,
       "areaMax": 55
     },
+    "sigilSide": true,
     "species": {
       "elk": 22,
       "stag": 18,

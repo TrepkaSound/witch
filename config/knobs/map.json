@@ -730,6 +730,13 @@
       ],
       "notes": "Each area's sleeping legend lies in a small circular clearing of its own [1], where no tree or decor stands: radius metres across from its middle (species: a radius for that legend, sized to fit it: half its sleeping width plus 4 m), a soft ring edge metres wide marking it on the ground, and the legend lying top x radius north of the middle (the circle's far side from the camera), the open floor in front. Quest sigils and relics take effect inside it."
     },
+    "legendClearing.sigilSide": {
+      "what": "The legend circle baby's loose sigil lands at its circle's left or right edge, clear of where she puts a quest sigil down; false (?circlesigil=old): by its dancing spot, as before.",
+      "decisions": [
+        { "by": "Ed", "date": "2026-11-16", "quote": "It is easy to go into a legend's circle and accidentally pick up the legend baby instead of putting down the quest sigil. Where in the circle does it land? Perhaps we can move it to the left or right edge.", "rest": "offered the edge, behind the legend, or put-down winning in a quest circle, he chose the edge" }
+      ],
+      "links": ["rules/stoneStacks.ts"]
+    },
     "legendClearing.back": {
       "what": "How far back in its circle a sleeping legend lies: its middle this share of the radius north of the circle's middle (the side furthest from the camera), so the front of the circle is open for her to stand in, facing it [1].",
       "decisions": [
