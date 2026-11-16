@@ -1295,9 +1295,9 @@ function scatterFriends(g: Game, key: string, at: { x: number; z: number }, time
 }
 
 export function joinParty(g: Game, c: Creature, soundsystem: { x: number; z: number }, cell: Cell): void {
-  // A legend's circle's baby dances in its circle (Ed, 2026-10-06: "Happy Circle baby should stay in its circle, though it can dance
-  // there"): by its loose sigil at the circle's side (Ed, 2026-11-16: "it can stay near its sigil as normal"), else on its open floor.
-  if (c.circle) { const k = c.circle, s = g.tuning.legendClearing.sigilSide !== false && g.loose.find(p => p.id === c.id && p.to === "circle"); danceAt(c, s ? { x: s.x, z: s.z } : { x: k.x, z: k.z + k.r * 0.3 }, s ? k.r * 0.15 : k.r * 0.45); return; }
+  // A legend's circle's baby dances in its circle, on its open floor (Ed, 2026-10-06: "Happy Circle baby should stay in its
+  // circle, though it can dance there").
+  if (c.circle) { const k = c.circle; danceAt(c, { x: k.x, z: k.z + k.r * 0.3 }, k.r * 0.45); return; }
   const spot = guestSpot(c, soundsystem, partySpots(g.map, cell, g.tuning));
   if (spot.kind === "soundsystem") { danceAt(c, spot, spot.r); return; }
   // the guests already round this place, and their slots

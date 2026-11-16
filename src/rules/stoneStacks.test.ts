@@ -332,12 +332,10 @@ describe("a legend circle's baby's sigil (Ed, 2026-10-28: it lands in its circle
     expect(p.to).toBe("circle");
     expect(Math.hypot(p.x - k.x, p.z - k.z)).toBeLessThan(k.r);
     expect(Math.abs(p.x - k.x)).toBeGreaterThan(k.r * 0.6); // (at its left or right edge: Ed, 2026-11-16; circleSpot.test.ts)
-    expect(b.dancing).toBe(true); expect(Math.hypot(b.anchorX - p.x, b.anchorZ - p.z)).toBeLessThan(1e-6); expect(b.range).toBeLessThanOrEqual(k.r * 0.15 + 1e-6); // (its baby dances by it: Ed, 2026-11-16, "it can stay near its sigil as normal")
     expect(Math.hypot(p.x - k.legendX, p.z - k.legendZ)).toBeGreaterThan(2);
     const others = g.loose.filter(q => q.id !== b.id && own(g, key).some(c => c.id === q.id && !c.boss));
     expect(others.length).toBeGreaterThan(0);
-    for (const q of others) { expect(q.to).toBeUndefined(); expect(Math.hypot(q.x - stone.x, q.z - stone.z)).toBeLessThanOrEqual(C.scatter.reach + 1e-6); }
-  };
+    for (const q of others) { expect(q.to).toBeUndefined(); expect(Math.hypot(q.x - stone.x, q.z - stone.z)).toBeLessThanOrEqual(C.scatter.reach + 1e-6); }  };
   const withBaby = (g: Game, keys: readonly (readonly [number, number])[]) => keys.map(([cx, cy]) => `${cx},${cy}`).find(key => own(g, key).some(c => c.circle && !c.boss && c.level === 0) && own(g, key).some(c => !c.circle && !c.boss && c.level === 0));
 
   it("by the spell", () => {

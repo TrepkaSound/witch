@@ -267,8 +267,8 @@ export function scatterSpots(key: string, x: number, z: number, n: number, t: Tu
  *  beyond the sigil button's pick-up reach (leash.runeRadius). Which side: by `seed` (its baby's id), the other side if that one isn't
  *  free; then along the edge from each, toward the back before the front (SIDE_STEPS), never the middle or front. Free: clear of the
  *  sleeping legend's body (`clear` metres round where it lies) and of anything `free` says no to (barred, another sigil near); the
- *  circle can sit across its area's edge, so no area or clearing test. With nowhere free, the seeded side all the same. Its baby dances
- *  by it there (Ed, 2026-11-16: "it can stay near its sigil as normal"; game.ts joinParty). `side` false (?circlesigil=old): as before, the free spot nearest that
+ *  circle can sit across its area's edge, so no area or clearing test. With nowhere free, the seeded side all the same. Its baby
+ *  roams the whole circle floor as before (Ed, 2026-11-16: "The baby can roam the whole floor"; creatures.ts pointInCircle). `side` false (?circlesigil=old): as before, the free spot nearest that
  *  dancing spot. */
 export function circleSpot(circle: { x: number; z: number; r: number; legendX: number; legendZ: number }, clear: number, seed: number, free: (x: number, z: number) => boolean, side = true): { x: number; z: number } {
   if (!side) return circleSpotOld(circle, clear, seed, free);
