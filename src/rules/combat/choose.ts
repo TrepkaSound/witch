@@ -44,18 +44,22 @@ function roleSpell(sp: SpeciesSpell | null, c: Creature, kind: ReturnType<typeof
   } else if (designed && !close) return null; // (alone too: its pack's designed shot, not its own)
   const P = packAttack(c.species, c.level, "ranged");
   if (close || !P) return sp;
-  const key = `${sp.name}/${c.level}`;
-  let out = FAR.get(key);
+  const key = `${c.level}/${sp.damage}`;
+  let by = FAR.get(sp.spec);
+  if (!by) FAR.set(sp.spec, (by = new Map()));
+  let out = by.get(key)?.from === P.attack ? by.get(key)!.out : undefined;
   if (!out) {
     // (it moves and times its shots as its pack's shooters do; what it fires is its own, reaching as far, wound up at least as long)
     const reach = P.attack.range, k = reach / sp.attack.range, windup = Math.max(P.attack.windup, sp.spec.cast?.windup ?? 0.6);
     const spec = { ...sp.spec, cast: { ...sp.spec.cast, range: reach, windup }, ...(sp.spec.life?.range !== undefined ? { life: { ...sp.spec.life, range: sp.spec.life.range * k } } : {}) };
-    FAR.set(key, (out = { ...sp, spec, attack: { ...P.attack, windup }, damage: sp.damage * (P.attack.cooldown / sp.attack.cooldown) }));
+    by.set(key, { from: P.attack, out: (out = { ...sp, spec, attack: { ...P.attack, windup }, damage: sp.damage * (P.attack.cooldown / sp.attack.cooldown) }) });
   }
   return out;
 }
 type SpeciesSpell = NonNullable<ReturnType<typeof speciesSpell>>;
-const FAR = new Map<string, SpeciesSpell>();
+// (by its own spell's spec, then its level and damage, and checked against the pack's shot it copies: keyed by name and level alone it
+// kept the first game's reach and damage, another fight scale's or difficulty's, for every game after: docs/notes/module-state.md)
+const FAR = new WeakMap<object, Map<string, { from: object; out: SpeciesSpell }>>();
 
 /** Its attack this step: `spell`, one in the grammar, and `atk`, what it strikes with (none: a baby, which doesn't attack). */
 export function attackFor(k: CombatStep, c: Creature, pd: Directive | undefined): { spell: Spell | null; atk: Armed | null } {

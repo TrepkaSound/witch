@@ -249,20 +249,26 @@ export function attackOf(species: string, level: Level, data: CombatData = COMBA
 }
 
 /** An attack at the fight's scale and speed (FIGHT): its lengths times scale, its shot's speed times speed. */
-export const SCALED = new Map<string, Attack>();
+// (by the attack itself, then the scale and speed: keyed by its name it once handed another combat data's attack of that name, a
+// test's or a tool's, to whoever asked next: docs/notes/module-state.md)
+// A scaling handed back in (attackOf scales what attackNamed scaled) is scaled from its own source, so never twice: the name-keyed
+// cache did that by chance, by name; SOURCE does it by the attack. // module-state: caches keyed by the attack object (and FIGHT)
+const SCALED = new WeakMap<Attack, Map<string, Attack>>(), SOURCE = new WeakMap<Attack, Attack>();
 export function scaled(name: string, A: Attack): Attack {
   if (!A) return A;
+  A = SOURCE.get(A) ?? A;
   // (the last scaling of each attack, by name, kept while the fight's scale and speed stay: no key string a call; phase
   // 2's GC audit. SCALED still holds every scaling made, as before.)
   const last = LAST_SCALED.get(name);
   if (last && last.A === A && last.scale === FIGHT.scale && last.speed === FIGHT.speed) return last.out;
-  const key = `${name}|${FIGHT.scale}|${FIGHT.speed}`;
-  let out = SCALED.get(key);
+  const key = `${FIGHT.scale}|${FIGHT.speed}`;
+  let by = SCALED.get(A);
+  if (!by) SCALED.set(A, (by = new Map()));
+  let out = by.get(key);
   if (!out) {
     const L = FIGHT.scale, V = FIGHT.speed, m = (x: number | undefined, k: number) => (x === undefined ? undefined : x * k);
     out = { ...A, range: A.range * L, lunge: m(A.lunge, L), radius: m(A.radius, L), width: m(A.width, L), knockback: m(A.knockback, L), speed: m(A.speed, V) };
-    if (SCALED.size > 2000) SCALED.clear();
-    SCALED.set(key, out);
+    by.set(key, out); SOURCE.set(out, A);
   }
   LAST_SCALED.set(name, { A, scale: FIGHT.scale, speed: FIGHT.speed, out });
   return out;
