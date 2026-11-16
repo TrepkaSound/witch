@@ -56,4 +56,4 @@ const marten = {
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes") (on the bench: src/rules/kinds.ts BENCH); plans, each level's build;
  *  curl, how it curls up to sleep where it differs from the rest (art/mesh/gear.js `napping` reads gait.curl): long, it turns further, so its ring closes with its head on its haunch. */
-export const MESH = { id: "marten", heights: [45, 69, 97, 237], gait: "bound", curl: { turn: 4.3 }, plans: marten };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "marten", heights: [45, 69, 97, 237], gait: "bound", curl: { turn: 4.3 }, plans: marten });

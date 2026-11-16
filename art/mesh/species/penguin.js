@@ -17,7 +17,7 @@ const prone = { lean: 1.25, legs: [0.2, 0, 0.3], neck: [-0.45, 0, 0], head: [-0.
 function build(name, o) {
   // (its flippers are made inside kit/bird.js, where its body's measure is known: what rocks them at each pace is filled in then)
   let flips = []; const slow = [], fast = [];
-  const wings = ({ B, Z, f }) => { flips = [[1, "L"], [-1, "R"]].map(([s, tag]) => { const at = B(s * 0.9 * f, 0.05 * f, Z(0.3)), to = B(s * (0.9 * f + 0.06 * o.len), -0.1 * f, Z(0.3) - o.len * 0.5); return flipper(tag, s, at, to.map((v, i) => v - at[i]), { len: o.len * (o.flip ?? 0.5), wide: o.len * 0.085, colours: { back: o.C.back, belly: o.C.belly, edge: o.C.back } }); });
+  const wings = ({ B, Z, f }) => { flips = /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]]).map(([s, tag]) => { const at = B(s * 0.9 * f, 0.05 * f, Z(0.3)), to = B(s * (0.9 * f + 0.06 * o.len), -0.1 * f, Z(0.3) - o.len * 0.5); return flipper(tag, s, at, to.map((v, i) => v - at[i]), { len: o.len * (o.flip ?? 0.5), wide: o.len * 0.085, colours: { back: o.C.back, belly: o.C.belly, edge: o.C.back } }); });
     slow.push(...flips.flatMap(w => w.wave({ out: 0.25, amp: 0.08, beats: 1 }))); fast.push(...flips.flatMap(w => w.wave({ out: 0.7, amp: 0.15, beats: 1 }))); return flips; };
   return bird(name, { tilt: 1.42, seat: -0.45, white: 0.15, wings, roost: { ...prone, more: rots => { for (const [i, w] of flips.entries()) rots[w.names[0]] = [0, 0, (i ? -1 : 1) * 0.5]; } }, ...o,
     neck: { rise: 1.5, len: 0.07, r: 0.075, ...o.neck }, head: { nod: 0.05, ...o.head }, beak: { len: 1.2, wide: 0.2, deep: 0.2, droop: 0.12, colour: "#2a2a30", ...o.beak }, eye: { r: 0.17, colour: "#0c0a09", ...o.eye }, tail: { len: 0.05, n: 3, fan: 0.3, pitch: -0.9, ...o.tail },
@@ -45,4 +45,4 @@ const penguin = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: today's drawn heights, Ed, 2026-11-12, "keep
  *  the sizes"); plans, each level's build. */
-export const MESH = { id: "penguin", heights: [50, 77, 111, 267], gait: "walk", plans: penguin };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "penguin", heights: [50, 77, 111, 267], gait: "walk", plans: penguin });

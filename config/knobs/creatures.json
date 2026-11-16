@@ -245,6 +245,12 @@
           "date": "2026-11-09",
           "quote": "The animal magic effects need to glow.",
           "rest": "core 1, halo 1, pool 1, lights 5, light 1; the look is the magic brief's (docs/backlog/magic-effects.md §5, Ed 2026-10-28: \"Pixel cores and dithered pixel halos, with a small smooth bloom over the top\"; effect lights allowed, capped at about six)"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-16",
+          "quote": "Stronger",
+          "rest": "asked how strong the creatures' spell glow should be; core 1 to 1.35, halo 1 to 1.8, pool 1 to 2, light 1 to 1.3, and the halo's reach (new: reach) 2.6 to 3.4 times its core; lights stays 5 (the effects' six slots were already the limit); ?spellglow=old draws it as before, to compare"
         }
       ],
       "links": [
@@ -253,7 +259,7 @@
         "render/fx/system.ts",
         "render/leash/attackLook.ts"
       ],
-      "notes": "core: how bright the glowing core added over each spell's own is, in its element's bright colour (a party animal's: its neon), enough to cross the bloom's threshold, so the bloom gives it a small smooth glow (0 none). halo: the dithered halo round bolts, hits and beams, in three art-pixel steps fading out (0 none). pool: its light's pool on the ground under every spell in flight (smaller and fainter the higher it flies, so the lit spot shows its height), at its hits and across lingering zones and quakes (0 none). lights: at most this many spells light the world around them at once (the strongest nearest her first, sharing the effects' six slots, config/fx/intensity.json lightCap, within the light budget; easing in and out, the world's farthest lights making room the same way, so none pops); 0 none. light: those lights' strength (1 as the magic layers' own). Reduce flashing (the Settings page) halves core, halo, pool and light; nothing in the glow flickers."
+      "notes": "core: how bright the glowing core added over each spell's own is, in its element's bright colour (a party animal's: its neon), enough to cross the bloom's threshold, so the bloom gives it a small smooth glow (0 none). halo: the dithered halo round bolts, hits and beams, in three art-pixel steps fading out (0 none). pool: its light's pool on the ground under every spell in flight (smaller and fainter the higher it flies, so the lit spot shows its height), at its hits and across lingering zones and quakes (0 none). lights: at most this many spells light the world around them at once (the strongest nearest her first, sharing the effects' six slots, config/fx/intensity.json lightCap, within the light budget; easing in and out, the world's farthest lights making room the same way, so none pops); 0 none. light: those lights' strength (1 as the magic layers' own). reach: how far the halo reaches, its width over its core's (2.6 until 16 November; her own magic's stays 2.6). ?spellglow=old draws the glow at its strength before 16 November (core, halo, pool and light 1, reach 2.6), to compare. Reduce flashing (the Settings page) halves core, halo, pool and light; nothing in the glow flickers."
     },
     "attackFx.magicGlow": {
       "what": "How her own magic glows, as the creatures' spells do: a bright core, a dithered pixel halo, a pool of its light on the ground and a real light where it earns one (all four at 0 draw her magic as before 13 November; ?magicglow=0 does too, to compare).",
@@ -758,12 +764,18 @@
           "date": null,
           "quote": "they should lose interest and go home if you leave their area, as they did before",
           "rest": "and; rules/hunt.ts"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-16",
+          "quote": "Keep: they give up and go home",
+          "rest": "her hunters when she is knocked out: they give up, walk home and roam, and the area's watch plays again on her next visit"
         }
       ],
       "links": [
         "rules/hunt.ts"
       ],
-      "notes": "The hunt [1][2]: once a wild area's watch is over with her on the ground in it, every one of its own awake young and adults hunts her while she's in the area, wherever in it they are, never giving up or napping; over the treetops there they hold and come on again when she lands. It ends for one when it's invited, enraged, or knocked down and run off; for all of an area's when she takes off outside the area (Ed's 31 Oct playtest: they follow her out on foot and hold while she's up over their own area; before, it ended as she left the area and they gave up combat.leaveArea metres past their edge); for all of hers when she's knocked out (they give up, walk home and roam, DECISION FOR ED, and the area's watch plays again on her next visit). Back in an area she left, it hunts her again at once while it's remembered (wildWatch.forget seconds after she was last on the ground in it), else its watch plays again. Babies don't fight."
+      "notes": "The hunt [1][2]: once a wild area's watch is over with her on the ground in it, every one of its own awake young and adults hunts her while she's in the area, wherever in it they are, never giving up or napping; over the treetops there they hold and come on again when she lands. It ends for one when it's invited, enraged, or knocked down and run off; for all of an area's when she takes off outside the area (Ed's 31 Oct playtest: they follow her out on foot and hold while she's up over their own area; before, it ended as she left the area and they gave up combat.leaveArea metres past their edge); for all of hers when she's knocked out (they give up, walk home and roam, and the area's watch plays again on her next visit: Ed, 2026-11-16, \"Keep: they give up and go home\"). Back in an area she left, it hunts her again at once while it's remembered (wildWatch.forget seconds after she was last on the ground in it), else its watch plays again. Babies don't fight."
     },
     "hunt.on": {
       "what": "false: the old rule (only those near her attack)."

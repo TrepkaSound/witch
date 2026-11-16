@@ -258,6 +258,7 @@ export type SchemaTuning = {
     "clear": number;
     "lightReach": number;
     "lightStrength": number;
+    "freeTakeOff"?: boolean;
     "landCooldown": number;
     "deck": {
       "on": boolean;
@@ -1215,6 +1216,7 @@ export type SchemaTuning = {
       "pool": number;
       "lights": number;
       "light": number;
+      "reach": number;
     };
     "magicGlow": {
       "core": number;
@@ -1494,6 +1496,7 @@ export type SchemaTuning = {
     "partyDrain": number;
     "partyReach": number;
     "homeAlike"?: boolean;
+    "hardHits"?: boolean;
   };
   "wildLegends": {
     "wake": number;
@@ -2075,6 +2078,7 @@ export type SchemaTuning = {
     "src": string;
     "singer": string;
     "haunted": boolean;
+    "hauntedHush": number;
     "melody": "dance" | "lyrical" | "old";
     "banger": boolean;
     "over": {

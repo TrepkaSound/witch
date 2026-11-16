@@ -6,6 +6,7 @@ import { SPRITE_UNIFORMS } from "../sprites";
 import { gpuKind } from "../gpuLedger";
 import { PIXEL_SNAP_GLSL } from "../shaders";
 import { ELEMENT_KEYS, elements, settings } from "./model";
+import { GLOW_REACH } from "./spellGlow";
 const VERT=/* glsl */ `
 uniform vec3 uRight,uUp;
 uniform float uFlat,uMpp;uniform vec2 uRes;
@@ -52,17 +53,20 @@ void spellGlow(){
   // colour pushed further from grey, so a pale element's glow still reads as its colour, not white)
   vec3 luma=vec3(0.2126,0.7152,0.0722);
   float even=clamp(0.55/max(0.05,dot(bright,luma)),0.55,1.15);
-  bright=clamp(mix(vec3(dot(bright,luma)),bright,1.6),0.0,1.0);
+  // (a glow raised past 1, Ed, 2026-11-16, "Stronger": its colour pushed further still, so more of it adds colour, not white)
+  float over=clamp(max(k.x,max(k.y,k.z))-1.0,0.0,1.0);
+  bright=clamp(mix(vec3(dot(bright,luma)),bright,1.6+0.9*over),0.0,1.0);hot=mix(hot,bright,0.5*over);
   vec2 cell=floor((vP*0.5+0.5)*vGrid),p=(cell+0.5)/vGrid*2.0-1.0;
   bool line=(form>1.5&&form<2.5)||form>10.5;
   float a=0.0;vec3 rgb=bright;
   if(uLayer<4.5){
-    // s: 1 at the core's edge; the quad reaches uSpellGlow.w times as far
-    float s=(line?abs(p.y):length(p))*uSpellGlow.w;
+    // s: 1 at the core's edge; the quad reaches span times as far (the creatures': attackFx.glow.reach; hers: GLOW_SPAN)
+    float span=vData.z>5.0?uMagicGlow.w:uSpellGlow.w;
+    float s=(line?abs(p.y):length(p))*span;
     if(s<0.5){a=k.x*0.9;rgb=mix(bright,hot,0.2);}
     else if(s<0.85)a=k.x*0.5;
     else{
-      float t=(s-0.85)/max(0.01,uSpellGlow.w-0.85),band=floor(t*3.0);
+      float t=(s-0.85)/max(0.01,span-0.85),band=floor(t*3.0);
       if(band>2.5||bayer4(cell)>0.75-band*0.25)discard;
       a=k.y*(0.34-band*0.11);
     }
@@ -149,8 +153,9 @@ void main(){
 /** Screen blending, light added that eases toward white instead of piling past it (1 - (1 - dst)(1 - src)): the spell glow's pool, so
  *  ground already lit (her light, the dancefloor's) isn't blown out into the bloom. */
 const SCREEN={blending:THREE.CustomBlending,blendEquation:THREE.AddEquation,blendSrc:THREE.OneMinusDstColorFactor,blendDst:THREE.OneFactor,blendSrcAlpha:THREE.ZeroFactor,blendDstAlpha:THREE.OneFactor} as const;
-/** How far the creatures' spell glow's dithered halo reaches past its core: its quad this many times the core's size. */
-export const GLOW_SPAN=2.6;
+/** How far a glow's dithered halo reaches past its core: its quad this many times the core's size (her own magic's; the creatures'
+ *  is the tuning's attackFx.glow.reach, this without one). */
+export const GLOW_SPAN=GLOW_REACH;
 /** How far a halo spreads past its core (1.45 of it), a little wider as its glow is raised. */
 export const haloSpread=(glow:number):number=>1.45*(1+0.15*Math.max(0,glow-1));
 /** A layer slot's draw order (slots 0 to 3 upright, 4 to 7 on the ground, 8 the canopy halo): the magic's own, or, from `base`, the
@@ -167,8 +172,10 @@ export class FxBatches {
   /** The creatures' spell glow's strengths this frame (render/fx/spellGlow.ts): core, halo, pool, and how far the halo reaches (its
    *  quad's size over the core's). */
   readonly spellGlow={value:new THREE.Vector4(0,0,0,GLOW_SPAN)};
-  /** Her own magic's glow's strengths this frame (spellGlow.ts magicGlowLook): core, halo, pool. */
-  readonly magicGlow={value:new THREE.Vector4(0,0,0,0)};
+  /** Her own magic's glow's strengths this frame (spellGlow.ts magicGlowLook): core, halo, pool, and its halo's reach. */
+  readonly magicGlow={value:new THREE.Vector4(0,0,0,GLOW_SPAN)};
+  /** A glow instance's halo's reach: her own magic's (its intensity past 10) or the creatures'. */
+  private span(data:number[]):number {return data[2]>5?this.magicGlow.value.w:this.spellGlow.value.w;}
   private count=0;
   canopy=false;
   /** `order`: its layers' draw order from this (ground layers, then upright ones, then the canopy halo) in place of the magic's own
@@ -246,7 +253,7 @@ export class FxBatches {
    *  GLOW_SPAN times it). data: form, element (past 100: tinted, its colour the tint's), intensity, phase. */
   glowAt(x:number,y:number,z:number,size:number,data:number[],alpha:number,tint:readonly number[]|null):void {
     if(this.count>=settings.instances||!this.layers[9])return;this.count++;
-    this.layers[9].add(x,y,z,size*this.spellGlow.value.w,data,tint?.[0]??1,tint?.[1]??1,tint?.[2]??1,alpha,1,false,0);
+    this.layers[9].add(x,y,z,size*this.span(data),data,tint?.[0]??1,tint?.[1]??1,tint?.[2]??1,alpha,1,false,0);
   }
   /** Its light's pool on the ground, `size` across (metres). */
   poolAt(x:number,z:number,size:number,data:number[],alpha:number,tint:readonly number[]|null):void {
@@ -256,7 +263,7 @@ export class FxBatches {
   /** Both along a beam or a trail (data's form a beam's or a trail's): standing at y (pool: on the ground), `width` its core's. */
   glowLine(x:number,y:number,z:number,length:number,heading:number,width:number,data:number[],alpha:number,tint:readonly number[]|null,pool:boolean):void {
     if(this.count>=settings.instances||!this.layers[10])return;this.count++;
-    this.layers[pool?10:9].add(x,pool?0:y,z,width*(pool?1:this.spellGlow.value.w),data,tint?.[0]??1,tint?.[1]??1,tint?.[2]??1,alpha,-length,false,heading);
+    this.layers[pool?10:9].add(x,pool?0:y,z,width*(pool?1:this.span(data)),data,tint?.[0]??1,tint?.[1]??1,tint?.[2]??1,alpha,-length,false,heading);
   }
   end():void {for(const b of this.layers)b.end();for(const b of this.extras)b.end();for(const b of this.glows)b.mesh.visible=(b.mesh.geometry as THREE.InstancedBufferGeometry).instanceCount>0;}
 }

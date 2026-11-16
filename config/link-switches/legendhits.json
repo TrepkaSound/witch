@@ -1,0 +1,10 @@
+{
+ "name": "legendhits",
+ "values": [
+  "old"
+ ],
+ "does": "A legend's attack hits creatures for 10, as before, to compare: not the 50 a hit of its kind's big attack, its lob or beam and a charging kind's trample.",
+ "group": "compare",
+ "since": "2026-11-16",
+ "decision": "50 a hit by default (Ed, 2026-11-16: \"50 a hit\")"
+}

@@ -28,7 +28,7 @@ const plumage = o => S => { const out = [], lit = o.lit ? { tipColour: o.lit, gl
 /** A serpent with wings on its reared neck at `at`: shut against it, or with `up` held spread and raised that many radians. */
 function winged(p, at, o, up) {
   const sp = p.gait.serpent.spine, r = sp[Math.round(at * (sp.length - 1))];
-  const ws = [[1, "L"], [-1, "R"]].map(([s, tag]) => featherwing(tag, s, [r.at[0] + s * r.rx * 0.7, r.at[1] + r.ry * 0.3, r.at[2]], { parent: r.bone, tilt: up ? 0 : r.pitch * 0.8, colours: { coat: "#1f9a5a", flight: SCARLET, tip: GOLD, under: TURQ }, ...o, ...(up ? { fold: { roll: -up, at: [0.5, -0.05, 0.4] } } : {}) }));
+  const ws = /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]]).map(([s, tag]) => featherwing(tag, s, [r.at[0] + s * r.rx * 0.7, r.at[1] + r.ry * 0.3, r.at[2]], { parent: r.bone, tilt: up ? 0 : r.pitch * 0.8, colours: { coat: "#1f9a5a", flight: SCARLET, tip: GOLD, under: TURQ }, ...o, ...(up ? { fold: { roll: -up, at: [0.5, -0.05, 0.4] } } : {}) }));
   for (const w of ws) { p.bones.push(...w.bones); p.lofts.push(...w.lofts); p.cones.push(...w.cones); }
   // (asleep, coiled, a raised wing is swung back and let down level)
   if (up) p.gait.nap = pose => { coil(pose); ws.forEach((w, i) => { const s = i ? -1 : 1; pose.rots[w.names[0]] = [-r.pitch, 0, -s * (up - 0.12)]; }); };
@@ -54,4 +54,4 @@ const featheredserpent = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs featheredserpent`: Ed, 2026-11-12, "keep
  *  the sizes"; its legend's is to the top of its raised wings, as today's is); plans, each level's build. */
-export const MESH = { id: "featheredserpent", heights: [108, 149, 196, 436], gait: "glide", plans: featheredserpent };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "featheredserpent", heights: [108, 149, 196, 436], gait: "glide", plans: featheredserpent });

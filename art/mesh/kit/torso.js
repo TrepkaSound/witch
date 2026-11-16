@@ -18,7 +18,7 @@ export function torso(o) {
   // (how far along the back, 0 at the hips to 1 at the shoulders: the spine arched up between them by `arch`, its front `drop` lower)
   const fr = v => Math.min(1.1, Math.max(-0.2, (v + 0.275) / 0.46)), yo = v => arch * 0.07 * Math.sin(Math.PI * Math.min(1, Math.max(0, fr(v)))) - drop * fr(v);
   const sh = [0, back - 0.005 + yo(0.185), z(0.185)], pivot = [0, sh[1] + neck[0], sh[2] + neck[1]];
-  return {
+  return /** @satisfies {import("../types").Body} */ ({
     pivot,
     bones: [["root", [0, 0, 0], null], ["pelvis", [0, back + 0.01 + yo(-0.26), z(-0.26)], "root"], ["loin", [0, back + 0.02 + yo(-0.1), z(-0.10)], "pelvis"], ["chest", [0, back + 0.005 + yo(0.08), z(0.08)], "loin"], ["neck", [0, sh[1] + neck[0] * 0.35, sh[2] + neck[1] * 0.45], "chest"]],
     rings: [
@@ -31,7 +31,7 @@ export function torso(o) {
       { at: [0, sh[1] + neck[0] * 0.82, sh[2] + neck[1] * 0.92], rx: 0.06 * g * neckThick, ry: 0.07 * g * neckThick, bone: "neck", colour: bib(C.coat, C.belly, at + 0.3), up: [0, 0.75, -0.65] },
     ],
     hip: s => [0.065 * g * rump * s, back - 0.01, z(-0.25)], shoulder: s => [0.06 * g * s, back - 0.04 - drop, z(0.175)],
-  };
+  });
 }
 
 /** The bone each ring of the torso's skin rides, rump tip to throat: what stands off a ring (kit/tufts.js) rides the same. */

@@ -34,6 +34,9 @@ export interface FrameCheckScene {
   /** Put in place before its frames: a debug arena (window.witch.arena) or a quick shot's scene (window.witch.shot). */
   arena?: string;
   shot?: string;
+  /** Her broom taken before its frames, as E at the rack takes it (app/frameCheckPlace.ts): the check's night waits for her party
+   *  spell, so she starts with none, and without one she falls off the Terrace's rim rather than flying from it. */
+  broom?: true;
   /** The sail: not stepped but run on the page's own loop (app/frameCheckRun.ts runSail), its parts each a row (FRAME_CHECK_SAIL_PARTS). */
   sail?: true;
   controls(i: number): Controls;
@@ -42,14 +45,17 @@ export interface FrameCheckScene {
 export const FRAME_CHECK_SCENES: readonly FrameCheckScene[] = [
   { id: "decks", label: "party start at the decks", bench: "the bench's start (its booth scene), then the party spell cast at 1 s and the home ring booting",
     controls: i => ({ ...idle, castParty: i === 60 }) },
-  { id: "ground-flight", label: "ground flight over the forest", bench: "the bench's ground-flight path, frame for frame (flown after the decks scene, not from the start)",
+  { id: "ground-flight", label: "ground flight over the forest", bench: "the bench's ground-flight path, frame for frame (flown after the decks scene, not from the start), her broom taken first: up from her decks, off the Terrace's rim and away over the treetops",
+    broom: true,
     controls: i => ({ moveX: Math.cos(Math.floor(i / 150) * 1.4), moveZ: -Math.abs(Math.sin(Math.floor(i / 150) * 1.4)), toggleMode: false, zoom: 0 }) },
   { id: "wave-fight", label: "wave fight: a pack, spells, glows and shot marks", bench: "the quick bench's wave-fight arena (wolf*3@2,boar*2@1), its walk-in, wave and circle; 10 s not 5, and she casts every 3/4 s",
-    arena: "wolf*3@2,boar*2@1",
+    arena: "wolf*3@2,boar*2@1", broom: true,
     controls: i => (i < 30 ? { ...idle, moveZ: 1 } : { moveX: Math.cos((i - 30) / 40), moveZ: Math.sin((i - 30) / 40), toggleMode: false, zoom: 0, nextWave: i === 30, spell: i % 45 === 0 }) },
-  { id: "treehouse", label: "the treehouse (the parlour)", bench: "the quick shot's room:parlour, a slow walk round; no bench scene times the house",
-    shot: "room:parlour",
-    controls: i => ({ ...idle, moveX: 0.5 * Math.cos(i / 90), moveZ: 0.5 * Math.sin(i / 90) }) },
+  { id: "treehouse", label: "the treehouse (the parlour)", bench: "the quick shot's room:parlour, a slow walk round inside it; no bench scene times the house",
+    shot: "room:parlour", broom: true,
+    // (a loop from the room's middle small enough to stay in the Parlour, a little over twice round: at i / 90 it was twice as wide
+    // and took her out along the branch to the next room. frameCheckScenes.test.ts walks it against the room's real floor.)
+    controls: i => ({ ...idle, moveX: 0.5 * Math.cos(i / 45), moveZ: 0.5 * Math.sin(i / 45) }) },
   { id: "sail", label: "the sail: the sea chart, its flight, the dive, the take-off", bench: "the nightly sail take-off check's voyage (tools/stall/sail-takeoff.cjs: the map table's chart to raven, seed 864794), from this game's home (seed 123, not its 81808); no bench scene times a sail",
     sail: true, controls: () => idle },
 ];

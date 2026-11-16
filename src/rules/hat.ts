@@ -4,7 +4,7 @@
 // up first. The purpose of this is to help you not lose fights that you might be in."): knocked out, she
 // drops it where she went down and wears none until she stands on it and presses the sigil button. It
 // never enters the stack. Knocked out again while it's still down, the old one stays where it lies and
-// nothing new drops (DECISION FOR ED). A witch with no hat (the character creator's "none": Ed, "If she
+// nothing new drops (Ed, 2026-11-16: "Keep it: one hat on the ground"). A witch with no hat (the character creator's "none": Ed, "If she
 // chooses no hat in character creation, then she simply doesn't have this mechanic") drops nothing.
 // The rules don't know her look: the page says whether she has one (`has`: app/night.ts wearHat).
 // Her other hats (Ed, 2026-10-12: "if her hat is placed in the world, she can go back to her room to pick up a new one and the

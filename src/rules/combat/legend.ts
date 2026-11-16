@@ -3,6 +3,7 @@
 import { guardsHome, homePost, LEGEND, type Creature } from "../creatures";
 import { foes, stateOf, type State } from "../creatureStates";
 import { LEGENDS } from "../legends";
+import { legendHit } from "./legendHits";
 import { bodyRadius } from "../spacing";
 import { FIGHT, type LegendSet } from "../movement";
 import { type Attack, type CombatData, type Target, type Fight, type CombatState, attackNamed, type CombatWorld } from "./data";
@@ -191,10 +192,10 @@ function friendlyIdle(w: CombatWorld, c: Creature): void {
  *  witch in reach the nearest standing soundsystem first: bombarding, below; happy: what's attacking a witch in its range first,
  *  else the enraged and the wild going for her), winds up for windup seconds, then casts its kind's own attack, exaggerated
  *  (rules/attacks/species.ts legendAttack; Ed, 2026-10-27); the old lob (a bomb landing after
- *  lobFlight seconds) or beam (by its species) only at a soundsystem, or with ?attacks=old, each hit plain attack.damage. (Its shots are the wild's when angry, the happy's when happy: foes() does the rest.) */
+ *  lobFlight seconds) or beam (by its species) only at a soundsystem, or with ?attacks=old, each hit plain attack.damage (50; Ed, 2026-11-16: "50 a hit"; rules/combat/legendHits.ts). (Its shots are the wild's when angry, the happy's when happy: foes() does the rest.) */
 export function stepLegendAttack(w: CombatWorld, s: CombatState, c: Creature, data: CombatData, grid: Grid): void {
   // Its attacks share the posse's allegiance so blows can land on wild witch-attackers as well as the enraged.
-  const A = LEGENDS.attack, time = w.time, S = FIGHT.scale, angry = c.legendState !== "happy", R = (angry ? A.range : w.t.legends.friendRange) * S, side: State = angry ? "wild" : "leashed";
+  const A = LEGENDS.attack, hit = legendHit(w.t, A.damage), time = w.time, S = FIGHT.scale, angry = c.legendState !== "happy", R = (angry ? A.range : w.t.legends.friendRange) * S, side: State = angry ? "wild" : "leashed";
   const f = (c.fight ??= { target: null, readyAt: time + A.interval * 0.5, windupUntil: 0, aimX: 0, aimZ: 0 });
   if (c.lairX === undefined) { c.lairX = c.x; c.lairZ = c.z; }
   const charger = LEGENDS.charge.species.includes(c.species);
@@ -208,8 +209,8 @@ export function stepLegendAttack(w: CombatWorld, s: CombatState, c: Creature, da
     for (const a of c.aims ?? []) {
       const ticks = Math.max(1, Math.round(A.beamTime / 0.25)), sk = a.target.kind === "sound" ? a.target.key : null;
       if (beam) {
-        s.beams.push({ id: s.nextShot++, from: c.id, angle: Math.atan2(a.z - c.z, a.x - c.x), length: Math.max(R, Math.hypot(a.x - c.x, a.z - c.z) + 4), width: A.beamWidth * S, until: time + A.beamTime, nextTick: time, tick: 0.25, damage: A.damage / ticks, side, species: c.species, attack: "legendBeam", target: a.target, ...(sk ? { sound: { key: sk, damage: (w.t.legends?.bombard?.damage ?? 0) / ticks } } : {}) });
-      } else s.shots.push({ id: s.nextShot++, x: c.x, z: c.z, vx: 0, vz: 0, until: time + A.lobFlight + 1, from: c.id, side, species: c.species, damage: A.damage, radius: A.lobRadius * S, attack: "legendLob", lob: { fx: c.x, fz: c.z, tx: a.x, tz: a.z, at: time, lands: time + A.lobFlight }, ...(sk ? { sound: { key: sk, damage: w.t.legends?.bombard?.damage ?? 0 } } : {}) });
+        s.beams.push({ id: s.nextShot++, from: c.id, angle: Math.atan2(a.z - c.z, a.x - c.x), length: Math.max(R, Math.hypot(a.x - c.x, a.z - c.z) + 4), width: A.beamWidth * S, until: time + A.beamTime, nextTick: time, tick: 0.25, damage: hit / ticks, side, species: c.species, attack: "legendBeam", target: a.target, ...(sk ? { sound: { key: sk, damage: (w.t.legends?.bombard?.damage ?? 0) / ticks } } : {}) });
+      } else s.shots.push({ id: s.nextShot++, x: c.x, z: c.z, vx: 0, vz: 0, until: time + A.lobFlight + 1, from: c.id, side, species: c.species, damage: hit, radius: A.lobRadius * S, attack: "legendLob", lob: { fx: c.x, fz: c.z, tx: a.x, tz: a.z, at: time, lands: time + A.lobFlight }, ...(sk ? { sound: { key: sk, damage: w.t.legends?.bombard?.damage ?? 0 } } : {}) });
     }
     if (c.aims?.length) s.events.push({ kind: beam ? "beam" : "shot", x: c.x, z: c.z, at: time, id: c.id });
     c.aims = undefined;
@@ -269,7 +270,7 @@ export function stepLegendAttack(w: CombatWorld, s: CombatState, c: Creature, da
     const S2 = (s.spells ??= newSpells()), W = spellWorld(w, s, grid, S2.seed, data), casts: number[] = [];
     // (at her, its aim followed till it locks, as every ranged attack's: rules/attacks/aim.ts, Ed 2026-11-12; ?ranged=old as before)
     const RG = rangedOf(w.t);
-    for (const a of c.aims) if (a.target.kind !== "sound") casts.push(castSpell(S2, W, spec, `legend:${c.species}`, { id: c.id, x: c.x, z: c.z, side, species: c.species, heading: Math.atan2(a.z - c.z, a.x - c.x) }, hittableOf(w, s, a.target), time, A.damage, f.windupUntil, { track: a.target.kind === "witch" ? trackFor(spec, LEGEND, RG) : undefined, centre: RG.on }));
+    for (const a of c.aims) if (a.target.kind !== "sound") casts.push(castSpell(S2, W, spec, `legend:${c.species}`, { id: c.id, x: c.x, z: c.z, side, species: c.species, heading: Math.atan2(a.z - c.z, a.x - c.x) }, hittableOf(w, s, a.target), time, hit, f.windupUntil, { track: a.target.kind === "witch" ? trackFor(spec, LEGEND, RG) : undefined, centre: RG.on }));
     if (casts.length) { f.spellCasts = casts; c.aims = c.aims.filter(a => a.target.kind === "sound"); }
   }
   c.facing = f.aimX >= c.x ? 1 : -1;
@@ -324,7 +325,7 @@ export function stepLongCharge(w: CombatWorld, s: CombatState, c: Creature, f: F
         if (angry ? false : st === "happy" || st === "leashed") continue; // (happy: its side's and hers pass)
         if (Math.hypot(o.x - c.x, o.z - c.z) > half + bodyRadius(o)) continue;
         run.hit.push(o.id);
-        land(w, s, c, { kind: "creature", id: o.id }, K.damage, blow, c.x, c.z);
+        land(w, s, c, { kind: "creature", id: o.id }, legendHit(w.t, K.damage), blow, c.x, c.z);
         // Knocked aside: off the lane, away from its line.
         const side = Math.sign((o.x - c.x) * -Math.sin(run.angle) + (o.z - c.z) * Math.cos(run.angle)) || 1;
         o.kx = -Math.sin(run.angle) * side * kb * 6 + vx * 0.3 * share; o.kz = Math.cos(run.angle) * side * kb * 6 + vz * 0.3 * share;

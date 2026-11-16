@@ -12,7 +12,7 @@ const SKULL = [[0.2, 0.86, 0.95], [0.42, 1, 1], [0.62, 0.9, 0.86], [0.84, 0.62, 
  *  (kit/serpent.js's S.P, or a neck's own); wide and deep the head's half-sizes in the same lengths, size its length in metres.
  *  o: spines (how many), high, colour, tip, frill: { colour, tip, long } or null, glow. */
 export function crest(P, bone, { wide, deep, size }, o = {}) {
-  const { spines = 4, high = 0.3, colour, tip = colour, frill = { colour, tip }, up = [0, 0, 1] } = o, cones = [];
+  const { spines = 4, high = 0.3, colour, tip = colour, frill = { colour, tip }, up = [0, 0, 1] } = o, cones = /** @type {import("../types").Cone[]} */ ([]);
   for (let i = 0; i < spines; i++) { const z = 0.72 - 0.6 * i / Math.max(1, spines - 1), k = 0.65 + 0.35 * Math.sin(Math.PI * (i + 0.6) / (spines + 0.2));
     cones.push({ at: P(0, deep * 0.8, z), rx: 0.05 * size, ry: 0.09 * size, tip: P(0, deep + high * k, z - 0.16 * k), bone, colour, tipColour: tip, split: 0.5, up, sides: 3 }); }
   if (frill) for (const s of [1, -1]) for (let j = 0; j < 3; j++) { const a = -0.5 + 0.55 * j, L = (frill.long ?? 0.42) * (j === 1 ? 1 : 0.8);
@@ -38,7 +38,7 @@ export function neck(tag, parent, from, o = {}) {
   const pts = [[...from]]; for (let i = 0; i < M; i++) { const d = dir((i + 0.5) / M); pts.push(pts[i].map((v, k) => v + d[k] * len / M)); }
   const at = t => { const f = Math.min(M - 1e-6, Math.max(0, t * M)), i = Math.floor(f), u = f - i; return pts[i].map((v, k) => v + (pts[i + 1][k] - v) * u); };
   const chain = Array.from({ length: nb }, (_, i) => `neck${tag}${i + 1}`), headBone = stump ? chain[nb - 1] : `head${tag}`, boneOf = t => chain[Math.min(nb - 1, Math.floor(t * nb + 1e-6))];
-  const bones = chain.map((name, i) => [name, at(i / nb), i ? chain[i - 1] : parent]), fat = t => r * (1 - (1 - taper) * t);
+  const bones = /** @satisfies {import("../types").Bone[]} */ (chain.map((name, i) => [name, at(i / nb), i ? chain[i - 1] : parent])), fat = t => r * (1 - (1 - taper) * t);
   const rings = Array.from({ length: n }, (_, i) => { const t = i / (n - 1); return { at: at(t), rx: fat(t) * 1.05, ry: fat(t), bone: boneOf(t), colour: skin(t, i), up: dorsal(t) }; }), lofts = [], cones = [];
   let mouth = at(1);
   if (stump) rings.push({ at: at(1).map((v, k) => v + dir(1)[k] * r * 0.25), rx: fat(1) * 0.55, ry: fat(1) * 0.5, bone: headBone, colour: scar, up: dorsal(1) });
@@ -62,5 +62,5 @@ export function neck(tag, parent, from, o = {}) {
   const SHAPES = { rear: [-0.62, -0.3, 0.42, 0.5, 0.12], snap: [0.6, 0.3, -0.2, -0.28, -0.22] };
   const pose = (kind, lean = 0) => Object.fromEntries(all.map((bone, i) => { const k = i === all.length - 1 && !stump ? 4 : Math.min(3, Math.round(i * 3 / Math.max(1, nb - 1)));
     return [bone, kind === "watch" ? [i ? 0 : 0.06, i === all.length - 1 ? lean * 1.2 : 0, i < 2 ? -lean : 0] : [SHAPES[kind][k] * (kind === "snap" && i === 0 ? 1 : 1), i ? 0 : -yaw * (kind === "snap" ? 0.5 : 0.15), 0]]; }));
-  return { bones, lofts, cones, chain, head: headBone, mouth, sways, pose };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones, lofts, cones, chain, head: headBone, mouth, sways, pose });
 }

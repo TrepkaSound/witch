@@ -16,5 +16,5 @@ export function jointLeg(tag, top, o) {
   const ring = (at, r, bone, colour, lit = false) => ({ at, rx: r * t, ry: r * t, bone: b[bone], colour, glow: lit });
   const rings = [ring(mix(top, K, -0.12), 0.07, 0, C.upper), ring(mix(top, K, 0.5), 0.085, 0, C.upper), ring(mix(top, K, 0.86), 0.078, 0, C.upper), ring(K, 0.078, 1, C.joint ?? C.upper), ring(mix(K, A, 0.14), 0.07, 1, C.lower ?? C.upper), ring(mix(K, A, 0.5), 0.06, 1, C.lower ?? C.upper), ring(mix(K, A, 0.88), 0.052, 1, C.lower ?? C.upper), ring(A, 0.052, 2, C.joint ?? C.upper),
     ring(mix(A, D, 0.6), 0.036, 2, C.tip ?? C.lower ?? C.upper, glow), ring(D, 0.022, 3, C.tip ?? C.lower ?? C.upper, glow), ring(P(1.03, 0.008 * t), 0.008, 3, C.tip ?? C.lower ?? C.upper, glow)];
-  return { bones: [[b[0], top, parent], [b[1], K, b[0]], [b[2], A, b[1]], [b[3], D, b[2]]], lofts: [{ sides, up, rings }], cones: [], names: b };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [[b[0], top, parent], [b[1], K, b[0]], [b[2], A, b[1]], [b[3], D, b[2]]], lofts: [{ sides, up, rings }], cones: [], names: b });
 }

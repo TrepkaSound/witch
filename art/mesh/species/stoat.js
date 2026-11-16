@@ -60,4 +60,4 @@ const stoat = {
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build;
  *  curl, how it curls up to sleep where it differs from the rest (art/mesh/gear.js `napping` reads gait.curl): long, it turns further, so its ring closes with its head on its haunch. */
-export const MESH = { id: "stoat", heights: [41, 63, 88, 229], gait: "bound", curl: { turn: 4.5 }, plans: stoat };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "stoat", heights: [41, 63, 88, 229], gait: "bound", curl: { turn: 4.5 }, plans: stoat });

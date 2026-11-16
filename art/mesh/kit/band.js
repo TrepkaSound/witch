@@ -7,5 +7,5 @@
 export function band(bone, a, b, o) {
   const { at = 0.5, r = 0.08, wide = 0.03, colour, up = [0, 0.8, -0.6], sides = 8, ry = r } = o, L = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) || 1;
   const m = f => a.map((v, i) => v + (b[i] - v) * f), w = wide / L;
-  return { bones: [], cones: [], lofts: [{ sides, up, rings: [[-w, 0.82], [-w / 2, 1], [w / 2, 1], [w, 0.82]].map(([d, f]) => ({ at: m(at + d), rx: r * f, ry: ry * f, bone, colour, up })) }] };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], cones: [], lofts: [{ sides, up, rings: [[-w, 0.82], [-w / 2, 1], [w / 2, 1], [w, 0.82]].map(([d, f]) => ({ at: m(at + d), rx: r * f, ry: ry * f, bone, colour, up })) }] });
 }

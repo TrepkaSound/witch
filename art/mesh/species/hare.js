@@ -80,4 +80,4 @@ const hare = {
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build;
  *  curl, how it curls up to sleep where it differs from the rest (art/mesh/gear.js `napping` reads gait.curl): its ears, longer than its ring is wide, lie back and swung in across its own back. */
-export const MESH = { id: "hare", heights: [74, 114, 164, 491], gait: "bound", curl: { ears: 1.4, earsIn: 1.6 }, plans: hare };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "hare", heights: [74, 114, 164, 491], gait: "bound", curl: { ears: 1.4, earsIn: 1.6 }, plans: hare });

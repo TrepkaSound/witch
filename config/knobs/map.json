@@ -1141,6 +1141,13 @@
     "treeMarginFromSoundsystem": {
       "see": "setPieceFootprint"
     },
+    "treehouse.freeTakeOff": {
+      "what": "Adults and legends in her stack never stop her taking off while she is at the treehouse (its floors, rooms and balcony: her followers count as placed there); false (?treehousetakeoff=old): they ground her there as everywhere else, as before.",
+      "decisions": [
+        { "by": "Ed", "date": "2026-11-16", "quote": "Let her take off from the treehouse", "rest": "asked whether the treehouse floor should be an exception to adults and legends in her stack grounding her, since her followers count as placed while she is perched" }
+      ],
+      "links": ["rules/leashWeight.ts"]
+    },
     "treehouse.landCooldown": {
       "what": "Seconds after she leaves a treehouse floor (rising or stepping off) before she can land on one, and after she lands before she can leave: meanwhile she flies on over its floors, and its open edges keep her in. 0: no wait.",
       "decisions": [

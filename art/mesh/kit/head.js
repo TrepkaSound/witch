@@ -23,7 +23,7 @@ export function head(pivot, o) {
     { at: P(0, -0.013, 0.16 + 0.087 * m), rx: 0.02 * k * nose, ry: 0.02 * k * nose, bone: "head", colour: C.nose },
     { at: P(0, -0.013, 0.16 + 0.101 * m), rx: 0.009 * k * nose, ry: 0.009 * k * nose, bone: "head", colour: C.nose },
   ];
-  const tall = ear.tall ?? 1, ew = ear.wide ?? 1, cones = [], lofts = [], bones = [["head", pivot, "neck"]], [ex = 0, ey = 0, ez = 0] = ear.at ?? [], shape = ear.shape ?? "point";
+  const tall = ear.tall ?? 1, ew = ear.wide ?? 1, cones = [], lofts = [], bones = /** @satisfies {import("../types").Bone[]} */ ([["head", pivot, "neck"]]), [ex = 0, ey = 0, ez = 0] = ear.at ?? [], shape = ear.shape ?? "point";
   for (const s of [1, -1]) {
     const name = s > 0 ? "earL" : "earR", bx = 0.048 * wide + ex, base = P(bx * s, 0.07 * dome + ey, 0.025 + ez), torn = ear.torn === s, h = torn ? 0.6 : 1;
     bones.push([name, base, "head"]);
@@ -44,5 +44,5 @@ export function head(pivot, o) {
     const E = C.eyes?.[s > 0 ? 0 : 1], ew2 = 0.058 * wide + eyeAt[0];
     cones.push({ at: P(ew2 * s, 0.055 * dome + eyeAt[1], 0.117 + eyeAt[2]), rx: 0.019 * k * eye, ry: 0.016 * k * eye, tip: P((ew2 + 0.016 * eye) * s, 0.063 * dome + eyeAt[1], 0.125 + eyeAt[2]), bone: "head", colour: E?.colour ?? C.eye ?? C.nose, glow: !!E?.glow, tag: "eye", split: 0.5, up: [0, 1, 0], sides: 4 });
   }
-  return { bones, rings, cones, lofts, P, ears: ["earL", "earR"] };
+  return /** @satisfies {import("../types").Skull} */ ({ bones, rings, cones, lofts, P, ears: ["earL", "earR"] });
 }

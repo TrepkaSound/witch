@@ -24,7 +24,7 @@ const falseBeard = (P, long = 1) => ({ at: P(0, -0.05, 0.175), rx: 0.016, ry: 0.
 const rope = (q, C, o) => catTail(q.root, C, { len: 0.7, r: 0.04, pitch: -0.9, curl: 1.3, tip: 0.24, plume: true, bones: 5, ...o });
 /** Its wings (kit/featherwing.js) from its shoulders: shut along its sides, or with `up` held spread and raised that many
  *  radians above level, as its legend's are. */
-const wings = (q, o, up) => [[1, "L"], [-1, "R"]].map(([s, tag]) => featherwing(tag, s, [s * q.R[4].rx * 0.8, q.R[4].at[1] + q.R[4].ry * 0.62, q.R[4].at[2] - 0.03], { parent: "chest", tilt: 0, ...o, ...(up ? { fold: { roll: -up, at: [0.5, -0.05, 0.4] } } : {}) }));
+const wings = (q, o, up) => /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]]).map(([s, tag]) => featherwing(tag, s, [s * q.R[4].rx * 0.8, q.R[4].at[1] + q.R[4].ry * 0.62, q.R[4].at[2] - 0.03], { parent: "chest", tilt: 0, ...o, ...(up ? { fold: { roll: -up, at: [0.5, -0.05, 0.4] } } : {}) }));
 // (asleep a raised wing is swung back and let down level along its back)
 const folded = (ws, up) => ({ rots }) => { ws.forEach((w, i) => { const s = i ? -1 : 1; rots[w.names[0]] = [0, s * 1.25, -s * (up - 0.25)]; rots[w.names[1]] = [0, s * 0.25, 0]; }); };
 const couched = (o = {}) => stalks({ sleep: "sphinx", ...o });
@@ -63,4 +63,4 @@ const sphinx = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs sphinx`: Ed, 2026-11-12, "keep the sizes";
  *  its legend's is to the top of its raised wings, as today's is); plans, each level's build. */
-export const MESH = { id: "sphinx", heights: [63, 98, 181, 484], gait: "trot", plans: sphinx };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "sphinx", heights: [63, 98, 181, 484], gait: "trot", plans: sphinx });

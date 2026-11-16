@@ -28,7 +28,7 @@ function build(o = {}) {
   return { body, skull, legs: fourLegs(body, hind, fore), root: [0, R[1].at[1] + 0.01, R[0].at[2] + 0.03], R, P, cones: [beak, ...ruff] };
 }
 const rope = (q, C, o) => catTail(q.root, C, { len: 0.7, r: 0.04, pitch: -0.9, curl: 1.3, tip: 0.26, plume: true, bones: 5, ...o });
-const wings = (q, o, up) => [[1, "L"], [-1, "R"]].map(([s, tag]) => featherwing(tag, s, [s * q.R[4].rx * 0.8, q.R[4].at[1] + q.R[4].ry * 0.62, q.R[4].at[2] - 0.02], { parent: "chest", tilt: 0, colours: { coat: "#8a5f34", flight: "#5e3f22", tip: "#e6d3ae", under: "#c79a52" }, ...o, ...(up ? { fold: { roll: -up, at: [0.5, -0.05, 0.4] } } : {}) }));
+const wings = (q, o, up) => /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]]).map(([s, tag]) => featherwing(tag, s, [s * q.R[4].rx * 0.8, q.R[4].at[1] + q.R[4].ry * 0.62, q.R[4].at[2] - 0.02], { parent: "chest", tilt: 0, colours: { coat: "#8a5f34", flight: "#5e3f22", tip: "#e6d3ae", under: "#c79a52" }, ...o, ...(up ? { fold: { roll: -up, at: [0.5, -0.05, 0.4] } } : {}) }));
 const folded = (ws, up) => ({ rots }) => { ws.forEach((w, i) => { const s = i ? -1 : 1; rots[w.names[0]] = [0, s * 1.25, -s * (up - 0.25)]; rots[w.names[1]] = [0, s * 0.25, 0]; }); };
 const griffin = {
   // a chick of a cub: downy, big-headed, stubs of wings
@@ -55,7 +55,7 @@ const griffin = {
     const q = build({ C, HC: { eyes: [{ colour: LIT, glow: true }, { colour: LIT, glow: true }] }, talon: GOLD, talons: { len: 2.4, thick: 1.8 }, hind: { len: 1.3, thick: 1.3, knob: 1.15, claws: { colour: DARK, len: 1.0 } }, fore: { len: 1.32, thick: 1.4, knob: 1.15 }, body: { len: 1.2, girth: 1.22, deep: 1.36, tuck: 0.6, hump: 0.6, neck: [0.24, 0.15], neckThick: 1.5 }, head: { size: 1.4 }, ear: { tall: 0.7 }, beak: 1.2, ruff: 1.5 }), P = q.P;
     const t = rope(q, C, { len: 0.95, r: 0.05, pitch: 0.2, curl: 1.4, wave: 0.2, bones: 6 });
     const w = wings(q, { span: 1.75, chord: 0.58, primaries: 8, secondaries: 6, lit: LIT }, UP);
-    const crest = [-0.03, 0, 0.03].flatMap((x, i) => [0, 1].map(j => ({ at: P(x, 0.085, 0.04 - 0.03 * j), rx: 0.014, ry: 0.03, tip: P(x * 2.2, 0.17 + 0.05 * (i === 1 ? 1 : 0) - 0.03 * j, -0.1 - 0.07 * j), bone: "head", colour: WHITE, tipColour: LIT, glow: "tip", split: 0.6, bulge: 0.92, up: [1, 0, 0], sides: 4 })));
+    const crest = /** @satisfies {import("../types").Cone[]} */ ([-0.03, 0, 0.03].flatMap((x, i) => [0, 1].map(j => ({ at: P(x, 0.085, 0.04 - 0.03 * j), rx: 0.014, ry: 0.03, tip: P(x * 2.2, 0.17 + 0.05 * (i === 1 ? 1 : 0) - 0.03 * j, -0.1 - 0.07 * j), bone: "head", colour: WHITE, tipColour: LIT, glow: "tip", split: 0.6, bulge: 0.92, up: [1, 0, 0], sides: 4 }))));
     const armour = [{ from: 0.9, to: 3.2, round: [0.25, 1.8], lames: 3, thick: 0.022, step: 0.012, colour: STORM, rim: GOLD, runes: { colour: LIT } }];
     return plan("griffin-legend", q.body, q.skull, [...q.legs, t, ...w], stalks({ sleep: "sphinx", lively: 0.75, tails: [t.chain], nap: folded(w, UP) }), { cones: [...q.cones, ...crest], armour });
   },
@@ -64,4 +64,4 @@ const griffin = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs griffin`: Ed, 2026-11-12, "keep the
  *  sizes"; its legend's is to the top of its raised wings, as today's is); plans, each level's build. */
-export const MESH = { id: "griffin", heights: [63, 139, 218, 524], gait: "trot", plans: griffin };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "griffin", heights: [63, 139, 218, 524], gait: "trot", plans: griffin });

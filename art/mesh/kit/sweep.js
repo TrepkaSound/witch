@@ -24,5 +24,5 @@ export const aside = d => { const a = d.map(Math.abs); return a[0] <= a[1] && a[
  *  function from one). up picks the rings' ry direction: not the way the path runs. Its rings have no coat's texture (`plain`). */
 export function sweep(bone, pts, o) {
   const { r = 0.02, colour, sides = 5, up = [0, 0, 1], flat = 1, glow = false } = o, n = Math.max(1, pts.length - 1);
-  return { sides, up, rings: pts.map((at, i) => { const t = i / n, R = pick(r, t, i); return { at, rx: R, ry: R * pick(flat, t, i), bone, colour: pick(colour, t, i), glow: !!pick(glow, t, i), plain: true, up }; }) };
+  return /** @satisfies {import("../types").Loft} */ ({ sides, up, rings: pts.map((at, i) => { const t = i / n, R = pick(r, t, i); return { at, rx: R, ry: R * pick(flat, t, i), bone, colour: pick(colour, t, i), glow: !!pick(glow, t, i), plain: true, up }; }) });
 }

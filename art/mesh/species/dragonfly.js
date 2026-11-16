@@ -15,16 +15,16 @@ function hawker(name, o) {
   const { fly = 0.34, k = 1, wing = 1, tail = 1, C = {}, eye = 1.7, tatters = 0, veins = { colour: VEIN, n: 2, w: 0.004 }, seconds = 0.8 } = o;
   const b = insect({ fly, k, chest: 1.05, skull: 1.1, C: { thorax: C.thorax ?? TEAL, head: C.head ?? DEEP, eye: C.eye ?? "#3ad0c0", eyeGlow: !!C.eyeGlow, leg: "#16211f" }, eye: { r: eye, out: 0.045, up: 0.018, fwd: 0.02 }, feelers: { len: 0 }, legs: { len: 0.75, fwd: 0.07 },
     abdomen: { len: 1.75 * tail, fat: 0.36, rings: o.rings ?? 9, bones: 3, droop: 0.015, prof: t => 0.62 - 0.3 * t + (t > 0.85 ? 0.12 : 0), colour: i => (i % 2 ? C.ring ?? "#16302e" : C.tail ?? BLUE) } }), { P } = b;
-  const wings = [], lofts = [], cones = [], bones = [];
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) for (const [pair, z, dir, len, wide, phase] of [["f", 0.055, [s, 0.07, 0.14], 0.56, 0.058, 0], ["h", -0.02, [s, 0.04, -0.2], 0.52, 0.072, Math.PI]]) {
+  const wings = [], lofts = /** @type {import("../types").Loft[]} */ ([]), cones = /** @type {import("../types").Cone[]} */ ([]), bones = /** @type {import("../types").Bone[]} */ ([]);
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) for (const [pair, z, dir, len, wide, phase] of /** @satisfies {[string, number, number[], number, number, number][]} */ ([["f", 0.055, [s, 0.07, 0.14], 0.56, 0.058, 0], ["h", -0.02, [s, 0.04, -0.2], 0.52, 0.072, Math.PI]])) {
     const bone = `wing${pair}${tag}`, root = P(0.04 * s, 0.13, z); bones.push([bone, root, "thorax"]); wings.push({ bone, s, phase });
     const w = insectwing(bone, root, dir, { len: len * wing * k, wide: wide * wing * k, colour: C.glass ?? GLASS, veins, tatters, prof: [[0, 0.4], [0.25, 0.9], [0.6, 1], [0.88, 0.8], [1, 0.3]], cells: [{ from: 0.8, to: 0.88, wide: 0.3, off: -0.55, colour: C.mark ?? "#2b3f46", glow: !!C.markGlow }] });
     lofts.push(...w.lofts); cones.push(...w.cones);
   }
   // (asleep: settled, its wings out flat and let down a little)
   const nap = ({ rots }) => { for (const w of wings) rots[w.bone] = [0, 0, -w.s * 0.22]; };
-  return { name, bones: [...b.bones, ...bones], lofts: [...b.lofts, ...lofts], cones: [...b.cones, ...cones], armour: o.armour ?? [], hover: fly * k,
-    gait: hovers(wings, { beats: 3, mid: 0.06, amp: 0.34, seconds, bob: 0.015 * k, more: b.sways, sleep: "settle", nap }) };
+  return /** @satisfies {import("../types").Plan} */ ({ name, bones: [...b.bones, ...bones], lofts: [...b.lofts, ...lofts], cones: [...b.cones, ...cones], armour: o.armour ?? [], hover: fly * k,
+    gait: hovers(wings, { beats: 3, mid: 0.06, amp: 0.34, seconds, bob: 0.015 * k, more: b.sways, sleep: "settle", nap }) });
 }
 const dragonfly = {
   baby: () => hawker("dragonfly-baby", { fly: 0.24, k: 0.9, wing: 0.62, tail: 0.6, eye: 1.9, rings: 6, C: { thorax: "#57b8a4", tail: "#6aa6d8", head: "#2f7a6c" }, seconds: 0.6 }),
@@ -40,4 +40,4 @@ const dragonfly = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette as its plan draws it, wings out, turned towards us: today's drawn heights, Ed,
  *  2026-11-12, "keep the sizes"); plans, each level's build. */
-export const MESH = { id: "dragonfly", heights: [36, 57, 86, 267], gait: "fly", plans: dragonfly };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "dragonfly", heights: [36, 57, 86, 267], gait: "fly", plans: dragonfly });

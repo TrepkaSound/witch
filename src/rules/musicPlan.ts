@@ -14,6 +14,7 @@ import { beatAt, type BeatClock } from "./beat";
 import type { Game } from "./game";
 import type { Creature } from "./creatures";
 import { circleReach } from "./legendCircle";
+import { passAt } from "./musicHush";
 import { arcStep, type BlockPlan, type MusicStyle } from "./musicScore";
 import { isHomeKey } from "./speakers";
 
@@ -219,15 +220,31 @@ function waveState(style: MusicStyle, cue: MusicCue, bar: number): { w: number; 
   return { w, arrival, next };
 }
 
-/** The form's clock in bar `bar` (Ed, 2026-10-09: the 32-bar ABAC form, its melodies and its sections): the bar it last
- *  started on (from bar 0 through the boot, then on the block line each wave lands on, and on the bar line each knockdown's
- *  new record starts on), and how many knockdowns' new records are playing by then (musicScore.ts musicSeed). */
-export function formClock(style: MusicStyle, cue: MusicCue, bar: number): { start: number; n: number } {
+/** Where the form last started by bar `bar`: the bar (from bar 0 through the boot, then the block line each wave lands on, and
+ *  the bar line each knockdown's new record starts on), and how many knockdowns' new records are playing by then. */
+function formOrigin(style: MusicStyle, cue: MusicCue, bar: number): { start: number; n: number } {
   const B = style.blockBars;
   const landed = (b: number) => b < cue.bootUntil ? 0 : blockAfter(waveState(style, cue, b).arrival, B);
   let n = 0, line = -Infinity;
   for (const k of cue.knockdowns ?? []) { const at = Math.ceil(k.back - 1e-3); if (at > bar) break; n++; line = at; }
   return { start: Math.max(landed(bar), line), n };
+}
+
+/** The form's clock in bar `bar` (Ed, 2026-10-09: the 32-bar ABAC form, its melodies and its sections): the bar it counts
+ *  from (where the form last started: formOrigin; later by the bars the haunted breakdowns since were lengthened by, which it
+ *  waits out: Ed, 2026-11-16, rules/musicHush.ts; held through a build and the victory), and how many knockdowns' new records
+ *  are playing by then (musicScore.ts musicSeed). */
+export function formClock(style: MusicStyle, cue: MusicCue, bar: number): { start: number; n: number } {
+  const o = formOrigin(style, cue, bar), B = style.blockBars;
+  if (!style.form || !style.haunted?.drop.stretch || bar < cue.bootUntil) return o;
+  const { w, next } = waveState(style, cue, bar), step = arcStep(style, cue.forceWave ?? w);
+  if (!step.sections) return o;
+  // (the last bar the form's own sections played: the one before the victory's block, or the build's)
+  let hold = bar;
+  if (cue.victory !== undefined) hold = Math.min(hold, cue.victory - (cue.victory % B) - 1);
+  const buildBars = step.buildBars ?? style.buildBars, drop = Number.isFinite(next) ? blockAfter(next, B) : Infinity;
+  if (drop > bar && drop - bar <= buildBars) hold = Math.min(hold, drop - buildBars - 1);
+  return { start: o.start + passAt(style, step.sections, hold - o.start).shift, n: o.n };
 }
 
 /** Whether the music is silent in bar `bar` (fractional): from a knockdown till its new record starts (Ed, 2026-10-09: "the
@@ -257,11 +274,12 @@ export function planBlock(style: MusicStyle, cue: MusicCue, bar: number): BlockP
   // breakbeats, and the fourth a breakdown"): from the form's start, round and round, a new section of each kind each pass
   const S = step.sections, F = style.form;
   if (S && F) {
-    const fs = formClock(style, cue, bar).start, L = F.order.length * F.phraseBars, P = F.phraseBars, k = bar - fs;
-    const pass = Math.floor(k / L), pos = k - pass * L, at = fs + pass * L, of = (l: string[]) => l[pass % l.length];
+    const fs = formOrigin(style, cue, bar).start, L = F.order.length * F.phraseBars, P = F.phraseBars;
+    // (a pass with a haunted breakdown is longer by its stretch, 8 quiet bars before the drop: Ed, 2026-11-16, rules/musicHush.ts)
+    const { pass, at: off, extra } = passAt(style, S, bar - fs), at = fs + off, pos = bar - at, of = (l: string[]) => l[pass % l.length];
     if (pos < 2 * P) return { ...plan(pass === 0 && S.land ? S.land : of(S.four), at, 2 * P), pass };
     if (pos < 3 * P) return { ...plan(of(S.breaks), at + 2 * P, P), pass };
-    return { ...plan(of(S.breakdown), at + 3 * P, L - 3 * P), pass };
+    return { ...plan(of(S.breakdown), at + 3 * P, L - 3 * P + extra), pass };
   }
   // the wave's own sections: its arrival, then its loop
   const k = Math.max(0, bar - blockAfter(arrival, B));

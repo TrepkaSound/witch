@@ -18,7 +18,7 @@ export function marked(plan, pattern, n = 3) {
   src.forEach((r, i) => { const next = src[i + 1];
     for (let k = 0; k < (next ? n : 1); k++) { const t = k / n, near = t < 0.5 ? r : next, m = rings.length, u = i + t, mix = (a, b) => a + (b - a) * t;
       rings.push({ ...near, at: k ? r.at.map((v, j) => mix(v, next.at[j])) : r.at, rx: k ? mix(r.rx, next.rx) : r.rx, ry: k ? mix(r.ry, next.ry) : r.ry, colour: (cy, sx, f) => pattern(u, cy, sx, m) ?? own(near, cy, sx, f) }); } });
-  return { ...plan, lofts: [{ ...skin, rings }, ...plan.lofts.slice(1)], armour: plan.armour.map(a => ({ ...a, from: (a.from ?? 0) * n, to: (a.to ?? src.length - 1) * n })), anchors: { neck: plan.anchors.neck * n, skull: plan.anchors.skull * n } };
+  return /** @satisfies {import("../types").Plan} */ ({ ...plan, lofts: [{ ...skin, rings }, ...plan.lofts.slice(1)], armour: plan.armour.map(a => ({ ...a, from: (a.from ?? 0) * n, to: (a.to ?? src.length - 1) * n })), anchors: { neck: plan.anchors.neck * n, skull: plan.anchors.skull * n } });
 }
 
 /** Stripes round the body, a tiger's: every `every`th ring from `from` to `to`, down to `low` on the flank (cy: 1 the spine, -1

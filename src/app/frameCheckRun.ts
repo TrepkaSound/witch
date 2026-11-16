@@ -15,6 +15,7 @@ import { SAIL_ANY } from "./chartView";
 import { takeBroom } from "../rules/kit";
 import type { Game } from "../rules/game";
 import { closeChart } from "../ui/chartOverlay";
+import { placeFrameCheckScene } from "./frameCheckPlace";
 import { FRAME_CHECK_DT, FRAME_CHECK_FRAMES, FRAME_CHECK_SAIL, FRAME_CHECK_SAIL_PARTS, FRAME_CHECK_SCENES, frameCheckHistory, frameCheckKeys, frameCheckText, keepFrameCheck, median, pressFrameCheckKey, spread, type FrameCheckMessage, type FrameCheckResult, type FrameCheckScene, type FrameCheckSceneResult } from "./frameCheck";
 
 /** The hooks it drives (window.witch: app/hooks.ts). */
@@ -62,8 +63,8 @@ export async function runFrameCheck(w: FrameCheckHooks, o: RunOptions): Promise<
       continue;
     }
     try {
-      if (s.arena) w.arena(s.arena);
-      if (s.shot) { const r = w.shot(s.shot); if (r && !r.ok) { notes.push(`${s.id} left out: ${r.say}`); continue; } }
+      const out = placeFrameCheckScene(w, s);
+      if (out !== null) { notes.push(`${s.id} left out: ${out}`); continue; }
     } catch (e) { notes.push(`${s.id} left out: ${String(e)}`); continue; }
     // (a few frames unmeasured, so the scene's own art is asked for and in, and its first-frame work isn't the scene's worst)
     const warm = Math.min(20, Math.ceil(o.frames / 3));

@@ -15,8 +15,8 @@ const INK = "#1d1712", YELLOW = "#f4d03a", BLUE = "#4f86d9";
 function swallowtail(name, o) {
   const { fly = 0.32, k = 1, wing = 1, C = {}, cells = true, tails = 0, eyes, veins, seconds = 0.7 } = o, ground = C.ground ?? INK, fill = C.fill ?? YELLOW;
   const b = insect({ fly, k, chest: 0.8, skull: 0.85, C: { thorax: C.body ?? "#2a2118", head: C.body ?? "#2a2118", eye: C.eye ?? "#0c0a09", eyeGlow: !!o.eyeGlow, leg: INK, feeler: INK }, eye: { r: 0.9 }, abdomen: { len: 0.85, fat: 0.36, rings: 6, colour: i => (i % 2 ? ground : C.band ?? C.body ?? "#2a2118"), ...o.abdomen }, legs: { len: 0.7 }, feelers: { len: 1.1, club: C.club ?? INK, glow: !!C.clubGlow, ...o.feelers } }), { P } = b;
-  const wings = [], lofts = [], cones = [], bones = [];
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) {
+  const wings = [], lofts = /** @type {import("../types").Loft[]} */ ([]), cones = /** @type {import("../types").Cone[]} */ ([]), bones = /** @type {import("../types").Bone[]} */ ([]);
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) {
     const fore = `wingf${tag}`, hind = `wingh${tag}`, fr = P(0.03 * s, 0.125, 0.045), hr = P(0.03 * s, 0.12, -0.01);
     bones.push([fore, fr, "thorax"], [hind, hr, "thorax"]); wings.push({ bone: fore, s }, { bone: hind, s, phase: -0.35 });
     const F = insectwing(fore, fr, [s * 0.78, 0.22, 0.5], { len: 0.46 * wing * k, wide: 0.2 * wing * k, colour: cells ? ground : fill, prof: [[0, 0.22], [0.3, 0.7], [0.68, 1], [0.9, 0.8], [1, 0.25]], veins,
@@ -28,8 +28,8 @@ function swallowtail(name, o) {
   }
   // (asleep: its wings shut upright over its back)
   const nap = ({ rots }) => { for (const w of wings) rots[w.bone] = [0, 0, w.s * 1.25]; };
-  return { name, bones: [...b.bones, ...bones], lofts: [...b.lofts, ...lofts], cones: [...b.cones, ...cones, ...(o.cones?.(b) ?? [])], armour: o.armour ?? [], hover: fly * k,
-    gait: hovers(wings, { beats: 1, mid: 0.4, amp: 0.65, seconds, bob: 0.03 * k, more: b.sways, sleep: "shut", nap }) };
+  return /** @satisfies {import("../types").Plan} */ ({ name, bones: [...b.bones, ...bones], lofts: [...b.lofts, ...lofts], cones: [...b.cones, ...cones, ...(o.cones?.(b) ?? [])], armour: o.armour ?? [], hover: fly * k,
+    gait: hovers(wings, { beats: 1, mid: 0.4, amp: 0.65, seconds, bob: 0.03 * k, more: b.sways, sleep: "shut", nap }) });
 }
 const butterfly = {
   baby: () => swallowtail("butterfly-baby", { fly: 0.22, k: 0.9, wing: 0.6, cells: false, C: { fill: "#f6e7a0", body: "#4a3c2a" }, abdomen: { len: 0.6, fat: 0.45 }, feelers: { len: 0.6 }, seconds: 0.5 }),
@@ -45,4 +45,4 @@ const butterfly = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette as its plan draws it, wings out, turned towards us: today's drawn heights, Ed,
  *  2026-11-12, "keep the sizes"); plans, each level's build. */
-export const MESH = { id: "butterfly", heights: [30, 45, 68, 214], gait: "fly", plans: butterfly };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "butterfly", heights: [30, 45, 68, 214], gait: "fly", plans: butterfly });

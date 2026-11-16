@@ -33,7 +33,7 @@
     "range": 420,
     "interval": 15,
     "windup": 2.2,
-    "damage": 10,
+    "damage": 50,
     "lobFlight": 3,
     "lobRadius": 8,
     "beamWidth": 3,
@@ -76,7 +76,7 @@
     "brake": 30,
     "arc": 55,
     "laneWidth": 6,
-    "damage": 10,
+    "damage": 50,
     "knockback": 9,
     "returnSpeed": 6,
     "rest": 2

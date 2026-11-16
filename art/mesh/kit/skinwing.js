@@ -23,7 +23,7 @@ export function skinwing(tag, s, shoulder, o = {}) {
   for (const t of tips) rod(wrist, t, names[1], hand * 0.022, ribs?.colour ?? C.bone ?? C.skin, !!ribs?.glow);
   cones.push({ at: wrist, rx: arm * 0.04, ry: arm * 0.04, tip: add(wrist, unit([s * 0.2, 0.5, 0.8]), arm * 0.22), bone: names[0], colour: C.claw ?? C.bone ?? C.skin, up: [0, 1, 0], sides: 3 });
   const T = Math.PI * 2;
-  return { bones: [[names[0], shoulder, parent], [names[1], wrist, names[0]]], lofts, cones, names, wrist, tips,
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [[names[0], shoulder, parent], [names[1], wrist, names[0]]], lofts, cones, names, wrist, tips,
     flap: ({ mid: m = 0.1, amp = 0.75, lag = 0.9, beats = 1, phase = 0 } = {}) => [{ bone: names[0], rot: u => [0, 0, s * (m + amp * Math.sin(T * beats * u + phase))] }, { bone: names[1], rot: u => [0, s * 0.12 * Math.cos(T * beats * u + phase), s * (amp * 0.75 * Math.sin(T * beats * u + phase - lag) - 0.1)] }],
-    wrap: (rots, { arm: a = [0.3, 1.0, -1.0], hand: h = [0, 1.5, -0.3] } = {}) => { rots[names[0]] = [a[0], s * a[1], s * a[2]]; rots[names[1]] = [h[0], s * h[1], s * h[2]]; } };
+    wrap: (rots, { arm: a = [0.3, 1.0, -1.0], hand: h = [0, 1.5, -0.3] } = {}) => { rots[names[0]] = [a[0], s * a[1], s * a[2]]; rots[names[1]] = [h[0], s * h[1], s * h[2]]; } });
 }

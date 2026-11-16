@@ -1,5 +1,5 @@
 import { configDefaults, defineConfig } from "vitest/config";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { availableParallelism } from "node:os";
 import { readPng } from "./tools/overrides/png";
 import { artHash as artHashOf, artFingerprintMap, overrideFiles as overridesAt } from "./tools/artHash";
@@ -46,10 +46,6 @@ const artOverrides = () => ({
     return `export default ${JSON.stringify(out)};`;
   },
 });
-// The start screen's "Coming up": the open pull requests, listed by the Pages workflow into
-// upcoming.generated.json before it builds (never committed); none in a local build.
-const upcoming = existsSync("upcoming.generated.json") ? JSON.parse(readFileSync("upcoming.generated.json", "utf8")) : [];
-
 // version.json beside the game (Ed, 2026-10-14: the page says when a newer build is out; app/newBuild.ts reads it): the build's label, so a
 // page left open can tell it's been replaced (main's at the site's root, each pull request's in its pr-<number>/).
 const versionFile = () => ({
@@ -61,7 +57,7 @@ const versionFile = () => ({
 
 const TESTS = ["src/**/*.test.ts", "tools/bench/*.test.ts", "tools/shots/*.test.ts", "tools/docs/*.test.ts", "tools/config/*.test.ts", "tools/ci/*.test.ts", "tools/checks/*.test.ts"];
 const mocking = mockingTests(".").filter(f => !f.startsWith("tools/") || /^tools\/(bench|shots|docs|config|ci|checks)\/[^/]+$/.test(f));
-const define = () => ({ __BUILD__: JSON.stringify(sha ? `${version} · ${sha}` : version), __BUILD_DATE__: JSON.stringify(new Date().toISOString().slice(0, 10)), __UPCOMING__: JSON.stringify(upcoming), __ART_HASH__: JSON.stringify(artHash), __ART_KIND_HASHES__: JSON.stringify(artKindHashes) });
+const define = () => ({ __BUILD__: JSON.stringify(sha ? `${version} · ${sha}` : version), __ART_HASH__: JSON.stringify(artHash), __ART_KIND_HASHES__: JSON.stringify(artKindHashes) });
 const plugins = () => [artOverrides(), configNotes(), versionFile(), changelogBatches(), houseStanding()];
 const worker = () => ({ format: "es" as const, plugins: () => [artOverrides(), configNotes()] });
 // The rules tests build whole maps and play out fights and waves: CPU-bound seconds each, many more

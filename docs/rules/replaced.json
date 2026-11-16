@@ -172,6 +172,49 @@
         "back home[^.;]{0,40}\\bstill defends her first"
       ],
       "unless": "\\b(was|were|used to|old|until|before|no longer|homelegends|homeAlike)\\b"
+    },
+    {
+      "id": "stone-stack-friends-above-enemies",
+      "ruling": "Ed, 2026-11-16: \"Keep the code\"",
+      "now": "a stone's stack shows only its hostile youths and adults while any are left; once none is left, everything else, babies on top (Ed's 2026-10-28 friends above enemies and 2026-10-29 babies at the top of each group are retired): docs/rules/invites.md",
+      "stale": [
+        "friends above (?:the )?enemies",
+        "each (?:group|side)[^.;]{0,30}\\bbabies (?:at the|on) top"
+      ],
+      "unless": "\\b(was|were|used to|old|until|before|no longer|retir\\w*|first words|replace|only (?:the|those|its)|while any)\\b"
+    },
+    {
+      "id": "areas-per-witch",
+      "ruling": "Ed, 2026-11-16: \"One area a wave, always\"",
+      "now": "each wave wakes one area (party.areasPerWave 1) however many witches play; the 2026-10-04 one per witch is retired: docs/rules/sieges.md",
+      "stale": [
+        "(?:areas?|waves?|wakes|partif\\w+)[^.;]{0,80}\\bone per witch",
+        "one area per witch",
+        "one per witch (?:present|in the game)"
+      ],
+      "unless": "\\b(was|were|used to|old|until|before|no longer|retir\\w*|first words|replace|always|bedrooms?|controls)\\b"
+    },
+    {
+      "id": "knockdown-bpm-by-1",
+      "ruling": "Ed, 2026-11-16: \"5 BPM: keep it\"",
+      "now": "each knockdown adds knockout.bpmStep, 5 BPM (Ed, 2026-10-08: \"Knockdowns increase the bpm by 5\"); his 2026-10-07 by 1 is retired: docs/rules/sieges.md",
+      "stale": [
+        "BPM goes up by 1\\b",
+        "\\+1 BPM\\b",
+        "(?:knockdown|knockout)[^.;]{0,40}\\b(?:adds?|costs?|costing) (?:a|1|one) BPM\\b"
+      ],
+      "unless": "\\b(was|were|used to|old|until|before|no longer|retir\\w*|first words|replace|by 5|5 BPM|\\+5|bpmStep)\\b"
+    },
+    {
+      "id": "ley-tip-three-times",
+      "ruling": "Ed, 2026-11-16: \"2.5 is right\"",
+      "now": "the drawn ley line's tip runs leyLines.reveal, 2.5, times the pulse's progress; his 2026-10-06 three times was adjustable: docs/notes/view.md (Ley lines)",
+      "stale": [
+        "ley ?line[^.;]{0,80}\\bthree times (?:faster|the speed)",
+        "\\b3x the progress of the pulse",
+        "tip[^.;]{0,60}\\bthree times the pulse"
+      ],
+      "unless": "(?:\\b(?:was|used to|old|until|before|no longer|retir\\w*|adjustable|reveal)\\b|2\\.5)"
     }
   ]
 }

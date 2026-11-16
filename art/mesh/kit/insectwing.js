@@ -32,4 +32,4 @@ export function insectwing(bone, root, dir, o = {}) {
  *  not: art/mesh/index.js MESH_RATE). wings: [{ bone, s (1 its left, -1 its right), phase }]; beats a cycle, mid and amp (how
  *  high the wings are held and how far they beat, radians); more: what else moves, as a gait's `extra`. */
 export const hovers = (wings, o = {}) => { const { beats = 3, mid = 0.15, amp = 0.75, seconds = 0.8, bob = 0.02, root = "thorax", more = [], ...rest } = o;
-  return { type: "fly", seconds, root, bob, bobs: 1, legs: [], ...rest, extra: [...wings.map(w => ({ bone: w.bone, rot: u => [0, 0, w.s * (mid + amp * Math.sin(T * beats * u + (w.phase ?? 0)))] })), ...more] }; };
+  return /** @satisfies {import("../types").Gait} */ ({ type: "fly", seconds, root, bob, bobs: 1, legs: [], ...rest, extra: [...wings.map(w => ({ bone: w.bone, rot: u => [0, 0, w.s * (mid + amp * Math.sin(T * beats * u + (w.phase ?? 0)))] })), ...more] }); };

@@ -26,7 +26,7 @@
           "quote": [
             "It's a spell that you're choosing to cast on this stone, rather than a property of the area/stone itself."
           ],
-          "rest": "every wild creature's sigil in its stone's stack (friends above enemies); no auto-clearing; the spell or a wave converts the stone, its friend sigils scattering round it for anyone to pick up"
+          "rest": "every wild creature's sigil in its stone's stack (only the hostile youths and adults shown while any are left: Ed, 2026-11-16, \"Keep the code\"); no auto-clearing; the spell or a wave converts the stone, its friend sigils scattering round it for anyone to pick up"
         }
       ],
       "links": [
@@ -82,7 +82,8 @@
         {
           "by": "Ed",
           "date": "2026-10-06",
-          "quote": "The leyline should always go from the treehouse to 3x the progress of the pulse, and I should be able to see it along its entire length"
+          "quote": "The leyline should always go from the treehouse to 3x the progress of the pulse, and I should be able to see it along its entire length",
+          "rest": "the tip runs leyLines.reveal, 2.5, times the pulse's progress now (Ed, 2026-11-16: \"2.5 is right\")"
         }
       ],
       "links": [
@@ -134,6 +135,12 @@
           "by": "Ed",
           "date": "2026-10-06",
           "quote": "The pulse starts from the treehouse at the start of the first wave. before that, during boot up phase, there's no leyline ... Then the leyline appears, starting at the treehouse, moving three times (adjustable) the speed on the pulse (so it reaches runestone 3 by the time the first wave finishes)"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-16",
+          "quote": "2.5 is right",
+          "rest": "asked whether the line's tip should run three times the pulse's pace, as his 2026-10-06 words had it, or the tuning's 2.5: the 2.5 stays"
         }
       ],
       "links": [
@@ -753,6 +760,23 @@
         "app/sound.ts"
       ]
     },
+    "music.hauntedHush": {
+      "what": "The quiet bars before a haunted breakdown's drum & bass drop: 8, the form's breakdown lengthened from 8 bars to 12 (8 quiet, then the 4-bar drop; rules/musicHush.ts, docs/notes/music.md Haunted); 4 or ?hauntedhush=old plays the 8-bar breakdown as it was (4 quiet, 4 dropped).",
+      "notes": "A pass round the form is 36 bars with it, not 32; the waves, builds, knockdowns and the victory land where they did. Under the music style's own quiet bars (its haunted drop's afterBars, 8) it takes the lengthening off; it never makes the hush longer than the style's.",
+      "decisions": [
+        {
+          "by": "Ed",
+          "date": "2026-11-16",
+          "quote": "Make it 8 bars",
+          "rest": "asked whether the 4 quiet bars before the drop in the haunted style's 8-bar breakdowns should be longer"
+        }
+      ],
+      "links": [
+        "rules/musicHush.ts",
+        "rules/musicPlan.ts",
+        "app/sound.ts"
+      ]
+    },
     "music.banger": {
       "what": "Banger mode, the music with one hook a night back at its key moments, kits and grooves by family, builds and drops, gentle till the second stump (docs/notes/music.md Banger mode); false or ?banger=0 plays the music as before.",
       "notes": "The music style's banger block. Written over the same conductor and engine: the boot's intro, the knockdown's silence and new record, the victory, the siege, party and legend parts and a clearing's layer all as before. Its mix is its own (a deeper kick duck, a high shelf, a low cut, a little drive).",
@@ -875,12 +899,18 @@
         {
           "by": "Ed",
           "date": "2026-10-04",
-          "rest": "one per witch"
+          "rest": "one per witch (retired: Ed, 2026-11-16, \"One area a wave, always\")"
         },
         {
           "by": "Ed",
           "date": "2026-10-07",
           "rest": "every one invited or run off; its legend and its circle's baby don't count"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-16",
+          "quote": "One area a wave, always",
+          "rest": "even with two witches: party.areasPerWave stays 1 however many play; this retires the 2026-10-04 one per witch"
         }
       ],
       "links": [

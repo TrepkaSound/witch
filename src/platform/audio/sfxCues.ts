@@ -644,7 +644,7 @@ export class SfxCues {
     this.sfx.invited(g.creatures[id]?.level ?? 0, pan, k);
   }
 
-  /** Knocked down, the party's tempo rises (Ed, 2026-10-07: "the BPM goes up by 1 each time you die"; hotel's
+  /** Knocked down, the party's tempo rises (by knockout.bpmStep, 5: Ed, 2026-10-08, "Knockdowns increase the bpm by 5"; 2026-11-16, "5 BPM: keep it"; hotel's
    *  rules/beat.ts knockdownTempo, g.beat.bonus), and the crowd's cheer greets her back at her decks at the faster tempo:
    *  on her knockout's backAt (her clock), after the sad trumpet and the rewind, never over them; with no knockout under
    *  way (a debug bump), on the bar line the rise starts from (g.beat.bonusAt). One cheer (fireworks.ts: three noise bands and a few whoops), at

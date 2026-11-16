@@ -14,14 +14,14 @@ function beetle(name, o) {
   const skin = [ring(-0.215, -0.02, 0.02, 0.02, "body", C.shell), ring(-0.175, 0, 0.075, 0.06, "body", C.shell), ring(-0.1, 0.012, 0.11, 0.086, "body", C.shell), ring(-0.02, 0.012, 0.112, 0.086, "body", C.shell), ring(0.026, 0, 0.096, 0.07, "body", C.shell),
     ring(0.034, 0, 0.102, 0.075, "body", C.thorax), ring(0.09, 0, 0.098, 0.068, "body", C.thorax), ring(0.125, -0.006, 0.066, 0.048, "body", C.thorax),
     ring(0.132, -0.012, 0.06 * hd, 0.045 * hd, "head", C.head), ring(0.172, -0.016, 0.055 * hd, 0.04 * hd, "head", C.head), ring(0.2, -0.02, 0.03 * hd, 0.024 * hd, "head", C.head)];
-  const H = [0, y0 - 0.014 * k * high, 0.2 * k], bones = [["body", [0, y0, 0], null], ["head", [0, y0 - 0.01 * k, 0.128 * k], "body"]], lofts = [{ name: "skin", sides: 8, up: [0, 1, 0], rings: skin }], cones = [];
+  const H = [0, y0 - 0.014 * k * high, 0.2 * k], bones = [["body", [0, y0, 0], null], ["head", [0, y0 - 0.01 * k, 0.128 * k], "body"]], lofts = /** @type {import("../types").Loft[]} */ ([{ name: "skin", sides: 8, up: [0, 1, 0], rings: skin }]), cones = [];
   // (a point on its wing cases: z along it, a round from its spine)
   const on = (z, a, lift = 1.02) => { let i = 1; while (i < 4 && skin[i + 1].at[2] < Z(z)) i++; const p = skin[i], q = skin[i + 1], f = Math.min(1, Math.max(0, (Z(z) - p.at[2]) / (q.at[2] - p.at[2]))), m = (u, v) => u + (v - u) * f; return [Math.sin(a) * m(p.rx, q.rx) * lift, m(p.at[1], q.at[1]) + Math.cos(a) * m(p.ry, q.ry) * lift, Z(z)]; };
   // the cracks down its wing cases: jagged lines, lit if they are embers
   if (cracks) for (const s of [1, -1]) for (let n = 0; n < (cracks.n ?? 2); n++) { const a0 = 0.5 + n * 0.62, w = (cracks.w ?? 0.007) * k;
     lofts.push({ sides: 3, up: [s, 0.4, 0], rings: [-0.165, -0.13, -0.095, -0.06, -0.03, 0.005].slice(n ? 1 : 0).map((z, i) => ({ at: on(z, s * (a0 + 0.14 * (i % 2 ? 1 : -1) * (n ? -1 : 1))), rx: w * (i % 2 ? 1.3 : 0.8), ry: w, bone: "body", colour: cracks.colour, glow: !!cracks.glow, up: [s * Math.sin(a0), Math.cos(a0), 0] })) }); }
   // its eyes, its feelers and its jaws
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) {
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) {
     cones.push({ at: [0.046 * hd * k * s, H[1] + 0.012 * k, 0.158 * k], rx: 0.016 * k * (eyes.size ?? 1), ry: 0.016 * k * (eyes.size ?? 1), tip: [0.064 * hd * k * s, H[1] + 0.016 * k, 0.162 * k], bone: "head", colour: eyes.colour ?? "#0c0a09", glow: !!eyes.glow, tag: "eye", up: [0, 1, 0], sides: 5, bulge: 0.8 });
     bones.push([`ant${tag}`, [0.03 * k * s, H[1] + 0.03 * k, 0.18 * k], "head"]);
     cones.push({ at: [0.03 * k * s, H[1] + 0.026 * k, 0.18 * k], rx: 0.007 * k, ry: 0.007 * k, tip: [(0.03 + 0.1 * feelers) * k * s, H[1] + (0.03 + 0.05 * feelers) * k, (0.18 + 0.1 * feelers) * k], bend: [0.02 * k * s * feelers, 0.03 * k * feelers, 0], bulge: 0.9, bone: `ant${tag}`, colour: C.leg, up: [0, 0, 1], sides: 3 });
@@ -59,4 +59,4 @@ const beetles = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. It sleeps on its belly with its legs folded in at every level (kit/manylegs.js `folds`): it can't curl. */
-export const MESH = { id: "beetle", heights: [29, 47, 72, 346], gait: "trot", legs: [6], plans: beetles };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "beetle", heights: [29, 47, 72, 346], gait: "trot", legs: [6], plans: beetles });

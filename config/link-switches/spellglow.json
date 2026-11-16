@@ -2,10 +2,11 @@
  "name": "spellglow",
  "values": [
   "0",
-  "1"
+  "1",
+  "old"
  ],
- "does": "The creatures' spells glow (a bright core, a dithered halo, a pool of light on the ground, a few real lights); 0 draws them without it, as before, to compare.",
+ "does": "The creatures' spells glow (a bright core, a dithered halo, a pool of light on the ground, a few real lights); 0 draws them without it, as before 9 November, and old draws the glow at its strength before 16 November, to compare.",
  "group": "compare",
  "since": "2026-11-09",
- "decision": "Glowing by default (Ed, 2026-11-09: \"The animal magic effects need to glow.\")"
+ "decision": "Glowing by default (Ed, 2026-11-09: \"The animal magic effects need to glow.\"), and stronger since Ed, 2026-11-16 (\"Stronger\")"
 }

@@ -91,12 +91,12 @@ describe("the ghost voice", () => {
 });
 
 describe("room to breathe: no drums, then the drum & bass drop (Ed, 2026-11-08: \"make it a drop - no drums, and then drum and bass kicks in\")", () => {
-  it("drops at most half way in, on a 4-bar line", () => {
+  it("drops after its quiet bars, leaving the drop a block at least, on a 4-bar line", () => {
     expect(hauntedDrop(style, 8)).toBe(4);
-    expect(hauntedDrop(style, 16)).toBe(8);
+    expect(hauntedDrop(style, 12)).toBe(8); expect(hauntedDrop(style, 16)).toBe(8);
     expect(hauntedDrop(style, 32)).toBe(H.drop.afterBars);
     expect(hauntedDrop(style, 4)).toBe(Infinity);
-    for (const b of [8, 12, 16, 24, 32, 64]) { const d = hauntedDrop(style, b); if (Number.isFinite(d)) { expect(d % style.blockBars).toBe(0); expect(d).toBeLessThanOrEqual(b / 2); } }
+    for (const b of [8, 12, 16, 24, 32, 64]) { const d = hauntedDrop(style, b); if (Number.isFinite(d)) { expect(d % style.blockBars).toBe(0); expect(d).toBeLessThanOrEqual(b - style.blockBars); } }
   });
 
   it("has no drums before the drop, a riser into it, an impact on it, then drum & bass on the key's root", () => {

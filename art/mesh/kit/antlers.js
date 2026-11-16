@@ -22,7 +22,7 @@ export const TINES = {
  *  bone, kit/sweep.js). */
 export function antlers(P, o = {}) {
   const { kind = "red", size = 1, spread = 1, lean = 1, r = 0.023, colour = "#cdb48a", tip = "#f3ead6", tines = TINES[kind] ?? [], at = [0.03, 0.082, 0.065], bone = "head", sides = 5, glow, moss, pools } = o;
-  const k = P(1, 0, 0)[0], lofts = [], cones = [], unit = d => { const l = Math.hypot(...d) || 1; return d.map(v => v / l); };
+  const k = P(1, 0, 0)[0], lofts = [], cones = /** @type {import("../types").Cone[]} */ ([]), unit = d => { const l = Math.hypot(...d) || 1; return d.map(v => v / l); };
   const hang = p => moss && cones.push({ at: p, rx: 0.02 * k, ry: 0.009 * k, tip: [p[0], p[1] - 0.11 * k * (moss.long ?? 1), p[2] - 0.015 * k], bone, colour: moss.colour, tipColour: moss.tip ?? moss.colour, bulge: 0.8, split: 0.5, up: [0, 0, 1], sides: 4 });
   for (const s of [1, -1]) {
     const from = P(at[0] * s, at[1], at[2]);
@@ -46,5 +46,5 @@ export function antlers(P, o = {}) {
       cones.push({ at: p, rx: rr, ry: rr, tip: p.map((v, j) => v + d[j] * len), bone, colour, tipColour: glow ?? tip, glow: glow ? "tip" : false, split: 0.55, bulge: 0.6, bend: [0, len * 0.12, 0], up: aside(d), sides: 4 }); }
     for (const t of [0.3, 0.55, 0.75]) hang(along(pts, t));
   }
-  return { bones: [], lofts, cones };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], lofts, cones });
 }

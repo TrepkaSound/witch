@@ -37,25 +37,25 @@ export function serpent(name, o) {
   const neck = spine[n - 1], hl = (H.len ?? 3.4) * r, hw = (H.wide ?? 1.3) * r, hd = (H.deep ?? 0.85) * r, nod = H.nod ?? 0.12, ha = A * env(1), hz = neck.z + hl * 0.1, base = [x0(hz, ha), neck.at[1], hz];
   const P = (x, y, z) => [base[0] + x * hl, base[1] + y * hl - Math.sin(nod) * z * hl, base[2] + Math.cos(nod) * z * hl], hc = H.colour ?? (() => skin(1, n));
   const skull = [[0.2, 0.86, 0.95], [0.42, 1, 1], [0.62, 0.9, 0.86], [0.84, 0.62, 0.6], [1, 0.3, 0.3]].map(([z, w, d], k) => ({ at: P(0, 0, z), rx: hw * w, ry: hd * d, bone: "head", colour: hc(k) }));
-  const eyes = H.eyes ?? {}, es = (H.eye ?? 1) * hw * 0.2, cones = [];
+  const eyes = H.eyes ?? {}, es = (H.eye ?? 1) * hw * 0.2, cones = /** @type {import("../types").Cone[]} */ ([]);
   for (const s of [1, -1]) {
     const e = P(s * hw * 0.82 / hl, hd * 0.5 / hl, 0.56);
     cones.push({ at: e, rx: es, ry: es * 0.85, tip: [e[0] + s * es * 0.8, e[1] + es * 0.4, e[2] + es * 0.3], bone: "head", colour: eyes.colour ?? "#17120f", glow: !!eyes.glow, tag: "eye", split: 0.5, up: [0, 1, 0], sides: 4 });
     if (H.tongue) cones.push({ at: P(0, -hd * 0.1 / hl, 1), rx: 0.1 * hw, ry: 0.05 * hw, tip: P(s * 0.12, -0.12, 1.42), bone: "head", colour: H.tongue, up: [0, 1, 0], sides: 3 });
     if (H.horns) cones.push({ at: P(s * hw * 0.6 / hl, hd * 0.8 / hl, 0.52), rx: 0.3 * hw, ry: 0.22 * hw, tip: P(s * (hw * 0.9 / hl + 0.12 * (H.horns.len ?? 1)), hd / hl + 0.3 * (H.horns.len ?? 1), 0.3), bone: "head", colour: H.horns.colour, tipColour: H.horns.tip ?? H.horns.colour, split: 0.5, up: [0, 0, 1], sides: 4 });
   }
-  const bones = [["root", [0, 0, 0], null], ...spine.map(p => [p.bone, p.at, "root"]), ["head", base, "root"]], lofts = [{ sides: 8, up: [0, 1, 0], rings: [...spine.map((p, i) => ({ at: p.at, rx: p.rx, ry: p.ry, bone: p.bone, colour: skin(p.t, i) })), ...skull] }];
+  const bones = /** @satisfies {import("../types").Bone[]} */ ([["root", [0, 0, 0], null], ...spine.map(p => /** @satisfies {import("../types").Bone} */ ([p.bone, p.at, "root"])), ["head", base, "root"]]), lofts = [{ sides: 8, up: [0, 1, 0], rings: [...spine.map((p, i) => ({ at: p.at, rx: p.rx, ry: p.ry, bone: p.bone, colour: skin(p.t, i) })), ...skull] }];
   // what moves: every ring's bone goes across with the wave and turns to face along it; counted from where it lies at rest
   const moved = [...spine.map(p => ({ bone: p.bone, z: p.z, a: p.a, x: p.at[0] })), { bone: "head", z: hz, a: ha, x: base[0] }];
-  const extra = moved.flatMap(m => [{ bone: m.bone, pos: u => [x0(m.z, m.a, u) - m.x, 0, 0], rot: u => [0, yaw(m.z, m.a, u) - yaw(m.z, m.a), 0] }]);
+  const extra = /** @type {import("../types").Motion[]} */ (moved.flatMap(m => [{ bone: m.bone, pos: u => [x0(m.z, m.a, u) - m.x, 0, 0], rot: u => [0, yaw(m.z, m.a, u) - yaw(m.z, m.a), 0] }]));
   if (rattle) { // beads on the end of its tail, standing on from it the way it points, shaken
     const tip = spine[0].at, d = [0, Math.sin(-pitch(0)), -Math.cos(pitch(0))], rr = rattle.r ?? r * 0.42, bl = rr * 1.25, rings = [];
     for (let j = 0; j < rattle.n; j++) { const k = 1 - 0.45 * j / Math.max(1, rattle.n), c = f => tip.map((v, i) => v + d[i] * bl * (j + f)), colour = j === rattle.n - 1 ? rattle.tip ?? rattle.colour : rattle.colour; rings.push({ at: c(0.12), rx: rr * 0.55 * k, ry: rr * 0.55 * k, bone: "tailrattle", colour }, { at: c(0.5), rx: rr * k, ry: rr * k, bone: "tailrattle", colour }, { at: c(0.88), rx: rr * 0.55 * k, ry: rr * 0.55 * k, bone: "tailrattle", colour }); }
     bones.push(["tailrattle", tip, "spine0"]); lofts.push({ sides: 6, up: [0, 0, 1], rings }); extra.push({ bone: "tailrattle", rot: u => [0.22 * Math.sin(TAU * 3 * u), 0.3 * Math.sin(TAU * 3 * u + 1.2), 0] });
   }
   const S = { at: t => spine[Math.round(Math.min(1, Math.max(0, t)) * (n - 1))], P, spine };
-  return { name, bones, lofts, cones: [...cones, ...(more?.(S) ?? [])], armour: armour.map(a => ({ ...a, from: a.from * (n - 1), to: a.to * (n - 1) })), anchors: { neck: n - 2, skull: n },
-    gait: { type: "glide", seconds, root: "root", bob: 0, legs: [], head: "head", stride: long, sleep: "coil", nap: coil, extra, serpent: { spine, len, r, head: { bone: "head", at: base, hl } } } };
+  return /** @satisfies {import("../types").Plan} */ ({ name, bones, lofts, cones: [...cones, ...(more?.(S) ?? [])], armour: armour.map(a => ({ ...a, from: a.from * (n - 1), to: a.to * (n - 1) })), anchors: { neck: n - 2, skull: n },
+    gait: /** @type {import("../types").Gait} */ ({ type: "glide", seconds, root: "root", bob: 0, legs: [], head: "head", stride: long, sleep: "coil", nap: coil, extra, serpent: { spine, len, r, head: { bone: "head", at: base, hl } } }) });
 }
 
 /** Asleep (a gait's `nap`, which art/mesh/gear.js `napping` calls): a snake can't curl nose to tail as a dog does, it coils

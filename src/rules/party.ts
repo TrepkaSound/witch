@@ -36,8 +36,8 @@ export interface PartyState {
   /** Game time of the next wave. */
   nextAt: number;
   paused: boolean;
-  /** The areas the next wave will wake (Ed, v149: one area a wave; 2026-10-04: one per witch in
-   *  the game, areasPerWave), chosen as soon as the previous ones woke, so the players know where
+  /** The areas the next wave will wake (Ed, v149: one area a wave; 2026-11-16: "One area a wave, always",
+   *  however many witches play; areasPerWave), chosen as soon as the previous ones woke, so the players know where
    *  to go; empty when every area has the party. */
   next: Cell[];
   /** The area the last wave woke (the picker spreads away from it). */
@@ -60,7 +60,7 @@ export interface PartyState {
   waveReached?: Map<string, { at: number; wave: number }>;
   /** Areas whose quest is done before their wave (rules/leylines.ts onAreaDone): key → game time. The ley line moves on from them. */
   leyDone?: Map<string, number>;
-  /** How many areas each wave wakes: one per witch present (Ed, 2026-10-04), read at each wave. */
+  /** How many areas each wave wakes: party.areasPerWave, 1 (Ed, 2026-11-16: "One area a wave, always", even with two witches), set as the night starts. */
   areasPerWave: number;
   /** Game time the home speaker ring finishes booting up (Ed, 2026-10-04; since 2026-10-06 the time its pulse takes down to the ring and round it from her leaving her decks, rules/bootRing.ts bootSeconds; 5 minutes from her first step before): the first wave's countdown starts then. */
   bootUntil: number;
@@ -281,7 +281,7 @@ export function soundsystemFor(map: ForestMap, cell: Cell): Soundsystem {
 }
 
 
-/** The areas the next wave will partify (one per witch, Ed 2026-10-04), and where the party comes
+/** The areas the next wave will partify (areasPerWave: one, Ed 2026-11-16), and where the party comes
  *  to each from: its nearest partified neighbour, or home if none touches it. */
 export function nextWave(p: PartyState, map: ForestMap): { key: string; cell: Cell; from: Cell }[] {
   return p.next.map(cell => {

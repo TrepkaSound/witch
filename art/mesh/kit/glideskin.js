@@ -20,5 +20,5 @@ export function glideskin(legs, R, o = {}) {
     if (stars) for (let i = 0; i < (stars.n ?? 5); i++) { const m = line[1 + (i % 4)], f = 0.15 + 0.6 * ((i * 5) % 7) / 7, at = [m.at[0] + s * m.rx * f, m.at[1] + thick, m.at[2] + ((i * 3) % 5 - 2) * 0.012];
       cones.push({ at, rx: 0.008, ry: 0.008, tip: [at[0], at[1] + 0.012, at[2]], bone: m.bone, colour: stars.colour, glow: true, up: [0, 0, 1], sides: 4 }); }
   }
-  return { bones: [], lofts, cones };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], lofts, cones });
 }

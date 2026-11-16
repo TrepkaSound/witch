@@ -10,7 +10,7 @@ import { eulerOf, times, transposed, turnOf } from "./turns.js";
  *  smaller the last is; colours { coat, joint, bulb, sting }; glow lights the sting. Hand its `chain` to the gait's `tails` and it
  *  sways behind the walk. Returns its pieces, chain, and `tip` (where the sting's point is). */
 export function stingTail(parent, root, o) {
-  const { n = 5, len = 0.4, r = 0.03, pitch = 0.5, curl = 2.3, taper = 0.75, colours: C, glow = false, bulb = 1, sting = 1, sides = 6 } = o, seg = len / n, bones = [], lofts = [], chain = [];
+  const { n = 5, len = 0.4, r = 0.03, pitch = 0.5, curl = 2.3, taper = 0.75, colours: C, glow = false, bulb = 1, sting = 1, sides = 6 } = o, seg = len / n, bones = /** @type {import("../types").Bone[]} */ ([]), lofts = [], chain = [];
   const way = i => { const a = pitch + curl * i / n; return [0, Math.sin(a), -Math.cos(a)]; }, add = (p, d, k) => p.map((v, j) => v + d[j] * k);
   let p = root;
   for (let i = 0; i <= n; i++) { const name = `tail${i}`, d = way(i), R = r * (1 - (1 - taper) * i / n) * (i === n ? 1.25 * bulb : 1), L = i === n ? seg * 0.9 * bulb : seg, perp = [1, 0, 0];
@@ -19,8 +19,8 @@ export function stingTail(parent, root, o) {
     if (i < n) p = add(p, d, seg); }
   // (the sting: off the bulb's end, hooking down and on)
   const d = way(n), a = pitch + curl + 0.9, hook = [0, Math.sin(a), -Math.cos(a)], from = add(p, d, seg * 0.8 * bulb), tip = add(add(from, d, seg * 0.35 * sting), hook, seg * 0.75 * sting);
-  const cones = [{ at: from, rx: r * 0.42 * bulb, ry: r * 0.42 * bulb, tip, bend: d.map(v => v * seg * 0.22 * sting), bulge: 0.6, bone: `tail${n}`, colour: C.sting ?? C.coat, tipColour: C.point ?? C.sting ?? C.coat, glow: glow ? "tip" : false, up: [1, 0, 0], sides: 4 }];
-  return { bones, lofts, cones, chain, tip, way, pitch, curl, n };
+  const cones = /** @satisfies {import("../types").Cone[]} */ ([{ at: from, rx: r * 0.42 * bulb, ry: r * 0.42 * bulb, tip, bend: d.map(v => v * seg * 0.22 * sting), bulge: 0.6, bone: `tail${n}`, colour: C.sting ?? C.coat, tipColour: C.point ?? C.sting ?? C.coat, glow: glow ? "tip" : false, up: [1, 0, 0], sides: 4 }]);
+  return /** @satisfies {import("../types").Pieces} */ ({ bones, lofts, cones, chain, tip, way, pitch, curl, n });
 }
 
 /** Asleep, such a tail is let down and laid round its side on the ground (a gait's `nap` calls this with the pose): each bead

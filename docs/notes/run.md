@@ -74,7 +74,7 @@ Actual layout, device navigation and network behavior remain coordinator browser
 A bot's asynchronous module must finish before its night starts.
 Bedroom wake-up and chart arrival retain their own gates; the old creator still waits for its spell-scroll action.
 Automatic starts keep the existing sound-only first-gesture prompt; that key/tap is not needed to begin play.
-Controls/Options can still borrow their hidden nodes, but main no longer imports the start-screen formatter, eager changelog or upcoming data.
+Controls/Options can still borrow their hidden nodes, but main no longer imports the start-screen formatter or eager changelog, and the upcoming data is deleted (Ed, 2026-11-16: "Gone: delete the leftovers").
 Started-night state is tracked separately from the hidden card, so hiding it during loading cannot itself authorize a saved-night checkpoint.
 This supersedes the earlier old-card waiting description below.
 The quick-smoke assertion now requires creator=0 to start without a key; the coordinator must run it in a browser.
@@ -263,7 +263,7 @@ Stump casting and the floor-hat rules are unchanged.
   And it's drawn once and kept (Ed, 2026-11-03: "it's the same nightie on every island every morning. Why do we need to keep re-drawing it?"): main.ts `keepNightie` asks for it in the background from the first night on and `AssetLibrary.keepLook` never lets it go (her last four looks once pushed it out, a station's choices each a look), so only a fresh game's first sail can find it not drawn yet.
   It's the same genome every morning while her day look is; a change of outfit makes a new one (it carries her hidden pieces too), drawn again in the background.
 - **Partified**: an area the party has reached: a soundsystem in its clearing, string lights round it, motes. Home is partified from the start.
-- **Wave**: one step of the party spreading: one area per witch (`party.areasPerWave`), the next on the ley line's planned route, partified as the ley pulse reaches its stone (Ed, 2026-10-09: "Pure constant speed": a straight line in the tempo, 1.0 m/s at 100 bpm to 5.0 at 200 (Ed, 2026-11-03;
+- **Wave**: one step of the party spreading: one area (`party.areasPerWave`; Ed, 2026-11-16: "One area a wave, always", however many witches play), the next on the ley line's planned route, partified as the ley pulse reaches its stone (Ed, 2026-10-09: "Pure constant speed": a straight line in the tempo, 1.0 m/s at 100 bpm to 5.0 at 200 (Ed, 2026-11-03;
   `leyLines.pulseAt100`, `pulseAt200`, `sparkSpeedAt` in rules/beat.ts), times `leyLines.pulseSpeed` (1; 1 m/s times the tempo's rate from Ed, 2026-10-18, till then; 4 before) along the route's own curves, so each gap is its link's length over the speed;
   `rules/pulseRoute.ts`) after home's boot-up (N brings the next one, P pauses it);
   a fallen soundsystem doesn't move it (Ed, 2026-10-08).

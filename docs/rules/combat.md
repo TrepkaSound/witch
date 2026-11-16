@@ -38,7 +38,7 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 4. A blow that does not knock her out throws her straight away from it: 2.5 m, plus 0.55 m for each point of the attack's knockback, at least 12 m if the attacker rams her (a charge, a leap, a legend's run), at most 14 m. It also staggers her (no moving, blinking or throwing) for 0.25 s plus 0.07 s for each metre thrown past 2.5, at most 1 s; she cannot be staggered again for 1 s after that, though blows still cost a hit. Code: `src/rules/knock.ts#knockOf`, `src/rules/knock.ts#knockWitch`, `config/tuning.json#witch.knock.base`, `config/tuning.json#witch.knock.charge`, `config/tuning.json#witch.knock.max`, `config/tuning.json#witch.knock.stunBase`, `config/tuning.json#witch.knock.immune`. Ruling: Ed, 2026-10-05: "add a knockback and stun on the witch; make it large on chasing/ramming creatures".
 5. A throw passes through all scenery and she is left wherever it ends. Only a lake (on foot) or the zoo's fence stops or nudges her; trees, rocks, soundsystems, speakers and the treehouse do not. Code: `src/rules/knock.ts#stepWitchKnock`, `src/rules/game.ts#blinkClear`. Ruling: Ed, 2026-11-13: "There's nothing to collide with apart from lakes".
 6. At no hits she is knocked out: her hat drops where she fell, and every carried sigil falls at once on the free hex cell nearest that spot, its animal parked there and still hers. Code: `src/rules/knockout.ts#fallAtKnockdown`, `config/tuning.json#knockout.releaseEach`, `config/tuning.json#knockout.dropHat`. Ruling: Ed, 2026-11-03: "If you're knocked down, animals' sigils fall and stay where you were knocked down".
-7. Knocked out again while her hat is still on the ground: nothing new drops and the old hat stays where it lies. Code: `src/rules/hat.ts#if (!on || !h.has || h.down) return false`. Ruling: none found (code only); the file's header still marks this "DECISION FOR ED".
+7. Knocked out again while her hat is still on the ground: nothing new drops and the old hat stays where it lies. Code: `src/rules/hat.ts#if (!on || !h.has || h.down) return false`. Ruling: Ed, 2026-11-16: "Keep it: one hat on the ground".
 8. The respawn wait is a flat 6 s from going down, for every knockdown (base 6, step 0, max 6), with at least 1.5 s of scratching, then moved to the nearest bar line. Code: `src/rules/knockout.ts#respawnWait`, `config/tuning.json#knockout.respawn.step`, `config/tuning.json#knockout.respawn.max`. Ruling: Ed, 2026-10-07: "any more than about six seconds to wait will be frustrating"; the flat wait is an undated quote in `config/knobs/witch.json#We can remove the extra knockdown time`.
 
 ## Effects on her
@@ -99,14 +99,10 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 
 ## Where code and the latest ruling disagree
 
-None found. Two things are close to it and worth knowing:
+None found. One thing is close to it and worth knowing:
 
 1. Telegraph colour is a trial. Ed, 2026-11-13 ("Let's try element colours and see") replaced his 2026-11-02 "the telegraph should be red" and 2026-11-03 "red telegraphs are right; red does mean warning"; the code follows the trial. Code: `src/render/leash/attackLook.ts#TELEGRAPHS_RED`.
-2. The hat rule (knocked out again while her hat is down) has no ruling at all: the code keeps the old hat and drops nothing, and the file still asks Ed. Code: `src/rules/hat.ts#DECISION FOR ED`.
 
 ## Stale comments or notes seen
 
-3. `src/rules/hat.ts#DECISION FOR ED`: an open question left in a header as if it were the rule ("the old one stays where it lies and nothing new drops (DECISION FOR ED)"). The code does that, but no ruling is recorded.
 5. `docs/notes/gameplay.md#Red is the warnings'`: says "the telegraphs' pure red ... and a wild area's rising aggro tint ... are unchanged". The telegraphs are element coloured now (the trial is written up in docs/notes/world-art.md, not here).
-7. `src/rules/attacks/combatWorld.ts#her thrown, slowed, staggered, rooted`: the comment on `effects` says an effect leaves her "staggered". A creature's stun on her is a slow now (stunWitch); only `?stun=old` staggers.
-9. `src/rules/game.ts#the BPM goes up by 1 each time you die`: the comment quotes Ed's "by 1" beside `knockdownTempo`; the live step is 5 (knockout.bpmStep). Not checked whether a later ruling set 5.

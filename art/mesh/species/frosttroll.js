@@ -47,7 +47,7 @@ const frosttroll = {
     const LIT = "#a8ecff", STONE = "#575f66", EDGE = "#2f3438", C = { ...TROLL, coat: "#8496aa", upper: "#8496aa", mid: "#6f8196", sock: "#5b6c80", belly: "#c3cfdb", muzzle: "#c3cfdb", eyes: [{ colour: LIT, glow: true }, { colour: LIT, glow: true }] };
     const claws = { colour: "#2a2f32", len: 1.2, thick: 1.9, wide: 1.2 }, q = build(C, { hind: { len: 0.64, thick: 2.5, knob: 1.15, claws }, fore: { len: 1.34, thick: 1.9, paw: 1.9, knob: 1.2, claws }, body: { len: 0.82, girth: 1.9, deep: 1.3, hump: 1.4, neck: [0.02, 0.1], neckThick: 2.0 }, head: { size: 1.75, eye: 1.3 } }), R = q.R, P = q.P, t = stub(q, C);
     const moss = shag(R, { n: 3, a0: 1.3, a1: 2.2, long: 0.1, colour: k => (k % 2 ? MOSS : "#4f6e38"), tip: () => "#b7c98a" });
-    const icicles = [-0.06, -0.02, 0.03, 0.065].map((x, i) => ({ at: P(x, -0.1 - 0.02 * (i % 2), 0.16), rx: 0.012, ry: 0.012, tip: P(x * 1.1, -0.2 - 0.03 * (i % 2), 0.155), bone: "head", colour: "#d9f4ff", tipColour: LIT, glow: "tip", up: [0, 0, 1], sides: 3 }));
+    const icicles = /** @satisfies {import("../types").Cone[]} */ ([-0.06, -0.02, 0.03, 0.065].map((x, i) => ({ at: P(x, -0.1 - 0.02 * (i % 2), 0.16), rx: 0.012, ry: 0.012, tip: P(x * 1.1, -0.2 - 0.03 * (i % 2), 0.155), bone: "head", colour: "#d9f4ff", tipColour: LIT, glow: "tip", up: [0, 0, 1], sides: 3 })));
     const armour = [{ from: 1.1, to: 4.7, round: [0, 1.45], lames: 4, thick: 0.03, step: 0.014, colour: STONE, rim: EDGE, runes: { colour: LIT } }];
     return plan("frosttroll-legend", q.body, q.skull, [...q.legs, t], heavy({ lively: 0.7, tails: [t.chain] }), { cones: [...beard(P, 1.5, "#e6eef0", "#b9c9cf"), ...moss, ...icicles], armour });
   },
@@ -56,4 +56,4 @@ const frosttroll = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs frosttroll`: Ed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. */
-export const MESH = { id: "frosttroll", heights: [89, 137, 201, 293], gait: "trot", plans: frosttroll };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "frosttroll", heights: [89, 137, 201, 293], gait: "trot", plans: frosttroll });

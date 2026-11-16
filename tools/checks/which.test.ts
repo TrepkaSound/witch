@@ -21,9 +21,9 @@ describe("which checks a change needs", () => {
     expect(globRegExp("tools/music-lab/tune.{ts,cjs}").test("tools/music-lab/tune.cjs")).toBe(true);
   });
 
-  it("asks a builder for typecheck, the related tests and the art check when the art changes; the rest is the coordinator's", () => {
+  it("asks a builder for typecheck, the art type check, the related tests and the art check when the art changes; the rest is the coordinator's", () => {
     const picked = select(["art/creatures/fox/genome.js"]);
-    expect(ids(picked, "builder")).toEqual(["typecheck", "related-tests", "stale-rulings", "art-check"]);
+    expect(ids(picked, "builder")).toEqual(["typecheck", "art-types", "related-tests", "stale-rulings", "art-check"]);
     expect(picked.builder.find((c: Check) => c.id === "art-check").command).toBe("node art/check.mjs --only fox --no-lab");
     expect(picked.builder.find((c: Check) => c.id === "related-tests").command).toContain("art/creatures/fox/genome.js");
     expect(ids(picked, "coordinator")).toEqual(["unit-full", "build", "smoke-quick", "smoke-full"]);

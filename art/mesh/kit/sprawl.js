@@ -20,7 +20,7 @@ export function sprawlLeg(kind, tag, s, top, o) {
   const rings = [ring(mix(top, knee, -0.12), 0.1, 0.13, 0, C.upper), ring(mix(top, knee, 0.4), 0.105, 0.12, 0, C.upper), ring(knee, 0.085, 0.095, 0, C.mid), ring(mix(knee, ankle, 0.5), 0.07, 0.08, 1, C.mid), ring(ankle, 0.06, 0.065, 1, C.sock),
     ring(pawAt, 0.075 * paw, 0.05, 2, C.sock, true), ring(toe(0.5), 0.11 * paw, 0.034, 3, C.sock, true), ring(toe(1), 0.1 * paw, 0.022, 3, C.sock, true)];
   const cones = claws ? [-1, 0, 1].map(k => ({ at: [toe(1)[0] + k * 0.07 * t * paw, 0.02 * L, toe(1)[2] - 0.01 * L], rx: 0.022 * t, ry: 0.02 * t, tip: [toe(1)[0] + k * 0.1 * t * paw, 0.004, toe(1)[2] + 0.07 * L * (claws.len ?? 1)], bone: b[3], colour: claws.colour, up: [0, 1, 0], sides: 3 })) : [];
-  return { bones: [[b[0], top, parent], [b[1], knee, b[0]], [b[2], ankle, b[1]], [b[3], pawAt, b[2]]], lofts: [{ sides: 5, up: [0, 0, 1], rings }], cones, names: b };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [[b[0], top, parent], [b[1], knee, b[0]], [b[2], ankle, b[1]], [b[3], pawAt, b[2]]], lofts: [{ sides: 5, up: [0, 0, 1], rings }], cones, names: b });
 }
 
 /** A sprawler's build in one go, as kit/quad.js is a four-legged one: a low, broad body (the kit's torso, its rings made `wide`
@@ -32,7 +32,7 @@ export function sprawler(o) {
   const body = torso({ back: 0.17, neck: [0.02, 0.15], neckThick: 1.2, tuck: 1.05, white: 0.55, ...o.body, colours: o.C });
   for (const r of body.rings) { r.rx *= wide; r.ry *= flat; }
   const skull = head(body.pivot, { cheek: 0, ear: { shape: "round", tall: 0.05, wide: 0.4, back: o.C.coat, inner: o.C.coat }, ...o.head, colours: o.C }), R = body.rings, legs = [];
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) legs.push(sprawlLeg("hind", tag, s, [R[1].rx * 0.8 * s, R[1].at[1], R[1].at[2] + 0.02], { ...hind, parent: "pelvis" }), sprawlLeg("fore", tag, s, [R[4].rx * 0.8 * s, R[4].at[1] - 0.005, R[4].at[2] - 0.02], { ...fore, parent: "chest" }));
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) legs.push(sprawlLeg("hind", tag, s, [R[1].rx * 0.8 * s, R[1].at[1], R[1].at[2] + 0.02], { ...hind, parent: "pelvis" }), sprawlLeg("fore", tag, s, [R[4].rx * 0.8 * s, R[4].at[1] - 0.005, R[4].at[2] - 0.02], { ...fore, parent: "chest" }));
   return { body, skull, legs, root: [0, R[1].at[1], R[0].at[2] + 0.03], R, P: skull.P };
 }
 
@@ -45,7 +45,7 @@ const SCUTTLE = { seconds: 0.44, duty: 0.38, reach: 1.2, step: 0.35, leap: 0, he
  *  { tails, lively, walk and run (each pace's own numbers over these) }. It sleeps with its legs laid back along its sides. */
 export function sprawls(o = {}) {
   const { walk: w = {}, run: r = {}, ...rest } = o, mk = (name, base, own) => pace(name, { ...base, ...own, body: { ...base.body, ...own.body } }), run = mk("patter", SCUTTLE, r);
-  return { type: run.type, seconds: run.seconds, legs: run.legs, nap: tucked, ...rest, paces: { walk: mk("amble", CREEP, w), run } };
+  return /** @satisfies {import("../types").Gait} */ ({ type: run.type, seconds: run.seconds, legs: run.legs, nap: tucked, ...rest, paces: { walk: mk("amble", CREEP, w), run } });
 }
 
 /** Asleep (a gait's `nap`, which art/mesh/gear.js `napping` calls with the pose it has made): a sprawled leg can't fold under

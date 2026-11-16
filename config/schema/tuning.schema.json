@@ -1354,6 +1354,10 @@
           "type": "number",
           "minimum": 0
         },
+        "freeTakeOff": {
+          "type": "boolean",
+          "description": "Adults and legends in her stack never stop her taking off while she is at the treehouse (its floors, rooms and balcony: her followers count as placed there); false (?treehousetakeoff=old): they ground her there as everywhere else, as before."
+        },
         "landCooldown": {
           "type": "number",
           "minimum": 0,
@@ -6249,6 +6253,11 @@
               "type": "number",
               "minimum": 0,
               "maximum": 4
+            },
+            "reach": {
+              "type": "number",
+              "minimum": 1.5,
+              "maximum": 5
             }
           },
           "required": [
@@ -6256,7 +6265,8 @@
             "halo",
             "pool",
             "lights",
-            "light"
+            "light",
+            "reach"
           ],
           "additionalProperties": false,
           "description": "How the creatures' spells glow: a bright core the bloom picks up, a dithered pixel halo round it, a pool of its light on the ground under it, and a real light for the brightest few nearest her (core, halo, pool and light 0 draw them as before 9 November; ?spellglow=0 does too, to compare)."
@@ -7664,6 +7674,10 @@
         "homeAlike": {
           "type": "boolean",
           "description": "A friendly route legend back at the dancefloor guards exactly like the island's home legend, and both take the party egg's letters; false (?homelegends=old): as before, the returned one on a ring post 36 m or more out, defending her first, and the home legend taking no letters."
+        },
+        "hardHits": {
+          "type": "boolean",
+          "description": "A legend's attack hits a creature for legends.json's attack.damage or charge.damage, 50 each; false (?legendhits=old): 10 a hit, as before."
         }
       },
       "required": [
@@ -10603,6 +10617,11 @@
           "type": "boolean",
           "description": "The haunted treatment in the quiet sections and a sleeping legend's clearing layer (the music style's haunted block, docs/notes/music.md Haunted); false plays the music as before, as does ?haunted=0 or the Music Lab's Haunted switch."
         },
+        "hauntedHush": {
+          "type": "number",
+          "minimum": 0,
+          "description": "The quiet bars before a haunted breakdown's drum & bass drop: 8, the form's breakdown lengthened from 8 bars to 12 (8 quiet, then the 4-bar drop; rules/musicHush.ts, docs/notes/music.md Haunted); 4 or ?hauntedhush=old plays the 8-bar breakdown as it was (4 quiet, 4 dropped)."
+        },
         "melody": {
           "type": "string",
           "enum": [
@@ -10672,6 +10691,7 @@
         "src",
         "singer",
         "haunted",
+        "hauntedHush",
         "melody",
         "banger",
         "over",

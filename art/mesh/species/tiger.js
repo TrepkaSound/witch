@@ -56,4 +56,4 @@ const tiger = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawn heights, `node tools/creature-mesh/sizes.mjs tiger`: Ed, 2026-11-12, "keep the sizes");
  *  plans, each level's build. */
-export const MESH = { id: "tiger", heights: [63, 97, 140, 276], gait: "trot", plans: tiger };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "tiger", heights: [63, 97, 140, 276], gait: "trot", plans: tiger });
