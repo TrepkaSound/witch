@@ -1,7 +1,7 @@
 // The creatures' spell glow's rules (Ed, 2026-11-09: "The animal magic effects need to glow"): the knobs after the link switch and
 // Reduce flashing, which effect lights get a slot, and the world's lights making room without popping.
 import { describe, expect, it } from "vitest";
-import { CALM_GLOW, HER_LIGHTS, MAX_SPELL_LIGHTS, NO_GLOW, easeRoom, glowLook, magicGlowLook, pickLights } from "./spellGlow";
+import { CALM_GLOW, GLOW_REACH, HER_LIGHTS, MAX_SPELL_LIGHTS, NO_GLOW, OLD_GLOW, SPELL_GLOW, easeRoom, glowLook, magicGlowLook, pickLights, spellGlowTuning } from "./spellGlow";
 import { TUNING } from "../../rules/tuning";
 import settings from "../../../config/fx/intensity.json";
 
@@ -9,8 +9,17 @@ const KNOBS = TUNING.attackFx.glow;
 
 describe("glowLook", () => {
   it("is the tuning's knobs, on by default", () => {
-    expect(KNOBS).toEqual({ core: 1, halo: 1, pool: 1, lights: 5, light: 1 });
+    // (Ed, 2026-11-16, asked how strong the glow should be: "Stronger")
+    expect(KNOBS).toEqual({ core: 1.35, halo: 1.8, pool: 2, lights: 5, light: 1.3, reach: 3.4 });
     expect(glowLook(KNOBS, true, false)).toEqual(KNOBS);
+  });
+  it("is stronger than the old strength in every piece, which ?spellglow=old brings back", () => {
+    for (const k of ["core", "halo", "pool", "light", "reach"] as const) expect(KNOBS[k]).toBeGreaterThan(OLD_GLOW[k]!);
+    expect(KNOBS.lights).toBe(OLD_GLOW.lights); // (the cap not raised: the frame's cost bounded as before)
+    expect(OLD_GLOW).toEqual({ core: 1, halo: 1, pool: 1, lights: 5, light: 1, reach: 2.6 });
+    expect(spellGlowTuning(KNOBS)).toBe(KNOBS);
+    SPELL_GLOW.old = true;
+    try { expect(spellGlowTuning(KNOBS)).toBe(OLD_GLOW); } finally { SPELL_GLOW.old = false; }
   });
   it("is none with ?spellglow=0, no knobs, or every knob at 0", () => {
     expect(glowLook(KNOBS, false, false)).toBeNull();
@@ -20,12 +29,13 @@ describe("glowLook", () => {
   it("is about half with Reduce flashing, the light count kept", () => {
     const calm = glowLook(KNOBS, true, true)!;
     expect(CALM_GLOW).toBe(0.5);
-    expect(calm).toEqual({ core: KNOBS.core * 0.5, halo: KNOBS.halo * 0.5, pool: KNOBS.pool * 0.5, lights: KNOBS.lights, light: KNOBS.light * 0.5 });
+    expect(calm).toEqual({ core: KNOBS.core * 0.5, halo: KNOBS.halo * 0.5, pool: KNOBS.pool * 0.5, lights: KNOBS.lights, light: KNOBS.light * 0.5, reach: KNOBS.reach });
   });
   it("caps the lights at the effects' six (Ed, 2026-10-28: about 6) and keeps every knob in range", () => {
     expect(MAX_SPELL_LIGHTS).toBe(settings.lightCap);
     const wild = glowLook({ core: 99, halo: -1, pool: NaN, lights: 40, light: 2.5 }, true, false)!;
-    expect(wild).toEqual({ core: 4, halo: 0, pool: 0, lights: 6, light: 2.5 });
+    expect(wild).toEqual({ core: 4, halo: 0, pool: 0, lights: 6, light: 2.5, reach: GLOW_REACH });
+    expect(glowLook({ ...KNOBS, reach: 99 }, true, false)!.reach).toBe(5);
     expect(KNOBS.lights).toBeLessThanOrEqual(MAX_SPELL_LIGHTS);
   });
 });
@@ -74,7 +84,7 @@ describe("magicGlowLook (her own magic's)", () => {
   const HERS = TUNING.attackFx.magicGlow;
   it("is the tuning's knobs, on by default, its lights not counted against the creatures' cap", () => {
     expect(HERS).toEqual({ core: 1, halo: 1, pool: 1, light: 1 });
-    expect(magicGlowLook(HERS, true, false)).toEqual({ ...HERS, lights: MAX_SPELL_LIGHTS });
+    expect(magicGlowLook(HERS, true, false)).toEqual({ ...HERS, lights: MAX_SPELL_LIGHTS, reach: GLOW_REACH });
   });
   it("is none with ?magicglow=0, no knobs, or every knob at 0: her magic as before", () => {
     expect(magicGlowLook(HERS, false, false)).toBeNull();

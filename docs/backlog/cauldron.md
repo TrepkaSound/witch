@@ -435,3 +435,7 @@ Current pixelation has two layers: low-resolution generated sprite artwork with 
 Ed, 3 November 2026. Alone: the drinker explores a private, harmless copy; friends keep playing and see her body lying on the grass. She wakes in that spot. Earsight: each sound launches a ripple that briefly reveals nearby ground, trees and animals.
 
 Ed, 3 November 2026. Defer both Bullet Time (#1) and Superhot (#12); revisit shared time only when Ed brings them back. The Whole Route (#31) illuminates her own connected sigil routes end to end. The Fear (#4) creates stalking, startling apparitions that cannot damage her.
+
+### Suggestion: Halo Moon (discovered while strengthening the creatures' spell glow, 2026-11-16)
+
+The spell glow's halo reach is now a knob (`attackFx.glow.reach`, 3.4; `render/fx/spellGlow.ts` clamps it at 5). Driven far past that for a trip, every spell in flight would wear a dithered ring several metres wide, the rings of a whole fight overlapping into a moiré of Bayer patterns in the elements' colours, with small cores lost in the middle. Sound: nothing new needed; it follows the spells that are already heard. Comfort: nothing in it flickers, and Reduce flashing already halves the glow. Related: Glow Up, Too Much Happening.

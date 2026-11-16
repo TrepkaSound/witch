@@ -39,7 +39,7 @@ describe("production magic lifecycle",()=>{
     expect(seen.at(-1)).toBeGreaterThan(0.3);
   });
   it("lights at most attackFx.glow.lights creatures' spells, scaled by its light",()=>{
-    const fx=new MagicFx(new THREE.Scene()),owner={},look={core:1,halo:1,pool:1,lights:3,light:1};
+    const fx=new MagicFx(new THREE.Scene()),owner={},look={core:1,halo:1,pool:1,lights:3,light:1,reach:2.6};
     for(let frame=0;frame<=30;frame++){fx.begin(frame/60,0,0,owner);for(let i=0;i<10;i++)fx.draw("fire","projectile",i,1,0,2,1,1,0,i,null,undefined,1,look);LIGHT_UNIFORMS.uLightCount.value=0;fx.finish(20);}
     expect(fx.stats.lights).toBe(3);
     const bright=LIGHT_UNIFORMS.uLightCol.value[0].w;
@@ -54,9 +54,9 @@ describe("production magic lifecycle",()=>{
     const fx=new MagicFx(new THREE.Scene()),owner={};fx.begin(0,0,0,owner);
     const count=(i:number)=>(fx.batches.layers[i].mesh.geometry as THREE.InstancedBufferGeometry).instanceCount;
     fx.draw("fire","projectile",0,1,0,2);fx.finish(20);expect(count(9)).toBe(0);expect(count(10)).toBe(0);expect(fx.batches.layers[9].mesh.visible).toBe(false);
-    fx.begin(0.1,0,0,owner);fx.draw("fire","projectile",0,1,0,2,1,1,0,0,null,undefined,1,{core:1,halo:1,pool:1,lights:5,light:1});fx.finish(20);
+    fx.begin(0.1,0,0,owner);fx.draw("fire","projectile",0,1,0,2,1,1,0,0,null,undefined,1,{core:1,halo:1,pool:1,lights:5,light:1,reach:2.6});fx.finish(20);
     expect(count(9)).toBe(1);expect(count(10)).toBe(1);expect(fx.batches.layers[9].mesh.visible).toBe(true);
-    fx.begin(0.2,0,0,owner);fx.draw("fire","projectile",0,1,0,2,1,1,0,0,null,undefined,1,{core:1,halo:1,pool:0,lights:5,light:1});fx.finish(20);
+    fx.begin(0.2,0,0,owner);fx.draw("fire","projectile",0,1,0,2,1,1,0,0,null,undefined,1,{core:1,halo:1,pool:0,lights:5,light:1,reach:2.6});fx.finish(20);
     expect(count(9)).toBe(1);expect(count(10)).toBe(0);
   });
   // Her own magic's glow (Ed, 2026-11-13, asked whether to extend the creatures' glow to her magic: "extend").

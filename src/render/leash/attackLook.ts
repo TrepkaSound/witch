@@ -24,7 +24,7 @@ import { indexedTexture } from "../atlas";
 import { fxFor, type MagicFx } from "../fx/system";
 import { FORM_KEYS, elements as FX_ELEMENTS, fxElement } from "../fx/model";
 import { TUNING } from "../../rules/tuning";
-import { SPELL_GLOW, glowLook, type GlowLook, type GlowTuning } from "../fx/spellGlow";
+import { SPELL_GLOW, glowLook, spellGlowTuning, type GlowLook, type GlowTuning } from "../fx/spellGlow";
 
 type RGB = [number, number, number];
 /** The danger frame's red (Ed, 2026-11-02: "the telegraph should be red"; art/attackLook.js RED). */
@@ -115,7 +115,7 @@ export class AttackLook {
   /** Another night: the effects in flight forgotten. */
   reset(): void { this.fx = []; this.shots.clear(); }
   begin(vis: Visibility = this.vis, glow: GlowTuning | undefined = TUNING.attackFx?.glow): void {
-    this.vis = vis; this.spellGlow = glowLook(glow, SPELL_GLOW.on && this.magic.enabled, comfort.reduceFlashing);
+    this.vis = vis; this.spellGlow = glowLook(spellGlowTuning(glow), SPELL_GLOW.on && this.magic.enabled, comfort.reduceFlashing);
     for (const L of this.layers()) L.begin();
     this.danger(null);
   }
