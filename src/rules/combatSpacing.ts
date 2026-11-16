@@ -6,7 +6,7 @@ import type { Creature } from "./creatures";
 import type { Tuning } from "./tuning";
 import { hash2 } from "./random";
 import { bodyRadius } from "./spacing";
-import { profileOf } from "./movement";
+import { profileOf } from "./movementData";
 export interface MotionProfile {
   radius: number; period: number; phaseSpread: number; radialWave: number; lobes: number; stretch: number;
   headingFollow: number; bearing: number; sweep: number; laneSpread: number; trailGap: number; sideGap: number;

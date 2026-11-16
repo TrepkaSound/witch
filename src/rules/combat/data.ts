@@ -5,7 +5,7 @@ import TUNED from "../../../config/tuning.json";
 import type { Creature, Level } from "../creatures";
 import { LEGEND } from "../creatureLevels";
 import { type State } from "../creatureStates";
-import { FIGHT } from "../movement";
+import { FIGHT } from "../movementData";
 import { sectionOf, speciesWith } from "../creatureConfig";
 import { type Tuning } from "../tuning";
 import type { Blow } from "../knock";

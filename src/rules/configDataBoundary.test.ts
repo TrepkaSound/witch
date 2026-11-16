@@ -24,7 +24,7 @@ it("preserves the legacy literal/export and identical default combat data and le
     if (name.endsWith("config/combat.json")) return raw;
     if (name.endsWith("config/tuning.json")) return tuning;
     if (name === "../creatures") return { LEGEND: 3 };
-    if (name === "../movement") return { FIGHT };
+    if (name === "../movementData") return { FIGHT };
     if (name === "../creatureConfig") return { sectionOf, speciesWith };
     throw Error(`Unexpected new runtime dependency ${name}`);
   };
