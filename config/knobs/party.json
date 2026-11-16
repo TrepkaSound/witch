@@ -26,7 +26,7 @@
           "quote": [
             "It's a spell that you're choosing to cast on this stone, rather than a property of the area/stone itself."
           ],
-          "rest": "every wild creature's sigil in its stone's stack (friends above enemies); no auto-clearing; the spell or a wave converts the stone, its friend sigils scattering round it for anyone to pick up"
+          "rest": "every wild creature's sigil in its stone's stack (only the hostile youths and adults shown while any are left: Ed, 2026-11-16, \"Keep the code\"); no auto-clearing; the spell or a wave converts the stone, its friend sigils scattering round it for anyone to pick up"
         }
       ],
       "links": [
@@ -82,7 +82,8 @@
         {
           "by": "Ed",
           "date": "2026-10-06",
-          "quote": "The leyline should always go from the treehouse to 3x the progress of the pulse, and I should be able to see it along its entire length"
+          "quote": "The leyline should always go from the treehouse to 3x the progress of the pulse, and I should be able to see it along its entire length",
+          "rest": "the tip runs leyLines.reveal, 2.5, times the pulse's progress now (Ed, 2026-11-16: \"2.5 is right\")"
         }
       ],
       "links": [
@@ -134,6 +135,12 @@
           "by": "Ed",
           "date": "2026-10-06",
           "quote": "The pulse starts from the treehouse at the start of the first wave. before that, during boot up phase, there's no leyline ... Then the leyline appears, starting at the treehouse, moving three times (adjustable) the speed on the pulse (so it reaches runestone 3 by the time the first wave finishes)"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-16",
+          "quote": "2.5 is right",
+          "rest": "asked whether the line's tip should run three times the pulse's pace, as his 2026-10-06 words had it, or the tuning's 2.5: the 2.5 stays"
         }
       ],
       "links": [
@@ -875,12 +882,18 @@
         {
           "by": "Ed",
           "date": "2026-10-04",
-          "rest": "one per witch"
+          "rest": "one per witch (retired: Ed, 2026-11-16, \"One area a wave, always\")"
         },
         {
           "by": "Ed",
           "date": "2026-10-07",
           "rest": "every one invited or run off; its legend and its circle's baby don't count"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-16",
+          "quote": "One area a wave, always",
+          "rest": "even with two witches: party.areasPerWave stays 1 however many play; this retires the 2026-10-04 one per witch"
         }
       ],
       "links": [

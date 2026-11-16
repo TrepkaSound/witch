@@ -157,7 +157,7 @@ describe("legends, redesigned (Ed, 2026-10-05; #87)", () => {
     expect(g.tally.stomps).toBe(1);
   }, 60000);
 
-  it("fire each volley at up to attack.targets of the nearest (balance builder's values: 10 a hit, every 15 s)", () => withAngryAfter(0.5, () => {
+  it("fire each volley at up to attack.targets of the nearest (every 15 s; 50 a hit: Ed, 2026-11-16)", () => withAngryAfter(0.5, () => {
     const { g, L, mate } = beside();
     mate!.gone = true;
     run(g, 1.2);

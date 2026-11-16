@@ -1,6 +1,7 @@
 // Runestone stacks and the soundsystem spell (Ed, 2026-10-28; the tuning's `cast`). Every wild creature belongs to its area's
-// runestone: above the stone a sigil stack, one sigil a creature (friends above enemies, each group babies at the top, then
-// youths, adults and the legend at the bottom). Inviting one turns its sigil friend-coloured where it is, in the stack (no rune
+// runestone: above the stone a sigil stack, one sigil a creature. While any hostile youth or adult is left it shows only those
+// (Ed, 2026-11-16: "Keep the code", retiring his 2026-10-28 and 2026-10-29 orders); once none is left, everything else, the
+// babies on top, then youths, adults and the legend at the bottom (stoneStack, stackOrder). Inviting one turns its sigil friend-coloured where it is, in the stack (no rune
 // at its feet: c.atStone); one that runs off leaves it. There's no auto-clearing: she converts a stone herself by standing at
 // it and holding the sigil button (the cast), or a wave does. Either way (rules/game.ts stepFights) the stone becomes a
 // soundsystem, the babies turn friendly, the leftover wild young and adults besiege it, and every friend sigil falls and
@@ -82,12 +83,12 @@ export function stoneOpen(g: Game, key: string): boolean {
 /** The order of a stack, bottom first: the enemy fighters, then the friend fighters (Ed, 2026-10-28: friends above enemies, "you
  *  mostly care about how many creatures are still hostile"), each in rank order from the bottom (the legend, adults, youths), then
  *  every baby on top whatever its state (Ed, 2026-10-29: "baby sigils are purple (neither friend nor enemy) ... And they're always at
- *  the top of the stack"), by id within a rank. */
+ *  the top of the stack"), by id within a rank. (What a stone shows is stoneStack's: only the hostile ones while any are left.) */
 const isBaby = (e: StackEntry) => e.level === 0 && !e.legend;
 const stackOrder = (a: StackEntry, b: StackEntry) => (+isBaby(a) - +isBaby(b)) || (isBaby(a) ? 0 : a.friend === b.friend ? 0 : a.friend ? 1 : -1) || b.level - a.level || a.id - b.id;
 
 /** The sigil stack above an area's stone (Ed, 2026-10-28), in draw order, bottom first: the enemy fighters, then the friend
- *  fighters above them, each the legend, adults, youths; then the babies at the top (stackOrder). Empty for a stone that's converted (its friends' sigils lie on the
+ *  fighters above them, each the legend, adults, youths; then the babies at the top (stackOrder). While any hostile youth or adult is left, only those are listed (Ed, 2026-11-16: "Keep the code"). Empty for a stone that's converted (its friends' sigils lie on the
  *  ground: g.loose), home, a ruined one, or with the stacks off. */
 export function stoneStack(g: Game, key: string): StackEntry[] {
   if (!castOn(g.tuning) || !stoneOpen(g, key)) return [];

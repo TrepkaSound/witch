@@ -49,7 +49,7 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 9. To cast she stands on foot on the stump's cut and holds the sigil button for 4 s. A hit breaks the cast, and she must let go and hold again. Progress drains at 0.15 of a cast a second while she is not casting. Code: `src/rules/stoneStacks.ts#stepCast`, `src/rules/stoneStacks.ts#pastCasting`, `config/tuning.json#cast.time`, `config/tuning.json#cast.drain`. Ruling: Ed, 2026-10-29: "The area in which I can cast the soundsystem spell should be the whole trunk. (cut part, not the roots)".
 10. At conversion the area's wild babies turn happy, and every friend sigil falls loose on the ground 4 to 20 m round the stone: the happy natives', the babies', and the legend's unless it is angry. None lands in the hidden strip just north of the stone. Code: `src/rules/game.ts#scatterFriends`, `src/rules/stoneStacks.ts#friendSigils`, `src/rules/stoneStacks.ts#scatterSpots`, `config/tuning.json#cast.scatter.reach`. Ruling: Ed, 2026-10-28: "scattered around the whole runestone clearing".
 11. The circle baby's sigil lands inside its legend's circle instead. Code: `src/rules/stoneStacks.ts#circleSpot`. Ruling: Ed, 2026-10-28: "this baby's sigil should land in the legend circle instead of near the soundsystem".
-12. What the stack over a stone lists: while any hostile youth or adult is left, only those. Once none is left, everything else, with all babies on top. Code: `src/rules/stoneStacks.ts#(hostiles.length ? hostiles : out)`, `src/rules/stoneStacks.ts#stackOrder`. Ruling: none found for showing only the hostile ones; the order is Ed, 2026-10-29: "baby sigils are purple (neither friend nor enemy) ... And they're always at the top of the stack".
+12. What the stack over a stone lists: while any hostile youth or adult is left, only those. Once none is left, everything else, with all babies on top. Code: `src/rules/stoneStacks.ts#(hostiles.length ? hostiles : out)`, `src/rules/stoneStacks.ts#stackOrder`. Ruling: Ed, 2026-11-16: "Keep the code" (only the hostile youths and adults are shown while any are left; this retires his 2026-10-28 friends above enemies and 2026-10-29 babies at the top of each group). The babies on top once none is left is Ed, 2026-10-29: "baby sigils are purple (neither friend nor enemy) ... And they're always at the top of the stack".
 
 ## Pick-up
 
@@ -71,7 +71,7 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 
 ## Where code and the latest ruling disagree
 
-1. Possible, not certain. Ed, 2026-10-28, has a stone's stack showing friends above enemies ("you mostly care about how many creatures are still hostile"), and on 2026-10-29 babies "always at the top of the stack". The code shows only the hostile youths and adults while any are left: no friends and no babies until then (`src/rules/stoneStacks.ts#(hostiles.length ? hostiles : out)`). I found no ruling of Ed's for that change; it may have been agreed outside the repo.
+None found.
 
 ## Stale comments or notes seen
 
@@ -80,7 +80,6 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 3. `docs/HOW-THE-GAME-WORKS.md#A full ring makes a wild animal **happy** (hearts)`. Same. Its own "Stunned" entry is right.
 5. `docs/HOW-THE-GAME-WORKS.md#Its sigil lies as a little rune at its feet` (the Happy entry). Only where the stone is no longer open.
 6. `docs/notes/gameplay.md#its **sigil rune** at its feet, moving with it` (the Wild / happy / leashed / enraged entry). Same.
-7. `docs/notes/gameplay.md#each group babies at the top` (the Runestone stack entry) and `src/rules/stoneStacks.ts#each group babies at the top` (the file header) say babies sit at the top of each group, friends above enemies. The code puts all babies on top, and lists only the hostile youths and adults while any are left.
 8. `src/rules/affection.ts#at most one 💌 counts every affection.gap seconds` (the file header). The game passes a gap of 0: every letter counts.
 9. `src/rules/combat/hits.ts#her party's shots and area hits pass the one she's inviting by`. True only of the old talk; with letters her party's blows land on it.
 10. `config/knobs/army.json#invites.hits` (its notes) reads the list as "baby, young, adult, legend". The baby and legend entries are not read; the legend's 100 is `config/tuning.json#legends.partyHits`.

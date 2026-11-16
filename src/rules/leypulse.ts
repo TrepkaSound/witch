@@ -53,7 +53,7 @@ export function pulsePathMetres(p: PartyState, map: ForestMap, time: number): nu
 }
 /** How far the line's front is along the route (m, from where the boot's lap ends; 0 while it's still on the ring): `reveal` times
  *  the pulse's distance along the one path the ring and the route make (Ed, 2026-10-06: "The leyline should always go from the
- *  treehouse to 3x the progress of the pulse"; 2026-10-29: one path, the line going on round from the lap the same way), so it runs
+ *  treehouse to 3x the progress of the pulse"; 2.5 times now, Ed, 2026-11-16: "2.5 is right"; 2026-10-29: one path, the line going on round from the lap the same way), so it runs
  *  round the ring as the boot's pulse sets off and on out along the route without a break or a jump as the boot ends and the wave's
  *  pulse takes over; nothing before the party spell. */
 export function frontMetres(p: PartyState, map: ForestMap, time: number, reveal: number): number {
@@ -141,7 +141,9 @@ export function clockText(seconds: number): string {
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 }
 
-/** How many times the pulse's pace the drawn line's tip grows (Ed, 2026-10-06: "The leyline can still travel three times faster than the pulse"). */
+/** How many times the pulse's pace the drawn line's tip grows where the tuning gives none, and the route planner's pace (rules/leyroute.ts
+ *  CROSSING_RULES.pace). The live pace is leyLines.reveal, 2.5 (Ed, 2026-11-16: "2.5 is right"; his 2026-10-06 words had it "three
+ *  times (adjustable) the speed on the pulse"). */
 export const TIP_PACE = 3;
 /** When the drawn ley line's growing tip reaches each stone on the route (Ed, 2026-10-06: "The column of light above a
  *  runestone first appears when the leyline meets it"): stone key → game time; null before the party spell (the tip

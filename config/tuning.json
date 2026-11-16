@@ -390,6 +390,7 @@
     "lightReach": 16,
     "lightStrength": 0.6,
     "landCooldown": 3,
+    "freeTakeOff": true,
     "deck": {
       "on": true,
       "radius": 7,
@@ -1794,7 +1795,8 @@
     "partyHits": 100,
     "partyDrain": 0.01,
     "partyReach": 6.8,
-    "homeAlike": true
+    "homeAlike": true,
+    "hardHits": true
   },
   "wildLegends": {
     "wake": 3,

@@ -1,0 +1,4 @@
+{
+  "reason": "Ed, 2026-11-16: a legend's attack hits creatures for 50, not 10 (\"50 a hit\"; its lob, beam and charge alike), so any scene in which a legend fights creatures can go differently; and adults or legends in her stack no longer ground her at the treehouse (\"Let her take off from the treehouse\"). Declared in case a quick-bench scene has an angry or friendly legend in reach of creatures; if none differs, this is only a precaution",
+  "rules": { "*": "creatures a legend hits lose 50 health a hit, so a fight near a legend may end sooner and what follows it shifts" }
+}

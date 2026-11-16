@@ -501,7 +501,7 @@ export function hitWitch(g: Game, id: number, worldAt: number, t: Tuning = g.tun
     // (her feeding stops: every queued berry of hers cancelled, and a press waiting on its hold dropped; Ed, 2026-11-03)
     for (const id of [...w.leash.stack, ...w.leash.placed.map(p => p.id)]) cancelFeeding(g.berries, id);
     delete w.leash.feedHold;
-    knockdownTempo(g.beat, t, g.clock.time); // (the beat speeds up: Ed, 2026-10-07, "the BPM goes up by 1 each time you die")
+    knockdownTempo(g.beat, t, g.clock.time); // (the beat speeds up, knockout.bpmStep, 5 a knockdown: Ed, 2026-10-08, "Knockdowns increase the bpm by 5"; 2026-11-16, "5 BPM: keep it")
     // her wait ends on a bar line at the new tempo, the nearest to it (never under knockout.respawn.minScratch of scratching):
     // her scratching on the new record leads straight into its first downbeat (Ed, 2026-10-09; the wait a second or so off knockout.respawn
     // for it is fine: Ed, 2026-10-11)
@@ -659,12 +659,12 @@ export function stepWitchLocomotion(g: Game, W: Witch, input: Controls, hdt: num
   // Her movement turned (pack combat: the bat's screech, rules/combat/packs.ts): her steering swung, wavering, as her aim is by the stoat's dance.
   else if (W.confused?.move && ht < W.confused.until && W.body.mode === "ground") { const a = W.confused.drift * Math.sin(ht * 2.3), cs = Math.cos(a), sn = Math.sin(a); c = { ...c, moveX: c.moveX * cs - c.moveZ * sn, moveZ: c.moveX * sn + c.moveZ * cs }; }
   // Grounded by who follows her (Ed, 2026-11-03: only adults and legends ground her; his 2026-10-18 rule by weight, "One adult stops you taking off. Three young do.", is replaced; "you try and fly
-  // but get pulled down"; rules/leashWeight.ts groundedBy, leash.grounded): the press keeps her on the ground, dropped before the
+  // but get pulled down"; rules/leashWeight.ts groundedBy): the press keeps her on the ground, dropped before the
   // cooldown's (so it spends none), and is said, the "grounded" leash event: the view draws her lifting off and yanked back down
   // by her taut, blazing leashes (render/view/witch.ts groundedHop, render/leash/stack.ts drawBond) and the landing's thud
   // (platform/audio/sfxCues.ts). Drawn only: she never leaves the ground, so it's no dodge. Only a take-off from the ground: up
   // in the treetops, or coming down, she flies on as before.
-  if (c.toggleMode && W.body.mode === "ground" && !W.body.seated && !g.map.bounds.fence && groundedBy(W.leash.stack, g.creatures, t).grounded) { // (never in the zoo: flying is the only way over its fences, Ed 2026-10-26, so nothing holds her down)
+  if (c.toggleMode && W.body.mode === "ground" && !W.body.seated && !g.map.bounds.fence && groundedBy(W.leash.stack, g.creatures, t, W.body).grounded) { // (never in the zoo: flying is the only way over its fences, Ed 2026-10-26, so nothing holds her down; nor at the treehouse, Ed 2026-11-16: "Let her take off from the treehouse")
     c = { ...c, toggleMode: false };
     g.leashEvents.push({ kind: "grounded", id: W.id, x: W.body.x, z: W.body.z, at: ht });
   }

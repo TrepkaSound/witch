@@ -13,7 +13,11 @@ import { holdsDown } from "./chains";
  *  never do. She tries and is pulled straight back down (rules/game.ts keeps her on the ground and says so, the "grounded" leash event;
  *  the view draws the hop, the chains of those holding her rattle, and the thud). Once she's up it doesn't bring her down. */
 export interface Grounding { grounded: boolean; /** an adult or a legend on her leash (the same as grounded) */ adult: boolean }
-export function groundedBy(stack: readonly number[], creatures: readonly Creature[], _t?: Tuning): Grounding {
+/** `at`: her body, where the caller knows it. At the treehouse (its floors, rooms and balcony: her body's `perch`) no one in her stack
+ *  grounds her (Ed, 2026-11-16, asked whether the treehouse floor should be an exception, her followers counting as placed while
+ *  she's perched: "Let her take off from the treehouse"); with ?treehousetakeoff=old (treehouse.freeTakeOff off) they do, as before. */
+export function groundedBy(stack: readonly number[], creatures: readonly Creature[], t?: Tuning, at?: { perch?: boolean }): Grounding {
+  if (at?.perch && t?.treehouse.freeTakeOff !== false) return { grounded: false, adult: false };
   const adult = stack.some(id => holdsDown(creatures[id]));
   return { grounded: adult, adult };
 }

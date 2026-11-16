@@ -1354,6 +1354,10 @@
           "type": "number",
           "minimum": 0
         },
+        "freeTakeOff": {
+          "type": "boolean",
+          "description": "Adults and legends in her stack never stop her taking off while she is at the treehouse (its floors, rooms and balcony: her followers count as placed there); false (?treehousetakeoff=old): they ground her there as everywhere else, as before."
+        },
         "landCooldown": {
           "type": "number",
           "minimum": 0,
@@ -7664,6 +7668,10 @@
         "homeAlike": {
           "type": "boolean",
           "description": "A friendly route legend back at the dancefloor guards exactly like the island's home legend, and both take the party egg's letters; false (?homelegends=old): as before, the returned one on a ring post 36 m or more out, defending her first, and the home legend taking no letters."
+        },
+        "hardHits": {
+          "type": "boolean",
+          "description": "A legend's attack hits a creature for legends.json's attack.damage or charge.damage, 50 each; false (?legendhits=old): 10 a hit, as before."
         }
       },
       "required": [

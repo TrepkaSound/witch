@@ -448,7 +448,7 @@ export function newBot(kind: BotKind, o: BotOptions = {}): Bot {
       if (rjob?.phase === "pick") { rjob = null; relicAgain = time + 60; }
       // (adults or legends on her leash keep her down, rules/leashWeight.ts groundedBy: she puts them down where she stands, one at a time, till she can rise;
       // they wait there to be gathered, as after a knockout. Pressing rise held down by them she only stood in the fight: 2026-10-27)
-      if (b.mode === "ground" && healing) { if (groundedBy(w.leash.stack, g.creatures, t).grounded) { bot.doing = "lightening her leash to rise"; putDown(); } else toggle = true; }
+      if (b.mode === "ground" && healing) { if (groundedBy(w.leash.stack, g.creatures, t, b).grounded) { bot.doing = "lightening her leash to rise"; putDown(); } else toggle = true; }
     } else if (o.calm && careful && (calm = calmJob())) {
       // The champion calming a legend: one of its kind from her stack, put down in its area (cycled to the bottom first,
       // a press of the cycle button a step, as a player would).
