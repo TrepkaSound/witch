@@ -96,7 +96,7 @@ function blowOf(effect: Effect | undefined, delivery: Delivery): Attack {
 }
 
 /** An effect's parts on what it touched, all but `done` (the one its blow landed already): a creature knocked, slowed, stunned (rooted
- *  too, for now: DECISION FOR ED), pulled toward (fx, fz); her thrown, slowed, staggered, rooted (all but stopped) or pulled, none of it
+ *  too, for now: DECISION FOR ED), pulled toward (fx, fz); her thrown, slowed (a stun too, since Ed, 2026-11-13: stunWitch; ?stun=old staggers her), rooted (all but stopped) or pulled, none of it
  *  costing her a hit. */
 function effects(w: CombatWorld, s: CombatState, t: Hittable, e: Effect, done: keyof Effect | null, fx: number, fz: number): void {
   const time = w.time, dx = t.x - fx, dz = t.z - fz, d = Math.hypot(dx, dz) || 1;

@@ -3,6 +3,7 @@
 // and the pulse turning them into speakers ... The leyline can still travel three times faster than the pulse. The game
 // starts when the witch casts the party spell, which sets off the pulse that starts turning stones into speakers." And:
 // "the pulse should go around the dancefloor speaker/runestone ring clockwise, starting from the top".
+// (The line's tip runs 2.5 times the pulse's pace now, leyLines.reveal: Ed, 2026-11-16, "2.5 is right".)
 //
 // One path: from the treehouse's front down to the ring's top (due north of the floor, under the treehouse), then round
 // the ring clockwise as seen from the default camera (north up: north, east, south, west) back to the top. The pulse sets

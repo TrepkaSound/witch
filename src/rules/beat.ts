@@ -14,8 +14,8 @@ export interface BeatClock {
   /** The base tempo beat-time is reckoned at (tuning beat.bpm). */
   base: number;
   segs: TempoSegment[];
-  /** BPM added by her knockdowns this run (Ed, 2026-10-07: "the BPM goes up by 1 each time you die": the DJ's off the
-   *  decks, the crowd gets restless and the beat speeds up), knockout.bpmStep each, up to knockout.bpmCap; never down. */
+  /** BPM added by her knockdowns this run (Ed, 2026-10-08: "Knockdowns increase the bpm by 5"; 2026-11-16: "5 BPM: keep it"; his first words, 2026-10-07, had it by 1:
+   *  the DJ's off the decks, the crowd gets restless and the beat speeds up), knockout.bpmStep (5) each, up to knockout.bpmCap; never down. */
   bonus?: number;
   /** The beat her latest knockdown's rise starts on (the next bar line after it): the music lands a crowd cue there. */
   bonusAt?: number;
@@ -134,8 +134,8 @@ export function sparkSpeedAt(bpm: number, t: { leyLines?: Pick<Tuning["leyLines"
 export const tempoRate = (c: BeatClock, t: Pick<Tuning, "beat"> & { leyLines?: Pick<Tuning["leyLines"], "pulseAt100" | "pulseAt200"> }): number =>
   sparkSpeedAt(targetTempo(c, t), t);
 
-/** She's been knocked down at `time` (Ed, 2026-10-07: "the BPM goes up by 1 each time you die"): the bonus rises by
- *  knockout.bpmStep (to knockout.bpmCap, if set), eased in over beat.knockBeats (a bar) from the next bar line (bonusAt), so
+/** She's been knocked down at `time` (Ed, 2026-10-08: "Knockdowns increase the bpm by 5"; 2026-11-16: "5 BPM: keep it"; his first words, 2026-10-07, had it by 1): the bonus rises by
+ *  knockout.bpmStep (5; to knockout.bpmCap, if set), eased in over beat.knockBeats (a bar) from the next bar line (bonusAt), so
  *  the beat never skips and the music's crowd cue lands on the line. Returns the BPM added (0 at the cap). */
 export function knockdownTempo(c: BeatClock, t: Pick<Tuning, "beat"> & { knockout: Pick<Tuning["knockout"], "bpmStep" | "bpmCap"> }, time: number): number {
   const step = Math.max(0, t.knockout.bpmStep ?? 0), was = c.bonus ?? 0;

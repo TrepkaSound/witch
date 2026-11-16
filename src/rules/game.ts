@@ -501,7 +501,7 @@ export function hitWitch(g: Game, id: number, worldAt: number, t: Tuning = g.tun
     // (her feeding stops: every queued berry of hers cancelled, and a press waiting on its hold dropped; Ed, 2026-11-03)
     for (const id of [...w.leash.stack, ...w.leash.placed.map(p => p.id)]) cancelFeeding(g.berries, id);
     delete w.leash.feedHold;
-    knockdownTempo(g.beat, t, g.clock.time); // (the beat speeds up: Ed, 2026-10-07, "the BPM goes up by 1 each time you die")
+    knockdownTempo(g.beat, t, g.clock.time); // (the beat speeds up, knockout.bpmStep, 5 a knockdown: Ed, 2026-10-08, "Knockdowns increase the bpm by 5"; 2026-11-16, "5 BPM: keep it")
     // her wait ends on a bar line at the new tempo, the nearest to it (never under knockout.respawn.minScratch of scratching):
     // her scratching on the new record leads straight into its first downbeat (Ed, 2026-10-09; the wait a second or so off knockout.respawn
     // for it is fine: Ed, 2026-10-11)

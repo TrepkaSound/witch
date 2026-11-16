@@ -1,4 +1,4 @@
-// The party's tempo on screen (Ed, 2026-10-07: "the BPM goes up by 1 each time you die"; "The BPM is shown on the sparkler
+// The party's tempo on screen (Ed, 2026-10-07: "the BPM goes up by 1 each time you die", his first words; the live step is knockout.bpmStep, 5, Ed 2026-11-16: "5 BPM: keep it", and this script still expects 1 a knockdown; "The BPM is shown on the sparkler
 // marker, and above the decks"). The built game (DIST, default dist/) at 1600×900: at her decks the display over them reads the
 // tempo; knocked down twice it reads 2 more (once the rise has eased in) and the wave pointer's label says the same. Fails on a
 // script error or a wrong reading. Writes <out dir>/bpm-decks.png and bpm-pointer.png.

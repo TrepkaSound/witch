@@ -63,13 +63,14 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 1. A creature's stun on her is now a slow: 40% speed for 3 times the stun's length. PR #2073. Code: `src/rules/game.ts#stunWitch`, `config/tuning.json#witch.stunAsSlow.on`, `config/tuning.json#witch.stunAsSlow.speed`, `config/tuning.json#witch.stunAsSlow.time`. Ruling: Ed, 2026-11-13: "I think stun and slow are very similar, and stun is less fun than slow, so how about stun is replaced with slow and we use circling stars?".
 2. A slow multiplies her top speed on the ground and in the treetops alike. Slows do not multiply together: the end time is the latest, and the strength is the stronger of the new one and any older one that lasts longer. Code: `src/rules/game.ts#slowMult`, `src/rules/game.ts#slowUntil`. Ruling: none found (code only).
 3. A root on her is a slow to 0.05 of her speed, not a full stop. Code: `src/rules/attacks/combatWorld.ts#w.slowWitch?.(id, time + e.root, 0.05)`. Ruling: none found (code only).
-4. Every blow's own short stagger (see Being thrown) was not changed: it is still a full stop of 0.25 to 1 s. Code: `src/rules/knock.ts#stunUntil`, `src/rules/game.ts#stunned(W.knock, ht)`. Ruling: none found (code only). Ed's 2026-11-13 stun ruling does not mention the stagger.
+4. Every blow's own short stagger (see Being thrown) was not changed: it is still a full stop of 0.25 to 1 s. Code: `src/rules/knock.ts#stunUntil`, `src/rules/game.ts#stunned(W.knock, ht)`. Ruling: Ed, 2026-11-16: "Keep the short stagger" (his 2026-11-13 stun ruling did not mention it).
 
 ## Knockout and respawn
 
 1. The fourth hit knocks her out where she stands: no input, and no throw. Code: `src/rules/game.ts#knockOut`, `src/rules/knockout.ts#hurt`, `config/tuning.json#witchHealth.hits`. Ruling: Ed, 2026-10-08: "three slashes, and then a final hit".
 2. Half way through the 1.2 s teleport she is moved to the treehouse: with the house on, to the magic circle, where she rises for 0.9 s and walks to her decks. She ends seated, on the treehouse floor, until her first move or rise. Code: `src/rules/knockout.ts#stepKnockout`, `config/tuning.json#knockout.teleport`, `config/tuning.json#knockout.rise`, `config/tuning.json#treehouse.house.on`. Ruling: Ed, 2026-10-06: "When you die and respawn, you should appear behind the decks in your treehouse, as when the game begins (but not zoomed in)".
 3. She can move again 6 s after going down, flat (no extra for repeat knockdowns: step 0), moved to the nearest bar line and never under 1.5 s of scratching. The desk's candles count the wait, one a second. Code: `src/rules/knockout.ts#respawnWait`, `src/rules/knockout.ts#candleCount`, `config/tuning.json#knockout.respawn.base`, `config/tuning.json#knockout.respawn.step`, `config/tuning.json#knockout.respawn.minScratch`, `config/tuning.json#knockout.candleStep`. Ruling: Ed, 2026-10-07: "any more than about six seconds to wait will be frustrating. We could alternatively make each successive death a bit longer, with a cooldown, to punish rapid dying".
+4. Knocked out, she drops her hat where she went down and wears none until she picks it up. Knocked out again while it is still on the ground, the old hat stays where it lies and no second one drops: one hat on the ground. Code: `src/rules/hat.ts#if (!on || !h.has || h.down) return false`, `config/tuning.json#knockout.dropHat`. Ruling: Ed, 2026-10-06: "when you are killed, you drop your hat"; Ed, 2026-11-16: "Keep it: one hat on the ground".
 
 ## The treehouse floor (the perch)
 
@@ -85,11 +86,10 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 
 ## Where code and the latest ruling disagree
 
-No clear contradiction found. Three places where the code does something Ed's newest words do not cover, for the coordinator to confirm:
+No clear contradiction found. Two places where the code does something Ed's newest words do not cover, for the coordinator to confirm:
 
 1. Ed, 2026-11-13: "There's nothing to collide with apart from lakes". The code also stops her at the zoo's fence on foot (`src/rules/witch.ts#bounds.fence.stop`, `src/rules/game.ts#blinkClear`; Ed's own ruling of 2026-10-26), at the island's coast, and at the treehouse floor's walls, desk and furniture (`src/rules/treehouse.ts#keepInHouse`). These look intended, but the quote names only lakes.
-2. Ed, 2026-11-13: "stun is replaced with slow". Every blow's own stagger is still a full stop of 0.25 to 1 s (`src/rules/knock.ts#stunUntil`), and a root is a slow to 0.05 (`src/rules/attacks/combatWorld.ts#e.root`). The decision record (`config/knobs/witch.json#knobs`) says the stagger was left unchanged on purpose, in the builder's words, not Ed's.
-3. `src/rules/game.ts#slowWitch` applies a plain slow with no blink test, while the comment beside it says a blink dodges an attack's effects "as a blow". Whether the caller always stops a dodged touch first was not traced.
+2. `src/rules/game.ts#slowWitch` applies a plain slow with no blink test, while the comment beside it says a blink dodges an attack's effects "as a blow". Whether the caller always stops a dodged touch first was not traced.
 
 ## Stale comments or notes seen
 

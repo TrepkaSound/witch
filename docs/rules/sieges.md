@@ -22,9 +22,9 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 
 1. There is no wave timer. A wave lands when the ley pulse reaches the next stone on the route, and the countdown is the metres left divided by the pulse's speed. Code: `src/rules/party.ts#stepParty`, `src/rules/party.ts#waveCountdown`. Ruling: Ed, 2026-10-09: "Pure constant speed".
 2. The pulse's speed follows the tempo in a straight line: 1 m/s at 100 bpm, 5 m/s at 200 bpm, times `leyLines.pulseSpeed` (1). At the tuning's 120 bpm that is 1.8 m/s. The record she puts on at her decks can change the night's tempo. Code: `src/rules/beat.ts#sparkSpeedAt`, `src/rules/beat.ts#tempoRate`, `src/rules/pulseRoute.ts#pulseSpeed`, `config/tuning.json#leyLines.pulseAt100`, `config/tuning.json#leyLines.pulseAt200`, `config/tuning.json#beat.bpm`. Ruling: Ed, 2026-11-03: "a smooth increase from 100 bpm 1.0 m/s to 200 bpm 5.0 m/s".
-3. The tempo is the same all night. Only her knockdowns raise it: 5 bpm each, with no cap. So every knockdown makes the waves come sooner. Code: `src/rules/beat.ts#knockdownTempo`, `src/rules/game.ts#knockdownTempo(g.beat, t, g.clock.time)`, `config/tuning.json#knockout.bpmStep`. Ruling: Ed, 2026-11-03: "the tempo (pulse speed) should stay the same through the night, and only raises when you get knocked down".
+3. The tempo is the same all night. Only her knockdowns raise it: 5 bpm each, with no cap. So every knockdown makes the waves come sooner. Code: `src/rules/beat.ts#knockdownTempo`, `src/rules/game.ts#knockdownTempo(g.beat, t, g.clock.time)`, `config/tuning.json#knockout.bpmStep`. Ruling: Ed, 2026-11-03: "the tempo (pulse speed) should stay the same through the night, and only raises when you get knocked down"; the 5 is Ed, 2026-11-16: "5 BPM: keep it".
 4. Losing a soundsystem or a home speaker changes nothing in the countdown or the tempo. Code: `src/rules/game.ts#loseSoundsystem`, `src/rules/party.ts#pulseLinksIn`. Ruling: Ed, 2026-10-08: "Losing a soundsystem no longer touches the wave countdown".
-5. Each wave wakes `party.areasPerWave` (1) area: the next stone on the planned route (`party.picker` is "route"). The next stone and the one after are fixed in advance. Code: `src/rules/party.ts#pickNext`, `src/rules/party.ts#planAhead`, `config/tuning.json#party.areasPerWave`, `config/tuning.json#party.picker`. Ruling: Ed, 2026-10-07: "each wave still targets the next stone on the route".
+5. Each wave wakes `party.areasPerWave` (1) area, however many witches play: the next stone on the planned route (`party.picker` is "route"). The next stone and the one after are fixed in advance. Code: `src/rules/party.ts#pickNext`, `src/rules/party.ts#planAhead`, `config/tuning.json#party.areasPerWave`, `config/tuning.json#party.picker`. Ruling: Ed, 2026-10-07: "each wave still targets the next stone on the route"; Ed, 2026-11-16: "One area a wave, always" (however many witches play; this retires the 2026-10-04 one per witch).
 6. A wave that reaches an area she already converted only celebrates. No second soundsystem, nobody enraged. Code: `src/rules/party.ts#p.ahead?.delete(k)`, `src/rules/game.ts#waveCelebrate`. Ruling: Ed, 2026-10-07: "no enrage, no second soundsystem".
 7. A ruined area (its soundsystem destroyed) is never woken again. If its wave had not come yet, the route still stops at its stone and that wave does nothing there. Code: `src/rules/party.ts#const passed`, `src/rules/party.ts#ruined?: Set<string>`. Ruling: none found (code only).
 
@@ -71,15 +71,12 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 
 ## Where code and the latest ruling disagree
 
-1. Areas a wave: the code wakes `party.areasPerWave` (1) area a wave however many witches play; nothing outside the tests changes it. The ruling it cites is one area per witch (Ed, 2026-10-04, quoted nowhere in words). Code: `src/rules/party.ts#areasPerWave: Math.max(1, map.tuning.party.areasPerWave)`. Possible disagreement in a two-witch night; ask Ed.
-2. None found otherwise.
+None found.
 
 ## Stale comments or notes seen
 
 1. `docs/notes/gameplay.md#Siege`: says "The run is **over** (`game.over`) when none stands." The code ends the party when the last home speaker falls (`g.partyOver`), whatever else stands; there is no `game.over`. The same entry says its happy babies "run off home for good"; they run to the beach.
 2. `src/rules/game.ts#The party's over (Ed, 2026-10-06: every soundsystem and the home ring's speakers destroyed)`: the field comment on `partyOver` gives the 2026-10-06 condition. Since Ed, 2026-10-10 only the home speakers count.
-3. `src/rules/game.ts#the BPM goes up by 1 each time you die` and `src/rules/beat.ts#the BPM goes up by 1 each time you die`: the quote is Ed's of 2026-10-07; the live step is 5 bpm (docs/notes/music.md quotes his later words of 2026-10-09 for the 5).
-4. `src/rules/party.ts#How many areas each wave wakes: one per witch present`: says it is "read at each wave"; nothing sets it from the number of witches (see the disagreement above).
 5. `src/rules/clear.ts#Clearing an area`: the header reads as live ("transforms its runestone at once"). With the stacks on the game never runs it (rule 4 under "What a soundsystem is").
 6. `config/knobs/party.json#An area cleared of its own wild creatures before its wave`: the `party` note says such an area "is partified at once, as its wave would (rules/clear.ts)". Not with the stacks on.
 7. `docs/notes/gameplay.md#Rank sigils`: says an empty stone is rare "since an area with none of its wild youths and adults left clears and its stone turns to a soundsystem (rules/clear.ts)". Not with the stacks on: it waits for her cast or its wave.

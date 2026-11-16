@@ -1,4 +1,4 @@
-// The beat speeds up as she's knocked down (Ed, 2026-10-07: "the BPM goes up by 1 each time you die"): the party's tempo
+// The beat speeds up as she's knocked down (Ed, 2026-10-08: "Knockdowns increase the bpm by 5"; 2026-11-16: "5 BPM: keep it"; his first words, 2026-10-07, had it by 1): the party's tempo
 // rises by knockout.bpmStep a knockdown, eased in from the next beat, and the wave countdown runs that much faster.
 import { describe, expect, it } from "vitest";
 import { beatAt, bpmAt, knockdownTempo, newBeatClock, recordTempo, sparkSpeedAt, tempoRate } from "./beat";
