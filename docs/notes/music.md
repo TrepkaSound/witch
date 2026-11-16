@@ -213,8 +213,8 @@ Ed, 2026-10-13: the committed pages conflicted on every rebuild).
   a clearing's own reverb takes that impulse, sent to more (`circle.wet`);
   (2) **room to breathe**, the sung line on held half-phrase rhythms (whole notes and ties, a rest at each half's end: `rhythms`;
   the breakdown's chord-hold not here) over slower chords (a phrase's opening chord, then its cadence's, the question or the answer: `hauntedBar`), the phrases on their 4-bar lines;
-  the drums out, then **the drop**: no drums for `drop.afterBars` (8, at most half the section, on a 4-bar line: an 8-bar breakdown 4 quiet, 4 dropped;
-  a 16-bar block 8 and 8), a riser over the `drop.riserBars` before, an impact on its downbeat, the low-pass opened to `drop.cutoff`, and drum & bass (`drop.parts`: `dnbKick` the two-step, kick on 1 and the and-of-3;
+  the drums out, then **the drop**: no drums for `drop.afterBars` (8, the drop a 4-bar block at least, on a 4-bar line: an 8-bar section 4 quiet, 4 dropped;
+  a 12-bar one 8 and 4; a 16-bar block 8 and 8; **The hush**, below, makes the form's breakdown 12), a riser over the `drop.riserBars` before, an impact on its downbeat, the low-pass opened to `drop.cutoff`, and drum & bass (`drop.parts`: `dnbKick` the two-step, kick on 1 and the and-of-3;
   `dnbSnare` on 2 and 4 with ghost notes;
   `dnbHat` sixteenths with thirty-second rolls;
   `dnbSub`, a sine on the key's root, the drone's, a `tonic` bass part;
@@ -233,6 +233,15 @@ Ed, 2026-10-13: the committed pages conflicted on every rebuild).
   `?section=` any section, the drop by default), the cloud: drawn ahead, no drop-out at any stall, no re-anchor, 20 bars rendered, none late or dropped, 357 ms a 2 s bar off the page's thread (the drop's 336 in the same run).
   The switch: the style's `haunted.on`, the tuning's `music.haunted` (`withHaunted`, applied in app/sound.ts), `?haunted=0` for a load, and the Music Lab's **Haunted** (the page and the pause page's).
   The drops and the energetic sections play exactly as before (`src/rules/musicHaunted.test.ts`).
+  **The hush** (Ed, 2026-11-16, asked whether the 4 quiet bars before the drop in the form's 8-bar breakdowns should be longer: "Make it 8 bars"; in the same round "Keep half-time" of the two-step, the drone and ghost levels "Fine as is", the other moods left alone;
+  `src/rules/musicHush.ts`): a haunted breakdown in the form is lengthened by `drop.stretch` (4) to 12 bars, 8 quiet and then the same 4-bar drop, the riser over the quiet's last two.
+  A pass round the form is then 36 bars, not 32 (16 four on the floor, 8 breakbeats, 12 the breakdown), so in a long wave each later pass starts 4 bars later than it did and a little less of the form fits before the next build;
+  the waves' landings, the builds, a knockdown's silence and new record and the victory are the game's and land where they did (`planBlock`, `passAt`).
+  The form's own clock (its chords and phrases, 32 bars round) waits out the added bars (`formClock`: its start moves on by each stretch as its drop begins, and holds through a build and the victory), so the quiet sings the C phrase whole (it had its first half) and the drop plays its second half again, as it did.
+  Banger mode's hook: the landing's whole hook as before; at half speed for the 8 quiet bars (its first half, where it had a quarter); whole for the drop's 4, four bars later in the pass.
+  Only the form's breakdown slot is lengthened: a calm family's haunted breaks (8 bars: 4 and 4) and four (16: 8 and 8) are as they were, and so is a section played on its own (`?music=breakdown`, the labs, the stall test: 16 bars, 8 and 8).
+  The switch: the tuning's `music.hauntedHush` (8; 4 the breakdown as it was, to the note: `withHush`, applied in app/sound.ts) and `?hauntedhush=old` for a load. Tests: `src/rules/musicHush.test.ts`.
+  `node tools/music-lab/haunted.mjs <out> hush [seeds]` renders a pass's breakbeats, breakdown and the next landing, new and old, with where the hush and the drop start.
   `node tools/music-lab/haunted.mjs <out> ab|circle|night [seeds]` renders the A/B with the game's singer: a breakdown and an ether block (quiet, the riser, the drop) and a clearing, each on and off, and a night over a few waves (`long-seed<N>.mp3` and where each haunted section and drop starts).
 - **The composer** (Ed, 2026-11-08, asked for better melodies and basslines and offered ways to get them, chose "smarter rules": the music still made live from the seed, but written more as a person would): the style's `compose` (`ComposeDef`, `src/rules/musicCompose.ts`;
   called from rules/musicScore.ts). **Melodies** (`formPhrase`, `hauntedPhrase`, and the clearings' and old styles' `motif` path): each phrase planned, then filled.

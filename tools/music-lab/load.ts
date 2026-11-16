@@ -15,6 +15,7 @@ import { mixAt } from "../../src/rules/music";
 import { newBeatClock, timeAt, type BeatClock } from "../../src/rules/beat";
 import type { MusicCue } from "../../src/rules/musicPlan";
 import { nightStyle, planNight } from "../../src/rules/musicSet";
+import { withHush } from "../../src/rules/musicHush";
 import { withHaunted, withMelody, withSinger, type MusicStyle } from "../../src/rules/musicScore";
 import { withBanger } from "../../src/rules/musicBanger";
 
@@ -98,7 +99,7 @@ async function load(o: LoadJob) {
   bars.length = 0; T = { live: { nodes: {}, spans: [] }, bar: { nodes: {}, spans: [] } };
   const ref0 = await reference(); // (and again after, the two averaged: the machine's speed while the music rendered)
   const M = TUNING.music, plan = planNight(base, { seed: o.seed, island: o.island, waves: 10 });
-  const style = withBanger(withMelody(withHaunted(withSinger(nightStyle(base, plan), M.singer), M.haunted), M.melody), o.banger); // (as app/sound.ts plays it)
+  const style = withBanger(withMelody(withHush(withHaunted(withSinger(nightStyle(base, plan), M.singer), M.haunted), M.hauntedHush), M.melody), o.banger); // (as app/sound.ts plays it)
   const clock = newBeatClock(style.bpm), t0 = timeAt(clock, o.from * 4), seconds = timeAt(clock, o.to * 4) - t0 + 3;
   const oc = new OAC(4, Math.ceil(seconds * RATE), RATE);
   live = oc;

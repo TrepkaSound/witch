@@ -10603,6 +10603,11 @@
           "type": "boolean",
           "description": "The haunted treatment in the quiet sections and a sleeping legend's clearing layer (the music style's haunted block, docs/notes/music.md Haunted); false plays the music as before, as does ?haunted=0 or the Music Lab's Haunted switch."
         },
+        "hauntedHush": {
+          "type": "number",
+          "minimum": 0,
+          "description": "The quiet bars before a haunted breakdown's drum & bass drop: 8, the form's breakdown lengthened from 8 bars to 12 (8 quiet, then the 4-bar drop; rules/musicHush.ts, docs/notes/music.md Haunted); 4 or ?hauntedhush=old plays the 8-bar breakdown as it was (4 quiet, 4 dropped)."
+        },
         "melody": {
           "type": "string",
           "enum": [
@@ -10672,6 +10677,7 @@
         "src",
         "singer",
         "haunted",
+        "hauntedHush",
         "melody",
         "banger",
         "over",

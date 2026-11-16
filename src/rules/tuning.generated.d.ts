@@ -2075,6 +2075,7 @@ export type SchemaTuning = {
     "src": string;
     "singer": string;
     "haunted": boolean;
+    "hauntedHush": number;
     "melody": "dance" | "lyrical" | "old";
     "banger": boolean;
     "over": {

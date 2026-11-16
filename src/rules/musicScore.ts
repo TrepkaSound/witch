@@ -2,6 +2,7 @@
 // plays on each sixteenth, from the style file (config/music-style.json) and the section the
 // conductor (rules/musicPlan.ts) has chosen. Numbers only, no sound: src/platform/audio/musicEngine.ts
 // plays the notes. The same seed and section always give the same notes.
+import { hauntedDrop } from "./musicHush";
 import { hash2 } from "./random";
 import { seedName } from "./kinds"; // (a renamed kind keeps its melody)
 import voices from "../../config/creature-voices.json";
@@ -285,11 +286,11 @@ export interface HauntedDef {
    *  band-passed `low` to `high` Hz), `wet` its send in these sections; a clearing's layer takes the same impulse. */
   verb: { time: number; decay: number; low: number; high: number; wet: number };
   /** 2. Room to breathe: the sung line's half-phrase rhythms here (whole notes and ties, rests at their ends: each half a
-   *  phrase long, 16 sixteenths a bar, x a note, - held, . a rest), and the drop: no drums for `afterBars` (at most half the
-   *  section, on a 4-bar line), then drum & bass (Ed, 2026-11-08: "make it a drop - no drums, and then drum and bass kicks
+   *  phrase long, 16 sixteenths a bar, x a note, - held, . a rest), and the drop: no drums for `afterBars` (the drop a block
+   *  at least, on a 4-bar line), then drum & bass (Ed, 2026-11-08: "make it a drop - no drums, and then drum and bass kicks
    *  in"): `parts` over the section's (null takes one out), a riser over the last `riserBars` before it and an impact on it. */
   rhythms: string[];
-  drop: { afterBars: number; riserBars: number; impact: boolean; /** the section's low-pass opened to this (Hz) from the drop */ cutoff?: number; parts: Record<string, PartUse | null> };
+  drop: { afterBars: number; riserBars: number; impact: boolean; /** bars a form's breakdown is lengthened by, for `afterBars` of quiet (Ed, 2026-11-16: "Make it 8 bars"; rules/musicHush.ts) */ stretch?: number; /** the section's low-pass opened to this (Hz) from the drop */ cutoff?: number; parts: Record<string, PartUse | null> };
   /** 3. The ghost voice: each sung note again `interval` scale steps away (-5 a sixth below, -2 a third), `delay` s late, at
    *  `gain` of its level, low-passed at `lowpass` Hz, panned to `pan`, on `vowel`; in place of the breakdown's wash. A clearing's
    *  lead part is ghosted the same way at `circle.ghost` of its level. */
@@ -434,14 +435,7 @@ export const arcStep = (style: MusicStyle, arc: number): ArcStep => style.arc[Ma
 export const hauntedOn = (style: MusicStyle): HauntedDef | null => (style.haunted && style.haunted.on !== false ? style.haunted : null);
 /** Whether a section is one of the haunted quiet ones (with the treatment on). */
 export const isHaunted = (style: MusicStyle, section: string): boolean => !!hauntedOn(style)?.sections.includes(section);
-/** The bar (into a haunted section) its drum & bass drops on: `afterBars`, at most half the section, on a block line; Infinity
- *  for none (a section too short to have a quiet half and a drop). */
-export function hauntedDrop(style: MusicStyle, bars: number): number {
-  const H = style.haunted, B = Math.max(1, style.blockBars);
-  if (!H) return Infinity;
-  const at = Math.floor(Math.min(H.drop.afterBars, bars / 2) / B) * B;
-  return at >= B && at < bars ? at : Infinity;
-}
+export { hauntedDrop };
 /** The form's bar whose chord a haunted section plays in form bar `formBar` (slower chords: a phrase's opening chord through its
  *  first half, its cadence chord, the question or the answer, through its second), so the phrases still land on their lines. */
 export function hauntedBar(F: FormDef, formBar: number): number {

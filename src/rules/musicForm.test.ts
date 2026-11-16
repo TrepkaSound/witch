@@ -138,7 +138,7 @@ describe("a knockdown: the record scratched, silence, a new record from the top 
   const cue = (knockdowns: { at: number; back: number }[], waves: number[] = []): MusicCue => ({ waves, nextAt: Infinity, bootUntil: 0, knockedOut: false, siege: 0, knockdowns });
   it("is silent from the knockdown till the new record, which starts its form there on a new seed", () => {
     const base = 77;
-    expect(formClock(style, cue([]), 100)).toEqual({ start: 0, n: 0 });
+    expect(formClock(style, cue([]), 20)).toEqual({ start: 0, n: 0 });
     const k = cue([{ at: 13.2, back: 17 }]);
     expect(silentAt(k, 13.1)).toBe(false);
     expect(silentAt(k, 13.2)).toBe(true);
@@ -220,11 +220,11 @@ describe("the form's sections (Ed, 2026-10-09: \"ABAC; the first two sections sh
   it("plays them on the form: A and B four on the floor, A breakbeats, C a breakdown, from where each wave lands", () => {
     const c = new Conductor(style), landed = 36; // (wave 1 at bar 36: the build before it, then the form)
     const cue: MusicCue = { waves: [landed], nextAt: Infinity, bootUntil: 8, knockedOut: false, siege: 0 }, S = style.arc[1].sections!;
-    for (let pass = 0; pass < 3; pass++) for (let b = 0; b < 32; b++) {
-      const bar = landed + pass * 32 + b, p = c.plan(cue, bar), kind = b < 16 ? "four" : b < 24 ? "breaks" : "breakdown";
+    for (let pass = 0; pass < 3; pass++) for (let b = 0; b < 36; b++) { // (a pass 36 bars, its haunted breakdown 12: Ed, 2026-11-16)
+      const bar = landed + pass * 36 + b, p = c.plan(cue, bar), kind = b < 16 ? "four" : b < 24 ? "breaks" : "breakdown";
       const want = kind === "four" ? (pass === 0 ? S.land! : S.four[pass % S.four.length]) : S[kind][pass % S[kind].length];
       expect(p.section, `bar ${bar}`).toBe(want);
-      expect(formClock(style, cue, bar).start).toBe(landed);
+      expect(formClock(style, cue, bar).start).toBe(landed + 4 * pass + (b < 32 ? 0 : 4)); // (the form's clock waits out the added bars)
     }
   });
 });
