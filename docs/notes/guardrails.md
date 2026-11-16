@@ -55,6 +55,10 @@ Big things in `src/` may shrink but not grow, compared with the merge base (same
     src/rules/combat.ts#stepCombat (function): 868 -> 870 lines (limit 150; over the limit it may shrink but not grow)
   ```
 
+## No new module state in the rules (`node tools/checks/moduleState.mjs`)
+
+Added with item d of the quality plan (Ed's go, 2026-11-15): a new top-level `let`, or a top-level collection written after load, in `src/rules/` since the merge base fails, unless its line (or the comment above) says `// module-state: <why>`. Its escape is that comment, not a trailer. The audit, the categories and what it can't see: `docs/notes/module-state.md`.
+
 ## The escape: a commit trailer, reviewed
 
 For a rare case where growth is right, add a trailer to one of the branch's commits (the last line block of its message):

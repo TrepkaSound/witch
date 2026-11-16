@@ -58,3 +58,30 @@ describe("the size ratchet", () => {
     expect(grown({ "src/f.ts": longFile(900) }, { "src/g.ts": longFile(900) }, new Map([["src/f.ts", "src/g.ts"]]))).toEqual([]);
   });
 });
+
+describe("no new module state in the rules (tools/checks/moduleState.mjs; docs/notes/module-state.md)", () => {
+  it("finds top-level lets and consts written after load, not read-only ones or locals", async () => {
+    // @ts-expect-error (a plain .mjs tool, no types)
+    const { bindingsOf } = await import("./moduleState.mjs");
+    const text = [
+      `let a = 1, [b, c] = [2, 3];`, `const TABLE = new Map([[1, 2]]);`, `const cache = new Map();`, `const list: number[] = [];`,
+      `const obj = { n: 0 };`, `const buf = new Float64Array(4);`, `const read = new Set([1]);`, `const marked = new Map(); // module-state: keyed by all its inputs`,
+      `// module-state: scratch, reset each step`, `const above: number[] = [];`,
+      `export function f(k: number) { let local = 0; cache.set(k, 1); list.push(k); obj.n++; buf[0] = k; marked.set(k, k); above.length = 0; return read.has(local) || TABLE.get(k); }`,
+    ].join("\n");
+    const found = bindingsOf(text, "src/rules/x.ts").map((b: { name: string; kind: string; marked: boolean }) => `${b.name}:${b.kind}${b.marked ? ":marked" : ""}`);
+    expect(found).toEqual(["a:let", "b:let", "c:let", "cache:written", "list:written", "obj:written", "buf:written", "marked:written:marked", "above:written:marked"]);
+  });
+
+  it("fails only a new, unmarked binding in src/rules/: an old one, a renamed file's, or one elsewhere passes", async () => {
+    // @ts-expect-error (a plain .mjs tool, no types)
+    const { newBindings } = await import("./moduleState.mjs");
+    const base = { "src/rules/a.ts": `let old = 0; export const f = () => old++;` };
+    const names = (head: Record<string, string>, renames = new Map()) => newBindings(base, head, renames).map((b: { file: string; name: string }) => `${b.file}#${b.name}`);
+    expect(names({ "src/rules/a.ts": `let old = 0; export const f = () => old++;` })).toEqual([]);
+    expect(names({ "src/rules/a.ts": `let old = 0, fresh = 1; export const f = () => old + fresh++;` })).toEqual(["src/rules/a.ts#fresh"]);
+    expect(names({ "src/rules/a.ts": `let old = 0;\nlet fresh = 1; // module-state: page wiring, set once at boot` })).toEqual([]);
+    expect(names({ "src/rules/b.ts": `let old = 0;` }, new Map([["src/rules/a.ts", "src/rules/b.ts"]]))).toEqual([]);
+    expect(names({ "src/render/a.ts": `let anything = 0;` })).toEqual([]);
+  });
+});
