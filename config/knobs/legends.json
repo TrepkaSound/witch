@@ -132,6 +132,14 @@
       ],
       "links": ["rules/homeLegends.ts"]
     },
+    "legends.hardHits": {
+      "what": "A legend's attack hits a creature for legends.json's attack.damage (its kind's attack made big, and the old lob or beam) or charge.damage (a charging kind's trample), 50 each; false (?legendhits=old): 10 a hit, as before. A blow on her still costs one hit, and bombardment is legends.bombard.damage.",
+      "decisions": [
+        { "by": "Ed", "date": "2026-11-16", "quote": "50 a hit", "rest": "asked how hard a legend's attack should hit creatures, at 10 every 15 s against an adult's 160 health; the charging kinds' trample goes to 50 with it, so every legend attack hits the same" },
+        { "by": "Ed", "date": "2026-11-16", "quote": "Keep 150: one lob destroys one", "rest": "the bombardment of soundsystems (legends.bombard.damage) stays" }
+      ],
+      "links": ["rules/combat/legendHits.ts"]
+    },
     "legends.bombard": {
       "what": "(\"Legend bombards, but prioritises you\"): an angry legend with no witch in its reach throws the first lob or beam of its volley at the nearest standing soundsystem within range metres, damage a hit (of combat.soundsystemHealth); a charging legend lobs at it rather than charge."
     },

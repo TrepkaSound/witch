@@ -7664,6 +7664,10 @@
         "homeAlike": {
           "type": "boolean",
           "description": "A friendly route legend back at the dancefloor guards exactly like the island's home legend, and both take the party egg's letters; false (?homelegends=old): as before, the returned one on a ring post 36 m or more out, defending her first, and the home legend taking no letters."
+        },
+        "hardHits": {
+          "type": "boolean",
+          "description": "A legend's attack hits a creature for legends.json's attack.damage (its kind's attack made big, and the old lob or beam) or charge.damage (a charging kind's trample), 50 each; false (?legendhits=old): 10 a hit, as before. A blow on her still costs one hit, and bombardment is legends.bombard.damage."
         }
       },
       "required": [

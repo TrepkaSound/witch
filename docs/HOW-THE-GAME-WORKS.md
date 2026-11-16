@@ -273,7 +273,8 @@ The young's moves are weaker and slower (`young`: wind-ups 1.3 times as long, bo
 - Each legend checks every **5 s** whether any of its own kind is in its area. That counts any state: wild, happy, your parked ones, babies.
 - With none, it grows **restless** (a nightmare bubble, from sad to furious). After **60 s** of that it turns **angry** (`config/legends.json` `angryAfter`).
 - An angry legend shoots or lobs at you and your posse on the ground from up to **420 m** (`legends.json` `attack.range`), a volley every 15 s. Nine species charge instead: boar, elk, stag, ram, ibex, hedgehog, woodlouse, rhino and unicorn (the last two since Ed's 31 Oct playtest). They take a long, curving run, then walk home.
-- With no witch in reach, an angry legend **bombards the nearest standing soundsystem** within 420 m, at **150 damage a hit** (`legends.bombard`).
+- Every legend attack hits a creature for **50** (Ed, 2026-11-16: "50 a hit"; `legends.json` `attack.damage` and `charge.damage`; an adult has 160 health, a legend 480). A blow on you still costs one hit. `?legendhits=old` plays the old 10.
+- With no witch in reach, an angry legend **bombards the nearest standing soundsystem** within 420 m, at **150 damage a hit** (`legends.bombard`): one landed lob destroys one (Ed, 2026-11-16: "Keep 150: one lob destroys one").
 - It **calms back to sleep as soon as one of its kind is back** in its area. Worn down in a fight, it also goes back to sleep. Either way it walks home to its spot first.
 - (A "stomp" variant, where a legend turning angry flattens its own area's soundsystem, exists but is switched off: `legends.stomp.on` false.)
 

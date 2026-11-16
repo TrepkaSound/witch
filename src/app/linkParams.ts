@@ -52,6 +52,9 @@ function compareFights(params: URLSearchParams, tuning: typeof TUNING): void {
   // ?homelegends=old: home legends as before Ed's 2026-11-15 rulings (tuning legends.homeAlike, rules/homeLegends.ts): a route legend
   // back home stands on a ring post and defends her first, and the island's home legend takes no letters, for comparison.
   if (params.get("homelegends") === "old") tuning.legends = { ...tuning.legends, homeAlike: false };
+  // ?legendhits=old: a legend's attack hits creatures for 10, as before Ed's 2026-11-16 "50 a hit" (tuning legends.hardHits,
+  // rules/combat/legendHits.ts), to compare.
+  if (params.get("legendhits") === "old") tuning.legends = { ...tuning.legends, hardHits: false };
   // ?lunge=old: lunges as before Ed's 2026-11-13 change (tuning lunge, rules/combat.ts longLunge): wound up close, sprinting in, and
   // stopping where they aimed, to compare with the long ones (wound up from about 1.5 dashes off, carrying through to about 2).
   if (params.get("lunge") === "old" && tuning.lunge) tuning.lunge = { ...tuning.lunge, on: false };
@@ -190,7 +193,7 @@ export function tuningFromLink(params: URLSearchParams) {
   if (params.get("trail") === "0") tuning.trail = { ...tuning.trail, on: false };
   if (params.get("stun") === "old" && tuning.witch.stunAsSlow) tuning.witch = { ...tuning.witch, stunAsSlow: { ...tuning.witch.stunAsSlow, on: false } }; // (?stun=old: a creature's stun on her staggers her as before, not the slow Ed chose on 2026-11-13, to compare)
   if (params.get("knock") === "0") tuning.witch = { ...tuning.witch, knock: { ...tuning.witch.knock, on: false } };
-  compareFights(params, tuning); // (?attacks=old, ?ranged=old, ?homelegends=old, ?lunge=old: below)
+  compareFights(params, tuning); // (?attacks=old, ?ranged=old, ?homelegends=old, ?legendhits=old, ?lunge=old: below)
   // ?shotmarks=0: wild shots leave no mark where they end, as before Ed's 2026-11-13 choice ("Mark the ground": tuning shotMarks,
   // rules/attacks/marks.ts), to compare.
   if (params.get("shotmarks") === "0" && tuning.shotMarks) tuning.shotMarks = { ...tuning.shotMarks, on: false };
