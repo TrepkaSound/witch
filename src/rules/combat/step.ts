@@ -3,11 +3,12 @@
 // the packs' plans). Split from stepCombat's body: the same sums in the same order.
 import { LEGEND, type Creature } from "../creatures";
 import { foes } from "../creatureStates";
-import { FIGHT, packsOf, profileOf, swoopStriking } from "../movement";
+import { packsOf, profileOf, swoopStriking } from "../movement";
 import type { Tuning } from "../tuning";
 import { attackOf, type Attack, type CombatData, type CombatState, type CombatWorld } from "./data";
 import { fighting, targetable, sideOf, Grid } from "./targeting";
 import { useData } from "./hits";
+import { setFight } from "../fightSettings";
 import { rangedOf as rangedRule } from "../attacks/aim";
 import { PACKS, stepPacks, packsOn, packKindOf, packAttack, strikingNow, observedPackPlans } from "./packs";
 import { noteWitches } from "../momentum";
@@ -71,11 +72,7 @@ export function beginStep(s: CombatState, w: CombatWorld, data: CombatData): Ste
   const { time, dt, t } = w, C = t.combat;
   const spacing = spacingOn(t);
   useData(data);
-  FIGHT.scale = t.fight.scale; FIGHT.speed = t.fight.speed; FIGHT.momentum = t.fight.momentum ?? 1;
-  FIGHT.creature = t.difficulty?.creatureSpeed ?? 1; FIGHT.adult = t.difficulty?.adultStrength ?? 1; // (the difficulty: Ed, 2026-11-03)
-  if (t.fight.charge) FIGHT.charge = t.fight.charge;
-  if (t.fight.leap) FIGHT.leap = t.fight.leap;
-  FIGHT.walk = t.groundSpeed;
+  setFight(t); // (the fight's speeds from the tuning: rules/fightSettings.ts)
   if (t.creatureMomentum?.on) noteWitches(s, w.witches, time); // (her trail, for the creatures' reaction delay: rules/momentum.ts)
   // (the grid every fighter is found in: shots, beams and slime hit what's in it, and each creature's turn looks round it)
   const grid = new Grid(w.active.filter(c => fighting(c)));

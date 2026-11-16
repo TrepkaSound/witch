@@ -6,8 +6,8 @@ import { runawaySpot, runOff } from "./runaway";
 import { stepWildWatch, type WildEntry } from "./wildWatch";
 import { stepHunts } from "./hunt";
 import { wakeOnInvites } from "./inviteWakes";
-import { MOVEMENT, resetFight } from "./movement";
-import { useData } from "./combat/hits";
+import { MOVEMENT } from "./movement";
+import { fightFor } from "./fightSettings";
 import { nightFor, type NightSet } from "./musicSet";
 import { bodyRadius, spaceOut, spaceRadius } from "./spacing";
 import { spacingOn } from "./combatSpacing";
@@ -155,7 +155,6 @@ export interface Witch {
   castFrom?: number;
   castBlocked?: boolean;
 }
-
 /** The simulation's fixed step (seconds): the rules advance only in these, driven only by the
  *  inputs and the seed, so the same inputs give the same game (Stage 4: deterministic sim). */
 export const STEP = 1 / 60;
@@ -283,6 +282,7 @@ export interface Game {
   wake?: WakeState;
   /** The island's built (the night's art drawn; app/pageFrame.ts sets it): the house's art swaps in its finished pieces then (nothing waits on it). */
   islandReady?: boolean;
+  /** A fight step has run (rules/fightSettings.ts: each step then begins with the tuning's fight speeds, not the page's) */ fightSet?: boolean;
 }
 
 /** The waves' events: a soundsystem lost ("home" for the dancefloor's ring; nothing off the countdown since Ed, 2026-10-08); an area cleared
@@ -335,7 +335,7 @@ export function newWitchPlayer(id: number, x: number, z: number, t: Tuning, seat
 }
 
 export function newGame(seed: number, tuning: Tuning, players = 1, ready?: MapPrep | ForestMap): Game {
-  resetFight(); useData(COMBAT); // (the last night's fight settings out: a night starts as a fresh page's)
+  fightFor({ tuning }); // (the last night's fight settings out: a night starts as a fresh page's)
   // (ready: the map made already for this seed and tuning (app/mapPrep.ts readyMap), or its heavy parts, made in a worker while the chart flew)
   const map = !ready ? generateMap(seed, tuning) : Array.isArray((ready as MapPrep).neighbours) ? hydrateMap(seed, tuning, ready as MapPrep) : (ready as ForestMap);
   const witches = Array.from({ length: Math.max(1, players) }, (_, i) => newWitchPlayer(i, map.start.x + i * 2, map.start.z, tuning, !map.zoo?.layout));
@@ -415,7 +415,7 @@ export function stepGame(g: Game, controls: Controls | readonly Controls[], real
     const caughtUp = multi ? guestCatchUpSteps(g, steps[1]) : [];
     if (multi) steps[1] = guestInputStep(g, steps[1]);
     remember(g);
-    setFloorSigils(gatherFloorSigils(g));
+    fightFor(g); setFloorSigils(gatherFloorSigils(g)); // (fightFor: FIGHT as this game's own steps left it)
     try { fixedStep(g, steps, caughtUp); } finally { setFloorSigils(null); }
   }
   g.alpha = Math.max(0, Math.min(1, g.acc / STEP));
@@ -1018,7 +1018,7 @@ function stepFights(g: Game, t: Tuning, dt: number, busy: (id: number) => boolea
   const coarse = coarseMarchers(g, active, t, dt);
   const stepped = coarse.size ? active.filter(c => !coarse.has(c)) : active;
   const views = g.witches.map(w => leashView(w, g.creatures, g.map, t)); // (each witch's: in the treehouse, her followers guard home)
-  stepCombat(S, {
+  g.fightSet = true; stepCombat(S, {
     friendlyRoute: () => friendlyLegendRoute(g),
     creatures: g.creatures, active: stepped, time, dt, t, busy,
     witches: g.witches.map((w, i) => {
