@@ -1,6 +1,6 @@
 // Drawing only. All gameplay shapes, timing, warnings and hits remain in the attack grammar.
 import * as THREE from "three";
-import { FxBatches } from "./batch";
+import { FxBatches, GLOW_SPAN } from "./batch";
 import { elements, forms, fxElement, intensityOf, mixIntensity, settings, ELEMENT_KEYS, FORM_KEYS, ImprintField, lightScore, type FxForm, type Imprint } from "./model";
 import { FX_UNIFORMS } from "./uniforms";
 import { LIGHT_UNIFORMS, MAX_LIGHTS } from "../lighting";
@@ -49,6 +49,9 @@ export class MagicFx {
   /** The creatures' spell glow on (render/fx/spellGlow.ts; ?spellglow=0 off), for the captures' before and after on one frame. */
   get spellGlow():boolean {return SPELL_GLOW.on;}
   set spellGlow(on:boolean){SPELL_GLOW.on=on;}
+  /** The creatures' glow at its strength before 16 November (?spellglow=old; spellGlow.ts OLD_GLOW), flipped live the same way. */
+  get spellGlowOld():boolean {return SPELL_GLOW.old;}
+  set spellGlowOld(old:boolean){SPELL_GLOW.old=old;}
   /** Her own magic's glow on (spellGlow.ts MAGIC_GLOW; ?magicglow=0 off), flipped live the same way. */
   get magicGlow():boolean {return MAGIC_GLOW.on;}
   set magicGlow(on:boolean){MAGIC_GLOW.on=on;}
@@ -89,12 +92,12 @@ export class MagicFx {
     this.batches.secondary.value=FX_QUALITY.secondary?1:0;this.batches.distort.value=FX_QUALITY.distortion&&!comfort.reduceFlashing?1:0;
     FX_UNIFORMS.uFxOn.value=this.enabled&&FX_QUALITY.imprints?1:0;
     FX_UNIFORMS.uFxTime.value=time;FX_UNIFORMS.uFxCalm.value=comfort.reduceFlashing?1:0;
-    this.stats.instances=0;this.spellCap=0;this.her=null;this.mine=false;this.batches.magicGlow.value.set(0,0,0,0);
+    this.stats.instances=0;this.spellCap=0;this.her=null;this.mine=false;this.batches.magicGlow.value.set(0,0,0,GLOW_SPAN);
   }
   /** Her own magic's glow this frame (each frame after begin; without it her magic draws as before): the tuning's attackFx.magicGlow. */
   hers(t:MagicGlowTuning|undefined):void {
     const look=this.her=magicGlowLook(t,MAGIC_GLOW.on&&this.enabled,comfort.reduceFlashing);
-    this.batches.magicGlow.value.set(look?.core??0,look?.halo??0,look?.pool??0,0);
+    this.batches.magicGlow.value.set(look?.core??0,look?.halo??0,look?.pool??0,GLOW_SPAN);
   }
   reset():void {this.field.reset();this.lights.clear();this.room=0;this.bursts.length=0;this.streaks.length=0;this.screen();this.screenAt=-Infinity;this.screenStrength=0;}
   get screenKick():number {
@@ -244,7 +247,7 @@ export class MagicFx {
    *  set once a frame, hers(); its lights aren't the creatures'.) */
   private glowLook(look:GlowLook):void {
     this.mine=look===this.her;if(this.mine)return;
-    this.batches.spellGlow.value.set(look.core,look.halo,look.pool,this.batches.spellGlow.value.w);this.spellCap=Math.max(this.spellCap,look.lights);
+    this.batches.spellGlow.value.set(look.core,look.halo,look.pool,look.reach);this.spellCap=Math.max(this.spellCap,look.lights);
   }
   /** The glow layers' data: form, element (past 100 when tinted: its colour the tint's), intensity (past 10: her own magic's, its
    *  strengths attackFx.magicGlow's), phase. */

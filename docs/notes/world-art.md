@@ -124,6 +124,9 @@ This changes cache reuse, not drawing algorithms, worker scheduling or arrival r
   Reduce flashing halves core, halo, pool and light; nothing in it flickers.
   The smooth extra bloom dot (`AttackLook.bloomAt`, `attackFx.visibility.bloom`) gives way to the dithered halo while it's on.
   `?spellglow=0` draws the spells as before; `window.witch.view.magic.spellGlow` flips it live (for before and after on one frame).
+  Stronger since Ed, 2026-11-16 (asked how strong the glow should be: "Stronger"): core 1.35, halo 1.8, pool 2, light 1.3, and the halo's reach, now a knob (`attackFx.glow.reach`), 3.4 times its core (her own magic's stays `GLOW_SPAN`, 2.6); `lights` stays 5, so the frame draws the same layers, instances and lights as before.
+  A glow raised past 1 has its colour pushed further from grey in the glow layers' shader, so the extra light adds its element's colour rather than white.
+  `?spellglow=old` draws the glow at its strength before that (`OLD_GLOW`); `window.witch.view.magic.spellGlowOld` flips it live.
   Tests: `src/render/fx/spellGlow.test.ts`, `src/render/fx/system.test.ts`, `src/render/leash/attackLook.test.ts`.
 - **Her magic's glow** (Ed, 2026-11-13, asked whether to extend the spell glow to her own magic: "extend";
   `render/fx/spellGlow.ts` `magicGlowLook`, the tuning's `attackFx.magicGlow`: core, halo, pool, light): the spell glow's pieces for her own magic, in the same two glow layers (an instance whose intensity is past 10 is hers and takes its strengths from `uMagicGlow`, not `uSpellGlow`, so the two are tuned apart with no second system).

@@ -4,13 +4,20 @@
 // enough in the added light to cross the bloom's threshold, a dithered halo in art-pixel steps, a pool of its light on the ground at
 // its foot, and a short-lived real light for the brightest few nearest her. Drawing only: nothing here touches the rules.
 // The tuning's attackFx.glow holds the knobs; ?spellglow=0 draws the spells as before, to compare.
+// Since Ed, 2026-11-16 (asked how strong the glow should be: "Stronger"): brighter cores, a wider and denser halo, more light on the
+// ground; ?spellglow=old draws the glow at its strength before that (OLD_GLOW), to compare.
 // Since Ed, 2026-11-13 ("extend"): her own magic glows with the same pieces (MagicGlowTuning below; attackFx.magicGlow, ?magicglow=0).
 
 /** The tuning's attackFx.glow: core, how bright the glowing cores are (0 none); halo, the dithered halo's strength; pool, the
- *  light's pool on the ground; lights, at most this many spells with a real light at once; light, those lights' strength. */
-export interface GlowTuning { core: number; halo: number; pool: number; lights: number; light: number }
+ *  light's pool on the ground; lights, at most this many spells with a real light at once; light, those lights' strength; reach, how
+ *  far the halo reaches past its core (its quad this many times the core's size; GLOW_REACH without one). */
+export interface GlowTuning { core: number; halo: number; pool: number; lights: number; light: number; reach?: number }
 /** One frame's glow, as drawn: the knobs after the comfort setting (each 0 or more). */
-export interface GlowLook { core: number; halo: number; pool: number; lights: number; light: number }
+export interface GlowLook { core: number; halo: number; pool: number; lights: number; light: number; reach: number }
+/** How far a halo reaches past its core where the tuning doesn't say (her own magic's; the creatures' until 16 November). */
+export const GLOW_REACH = 2.6;
+/** The creatures' glow as it was from 9 to 16 November (?spellglow=old), before Ed's "Stronger" (2026-11-16). */
+export const OLD_GLOW: Readonly<GlowTuning> = { core: 1, halo: 1, pool: 1, lights: 5, light: 1, reach: GLOW_REACH };
 
 /** The look before the glow (the knobs' off values): the spells drawn exactly as they were. */
 export const NO_GLOW: Readonly<GlowTuning> = { core: 0, halo: 0, pool: 0, lights: 0, light: 0 };
@@ -19,8 +26,12 @@ export const CALM_GLOW = 0.5;
 /** The most effect lights there are at once (config/fx/intensity.json lightCap; Ed, 2026-10-28: "about 6 effect lights at once"). */
 export const MAX_SPELL_LIGHTS = 6;
 
-/** ?spellglow=0: the creatures' spells without the glow (as before 9 November), to compare. Read once, from the link. */
-export const SPELL_GLOW = { on: new URLSearchParams(globalThis.location?.search ?? "").get("spellglow") !== "0" };
+/** ?spellglow=0: the creatures' spells without the glow (as before 9 November); ?spellglow=old: the glow at its strength before
+ *  16 November (OLD_GLOW); both to compare. Read once, from the link. */
+const LINK = new URLSearchParams(globalThis.location?.search ?? "").get("spellglow");
+export const SPELL_GLOW = { on: LINK !== "0", old: LINK === "old" };
+/** The creatures' glow's knobs after the link switch: the tuning's, or the old strength's with ?spellglow=old. */
+export const spellGlowTuning = (t: GlowTuning | undefined): GlowTuning | undefined => (SPELL_GLOW.old ? OLD_GLOW : t);
 
 const clamp = (v: number, lo: number, hi: number) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : lo);
 
@@ -29,7 +40,7 @@ const clamp = (v: number, lo: number, hi: number) => (Number.isFinite(v) ? Math.
 export function glowLook(t: GlowTuning | undefined, on: boolean, reduceFlashing: boolean): GlowLook | null {
   if (!on || !t) return null;
   const k = reduceFlashing ? CALM_GLOW : 1;
-  const look = { core: clamp(t.core, 0, 4) * k, halo: clamp(t.halo, 0, 4) * k, pool: clamp(t.pool, 0, 4) * k, lights: Math.round(clamp(t.lights, 0, MAX_SPELL_LIGHTS)), light: clamp(t.light, 0, 4) * k };
+  const look = { core: clamp(t.core, 0, 4) * k, halo: clamp(t.halo, 0, 4) * k, pool: clamp(t.pool, 0, 4) * k, lights: Math.round(clamp(t.lights, 0, MAX_SPELL_LIGHTS)), light: clamp(t.light, 0, 4) * k, reach: clamp(t.reach ?? GLOW_REACH, 1.5, 5) };
   return look.core + look.halo + look.pool + look.light > 0 ? look : null;
 }
 

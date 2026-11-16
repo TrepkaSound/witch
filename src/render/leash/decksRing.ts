@@ -195,7 +195,7 @@ export function drawDecksRing(lv: LeashView, time: number, dot: number[], camera
   // as drawn, in the ring's own layers over the house: LeashView.decksHalo), and one real light over the decks in the rainbow's
   // drifting colour, as strong as the ring is grown and shown (steady: the bars move with the music, the light doesn't flicker).
   const magic = (lv.look as LeashView["look"] | undefined)?.magic, G = DECKS_GLOW, data = magic?.herData("party", true) ?? null; // (none in a view with no magic: the tests' stand-ins)
-  const halo = data ? laid(lv.decksHalo.core) : null, pool = data ? laid(lv.decksHalo.pool) : null, span = magic?.batches.spellGlow.value.w ?? 1;
+  const halo = data ? laid(lv.decksHalo.core) : null, pool = data ? laid(lv.decksHalo.pool) : null, span = magic?.batches.magicGlow.value.w ?? 1;
   const tipAt: BarTip | undefined = data ? (x, z, c, a, k) => {
     const s = a * (G.least + (1 - G.least) * k); // (a bar far out, a loud one, glows brighter: the kick's bass bars brightest)
     pool!.add(x, lift - 0.03, z, G.pool, data, c[0], c[1], c[2], s * G.poolAlpha);

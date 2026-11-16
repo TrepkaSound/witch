@@ -1215,6 +1215,7 @@ export type SchemaTuning = {
       "pool": number;
       "lights": number;
       "light": number;
+      "reach": number;
     };
     "magicGlow": {
       "core": number;
