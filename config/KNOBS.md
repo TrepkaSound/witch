@@ -650,6 +650,9 @@ Each sleeping legend lies in a small round clearing of its own, sized to fit it.
 1. Ed, 2026-10-06
 Each area's sleeping legend lies in a small circular clearing of its own [1], where no tree or decor stands: radius metres across from its middle (species: a radius for that legend, sized to fit it: half its sleeping width plus 4 m), a soft ring edge metres wide marking it on the ground, and the legend lying top x radius north of the middle (the circle's far side from the camera), the open floor in front. Quest sigils and relics take effect inside it.
 
+- **`legendClearing.sigilSide`**: The legend circle baby's loose sigil lands at its circle's left or right edge, clear of where she puts a quest sigil down; false (?circlesigil=old): by its dancing spot, as before.
+  1. Ed, 2026-11-16: "It is easy to go into a legend's circle and accidentally pick up the legend baby instead of putting down the quest sigil. Where in the circle does it land? Perhaps we can move it to the left or right edge." (offered the edge, behind the legend, or put-down winning in a quest circle, he chose the edge)
+  Code: `rules/stoneStacks.ts`
 - **`legendClearing.back`**: How far back in its circle a sleeping legend lies: its middle this share of the radius north of the circle's middle (the side furthest from the camera), so the front of the circle is open for her to stand in, facing it [1].
   1. Ed, 2026-11-12: "Legends should sleep at the back of their circles, so you can stand in the circle before them."
   2. Ed, 2026-11-13: "fix the others"
@@ -704,6 +707,7 @@ Each area's sleeping legend lies in a small circular clearing of its own [1], wh
 | `legendClearing.fit.margin` | number | 0 to … |
 | `legendClearing.fit.max` | number | 0 to … |
 | `legendClearing.fit.areaMax` | number | 0 to … |
+| `legendClearing.sigilSide` | boolean |  |
 | `legendClearing.species` | record |  |
 
 ### `relics`
