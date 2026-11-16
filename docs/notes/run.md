@@ -74,7 +74,7 @@ Actual layout, device navigation and network behavior remain coordinator browser
 A bot's asynchronous module must finish before its night starts.
 Bedroom wake-up and chart arrival retain their own gates; the old creator still waits for its spell-scroll action.
 Automatic starts keep the existing sound-only first-gesture prompt; that key/tap is not needed to begin play.
-Controls/Options can still borrow their hidden nodes, but main no longer imports the start-screen formatter, eager changelog or upcoming data.
+Controls/Options can still borrow their hidden nodes, but main no longer imports the start-screen formatter or eager changelog, and the upcoming data is deleted (Ed, 2026-11-16: "Gone: delete the leftovers").
 Started-night state is tracked separately from the hidden card, so hiding it during loading cannot itself authorize a saved-night checkpoint.
 This supersedes the earlier old-card waiting description below.
 The quick-smoke assertion now requires creator=0 to start without a key; the coordinator must run it in a browser.

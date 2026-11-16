@@ -23,7 +23,7 @@ Existing source activation and canonical public version.json verification remain
 Eight matching records include all four complete unit shards; lookup additionally verifies the merged PR, both checked/merged Git trees, completed successful source jobs and latest attempt.
 Missing, expired, malformed, partial or mismatched evidence runs full CI.
 PR/prototype never reuse.
-Build/config checks and main publication remain fresh for current version/SHA/upcoming metadata; validation jobs retain their status gates and name the reused source in logs.
+Build/config checks and main publication remain fresh for the current version and SHA (the start screen's upcoming list is gone: Ed, 2026-11-16, "Gone: delete the leftovers"); validation jobs retain their status gates and name the reused source in logs.
 Synthetic safety coverage lives in `tools/ci/release-reuse.test.ts` and `workflows.test.ts`; no fight simulation is needed for this routing change.
 
 **Shared still capture harness** (#1556, canonical #1555, 2026-10-31):
