@@ -68,7 +68,7 @@ function dryMetres(dry: { line: readonly RoutePoint[]; source: readonly number[]
 const routeLines = new WeakMap<Game, { key: number; line: readonly RoutePoint[]; source: readonly number[] }>();
 /** The same curved links and drawing-front metres used by the ley line, not its slower wave pulse; kept round the lakes (dryRoute:
  *  the ley line itself may cross one), its front mapped onto the way round. */
-export function friendlyLegendRoute(g: Game): { line: readonly RoutePoint[]; tip: number; post: (c: Creature) => { x: number; z: number } } {
+export function friendlyLegendRoute(g: Game): { line: readonly RoutePoint[]; tip: number; key: number; post: (c: Creature) => { x: number; z: number } } {
   const key = leyKey(g.party);
   let cached = routeLines.get(g);
   if (!cached || cached.key !== key) {
@@ -80,13 +80,19 @@ export function friendlyLegendRoute(g: Game): { line: readonly RoutePoint[]; tip
     cached = { key, ...dryRoute(g.map.bounds, line, lakeKnobs(g.tuning).shore + 4, 4) }; routeLines.set(g, cached);
   }
   const tip = frontMetres(g.party, g.map, g.clock.time, g.tuning.leyLines.reveal ?? TIP_PACE);
-  return { line: cached.line, tip: dryMetres(cached, tip), post: c => homePost(g.map, g.creatures, c) }; // (post: where one back home stands, rules/creatures.ts homePost)
+  return { line: cached.line, tip: dryMetres(cached, tip), key, post: c => homePost(g.map, g.creatures, c) }; // (post: where one back home stands, rules/creatures.ts homePost)
 }
-const friendRoutes = new WeakMap<Creature, { line: readonly RoutePoint[]; at: number; x: number; z: number }>();
+/** A route's identity when its maker gives none (a test's own line): its points, hashed. */
+function lineKey(line: readonly RoutePoint[]): string {
+  let h = 2166136261;
+  for (const [x, z] of line) h = Math.imul(Math.imul(h ^ Math.round(x * 1000), 16777619) ^ Math.round(z * 1000), 16777619);
+  return `${line.length}:${h >>> 0}`;
+}
 /** Join the nearest point on tonight's route, then walk along its curves towards `tip` metres along it (clamped to the route:
  * Infinity is its far end, 0 its start at home), stopping there. True once it stands there.
- * The transient progress hint disambiguates crossings; after displacement or a changed route the legend rejoins. */
-export function walkFriendlyRoute(c: Creature, line: readonly RoutePoint[], tip: number, dt: number, speed = c.speed, round?: CombatWorld["round"]): boolean {
+ * The progress (the creature's routeWalk, kept with the night) disambiguates crossings; after displacement or a changed route
+ * (`key`, the route's identity: its ley chain's) the legend rejoins. */
+export function walkFriendlyRoute(c: Creature, line: readonly RoutePoint[], tip: number, dt: number, speed = c.speed, round?: CombatWorld["round"], key: number | string = lineKey(line)): boolean {
   if (line.length < 2) return false;
   const lengths = [0];
   for (let i = 1; i < line.length; i++) lengths.push(lengths[i - 1] + Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1]));
@@ -97,8 +103,8 @@ export function walkFriendlyRoute(c: Creature, line: readonly RoutePoint[], tip:
     }
     return line[line.length - 1];
   };
-  let state = friendRoutes.get(c);
-  if (!state || state.line !== line || state.x !== c.x || state.z !== c.z) {
+  let state = c.routeWalk && { ...c.routeWalk }; // (a copy, written back below: a creature's fields are never shared objects)
+  if (!state || state.key !== key || state.x !== c.x || state.z !== c.z) {
     let best = Infinity, at = 0;
     for (let i = 1; i < line.length; i++) {
       const a = line[i - 1], b = line[i], dx = b[0] - a[0], dz = b[1] - a[1], len = lengths[i] - lengths[i - 1];
@@ -106,7 +112,7 @@ export function walkFriendlyRoute(c: Creature, line: readonly RoutePoint[], tip:
       const d = Math.hypot(c.x - a[0] - dx * k, c.z - a[1] - dz * k);
       if (d < best) { best = d; at = lengths[i - 1] + len * k; }
     }
-    state = { line, at, x: c.x, z: c.z }; friendRoutes.set(c, state);
+    state = { key, at, x: c.x, z: c.z };
   }
   const join = point(state.at), distance = Math.hypot(join[0] - c.x, join[1] - c.z);
   let left = speed * FIGHT.speed * dt;
@@ -128,7 +134,7 @@ export function walkFriendlyRoute(c: Creature, line: readonly RoutePoint[], tip:
   const dx = c.x - before.x, dz = c.z - before.z;
   c.vx = dt > 0 ? dx / dt : 0; c.vz = dt > 0 ? dz / dt : 0;
   c.moving = Math.hypot(dx, dz) > 0; if (c.moving) { c.walk += dt * 5; if (dx) c.facing = dx > 0 ? 1 : -1; c.away = dz < -Math.abs(dx); }
-  state.x = c.x; state.z = c.z;
+  state.x = c.x; state.z = c.z; c.routeWalk = state;
   const goal = point(end);
   return state.at === end && Math.hypot(goal[0] - c.x, goal[1] - c.z) < 1e-6;
 }
@@ -179,7 +185,8 @@ function friendlyIdle(w: CombatWorld, c: Creature): void {
     return;
   }
   if (!w.friendlyRoute) return;
-  if (!walkFriendlyRoute(c, w.friendlyRoute().line, j ? 0 : Infinity, w.dt, speed, w.round)) return;
+  const route = w.friendlyRoute();
+  if (!walkFriendlyRoute(c, route.line, j ? 0 : Infinity, w.dt, speed, w.round, route.key)) return;
   if (!j) c.journey = { stage: "back" };
   else c.journey = w.t.legends.homeAlike !== false ? { stage: "guard", home: true, ...(w.friendlyRoute().post?.(c) ?? { x: c.x, z: c.z }) } : { stage: "guard", ...guardPost(w, c) };
 }

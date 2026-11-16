@@ -260,11 +260,30 @@ export function scatterSpots(key: string, x: number, z: number, n: number, t: Tu
   return out;
 }
 
-/** Where a legend circle's baby's sigil lands at its stone's conversion (Ed, 2026-10-28): on its circle's open floor, clear of the
- *  sleeping legend's body (`clear` metres round where it lies) and of anything `free` says no to (barred, another sigil near): the
- *  free spot nearest where its baby dances (the circle's middle, a little south), a seeded jitter between equals; the circle can sit
- *  across its area's edge, so no area or clearing test. With nowhere free, that dancing spot. */
-export function circleSpot(circle: { x: number; z: number; r: number; legendX: number; legendZ: number }, clear: number, seed: number, free: (x: number, z: number) => boolean): { x: number; z: number } {
+/** Where a legend circle's baby's sigil lands at its stone's conversion (Ed, 2026-10-28: "this baby's sigil should land in the legend
+ *  circle instead of near the soundsystem"): at its circle's left or right edge (Ed, 2026-11-16: "It is easy to go into a legend's
+ *  circle and accidentally pick up the legend baby instead of putting down the quest sigil ... Perhaps we can move it to the left or
+ *  right edge"), SIDE_SHARE of the radius east or west of the middle, so the middle and front, where she puts a quest sigil down, lie
+ *  beyond the sigil button's pick-up reach (leash.runeRadius). Which side: by `seed` (its baby's id), the other side if that one isn't
+ *  free; then along the edge from each, toward the back before the front (SIDE_STEPS), never the middle or front. Free: clear of the
+ *  sleeping legend's body (`clear` metres round where it lies) and of anything `free` says no to (barred, another sigil near); the
+ *  circle can sit across its area's edge, so no area or clearing test. With nowhere free, the seeded side all the same. Its baby
+ *  roams the whole circle floor as before (Ed, 2026-11-16: "The baby can roam the whole floor"; creatures.ts pointInCircle). `side` false (?circlesigil=old): as before, the free spot nearest that
+ *  dancing spot. */
+export function circleSpot(circle: { x: number; z: number; r: number; legendX: number; legendZ: number }, clear: number, seed: number, free: (x: number, z: number) => boolean, side = true): { x: number; z: number } {
+  if (!side) return circleSpotOld(circle, clear, seed, free);
+  const first = hash2(seed, 0, 4419) < 0.5 ? 1 : -1, cands: { x: number; z: number }[] = []; // (1: east, the right on screen)
+  for (const a of SIDE_STEPS) for (const s of [first, -first]) cands.push({ x: circle.x + s * Math.cos(a) * circle.r * SIDE_SHARE, z: circle.z + Math.sin(a) * circle.r * SIDE_SHARE });
+  return cands.find(p => Math.hypot(p.x - circle.legendX, p.z - circle.legendZ) >= clear && free(p.x, p.z)) ?? cands[0];
+}
+/** How far out the circle baby's sigil lies, a share of its circle's radius (its floor reaches the whole radius). */
+export const SIDE_SHARE = 0.8;
+/** The angles tried along the edge from due east or west, radians (negative: north, toward the back, further from where she stands). */
+const SIDE_STEPS = [0, -0.21, 0.21, -0.42, 0.42, -0.63, 0.63];
+
+/** As it was before Ed's 2026-11-16 ruling: the free spot nearest where its baby dances, a seeded jitter between equals; with nowhere
+ *  free, that dancing spot. */
+function circleSpotOld(circle: { x: number; z: number; r: number; legendX: number; legendZ: number }, clear: number, seed: number, free: (x: number, z: number) => boolean): { x: number; z: number } {
   const dance = { x: circle.x, z: circle.z + circle.r * 0.3 }, cands: { x: number; z: number; o: number }[] = [];
   for (const k of [0, 0.3, 0.55, 0.8]) for (let i = 0; i < (k ? 16 : 1); i++) {
     const a = (i / 16) * Math.PI * 2, x = dance.x + Math.cos(a) * circle.r * k, z = dance.z + Math.sin(a) * circle.r * k;

@@ -23,6 +23,15 @@ No new import loops in src/.
 node tools/checks/loops.mjs [--base <ref>] [--list] [--json]
 ```
 
+## `moduleState.mjs`
+
+No new hidden state in src/rules/: a new module-level mutable binding there fails, unless it says why it may stay.
+
+```
+node tools/checks/moduleState.mjs [--base <ref>]   the check
+node tools/checks/moduleState.mjs --list [dir]      every binding found (default src/), as tab-separated lines
+```
+
 ## `size.mjs`
 
 The size ratchet: big files and functions in src/ may shrink but not grow.

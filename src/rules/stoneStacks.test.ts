@@ -325,17 +325,17 @@ describe("a stone's conversion by its wave (Ed, 2026-10-28: the same rule as the
   });
 });
 
-describe("a legend circle's baby's sigil (Ed, 2026-10-28: it lands in its circle)", () => {
+describe("a legend circle's baby's sigil (Ed, 2026-10-28: it lands in its circle; 2026-11-16: at its left or right edge)", () => {
   /** Its circle's baby lies in its circle, clear of the legend, flagged for the view; the others by the stone, unflagged. */
   const check = (g: Game, key: string, stone: { x: number; z: number }) => {
     const b = own(g, key).find(c => c.circle && !c.boss && c.loose)!, k = b.circle!, p = g.loose.find(q => q.id === b.id)!;
     expect(p.to).toBe("circle");
     expect(Math.hypot(p.x - k.x, p.z - k.z)).toBeLessThan(k.r);
+    expect(Math.abs(p.x - k.x)).toBeGreaterThan(k.r * 0.6); // (at its left or right edge: Ed, 2026-11-16; circleSpot.test.ts)
     expect(Math.hypot(p.x - k.legendX, p.z - k.legendZ)).toBeGreaterThan(2);
     const others = g.loose.filter(q => q.id !== b.id && own(g, key).some(c => c.id === q.id && !c.boss));
     expect(others.length).toBeGreaterThan(0);
-    for (const q of others) { expect(q.to).toBeUndefined(); expect(Math.hypot(q.x - stone.x, q.z - stone.z)).toBeLessThanOrEqual(C.scatter.reach + 1e-6); }
-  };
+    for (const q of others) { expect(q.to).toBeUndefined(); expect(Math.hypot(q.x - stone.x, q.z - stone.z)).toBeLessThanOrEqual(C.scatter.reach + 1e-6); }  };
   const withBaby = (g: Game, keys: readonly (readonly [number, number])[]) => keys.map(([cx, cy]) => `${cx},${cy}`).find(key => own(g, key).some(c => c.circle && !c.boss && c.level === 0) && own(g, key).some(c => !c.circle && !c.boss && c.level === 0));
 
   it("by the spell", () => {

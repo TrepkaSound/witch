@@ -1930,6 +1930,10 @@
           "additionalProperties": false,
           "description": "Each legend's clearing is sized to its legend as drawn asleep, with a margin to spare."
         },
+        "sigilSide": {
+          "type": "boolean",
+          "description": "The legend circle baby's loose sigil lands at its circle's left or right edge, clear of where she puts a quest sigil down; false (?circlesigil=old): by its dancing spot, as before."
+        },
         "species": {
           "type": "object",
           "additionalProperties": {

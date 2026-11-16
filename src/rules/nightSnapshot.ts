@@ -11,7 +11,7 @@ interface Graph { root: Value; nodes: Node[] }
 export interface NightSnapshot { version: 1; seed: number; tuning: Tuning; state: Graph }
 
 const OMIT = new Set(["seed", "tuning", "map", "forest", "witch", "leash", "spells", "prev", "pending", "acc", "alpha", "disposed", "byArea", "lod", "introFocus", "islandReady", "koEvents", "questEvents", "waveEvents", "leashEvents"]);
-const OPTIONAL = new Set(["rings", "hunts", "rainbows", "clearedAt", "legendIds", "arena", "zooMoods", "zooExit", "zooPush", "asleepBeforeParty", "wake"]);
+const OPTIONAL = new Set(["fightSet", "rings", "hunts", "rainbows", "clearedAt", "legendIds", "arena", "zooMoods", "zooExit", "zooPush", "asleepBeforeParty", "wake"]);
 const BAD_KEYS = new Set(["__proto__", "prototype", "constructor"]);
 const ARRAYS = { Float64Array, Float32Array, Int32Array, Uint32Array, Int16Array, Uint16Array, Int8Array, Uint8Array, Uint8ClampedArray };
 const MAX_NODES = 500_000, MAX_VALUES = 5_000_000;

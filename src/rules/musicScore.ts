@@ -3,6 +3,7 @@
 // conductor (rules/musicPlan.ts) has chosen. Numbers only, no sound: src/platform/audio/musicEngine.ts
 // plays the notes. The same seed and section always give the same notes.
 import { hauntedDrop } from "./musicHush";
+import { ownedMemo } from "./ownedMemo";
 import { hash2 } from "./random";
 import { seedName } from "./kinds"; // (a renamed kind keeps its melody)
 import voices from "../../config/creature-voices.json";
@@ -494,17 +495,12 @@ export function riffLead(C: ComposeDef, kind: RiffKind, family: string | undefin
 }
 /** Whether a clearing's layer plays the witch-house ostinato for this seed and arc step (the dance way's `ostinato`). */
 const clearingOstinato = (D: ComposeDef | null, seed: number, arc: number): boolean => !!D && hash2(seed, arc, 497) < D.dance!.ostinato;
-const riffCache = new Map<string, Riff>();
+const riffCache = ownedMemo<Riff>(128); // (by its compose def, then the key: rules/ownedMemo.ts)
 /** A wave's riff of a kind: its rhythm and arrangement the wave's seed's, its pitch cell `cellSeed`'s (the night's, in a haunted
  *  section's sung letters: the breakdown's slow hook and the drop's riff one tune). */
 export function riffFor(C: ComposeDef, kind: RiffKind, seed: number, cellSeed = seed): Riff {
   const k = `${kind}|${seed}|${cellSeed}|${C.sevenths ? 1 : 0}`;
-  let R = riffCache.get(k);
-  if (!R) {
-    if (riffCache.size > 128) riffCache.clear();
-    riffCache.set(k, (R = makeRiff(C, kind, pitchCell(C, i => hash2(cellSeed + i * 7919, 493, 11)), i => hash2(seed + i * 7919, 495, kind.length))));
-  }
-  return R;
+  return riffCache(C, k, () => makeRiff(C, kind, pitchCell(C, i => hash2(cellSeed + i * 7919, 493, 11)), i => hash2(seed + i * 7919, 495, kind.length)));
 }
 
 const use = (u: PartUse) => (typeof u === "string" ? { p: u, level: 1, from: 0, energy: 0 } : { p: u.p, level: u.level ?? 1, from: u.from ?? 0, energy: u.energy ?? 0 });
@@ -572,13 +568,11 @@ export function composedMotif(C: ComposeDef, seed: number, arc: number, part: st
   return beatMotif(C, k => hash2(seed + k * 7919, arc, salt + 3));
 }
 
-const motifCache = new Map<string, number[]>();
+const motifCache = ownedMemo<number[]>(256); // (by its style, then the key: rules/ownedMemo.ts)
 function motifFor(style: MusicStyle, seed: number, arc: number, part: string, own = false): number[] {
   const C = composeOn(style), ost = own && clearingOstinato(danceOn(style), seed, arc);
   const k = `${seed}|${arc}|${part}|${C ? "c" : ""}${ost ? "o" : ""}`;
-  let m = motifCache.get(k);
-  if (!m) { if (motifCache.size > 256) motifCache.clear(); motifCache.set(k, m = ost ? ostinatoMotif(x => hash2(seed + x * 7919, arc, 499)) : C ? composedMotif(C, seed, arc, part) : motif(seed, arc, part)); }
-  return m;
+  return motifCache(style, k, () => ost ? ostinatoMotif(x => hash2(seed + x * 7919, arc, 499)) : C ? composedMotif(C, seed, arc, part) : motif(seed, arc, part));
 }
 
 /** The chord (scale degrees) a section plays in bar `barIn` of itself (its own progression: the music
@@ -922,12 +916,10 @@ function composedHaunted(style: MusicStyle, C: ComposeDef, seed: number, letter:
   return out;
 }
 
-const phraseCache = new Map<string, (PhraseNote | null)[]>();
+const phraseCache = ownedMemo<(PhraseNote | null)[]>(64); // (by its style, then the key: rules/ownedMemo.ts)
 function phraseFor(style: MusicStyle, seed: number, letter: string, hookSeed?: number, haunted = false, cell?: number[]): (PhraseNote | null)[] {
   const k = `${seed}|${letter}|${hookSeed ?? ""}|${haunted ? "h" : ""}|${composeOn(style) ? "c" : ""}|${cell?.join() ?? ""}`;
-  let p = phraseCache.get(k);
-  if (!p) { if (phraseCache.size > 64) phraseCache.clear(); phraseCache.set(k, p = haunted ? hauntedPhrase(style, seed, letter, hookSeed, cell) : formPhrase(style, seed, letter, hookSeed)); }
-  return p;
+  return phraseCache(style, k, () => haunted ? hauntedPhrase(style, seed, letter, hookSeed, cell) : formPhrase(style, seed, letter, hookSeed));
 }
 
 /** The dance way's riff for a phrase letter (riffLine): `kind`'s riff of the wave's seed on `cellSeed`'s pitch cell, over the
@@ -946,12 +938,7 @@ export function hookPhrase(style: MusicStyle, seed: number, letter: string, hook
   const ends = letter === "B" ? [1, 4] : letter === "C" ? [0] : formChord(style, seed, at + F.phraseBars - 1).tones.map(t => mod(t, 7)).filter(t => t !== 0);
   return hookLine(wlo, hi, F.phraseBars, b => formChord(style, seed, at + b, !!C.sevenths).tones.map(t => mod(t, 7)), ends, i => hash2(ms + i * 7919, 489, salt));
 }
-const danceCache = new Map<string, (PhraseNote | null)[]>();
-function dancePhraseFor(key: string, make: () => (PhraseNote | null)[]): (PhraseNote | null)[] {
-  let p = danceCache.get(key);
-  if (!p) { if (danceCache.size > 64) danceCache.clear(); danceCache.set(key, (p = make())); }
-  return p;
-}
+const dancePhraseFor = ownedMemo<(PhraseNote | null)[]>(64); // (by its style, then the key: rules/ownedMemo.ts)
 
 let lastPhrase: { style: MusicStyle; seed: number; letter: string; hook: number | undefined; haunted: boolean; riff: RiffKind | undefined; sung: boolean; notes: (PhraseNote | null)[] } | null = null;
 
@@ -974,8 +961,8 @@ export function formNoteAt(style: MusicStyle, seed: number, formStep: number, tr
   let L = lastPhrase;
   if (!L || L.style !== style || L.seed !== seed || L.letter !== letter || L.hook !== hook || L.haunted !== haunted || L.riff !== riff || L.sung !== sung) {
     const D = danceOn(style), cellSeed = haunted && hook !== undefined ? hook : seed;
-    const notes = D && riff && !sung ? dancePhraseFor(`r|${seed}|${letter}|${riff}|${cellSeed}|${haunted}|${D.sevenths ? 1 : 0}`, () => riffPhrase(style, seed, letter, riff, cellSeed, haunted))
-      : D && sung && !haunted && hash2(seed, 487, 3) < D.dance!.hook ? dancePhraseFor(`h|${seed}|${letter}|${hook ?? ""}|${D.sevenths ? 1 : 0}`, () => hookPhrase(style, seed, letter, hook))
+    const notes = D && riff && !sung ? dancePhraseFor(style, `r|${seed}|${letter}|${riff}|${cellSeed}|${haunted}|${D.sevenths ? 1 : 0}`, () => riffPhrase(style, seed, letter, riff, cellSeed, haunted))
+      : D && sung && !haunted && hash2(seed, 487, 3) < D.dance!.hook ? dancePhraseFor(style, `h|${seed}|${letter}|${hook ?? ""}|${D.sevenths ? 1 : 0}`, () => hookPhrase(style, seed, letter, hook))
       : phraseFor(style, seed, letter, hook, haunted, D && haunted && riff ? riffFor(D, riff, seed, cellSeed).cell : undefined);
     lastPhrase = L = { style, seed, letter, hook, haunted, riff, sung, notes };
   }
@@ -1030,7 +1017,7 @@ export function bassPatternName(C: ComposeDef, part: string, own: string, sectio
   return pick(pool.includes(own) || (!sec && e < 0.4) ? pool : [...pool, own], hash2(seed + Math.floor(bar / 4) * 7919, 511, part.length)); // (the section's own among them, but in the quiet waves)
 }
 
-const rootCache = new Map<string, number[]>();
+const rootCache = ownedMemo<number[]>(64); // (by its style, then the key: rules/ownedMemo.ts)
 /** A composed bass part's chord root (MIDI) in form bar `formBar` within its register `R` (Ed, 2026-11-09: "too high"): each
  *  root in the octave nearest the bar before's, within the register's lowest fifteen semitones, from the form's top (the first
  *  nearest the middle of those); with no form (`formBar` null), `root` nearest that middle. */
@@ -1041,13 +1028,11 @@ function bassRoot(style: MusicStyle, scale: number[], transpose: number, R: [num
   const F = style.form;
   if (formBar === null || !F) return place(pcOf(root), mid);
   const n = formBars(F), key = `${seed}|${transpose}|${scale.join()}|${lo},${hi}|${haunt ? 1 : 0}`;
-  let seq = rootCache.get(key);
-  if (!seq) {
-    if (rootCache.size > 64) rootCache.clear();
-    seq = [];
-    for (let b = 0; b < n; b++) seq.push(place(pcOf(formChord(style, seed, haunt ? hauntedBar(F, b) : b).root), b ? seq[b - 1] : mid));
-    rootCache.set(key, seq);
-  }
+  const seq = rootCache(style, key, () => {
+    const out: number[] = [];
+    for (let b = 0; b < n; b++) out.push(place(pcOf(formChord(style, seed, haunt ? hauntedBar(F, b) : b).root), b ? out[b - 1] : mid));
+    return out;
+  });
   return seq[mod(formBar, n)];
 }
 

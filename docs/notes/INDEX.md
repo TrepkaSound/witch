@@ -23,6 +23,7 @@ that; `tools/docs/glossary.test.ts` fails while this is out of date. Read an are
 - [Islands and the journey](island.md): Island growth and shape, the land, lakes, biomes and beaches, the archipelago and the sea chart, sailing in place, kinds, the zoo.
 - [Light-pool readability experiment](light-pool-readability.md): Default-off creature readability inside the witch's light pool, investigation and review evidence requirements.
 - [The Making Of](making-of.md): The static site about how the game was made.
+- [Module state](module-state.md): Every module-level mutable binding in src/ (top-level lets, and top-level collections written after load), what each holds and its category; the four that were game state and where they went; the caches whose keys were short; the check against new ones in src/rules/ and the leak harness.
 - [The music](music.md): The music engine, its style, sections and arc, the singer, the labs and studio, samples.
 - [Two-browser prototype](online-prototype.md): The separate two-browser prototype: local relay, host authority, joining, checks and current limits.
 - [The page](page.md): How the game's page is put together: src/main.ts's start-up and wiring, the src/app/page*.ts modules by job, and the page's host (pageHost) they share.
@@ -301,6 +302,14 @@ glossary; these are the prototype's), by note.
 ### [The Making Of](making-of.md)
 
 (no entries: its tools and checks only)
+
+### [Module state](module-state.md)
+
+- a
+- b
+- c
+- d
+- e
 
 ### [The music](music.md)
 

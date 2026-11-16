@@ -32,8 +32,10 @@ const GAMES: Record<string, string> = { "1": "f32b65b969a1a5b1bf756d064ad01db325
 // Runtime proof: nightSnapshot.test.ts "migrates older nights without mushroom state...".
 // And the challenge area (rules/challenge.ts): restoreGame gives an older night none (its creatures have no pack);
 // runtime proof: challenge.test.ts "restores a night saved before the challenge area".
+// And fightSet (rules/fightSettings.ts; docs/notes/module-state.md): optional, absent in an older night (read as not yet fought, as
+// every loaded night was read before); runtime proof: moduleState.test.ts "a night saved after its first fight and loaded...".
 const GAME_MIGRATIONS: Record<string, { fingerprint: string; addedFields: readonly string[] }> = {
-  "1": { fingerprint: "63a02d0f12677b3e7b93d5e98ec15d5455f69eaf3a7144ade71798be553e6f5a", addedFields: ["mushrooms", "challenge"] },
+  "1": { fingerprint: "04ff12a9ed098fe75c62836f4f6ffa7b288477278908516837fb4310f6016442", addedFields: ["mushrooms", "challenge", "fightSet"] },
 };
 describe("saved format contracts", () => {
   it("requires an explicit envelope-format review when SavedNight changes", () => {

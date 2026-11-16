@@ -1,0 +1,10 @@
+{
+ "name": "circlesigil",
+ "values": [
+  "old"
+ ],
+ "does": "A legend circle's baby's loose sigil lands by its dancing spot (the circle's middle, a little to the front), as before, to compare: not at the circle's left or right edge.",
+ "group": "compare",
+ "since": "2026-11-16",
+ "decision": "at the left or right edge by default (Ed, 2026-11-16: \"Perhaps we can move it to the left or right edge\")"
+}

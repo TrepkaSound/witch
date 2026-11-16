@@ -15,6 +15,10 @@ npm run bench:compare /tmp/before /tmp/after   # exits 1 on any mismatch
 
 Timings in the cloud's software renderer are noisy and slow (frames are mostly the renderer); compare them only between runs on the same machine with nothing else running.
 
+## The leak harness
+
+**`node tools/bench/ts.mjs leaks`** (`leaks.ts`, about a minute): the bench's game on two seeds (`--seeds`, `--wave=6`, `--steps=600`, `--every=150`), each compared with itself played alone in its own process: back to back, interleaved, saved and loaded half way, on another tuning beside the shipped one (interleaved, staggered, saved and loaded). Exits 1 on any difference: hidden state that leaks between games (docs/notes/module-state.md).
+
 ## Performance probes (report only; overnight phase 2, docs/archive/BASELINE-2026-10-07.md)
 
 - **`node tools/bench/ts.mjs perf`** (`perf.ts`): the rules at late waves, headless. `--seeds=123,871136 --waves=10,20,28 --steps=1200`, brought on by the playtest key every `--gap` steps (180), or `--bot=skilled|champion` playing at the game's own waves. Per wave: step p50/p95/p99/worst, steps over 4 and 16.7 ms, creatures by state, the sim's level of detail and the heap.

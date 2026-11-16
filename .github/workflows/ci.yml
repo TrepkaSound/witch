@@ -385,6 +385,11 @@ jobs:
       - name: Size ratchet
         if: needs.build.outputs.reuse != 'true' && github.event_name == 'pull_request'
         run: node tools/checks/size.mjs --base HEAD^1
+      # No new hidden state in the rules (quality plan item d; docs/notes/module-state.md): a new top-level let, or a top-level
+      # collection written after load, in src/rules/ fails unless it says why (// module-state: <why>).
+      - name: No new module state in the rules
+        if: needs.build.outputs.reuse != 'true' && github.event_name == 'pull_request'
+        run: node tools/checks/moduleState.mjs --base HEAD^1
       - name: Lint
         if: needs.build.outputs.reuse != 'true'
         run: npm run lint
