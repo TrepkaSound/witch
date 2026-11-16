@@ -16,7 +16,7 @@
 //   the nearest the target; among those within mixTolerance of the nearest, a mix of young and adults first (Ed: "one adult +
 //   one youth is better than 4 youths even if they're the same difficulty"), then the nearest. No drawing here.
 import SIM from "../../config/swarm-power.json";
-import { COMBAT, strengthOf, type CombatData } from "./combat";
+import { COMBAT, strengthOf, type CombatData } from "./combat/data";
 
 /** A class of species: its cap at the last runestone and its members. */
 export interface SwarmClass { cap: number; species: string[] }

@@ -206,6 +206,7 @@ glossary; these are the prototype's), by note.
 - Runaway
 - Restless / angry legend, relic
 - Route out and back
+- Exactly like the home legend
 - The challenge circle hidden till the party
 
 ### [Guardrails](guardrails.md)
@@ -271,6 +272,7 @@ glossary; these are the prototype's), by note.
 
 ### [Islands and the journey](island.md)
 
+- Where the map is made
 - Island growth / island shape
 - Land map
 - Archipelago

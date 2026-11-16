@@ -212,13 +212,16 @@ export interface Creature {
   /** An area's legend: a mini-boss once angry. Not every area has one (one area in five, never home's: docs/rules/legends.md;
    *  Ed's 2026-10-04 "every area has one, sleeping" was replaced). */
   boss?: boolean;
-  /** The island-kind friendly home defender, never a dealt/quest/party legend (Ed, 2026-10-31). */
+  /** The island-kind friendly home defender, never a dealt or quest legend (Ed, 2026-10-31). Since Ed, 2026-11-15, it takes
+   *  the party egg's letters like any happy legend (rules/homeLegends.ts). */
   homeGuard?: boolean;
   /** A friendly route legend's journey (Ed, 2026-11-13: "once it gets to the end of the route, it should turn around and walk back.
    *  Once it gets back to the dancefloor, it starts guarding the home area like the home legend"; rules/combat/legend.ts
    *  friendlyIdle). Unset: walking out to the route's far end. "back": walking the route home. "guard": home for good, standing
-   *  at its post (x, z) in the home area. Kept with the night (a saved night restores the stage). */
-  journey?: { stage: "back" | "guard"; x?: number; z?: number };
+   *  at its post (x, z) in the home area. Kept with the night (a saved night restores the stage). `home`: it guards exactly like
+   *  the home legend (Ed, 2026-11-15; unset with ?homelegends=old or from an older save: the ring post, defending her first);
+   *  `posted`: it has reached its post, and from then stands where a fight leaves it, as the home legend does (rules/homeLegends.ts). */
+  journey?: { stage: "back" | "guard"; x?: number; z?: number; home?: boolean; posted?: boolean };
   /** One of the challenge circle's pack as a statue (rules/challengeStatues.ts; Ed, 2026-11-04: "grey statues, all facing the centre
    *  of the circle"): stone at its post, or walking back to it to turn to stone; either way out of everything (no roam, fight, 💌 or
    *  hit: rules/game.ts dormant). Unset: itself. */
@@ -544,6 +547,37 @@ export function spawnCreatures(map: ForestMap): Creature[] {
     out.push(guard);
   }
   return out;
+}
+
+/** How far apart two home legends' posts are kept, in metres (the builder's number, as the old ring posts' gap was; rules/homeLegends.ts). */
+export const POST_GAP = 18;
+
+/** The spots the home legend's own rule deals, in order: a point in the home area by the island's seed, the same draw
+ *  spawnCreatures makes for the home legend, so the first is exactly where a home legend stands (or would, on an island with none). */
+function* homeSpots(map: ForestMap): Generator<{ x: number; z: number }> {
+  const cell: [number, number] = [map.centreCell[0], map.centreCell[1]], site = map.siteOf(cell[0], cell[1]), range = wanderRange(map), [anchorX, anchorZ] = anchorOf(map, cell, site.x, site.z, range);
+  const r = rng(map.seed * 7919 + 3), base = { cell, homeX: site.x, homeZ: site.z, range, anchorX, anchorZ, level: LEGEND as Level };
+  for (;;) { const [x, z] = pointInArea(map, base, r); yield { x, z }; }
+}
+
+/** Where a returned route legend stands guard: where the home legend stands. With no home legend there (the home island) and no
+ *  other returned legend, that very spot; otherwise the next spot the same rule deals that is POST_GAP clear of the home legend's
+ *  and of every other returned legend's, so no two stand in one place. (None clear in `tries`: the one furthest from the others.) */
+export function homePost(map: ForestMap, creatures: readonly Creature[], c: Creature, tries = 40): { x: number; z: number } {
+  const taken: { x: number; z: number }[] = [];
+  for (const o of creatures) {
+    if (o === c || o.gone) continue;
+    if (o.homeGuard) taken.push({ x: o.lairX ?? o.x, z: o.lairZ ?? o.z });
+    else if (o.journey?.stage === "guard" && o.journey.x !== undefined) taken.push({ x: o.journey.x, z: o.journey.z ?? o.z });
+  }
+  let best = { x: c.x, z: c.z }, room = -1, n = 0;
+  for (const p of homeSpots(map)) {
+    const clear = Math.min(Infinity, ...taken.map(t => Math.hypot(t.x - p.x, t.z - p.z)));
+    if (clear >= POST_GAP) return p;
+    if (clear > room) { room = clear; best = p; }
+    if (++n >= tries) break;
+  }
+  return best;
 }
 
 /** Roam: walk to a random spot in its own area, pause a while, pick another. It never crosses

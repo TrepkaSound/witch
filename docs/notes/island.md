@@ -16,6 +16,11 @@ Part of Witch's notes (`docs/notes/INDEX.md` is the index): island growth and sh
 Moved here from CLAUDE.md as it stood (housekeeping, Ed 2026-10-23: a note an area, so pull requests add to their own area's file, not one shared file); every rule kept.
 Add to this file, not CLAUDE.md, when you change this area.
 
+**Where the map is made** (the big split, 2026-11-15, Ed's quality plan item b): `generateMap` in `src/rules/map.ts` calls fifteen stages in order, one file each in `src/rules/map/`:
+`frame` (shape, the island by roster, its size, the coast, the warp, home's cell, the partition), `areaGrid` (neighbours, area types, centres), `growth` (the island grown, its lakes, playable areas), `roster` (its kinds by roster), `legendAreas`, `land` (land, coast, lakes; `islandLand` stops here), `specials` (the find's and challenge's areas), `sampling` (`areaAt`, set pieces), `sites` (`placeSites`, soundsystems, the treehouse), `reserve` (what's kept clear, hard ground, the trees' weight, `areaOf`), `assemble` (the map object, its paths, the night's deal), `scenery` (grounds and scenes), `legends` (the night's), `clearings` and `clearingGrowth` (the legends' circles).
+Each stage destructures the earlier stages' locals it reads and returns what it made; the few lets later stages change, or read before they're made, live on one shared `MapLive` (in `frame.ts`), so closures read them live. `map/areaTypes.ts` (the area types) and `map/helpers.ts` (`siteRules`, `cellKey`, `findNeighbours`, `assignRoster`, `chooseLegendCells`...) are leaves, still exported from `map.ts`.
+A new step goes in the stage it belongs to (or a new stage between two); keep each stage under the size ratchet's 150 lines.
+
 Another night in place (docs/plans/sail-without-reload.md, PR 4b): `node tools/sail/swap.cjs [out]` loads seed A with `?debug=sail`, swaps to seed B in place (`window.witch.debugSwap(seed, island?)`: `startNight`, `View.setGame`) and compares its canvas with seed B fresh pixel by pixel, and logs the renderer's textures, geometries and programs over A to B to A to B (about 10 minutes in the cloud).
 Run it after a change to what the view keeps of a night.
 `SAIL=1` does the same through the real sail path (`?sail=inplace`, `window.witch.sail(island, seed)`: main.ts `sailFromChart`), home to fox and back.
@@ -35,7 +40,7 @@ Run it after a change to what a night builds or the sail.
   `node tools/islands/map.mjs [--phases] [--seeds] [--out]` draws islands by phase from above.
   Their real outlines for the sea chart and the dreams: `islandOutline(island, tuning, step)` (`src/rules/islandShape.ts`;
   the island from `islandOf(kind, world)` or `homeIsland(world)`): the coast's loops in metres round home's middle (`sea` the sea's coast, else a lake's shore), its box, `far` (its furthest coast), the areas' size;
-  exact (the map's own growth and land, `islandLand` in rules/map.ts, sampled every `step` m, 16 by default), so about 0.1 s for a phase 1 island to 2 s for a phase 5 one: remembered once made;
+  exact (the map's own growth and land, `islandLand` in rules/map.ts, its stages in rules/map/, sampled every `step` m, 16 by default), so about 0.1 s for a phase 1 island to 2 s for a phase 5 one: remembered once made;
   for a whole chart, worth making off the main thread or as islands come into view.
   `islandCoast` (the radii the chart and the dreams draw today) is still the old seeded wobble until they move to it.
 - **Land map**: where the island's land is (`src/rules/land.ts`, `makeLand`;

@@ -3,7 +3,7 @@
 // sum over its fighters of √(hp × dps): a young is worth 11.6, an adult 40, a legend 76, a baby 0 (the level gap of 2026-10-07; 15.5 and 29 before).
 // The side with more wins, with about √(big² − small²) left. Read by the debug overlay's power
 // meter, the playtest log and the balance tools (tools/balance). No drawing here.
-import { COMBAT, strengthOf, type CombatData } from "./combat";
+import { COMBAT, strengthOf, type CombatData } from "./combat/data";
 import type { Creature, Level } from "./creatures";
 import { isHomeKey } from "./speakers";
 

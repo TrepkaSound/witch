@@ -4,7 +4,7 @@
 // old growth's level and pace, stay for tools/balance/fightbot.mjs, tools/behaviour and the strength tests. No drawing here.
 import type { Level } from "./creatures";
 import type { ForestMap } from "./map";
-import { COMBAT, strengthOf, type CombatData } from "./combat";
+import { COMBAT, strengthOf, type CombatData } from "./combat/data";
 import { buildSwarm, islandShare, phaseReach, POWER_TABLE, type PowerTable, type SwarmTuning } from "./swarm";
 import { foundShare } from "./rosters";
 import { hash2 } from "./random";

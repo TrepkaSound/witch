@@ -1,5 +1,6 @@
 // Pure path ribbon preparation, shared by the map worker and sliced main-thread fallback.
-import { AREA_TYPES, type ForestMap } from './map';
+import { AREA_TYPES } from './map/areaTypes';
+import type { ForestMap } from './map';
 import { floorClearing } from './speakers';
 import { hash2 } from './random';
 
