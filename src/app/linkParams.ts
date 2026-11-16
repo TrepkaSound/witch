@@ -41,6 +41,22 @@ export function islandFromLink(v: string | null, home: number): number | null {
   return Number.isFinite(n) && n > 0 ? Math.min(200, n) : null;
 }
 
+/** The fights' comparison switches (out of tuningFromLink, which may not grow: docs/notes/guardrails.md): each plays a rule as it
+ *  was before a ruling of Ed's, to compare. */
+function compareFights(params: URLSearchParams, tuning: typeof TUNING): void {
+  // ?attacks=old: every species fights with its old attacks (config/combat.json), not its own in the grammar (rules/attacks/species.ts).
+  if (params.get("attacks") === "old") tuning.attacks = { reactionFloor: tuning.attacks?.reactionFloor ?? 0.45, species: false };
+  // ?ranged=old: creatures' ranged attacks aimed as before Ed's 2026-11-12 ruling (tuning ranged, rules/attacks/aim.ts): at her place as
+  // the wind-up starts (the old pack bolts leading her at their release), no speed floor, fans and walls as laid out before, for comparison.
+  if (params.get("ranged") === "old" && tuning.ranged) tuning.ranged = { ...tuning.ranged, on: false };
+  // ?homelegends=old: home legends as before Ed's 2026-11-15 rulings (tuning legends.homeAlike, rules/homeLegends.ts): a route legend
+  // back home stands on a ring post and defends her first, and the island's home legend takes no letters, for comparison.
+  if (params.get("homelegends") === "old") tuning.legends = { ...tuning.legends, homeAlike: false };
+  // ?lunge=old: lunges as before Ed's 2026-11-13 change (tuning lunge, rules/combat.ts longLunge): wound up close, sprinting in, and
+  // stopping where they aimed, to compare with the long ones (wound up from about 1.5 dashes off, carrying through to about 2).
+  if (params.get("lunge") === "old" && tuning.lunge) tuning.lunge = { ...tuning.lunge, on: false };
+}
+
 /** The world's shape and travel speed for this load: the tuning's, unless the link says otherwise (?areaSize= or ?areaScale=,
  *  ?treetopSpeed=, ?mapAreas=), clamped. Never from what an earlier load saw. */
 export function worldFromLink(params: URLSearchParams, defaults = { areaSize: TUNING.areaSize * TUNING.areaScale, treetopSpeed: TUNING.treetopSpeed, mapAreas: TUNING.mapAreas }) {
@@ -174,14 +190,7 @@ export function tuningFromLink(params: URLSearchParams) {
   if (params.get("trail") === "0") tuning.trail = { ...tuning.trail, on: false };
   if (params.get("stun") === "old" && tuning.witch.stunAsSlow) tuning.witch = { ...tuning.witch, stunAsSlow: { ...tuning.witch.stunAsSlow, on: false } }; // (?stun=old: a creature's stun on her staggers her as before, not the slow Ed chose on 2026-11-13, to compare)
   if (params.get("knock") === "0") tuning.witch = { ...tuning.witch, knock: { ...tuning.witch.knock, on: false } };
-  // ?attacks=old: every species fights with its old attacks (config/combat.json), not its own in the grammar (rules/attacks/species.ts).
-  if (params.get("attacks") === "old") tuning.attacks = { reactionFloor: tuning.attacks?.reactionFloor ?? 0.45, species: false };
-  // ?ranged=old: creatures' ranged attacks aimed as before Ed's 2026-11-12 ruling (tuning ranged, rules/attacks/aim.ts): at her place as
-  // the wind-up starts (the old pack bolts leading her at their release), no speed floor, fans and walls as laid out before, for comparison.
-  if (params.get("ranged") === "old" && tuning.ranged) tuning.ranged = { ...tuning.ranged, on: false };
-  // ?lunge=old: lunges as before Ed's 2026-11-13 change (tuning lunge, rules/combat.ts longLunge): wound up close, sprinting in, and
-  // stopping where they aimed, to compare with the long ones (wound up from about 1.5 dashes off, carrying through to about 2).
-  if (params.get("lunge") === "old" && tuning.lunge) tuning.lunge = { ...tuning.lunge, on: false };
+  compareFights(params, tuning); // (?attacks=old, ?ranged=old, ?homelegends=old, ?lunge=old: below)
   // ?shotmarks=0: wild shots leave no mark where they end, as before Ed's 2026-11-13 choice ("Mark the ground": tuning shotMarks,
   // rules/attacks/marks.ts), to compare.
   if (params.get("shotmarks") === "0" && tuning.shotMarks) tuning.shotMarks = { ...tuning.shotMarks, on: false };

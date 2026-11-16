@@ -113,25 +113,35 @@ describe("friendly legends: defend, engage, walk (Ed, 31 Oct)", () => {
   });
   // Ed, 2026-11-13: "once it gets to the end of the route, it should turn around and walk back. Once it gets back to the
   // dancefloor, it starts guarding the home area like the home legend"; "I mean the very end of the route, not where the pulse is".
-  const journey = (species = "toad") => {
+  // Ed, 2026-11-15: "Exactly like the home legend": its post is the home legend's (here HOME_POST, as rules/creatures.ts homePost
+  // would deal it), and with `old` (?homelegends=old, legends.homeAlike off) the ring post and the old priorities.
+  const HOME_POST = { x: 20, z: 15 };
+  const journey = (species = "toad", old = false) => {
     const t = scene([]), line = [[0, 0], [60, 0], [60, 40]] as const, home = { x: 0, z: 0, r: 50, inside: (x: number, z: number) => Math.hypot(x, z) <= 50 };
-    t.legend.species = species; t.w.friendlyRoute = () => ({ line, tip: 10 }); t.w.home = home; t.w.dt = 0.5; t.legend.fight!.readyAt = 1000;
+    if (old) t.w.t = { ...t.w.t, legends: { ...t.w.t.legends, homeAlike: false } };
+    t.legend.species = species; t.w.friendlyRoute = () => ({ line, tip: 10, post: () => HOME_POST }); t.w.home = home; t.w.dt = 0.5; t.legend.fight!.readyAt = 1000;
     const until = (done: () => boolean, max = 400) => { let n = 0; while (!done() && n++ < max) t.step(); expect(n).toBeLessThan(max); };
     return { ...t, line, home, until };
   };
-  it("walks the whole route to its far end, past the drawing tip, then back to its start, then to a guard post at home for good", () => {
-    const { legend, w, step, until, home } = journey();
+  it.each([false, true])("walks the whole route to its far end, past the drawing tip, then back to its start, then to its post at home for good: the home legend's, or with ?homelegends=old (%s) a ring post", old => {
+    const { legend, w, step, until, home } = journey("toad", old);
     until(() => legend.journey?.stage === "back");
     expect([legend.x, legend.z]).toEqual([60, 40]); // (the route's last point: the tip is 10 m along)
     until(() => legend.journey?.stage === "guard");
     expect([legend.x, legend.z]).toEqual([0, 0]);
     const post = { x: legend.journey!.x!, z: legend.journey!.z! };
-    expect(Math.hypot(post.x, post.z)).toBeCloseTo(GUARD_POSTS.ring); expect(home.inside(post.x, post.z)).toBe(true);
+    if (old) { expect(Math.hypot(post.x, post.z)).toBeCloseTo(GUARD_POSTS.ring); expect(legend.journey!.home).toBeUndefined(); }
+    else { expect(post).toEqual(HOME_POST); expect(legend.journey!.home).toBe(true); }
+    expect(home.inside(post.x, post.z)).toBe(true);
     w.friendlyRoute = () => { throw Error("a guard walked the route again"); };
     until(() => !legend.moving);
     expect(legend.x).toBeCloseTo(post.x); expect(legend.z).toBeCloseTo(post.z);
     for (let i = 0; i < 20; i++) step();
     expect([legend.x, legend.z, legend.moving]).toEqual([post.x, post.z, false]);
+    expect(!!legend.journey!.posted).toBe(!old);
+    // Moved off its post inside home (a charge's end, a shove): like the home legend it stands where it is; the old one walked back.
+    Object.assign(legend, { x: post.x - 10, z: post.z }); step();
+    expect(legend.moving).toBe(old); expect(legend.x > post.x - 10).toBe(old);
   });
 
   it("a legend befriended near the far end goes on to the end first, then back", () => {
@@ -162,18 +172,18 @@ describe("friendly legends: defend, engage, walk (Ed, 31 Oct)", () => {
     until(() => !legend.moving); expect([legend.x, legend.z]).toEqual([post.x, post.z]);
   });
 
-  it("guards home like the home legend once back: a charger takes only targets inside home, and still defends her first", () => {
-    const { legend, w, step, home } = journey("boar");
-    Object.assign(legend, { journey: { stage: "guard", x: 0, z: 0 } }); legend.fight!.readyAt = 0;
+  it.each([false, true])("guards home exactly like the home legend once back: a charger takes only targets inside home, and no longer defends her first (Ed, 2026-11-15); with ?homelegends=old (%s) it still does", old => {
+    const { legend, w, step, home } = journey("boar", old);
+    Object.assign(legend, { journey: { stage: "guard", x: 0, z: 0, ...(old ? {} : { home: true, posted: true }) } }); legend.fight!.readyAt = 0;
     w.creatures.push(creature(1, 70, { enraged: true }));
     step(); expect(legend.fight?.target).toBeNull(); expect(legend.run).toBeUndefined();
     const attacker = creature(2, 40, { hunting: 0 }); w.creatures.push(attacker, creature(3, 5, { enraged: true })); w.witches[0].x = 30; legend.fight!.readyAt = 0;
-    step(); expect(legend.run?.target).toEqual({ kind: "creature", id: 2 });
+    step(); expect(legend.run?.target).toEqual({ kind: "creature", id: old ? 2 : 3 }); // (the nearest in its own reach, as the home legend; before, her attacker first)
     Object.assign(legend, { x: 49, run: { phase: "run", at: 0, angle: 0, speed: 100, turn: 1, target: null, tx: 100, tz: 0, ran: 0, hit: [], fromX: 0, fromZ: 0 } });
     w.dt = 1; step(); expect(home.inside(legend.x, legend.z)).toBe(true); expect(legend.run).toBeUndefined();
   });
 
-  it("several legends guarding home, with the island's own home legend, take posts apart from each other", () => {
+  it("with ?homelegends=old, several legends guarding home, with the island's own home legend, take ring posts apart from each other", () => {
     const home = { x: 0, z: 0, r: 80, inside: (x: number, z: number) => Math.hypot(x, z) <= 80 };
     const own = creature(0, GUARD_POSTS.ring, { level: 3, boss: true, homeGuard: true, lairX: GUARD_POSTS.ring, lairZ: 0 }), creatures = [own];
     for (let i = 1; i <= 8; i++) {

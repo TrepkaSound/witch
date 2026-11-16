@@ -1793,7 +1793,8 @@
     "partyEgg": true,
     "partyHits": 100,
     "partyDrain": 0.01,
-    "partyReach": 6.8
+    "partyReach": 6.8,
+    "homeAlike": true
   },
   "wildLegends": {
     "wake": 3,

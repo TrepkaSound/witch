@@ -18,6 +18,7 @@ import { facingAway } from "./witch";
 import { offSigils, onFloorSigil } from "./sigilAvoid";
 import { hurryOf, takePulled } from "./chains";
 import type { HomeArea } from "./homeArea";
+import { backToGuarding, isHomeLegend } from "./homeLegends";
 
 export interface PlacedSigil { id: number; x: number; z: number; /** game time it was put down */ at: number }
 
@@ -192,7 +193,7 @@ function nearest(creatures: Creature[], x: number, z: number, within: number, le
 
 /** Invite it: leashed to her, for good (#87), its sigil on the bottom of the stack (the 💌's second step: rules/invites.ts). */
 export function inviteCreature(s: LeashState, c: Creature, x: number, z: number, time: number, kind: "invited" | "picked" = "invited"): void {
-  if (c.homeGuard) return;
+  if (c.homeGuard && !c.partyLegend) return;
   if ((c.boss || c.level === LEGEND) && !c.partyLegend) return; // Only the completed partyEgg may make a legend available for pickup.
   if (c.level === 0 && (kind !== "picked" || stateOf(c) !== "happy")) return; // Soundsystem loose-sigil pickup only; never a baby invitation.
   if (inConga(c)) return; // (the won night's line follows her, never on her leash: rules/creatureStates.ts inConga)
@@ -206,8 +207,10 @@ export function inviteCreature(s: LeashState, c: Creature, x: number, z: number,
   s.events.push({ kind, id: c.id, x, z, at: time });
 }
 
-/** A party legend let off her leash (its sigil put down, or her knocked out): happy again where it stands, dancing, its rune at its feet. */
+/** A party legend let off her leash (its sigil put down, or her knocked out): happy again where it stands, dancing, its rune at its feet.
+ *  A home legend (the island's own, or a route legend back home: Ed, 2026-11-15) goes back to guarding instead (rules/homeLegends.ts). */
 export function letPartyLegendGo(c: Creature): void {
+  if (isHomeLegend(c)) { backToGuarding(c); return; }
   c.leashed = false; c.state = undefined; c.dancing = true; c.anchorX = c.x; c.anchorZ = c.z; c.fight = undefined;
 }
 

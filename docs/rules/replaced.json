@@ -149,6 +149,29 @@
         "up to 12 for 12"
       ],
       "unless": "\\b(was|used to|old|until|before|no longer|step 0|flat)\\b"
+    },
+    {
+      "id": "home-legend-no-letters",
+      "ruling": "Ed, 2026-11-15: \"Both home legends and returned route legends should be invitable in this way.\"",
+      "now": "the island's home legend takes the party egg's letters like any happy legend, and its 100th makes it a party legend: docs/rules/legends.md",
+      "stale": [
+        "home (?:guard |guard-)?legend[^.;]{0,60}\\b(?:takes? no letters|refuses? letters|never (?:takes?|given) letters|can(?:not|'t| never) be (?:invited|given letters))",
+        "home guard[^.;]{0,40}\\b(?:takes? no letters|cannot be invited|never a[^.;]{0,20}party legend)",
+        "never a dealt/quest/party legend"
+      ],
+      "unless": "\\b(was|used to|old|until|before|no longer|normal way|homelegends|homeAlike)\\b"
+    },
+    {
+      "id": "returned-legend-ring-post",
+      "ruling": "Ed, 2026-11-15: \"Exactly like the home legend\"",
+      "now": "a route legend back home stands where the home legend stands (rules/creatures.ts homePost) and no longer defends her first: docs/rules/legends.md",
+      "stale": [
+        "guard posts? (?:is|are) on rings",
+        "returned (?:route )?(?:legend|guard)[^.;]{0,60}\\bstill defends her first",
+        "unlike the home legend[^.;]{0,60}\\b(?:defends her first|party egg)",
+        "back home[^.;]{0,40}\\bstill defends her first"
+      ],
+      "unless": "\\b(was|were|used to|old|until|before|no longer|homelegends|homeAlike)\\b"
     }
   ]
 }

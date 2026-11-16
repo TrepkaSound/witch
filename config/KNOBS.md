@@ -2817,6 +2817,10 @@ Which areas have a legend (a happy one's reach is legends.friendRange).
   1. Ed, 2026-10-31: "no quest cap" (questCap is 0; questLater is unchanged.)
 - **`legends.questLater`**: a legend dreams only of a kind living in an area later on the route than its own, within questCap areas when a positive cap is set (default 0: no cap); failing that, the kind of the nearest later area; with no later area, any kind (the early easy quest keeps its own pick); false: any kind as before.
   1. Ed's core design, 2026-10-07: relayed by the coordinator: quests point to later areas, deeper in and wilder now the forest is grown before the waves
+- **`legends.homeAlike`**: A friendly route legend back at the dancefloor guards exactly like the island's home legend, and both take the party egg's letters; false (?homelegends=old): as before, the returned one on a ring post 36 m or more out, defending her first, and the home legend taking no letters.
+  1. Ed, 2026-11-15: "Exactly like the home legend" (asked whether a returned route legend should keep its ring post, defend her first and take the party egg)
+  2. Ed, 2026-11-15: "Both home legends and returned route legends should be invitable in this way." (the party egg)
+  Code: `rules/homeLegends.ts`
 - **`legends.bombard`**: ("Legend bombards, but prioritises you"): an angry legend with no witch in its reach throws the first lob or beam of its volley at the nearest standing soundsystem within range metres, damage a hit (of combat.soundsystemHealth); a charging legend lobs at it rather than charge.
 - **`legends.stomp`**: A legend turning angry destroys its own area's soundsystem at once.
   1. Ed, 2026-10-06: "perhaps" … "an angry legend simply stamps on the soundsystem in its area, destroying immediately. The angry legend waking timer may have to be longer" (a)
@@ -2842,6 +2846,7 @@ Which areas have a legend (a happy one's reach is legends.friendRange).
 | `legends.partyHits` | number | 1 to … |
 | `legends.partyDrain` | number | 0 to … |
 | `legends.partyReach` | number | 0 to … |
+| `legends.homeAlike` | boolean |  |
 
 ### `wildLegends`
 
