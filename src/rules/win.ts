@@ -248,7 +248,7 @@ function win(g: Game, time: number): void {
   // Her leash let go: every one of them dances in the line now.
   for (const W of g.witches) { for (const id of [...W.leash.stack, ...W.leash.placed.map(p => p.id)]) g.creatures[id].leashed = false; W.leash.stack = []; W.leash.placed = []; W.leash.talk = null; }
   g.combat.busy.clear();
-  for (const c of g.creatures) if (c.homeGuard) { c.fight = undefined; c.run = undefined; c.charge = undefined; c.moving = false; }
+  for (const c of g.creatures) if (c.homeGuard) { c.fight = undefined; c.run = undefined; c.charge = undefined; c.moving = false; if (c.state === "leashed") c.state = "happy"; } // (one off her leash just now, a party legend: Ed, 2026-11-15)
   // Ed, 2026-10-31: only completed quests bring legends to the dancefloor; all others sleep in their circles.
   const legends = dealtLegends(g), woken: Creature[] = [];
   w.found = [...(g.islandsTonight ?? [])]; // (only the quests done tonight find islands: Ed, 2026-10-18)

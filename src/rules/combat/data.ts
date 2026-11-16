@@ -5,7 +5,7 @@ import TUNED from "../../../config/tuning.json";
 import type { Creature, Level } from "../creatures";
 import { LEGEND } from "../creatureLevels";
 import { type State } from "../creatureStates";
-import { FIGHT } from "../movement";
+import { FIGHT } from "../movementData";
 import { sectionOf, speciesWith } from "../creatureConfig";
 import { type Tuning } from "../tuning";
 import type { Blow } from "../knock";
@@ -302,7 +302,7 @@ export const creatureMaxHp = (c: { species: string; level: Level }, data: Combat
 export interface CombatWorld {
   /** Tonight's whole curved ley route (planned, drawn or not) and its drawing tip, in metres; absent in detached combat worlds.
    *  Friendly legends walk the whole line, not to the tip (Ed, 2026-11-13: "the very end of the route, not where the pulse is"). */
-  friendlyRoute?: () => { line: readonly (readonly [number, number])[]; tip: number };
+  friendlyRoute?: () => { line: readonly (readonly [number, number])[]; tip: number; /** where a route legend back home stands guard (rules/creatures.ts homePost) */ post?: (c: Creature) => { x: number; z: number } };
   creatures: Creature[];
   /** The creatures to step this time (near a witch, or busy with a siege). */
   active: Creature[];

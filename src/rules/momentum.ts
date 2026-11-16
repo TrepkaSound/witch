@@ -5,7 +5,7 @@
 // then the tuning's global sliders (creatureMomentum). Pure; the trail of her places lives in the combat state.
 import type { Tuning } from "./tuning";
 import type { CombatState } from "./combat/data";
-import { profileOf } from "./movement";
+import { profileOf } from "./movementData";
 import { traitsOf } from "./combat/data";
 
 export interface Momentum {

@@ -7,7 +7,7 @@
 // Soft: a push that grows as they overlap, at most bodies.push m/s, never a hard collision, so a
 // pack still closes on its target. Cheap: a grid of the creatures in view, and at most
 // bodies.neighbours looked at for each. No drawing here.
-import { FIGHT, MOVEMENT, type MovementData } from "./movement";
+import { FIGHT, MOVEMENT, type MovementData } from "./movementData";
 import type { Creature } from "./creatures";
 
 export interface Bodies { radius: Record<string, number>; level: number[]; space?: number[]; factor: number; margin: number; push: number; neighbours: number; cell: number; range: number }
