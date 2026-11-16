@@ -2395,6 +2395,7 @@
     "src": "",
     "singer": "",
     "haunted": true,
+    "hauntedHush": 8,
     "melody": "dance",
     "banger": true,
     "over": {

@@ -242,14 +242,14 @@ describe("banger mode's blocks", () => {
     }
   });
   it("keeps the breakdown's shape (Ed, 2026-11-08: no drums, then drum & bass): the singer on the hook at half speed, then the hook whole", () => {
-    const style = night(7), cue = { nextAt: Infinity }, quiet = [24, 25, 26, 27].flatMap(b => barNotes(style, 7, 5, b, cue)), loud = [28, 29, 30].flatMap(b => barNotes(style, 7, 5, b, cue));
+    const style = night(7), cue = { nextAt: Infinity, waves: Array(5).fill(0), stumps: Array(5).fill(0) }, quiet = [24, 25, 26, 27, 28, 29, 30, 31].flatMap(b => barNotes(style, 7, 5, b, cue)), loud = [32, 33, 34].flatMap(b => barNotes(style, 7, 5, b, cue)); // (8 quiet bars: Ed, 2026-11-16)
     expect(quiet.filter(e => !pitched(e) && e.patch !== "riser" && e.patch !== B.dream!.riser && e.patch !== B.spice!.snap)).toEqual([]); // (no drums but, now and then, a finger snap)
     const sung = quiet.filter(e => e.part === style.form!.sung.part && !e.ghost && !e.double), h = nightHook(B, 7);
-    expect(sung.length).toBe(h.period.slice(0, 32).filter(x => x?.long).length); // (its long notes: the runs are left to the bed)
+    expect(sung.length).toBe(h.period.slice(0, 64).filter(x => x?.long).length); // (its long notes: the runs are left to the bed)
     expect(sung.every(e => e.dur >= 6 && e.step % 2 === 0)).toBe(true);
     expect(quiet.some(e => e.ghost)).toBe(true);
     expect(loud.some(e => e.patch === "dnbKick")).toBe(true); expect(loud.some(e => e.patch === "dnbSnare")).toBe(true);
-    expect(barNotes(style, 7, 5, 28, cue).some(e => e.patch === "impact")).toBe(true);
+    expect(barNotes(style, 7, 5, 32, cue).some(e => e.patch === "impact")).toBe(true);
     for (const e of sung) { expect(e.midi!).toBeGreaterThanOrEqual(53); expect(e.midi!).toBeLessThanOrEqual(81); }
   });
   it("lifts the victory a whole step with its conga claps, the hook whole throughout", () => {
@@ -671,8 +671,8 @@ describe("snaps and claps at different times (Ed, 2026-11-11: \"Don't need claps
         // (the landing's hook: the clap or snare; the breakbeat phrase: the snare; the breakdown's quiet half: soft snaps on two and four)
         for (const bar of [0, 1, 2, 5]) { const b = backbeat(barNotes(style, seed, before, bar, cue)); expect(b.snap, `landing ${seed} ${before} ${bar}`).toBe(false); if (/[Xx]/.test(K.drums.find(v => HEAVY.has(v.patch))!.p.slice(0, 8))) expect(b.heavy).toBe(true); }
         if (!K.breaks.some(v => SNAPS.has(v.patch))) for (const bar of [17, 18]) expect(backbeat(barNotes(style, seed, before, bar, cue)).snap).toBe(false); // (but a kit whose own breakbeat is snapped)
-        for (const bar of [24, 25, 26, 27]) { const es = barNotes(style, seed, before, bar, cue); expect(es.filter(e => SNAPS.has(e.patch)).map(e => e.step % 16)).toEqual([4, 12]); expect(es.some(e => HEAVY.has(e.patch))).toBe(false); }
-        for (const bar of [28, 29]) expect(barNotes(style, seed, before, bar, cue).some(e => SNAPS.has(e.patch))).toBe(false); // (the drum & bass: its snare)
+        for (const bar of [24, 25, 26, 27, 28, 29, 30, 31]) { const es = barNotes(style, seed, before, bar, cue); expect(es.filter(e => SNAPS.has(e.patch)).map(e => e.step % 16)).toEqual([4, 12]); expect(es.some(e => HEAVY.has(e.patch))).toBe(false); }
+        for (const bar of [32, 33]) expect(barNotes(style, seed, before, bar, { ...cue, waves: Array(before).fill(0), stumps: Array(before).fill(0) }).some(e => SNAPS.has(e.patch))).toBe(false); // (the drum & bass: its snare)
         // (the groove where the hook rests, bars 9 to 15: one or the other for the whole phrase)
         const kinds = [9, 10, 11, 12, 13, 14].map(bar => backbeat(barNotes(style, seed, before, bar, cue)));
         expect(new Set(kinds.filter(k => k.snap || k.heavy).map(k => (k.snap ? "snap" : "heavy"))).size).toBeLessThanOrEqual(1);
@@ -867,12 +867,12 @@ describe("the leads' new style, the house ostinato, dreamy against aggressive (E
         if (K.bass.bounce) { const bs = es.filter(e => K.bass.patch.includes(e.patch)); for (const st of [0, 4, 8]) expect(bs.some(e => e.step % 16 === st)).toBe(true); for (const e of bs) { expect(e.midi!).toBeGreaterThanOrEqual(28); expect(e.midi!).toBeLessThanOrEqual(40); } }
         expect(es.filter(e => e.patch === bedPatch(K) && e.dur === 1 && !ld.some(l => l.step === e.step))).toEqual([]); // (no bed under it: the xylophone is on the riff)
       }
-      // (the second time round the form: a line a third under; then the answer in accented hits, the bass busier)
+      // (the second time round the form, 36 bars on: a line a third under; then the answer in accented hits, the bass busier)
       const count = (b: number) => bar(b).filter(e => leads.has(e.patch) && pitched(e)).length, base8 = count(8);
-      expect(base8).toBeGreaterThanOrEqual(2); expect(count(32) + count(33)).toBe(2 * (count(8) + count(9)));
-      const third = bar(32).filter(e => leads.has(e.patch) && pitched(e)), st0 = third[0].step, pair = third.filter(e => e.step === st0).map(e => e.midi!).sort((x, y) => x - y);
+      expect(base8).toBeGreaterThanOrEqual(2); expect(count(36) + count(37)).toBe(2 * (count(8) + count(9)));
+      const third = bar(36).filter(e => leads.has(e.patch) && pitched(e)), st0 = third[0].step, pair = third.filter(e => e.step === st0).map(e => e.midi!).sort((x, y) => x - y);
       expect(pair.length).toBe(2); expect([2, 3, 4, 5]).toContain(pair[1] - pair[0]);
-      if (K.bass.bounce) expect(bar(40).filter(e => K.bass.patch.includes(e.patch)).length).toBeGreaterThan(bar(8).filter(e => K.bass.patch.includes(e.patch)).length);
+      if (K.bass.bounce) expect(bar(44).filter(e => K.bass.patch.includes(e.patch)).length).toBeGreaterThan(bar(8).filter(e => K.bass.patch.includes(e.patch)).length);
     }
     expect(sung).toBeGreaterThan(10);
     // (the fills' bank has the tom sweeps: one, and the longer one with a rim shot closing it)
@@ -880,10 +880,10 @@ describe("the leads' new style, the house ostinato, dreamy against aggressive (E
     expect(B.fills.sweep2.length).toBeGreaterThan(B.fills.sweep.length);
   });
   it("sets dreamy against aggressive inside the form as it was: a breakdown's quiet half and a build's first half her stacked long notes over the soft bed, no kick; the breakbeat phrase and the drum & bass ghost snares, running hats and the distorted mid bass over the sub; a touch of it under a landing, none in a groove or before the second stump", () => {
-    const cue = { nextAt: Infinity }, grit = DR.bass.patch;
+    const cue = { nextAt: Infinity, waves: Array(5).fill(0), stumps: Array(5).fill(0) }, grit = DR.bass.patch; // (no wave after it: the breakdown plays out)
     for (const seed of [7, 23, 101]) {
       const style = night(seed), K = kitAt(style, 5), bar = (b: number, w = 5) => barNotes(style, seed, w, b, cue);
-      const quiet = [24, 25, 26, 27].flatMap(b => bar(b)), dnb = [28, 29, 30].flatMap(b => bar(b)), brk = [16, 17, 18, 19, 20, 21, 22].flatMap(b => bar(b)), land = [0, 1, 2, 3].flatMap(b => bar(b)), groove = [8, 9, 10, 11].flatMap(b => bar(b));
+      const quiet = [24, 25, 26, 27].flatMap(b => bar(b)), dnb = [32, 33, 34].flatMap(b => bar(b)), brk = [16, 17, 18, 19, 20, 21, 22].flatMap(b => bar(b)), land = [0, 1, 2, 3].flatMap(b => bar(b)), groove = [8, 9, 10, 11].flatMap(b => bar(b));
       // (dreamy: the stack on her sixteenth, the same note left and right and its octave; the bed; no kick, snare or clap)
       const st = quiet.filter(e => DM.stack.includes(e.patch)), oc = quiet.filter(e => e.patch === DM.octave), sung = quiet.filter(e => e.part === style.form!.sung.part && !e.ghost && !e.double);
       expect(st.length).toBeGreaterThan(0); expect(st.length).toBe(2 * oc.length);

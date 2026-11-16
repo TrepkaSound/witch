@@ -3617,6 +3617,10 @@ Code: `tools/music-lab/check.cjs`
   2. Ed, 2026-11-08: "Instead of 50% of the time, make it a drop - no drums, and then drum and bass kicks in. (Agree, not in legend areas)" (the quiet sections' drums: silent, then a drum & bass drop; the clearings without drums)
   In its sections (breakdown, ether, whisper): the voice's own long dark reverb, no drums and then a drum and bass drop on a 4-bar line, held notes and slower chords, a ghost voice a sixth below, a root-and-fifth drone, the flattened 2nd or raised 7th as colour (notes outside dorian there only), and the voice lifted.
   Code: `rules/musicScore.ts`, `platform/audio/musicEngine.ts`, `app/sound.ts`
+- **`music.hauntedHush`**: The quiet bars before a haunted breakdown's drum & bass drop: 8, the form's breakdown lengthened from 8 bars to 12 (8 quiet, then the 4-bar drop; rules/musicHush.ts, docs/notes/music.md Haunted); 4 or ?hauntedhush=old plays the 8-bar breakdown as it was (4 quiet, 4 dropped).
+  1. Ed, 2026-11-16: "Make it 8 bars" (asked whether the 4 quiet bars before the drop in the haunted style's 8-bar breakdowns should be longer)
+  A pass round the form is 36 bars with it, not 32; the waves, builds, knockdowns and the victory land where they did. Under the music style's own quiet bars (its haunted drop's afterBars, 8) it takes the lengthening off; it never makes the hush longer than the style's.
+  Code: `rules/musicHush.ts`, `rules/musicPlan.ts`, `app/sound.ts`
 - **`music.banger`**: Banger mode, the music with one hook a night back at its key moments, kits and grooves by family, builds and drops, gentle till the second stump (docs/notes/music.md Banger mode); false or ?banger=0 plays the music as before.
   1. Ed, 2026-11-10: "I'm open to substantial redesigns, as long as we get music that fits with the game; catchy spooky cute dancey witchy ravey bangers" (the brief for the music review and redesign)
   2. Ed, 2026-11-10: "Repetition: one hook is good, but bring it back at key moments." (the hook whole only at a wave landing, a breakdown's drum & bass drop and the victory, slow in the breakdowns and builds and a clearing; each wave's own riff between)
@@ -3655,6 +3659,7 @@ Code: `tools/music-lab/check.cjs`
 | `music.src` | string |  |
 | `music.singer` | string |  |
 | `music.haunted` | boolean |  |
+| `music.hauntedHush` | number | 0 to … |
 | `music.melody` | string | "dance" / "lyrical" / "old" |
 | `music.banger` | boolean |  |
 | `music.over.stop` | number | 0 to … |

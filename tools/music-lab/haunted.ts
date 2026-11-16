@@ -9,6 +9,7 @@ import { mixAt, nearness } from "../../src/rules/music";
 import { newBeatClock, timeAt } from "../../src/rules/beat";
 import { Conductor, type MusicCue } from "../../src/rules/musicPlan";
 import { nightStyle, planNight } from "../../src/rules/musicSet";
+import { withHush } from "../../src/rules/musicHush";
 import { hauntedDrop, isHaunted, withHaunted, type MusicStyle } from "../../src/rules/musicScore";
 import styleJson from "../../config/music-style.json";
 
@@ -93,4 +94,28 @@ async function nightRender(o: { island: string; waves: number; seed: number; bar
   return result(await oc.startRendering(), { marks });
 }
 
-Object.assign(window as unknown as W, { hauntedRender, circleRender, nightRender });
+/** The hush before the drop, old and new (Ed, 2026-11-16: "Make it 8 bars"): `bars` bars from bar `from` of a wave of the
+ *  night's set that landed on bar 0 (its breakbeats, its haunted breakdown and the next pass's landing), as the game plays it,
+ *  with `hush` quiet bars (8; 4 the breakdown as it was: tuning music.hauntedHush), and where each section and the drop starts. */
+async function hushRender(o: { island: string; wave: number; seed: number; from: number; bars: number; hush: number; samples: Record<string, string> }) {
+  const n = planNight(base, { seed: o.seed, island: o.island, waves: 10 }), style = withHush(nightStyle(base, n), o.hush);
+  const clock = newBeatClock(style.bpm), t0 = timeAt(clock, o.from * 4), seconds = timeAt(clock, (o.from + o.bars) * 4) - t0 + 3;
+  const oc = new OfflineAudioContext(2, Math.ceil(seconds * RATE), RATE), recs = await decode(oc, o.samples);
+  const M = TUNING.music, m = new Music(oc, M.volume * 0.8, style, o.seed), mix = mixAt(M, 1, 0, 10);
+  m.engine!.setRecordings(recs); if (recs.whispers) m.engine!.setWhisper(recs.whispers);
+  const cue: MusicCue = { waves: Array(o.wave).fill(0), nextAt: Infinity, bootUntil: 0, knockedOut: false, siege: 0 };
+  frames(oc, seconds, t => m.update(mix, cue, t0 + t, clock, true, M));
+  const C = new Conductor(style), marks: { at: number; what: string }[] = [];
+  let last = "";
+  for (let b = o.from; b < o.from + o.bars; b++) {
+    const p = C.plan(cue, b), key = `${p.section}@${p.start}`;
+    if (key === last) continue;
+    last = key;
+    const h = isHaunted(style, p.section), d = h ? hauntedDrop(style, p.bars) : Infinity;
+    marks.push({ at: timeAt(clock, b * 4) - t0, what: h ? `the haunted breakdown (${p.section}, ${p.bars} bars): ${d} quiet bars` : `${b > o.from ? "the next pass round the form: " : ""}${p.section}` });
+    if (Number.isFinite(d)) marks.push({ at: timeAt(clock, (p.start + d) * 4) - t0, what: `the drum & bass drop (${p.bars - d} bars)` });
+  }
+  return result(await oc.startRendering(), { marks });
+}
+
+Object.assign(window as unknown as W, { hauntedRender, circleRender, nightRender, hushRender });

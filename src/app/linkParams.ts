@@ -136,9 +136,9 @@ export function tuningFromLink(params: URLSearchParams) {
   if (singerParam) tuning.music = { ...tuning.music, singer: singerParam };
   // ?haunted=0: the quiet sections and the legends' clearings as before the haunted treatment (Ed, 2026-11-08: "B, 1-6"), to
   // A/B; ?haunted=1 on (tuning music.haunted, app/sound.ts)
-  const hauntedParam = params.get("haunted");
-  if (hauntedParam === "0" || hauntedParam === "off") tuning.music = { ...tuning.music, haunted: false };
-  else if (hauntedParam === "1" || hauntedParam === "on") tuning.music = { ...tuning.music, haunted: true };
+  const hauntedParam = params.get("haunted"), hauntedOn = hauntedParam === "1" || hauntedParam === "on";
+  if (hauntedOn || hauntedParam === "0" || hauntedParam === "off") tuning.music = { ...tuning.music, haunted: hauntedOn };
+  if (params.get("hauntedhush") === "old") tuning.music = { ...tuning.music, hauntedHush: 4 }; // (a haunted breakdown as it was, 8 bars with 4 quiet before its drop, to A/B against the 12 with 8: Ed, 2026-11-16, "Make it 8 bars"; rules/musicHush.ts)
   // ?melody=old: the melodies and basslines by the old rules, before the composer (Ed, 2026-11-08: "smarter rules"); ?melody=
   // lyrical the composer's planned phrases (new, its first name), ?melody=dance its riffs and hooks (the default; Ed: "not
   // very dancey"), to A/B (tuning music.melody, app/sound.ts)

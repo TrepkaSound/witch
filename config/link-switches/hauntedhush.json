@@ -1,0 +1,10 @@
+{
+ "name": "hauntedhush",
+ "values": [
+  "old"
+ ],
+ "does": "A haunted breakdown as it was (old): 8 bars, 4 quiet and then its drum & bass drop, to A/B against the 12 bars with 8 quiet (the default). Sets tuning music.hauntedHush to 4.",
+ "group": "compare",
+ "since": "2026-11-16",
+ "decision": "The quiet stretch before a haunted breakdown's drop is 8 bars (Ed, 2026-11-16: \"Make it 8 bars\"); the 4-bar hush kept to A/B"
+}

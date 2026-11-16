@@ -1,4 +1,4 @@
-// The haunted treatment's A/B (Ed, 2026-11-08: "B, 1-6"): node tools/music-lab/haunted.mjs <out dir> [ab|circle|night] [seed...]
+// The haunted treatment's A/B (Ed, 2026-11-08: "B, 1-6"): node tools/music-lab/haunted.mjs <out dir> [ab|circle|night|hush] [seed...]
 // Renders tools/music-lab/haunted.ts offline in headless Chromium with the game's singer (samples/chimera) and writes mp3s
 // (192 kbps) to <out dir>:
 //   ab      breakdown-on.mp3 / breakdown-off.mp3 (wave 2's breakdown, 16 bars: its quiet half, the riser, the drum & bass drop)
@@ -6,6 +6,8 @@
 //   circle  circle-<species>-on.mp3 / -off.mp3 (wave 1's music nearby, then 20 s in the legend's clearing, the world slowed)
 //   night   long-seed<N>.mp3 (a night on the owl island, its start and 3 waves of 40 bars (the form's 32 and the build's 8): each wave's haunted breakdown and drop),
 //           with long-seed<N>.txt, where each section, haunted section and drop starts; NIGHT_OFF=1 also the treatment off
+//   hush    hush-seed<N>-new.mp3 / -old.mp3 (Ed, 2026-11-16: "Make it 8 bars": wave 3's breakbeats, its haunted breakdown and the
+//           next landing as the game plays them, with 8 quiet bars before the drop and with the old 4), each with a .txt
 // Fails on a script error, NaN, clipping or silence. Nothing here touches the game.
 import { build } from "esbuild";
 import { execFileSync } from "node:child_process";
@@ -16,7 +18,7 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url)), root = resolve(here, "../..");
 const [outArg, what = "ab", ...seedArgs] = process.argv.slice(2);
-if (!outArg) { console.error("usage: node tools/music-lab/haunted.mjs <out dir> [ab|circle|night] [seed...]"); process.exit(2); }
+if (!outArg) { console.error("usage: node tools/music-lab/haunted.mjs <out dir> [ab|circle|night|hush] [seed...]"); process.exit(2); }
 const out = resolve(outArg);
 mkdirSync(out, { recursive: true });
 const require = createRequire(import.meta.url);
@@ -61,6 +63,16 @@ if (what === "ab") {
     const name = `long-seed${seed}${on ? "" : "-off"}`;
     save(r, name);
     const lines = [`${name}: the owl island's night, seed ${seed}, its start and 3 waves of 40 bars at 120 bpm (${mmss(r.seconds)})`, ...r.marks.map(m => `${mmss(m.at).padStart(7)}  ${m.what}`)];
+    writeFileSync(resolve(out, `${name}.txt`), lines.join("\n") + "\n");
+    for (const l of lines) console.log("     " + l);
+  }
+}
+if (what === "hush") {
+  for (const seed of seedArgs.length ? seedArgs.map(Number) : [7]) for (const [tag, hush] of [["new", 8], ["old", 4]]) {
+    const r = await page.evaluate(o => window.hushRender(o), { island: "owl", wave: 3, seed, from: 16, bars: hush > 4 ? 28 : 24, hush, samples });
+    const name = `hush-seed${seed}-${tag}`;
+    save(r, name);
+    const lines = [`${name}: seed ${seed}, wave 3, from its breakbeats, ${hush} quiet bars before the drop (${mmss(r.seconds)})`, ...r.marks.map(m => `${mmss(m.at).padStart(7)}  ${m.what}`)];
     writeFileSync(resolve(out, `${name}.txt`), lines.join("\n") + "\n");
     for (const l of lines) console.log("     " + l);
   }
