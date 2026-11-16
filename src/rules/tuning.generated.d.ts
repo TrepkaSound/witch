@@ -258,6 +258,7 @@ export type SchemaTuning = {
     "clear": number;
     "lightReach": number;
     "lightStrength": number;
+    "freeTakeOff"?: boolean;
     "landCooldown": number;
     "deck": {
       "on": boolean;

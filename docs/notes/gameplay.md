@@ -165,7 +165,7 @@ Add to this file, not CLAUDE.md, when you change this area.
   `beginChains` clears).
   In every mode; not while knocked out, perched or in the zoo.
   A sleeping legend's tether is at least the chain length (rules/sigilButton.ts).
-  Take-off: `groundedBy` (rules/leashWeight.ts, now only this): any adult or legend in her stack (`holdsDown`, a party legend too) grounds her; youths never.
+  Take-off: `groundedBy` (rules/leashWeight.ts, now only this): any adult or legend in her stack (`holdsDown`, a party legend too) grounds her; youths never. Never at the treehouse (Ed, 2026-11-16: "Let her take off from the treehouse"; `treehouse.freeTakeOff`, `?treehousetakeoff=old` as before).
   `loadOf`/`NO_LOAD` remain as a no-load shim only for the step's call site till #1609 lands.
   The rattle: `weighingChains` (adults and legends) on the "grounded" event, render/leash/stack.ts (`rattleChain`, `leash.chain.rattle`) and platform/audio (chimes.ts `rattle`, `sfx.rattle`, once).
   `youthRising`: her rise drawn slower with a youth (`youthRise`, render/view/witch.ts; drawn only).

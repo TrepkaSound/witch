@@ -390,6 +390,7 @@
     "lightReach": 16,
     "lightStrength": 0.6,
     "landCooldown": 3,
+    "freeTakeOff": true,
     "deck": {
       "on": true,
       "radius": 7,

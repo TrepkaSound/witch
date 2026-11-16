@@ -1354,6 +1354,10 @@
           "type": "number",
           "minimum": 0
         },
+        "freeTakeOff": {
+          "type": "boolean",
+          "description": "Adults and legends in her stack never stop her taking off while she is at the treehouse (its floors, rooms and balcony: her followers count as placed there); false (?treehousetakeoff=old): they ground her there as everywhere else, as before."
+        },
         "landCooldown": {
           "type": "number",
           "minimum": 0,

@@ -659,12 +659,12 @@ export function stepWitchLocomotion(g: Game, W: Witch, input: Controls, hdt: num
   // Her movement turned (pack combat: the bat's screech, rules/combat/packs.ts): her steering swung, wavering, as her aim is by the stoat's dance.
   else if (W.confused?.move && ht < W.confused.until && W.body.mode === "ground") { const a = W.confused.drift * Math.sin(ht * 2.3), cs = Math.cos(a), sn = Math.sin(a); c = { ...c, moveX: c.moveX * cs - c.moveZ * sn, moveZ: c.moveX * sn + c.moveZ * cs }; }
   // Grounded by who follows her (Ed, 2026-11-03: only adults and legends ground her; his 2026-10-18 rule by weight, "One adult stops you taking off. Three young do.", is replaced; "you try and fly
-  // but get pulled down"; rules/leashWeight.ts groundedBy, leash.grounded): the press keeps her on the ground, dropped before the
+  // but get pulled down"; rules/leashWeight.ts groundedBy): the press keeps her on the ground, dropped before the
   // cooldown's (so it spends none), and is said, the "grounded" leash event: the view draws her lifting off and yanked back down
   // by her taut, blazing leashes (render/view/witch.ts groundedHop, render/leash/stack.ts drawBond) and the landing's thud
   // (platform/audio/sfxCues.ts). Drawn only: she never leaves the ground, so it's no dodge. Only a take-off from the ground: up
   // in the treetops, or coming down, she flies on as before.
-  if (c.toggleMode && W.body.mode === "ground" && !W.body.seated && !g.map.bounds.fence && groundedBy(W.leash.stack, g.creatures, t).grounded) { // (never in the zoo: flying is the only way over its fences, Ed 2026-10-26, so nothing holds her down)
+  if (c.toggleMode && W.body.mode === "ground" && !W.body.seated && !g.map.bounds.fence && groundedBy(W.leash.stack, g.creatures, t, W.body).grounded) { // (never in the zoo: flying is the only way over its fences, Ed 2026-10-26, so nothing holds her down; nor at the treehouse, Ed 2026-11-16: "Let her take off from the treehouse")
     c = { ...c, toggleMode: false };
     g.leashEvents.push({ kind: "grounded", id: W.id, x: W.body.x, z: W.body.z, at: ht });
   }
