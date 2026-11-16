@@ -124,6 +124,14 @@
         }
       ]
     },
+    "legends.homeAlike": {
+      "what": "A friendly route legend back at the dancefloor guards exactly like the island's home legend, and both take the party egg's letters; false (?homelegends=old): as before, the returned one on a ring post 36 m or more out, defending her first, and the home legend taking no letters.",
+      "decisions": [
+        { "by": "Ed", "date": "2026-11-15", "quote": "Exactly like the home legend", "rest": "asked whether a returned route legend should keep its ring post, defend her first and take the party egg" },
+        { "by": "Ed", "date": "2026-11-15", "quote": "Both home legends and returned route legends should be invitable in this way.", "rest": "the party egg" }
+      ],
+      "links": ["rules/homeLegends.ts"]
+    },
     "legends.bombard": {
       "what": "(\"Legend bombards, but prioritises you\"): an angry legend with no witch in its reach throws the first lob or beam of its volley at the nearest standing soundsystem within range metres, damage a hit (of combat.soundsystemHealth); a charging legend lobs at it rather than charge."
     },

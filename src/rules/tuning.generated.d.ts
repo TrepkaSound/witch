@@ -1493,6 +1493,7 @@ export type SchemaTuning = {
     "partyHits": number;
     "partyDrain": number;
     "partyReach": number;
+    "homeAlike"?: boolean;
   };
   "wildLegends": {
     "wake": number;

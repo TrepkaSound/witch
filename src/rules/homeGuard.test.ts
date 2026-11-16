@@ -67,11 +67,24 @@ describe("the island-kind home guard", () => {
     expect([c.x, c.z]).toEqual([c.lairX, c.lairZ]);
   });
 
-  it("cannot be invited, given letters, become a party egg, expose a rune or answer a quest", () => {
+  it("put back at its post it also stops: its run and its speed are gone (Ed, 2026-11-15: \"Fix it\"; the reset had sat behind a comment)", () => {
+    const g = preppedGame(11, withTuning({ map: { ...TUNING.map!, island: "tiger", islandAreas: 10 } }));
+    g.clock.paused = false; g.party.spellAt = undefined;
+    const c = g.creatures.find(c => c.homeGuard)!;
+    g.witch = { ...g.witch, x: c.x + 5000, z: c.z }; // (far off: nothing else steps it)
+    Object.assign(c, { x: g.map.bounds.maxX + 100, z: g.map.bounds.maxZ + 100, moving: true, vx: 7, vz: -3, run: { phase: "home", at: 0, angle: 0, speed: 9, turn: 1, target: null, tx: 0, tz: 0, ran: 0, hit: [], fromX: 0, fromZ: 0 } });
+    stepGame(g, { moveX: 0, moveZ: 0, toggleMode: false, zoom: 0, autoTalk: false }, STEP);
+    expect([c.x, c.z]).toEqual([c.lairX, c.lairZ]);
+    expect([c.run, c.moving, c.vx, c.vz]).toEqual([undefined, false, 0, 0]);
+  });
+
+  it("cannot be invited in the normal way, expose a rune or answer a quest; with ?homelegends=old (or the egg off) it takes no letters either", () => {
     const map = mapOf("tiger"), creatures = spawnCreatures(map), c = creatures.find(c => c.homeGuard)!;
-    expect(invitableNow(c, { affection: { hits: [1], drain: 0, drainDelay: 0, gap: 0 }, leash: "again", pickupDelay: 0, holdTime: 0, partyEgg: true })).toBe(false);
-    expect(partyEggOpen(c)).toBe(false); expect(hasRune(c)).toBe(false);
-    expect(hit({ time: 0, leash: () => { throw Error("home guard invited"); } }, c, 1000)).toBe(false);
+    const data = { affection: { hits: [1], drain: 0, drainDelay: 0, gap: 0 }, leash: "again" as const, pickupDelay: 0, holdTime: 0, partyEgg: true };
+    expect(invitableNow(c, { ...data, homeEgg: false })).toBe(false); expect(invitableNow(c, { ...data, partyEgg: false })).toBe(false);
+    expect(invitableNow(c, data)).toBe(true); expect(partyEggOpen(c)).toBe(true); // (the party egg's letters: Ed, 2026-11-15; rules/homeLegends.test.ts)
+    expect(hasRune(c)).toBe(false);
+    expect(hit({ time: 0, leash: () => { throw Error("home guard invited"); } }, c, 1000, 0, { ...data, homeEgg: false })).toBe(false);
     const s = newLeash(); inviteCreature(s, c, c.x, c.z, 0, "picked"); expect(s.stack).toEqual([]);
     expect(talkTarget([c], c.x, c.z, TUNING)).toBeNull();
     expect(legendOf(creatures, [c.id], cellKey(c.cell))).toBeNull();

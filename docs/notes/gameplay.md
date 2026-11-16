@@ -51,7 +51,7 @@ No game, invitation eligibility, wake, combat or MP rule changes; [exact21 dispo
   Variants measured the same way, for the record: shortening only the round time and the window (the brief's first reading) cost strikes (64: 10.7, 128: 7.9) and left the round about 7 s (the rest held it); shortening the round time and the rest but keeping the 3 s window gave the most strikes (64: 14.7, 128: 11.8) but rounds still about 7 s long (the window and the strikers' run-in fill them).
   Since 2026-11-04 the window keeps its 3 s (`teamRounds.window` 1: **Waiting rings and the 128 rate**, below); the window numbers above are with `window` at its floor.
 - **Roles decided in advance** (Ed, 2026-11-03, on #1782: "can we decide the roles in advance and have them move in sooner, in time for their attack?";
-  `TeamState.next` in rules/combat/teams.ts, `movingGoal` in rules/combat.ts, tuning `teamRounds.ahead`, the pause page's *Big packs: attackers picked rounds ahead*): a team past `teamRounds.reference` (20) keeps its next `ahead` rounds' attackers drawn, each drawn as the round `ahead` before it starts: the same seeded `chooseTeamActions` that round would make (its round number;
+  `TeamState.next` in rules/combat/teams.ts, `movingGoal` in rules/combat/waiting.ts, tuning `teamRounds.ahead`, the pause page's *Big packs: attackers picked rounds ahead*): a team past `teamRounds.reference` (20) keeps its next `ahead` rounds' attackers drawn, each drawn as the round `ahead` before it starts: the same seeded `chooseTeamActions` that round would make (its round number;
   each action ready by when that round should start), so lockstep sees the same picks.
   When its round comes, its picks are its actions (one withdrawn since, or whose action isn't ready after all, dropped; none left, the usual reserve draw).
   Each round's picks carry `readyBy`, when its window should open, re-estimated every step from the team's phase (the lull's end, or the round's shortened end at its earliest, then the tell; one more nominal round, max(round time, tell + window + least rest), for each round further on).
@@ -106,7 +106,7 @@ Add to this file, not CLAUDE.md, when you change this area.
   she flies 19.25 on the ground, animals run about 14 in a fight), `invites.range` 42 (was 33), `invites.homingRange` 14 (was 10);
   `homing` and `homingCone` unchanged.
   A letter reaches its full range in 0.93 s (was 1.06 s).
-  The waiting room (rules/combatSpacing.ts `waitingSlot`, its reference `(dashReach + inviteReach) × combatWaiting.reachScale`) no longer reads the live `invites.range`: rules/combat.ts passes `combatWaiting.inviteReach` (33, the old range), so the reference stays (30 + 33) × 0.8 = 50.4 m and the longer letters reach circling animals;
+  The waiting room (rules/combatSpacing.ts `waitingSlot`, its reference `(dashReach + inviteReach) × combatWaiting.reachScale`) no longer reads the live `invites.range`: rules/combat/waiting.ts passes `combatWaiting.inviteReach` (33, the old range), so the reference stays (30 + 33) × 0.8 = 50.4 m and the longer letters reach circling animals;
   buffs and bags (the Clutch's ×1.6) no longer push waiting animals further out either.
   `?invites=old` flies 31.2 / 33 / 10 (rules/invites.ts `OLD_LETTERS`), the waiting distance the same, to A/B the letters alone.
   `bubbles.near` went 38 to 47 with it, so a creature hit at full range still shows its reply.
@@ -368,14 +368,17 @@ Add to this file, not CLAUDE.md, when you change this area.
   Wild and enraged ones go barefoot.
 - **Combat**: `rules/combat.ts` (the fight's step and the sieges;
   split into `rules/combat/`: `data.ts` the attacks, levels, strength and types, `targeting.ts` who fights whom and finding a target, `hits.ts` a hit landing and what a knockdown does, `legend.ts` the legends' moves;
-  all re-exported from `combat.ts`), its attacks as data in `config/combat.json` (compiled from `config/attacks.json`: the attack grammar, below;
+  all re-exported from `combat.ts`).
+  `stepCombat` is a table of contents (the big split, 2026-11-15, Ed's quality plan item b): `combat/step.ts` the step's base and its shared `CombatStep` (her party, the packs, claims, the dodge's tokens), `combat/flight.ts` shots, lobs, the grammar's attacks in flight, beams, slime and trails, then `combat/turn.ts` each creature's turn, its phases in order:
+  `standby.ts` what holds it (knocked, dazed, fleeing, a legend's ranged attack, stunned, sitting; hiding round out of sight), `choose.ts` its attack (`roleSpell`) and target (guarding, sieges, turned on her) or idling and retreating, `fighter.ts` its `Turn` (target, reach, `want`, pace, the old bolt's aim), `lunge.ts` a lunge under way and the first look, `waiting.ts` the combat spacing's waiting ring (`movingGoal`), `packWait.ts` a pack member's lull, `moves.ts` and `stances.ts` its kind's own move (charge, swoop, burrow, leap; ambush, dig, block, flash), `approach.ts` steering in and starting the strike, `release.ts` the wind-up and letting go;
+  `strikes.ts` the small rules they share (tokens, `reachOf`, `thrown`, `startSpell`, hops), `reach.ts` the lunge's length and `guardRadius`, `siege.ts` sieges and marching. Each `return` in a phase was the old loop's `continue`; read `turn.ts` first. its attacks as data in `config/combat.json` (compiled from `config/attacks.json`: the attack grammar, below;
   levels' health and power budget;
   melee, shot or quake;
   windup, cooldown, modifier).
   Party (leashed) against wild; same kind never fights same kind; wild young and up attack the witch on the ground.
 - **Long lunges** (Ed, 2026-11-13: "Lunge ranges seem very short; they could be twice as long, around 1.5-2 dashes range.";
   asked how, "Both": wound up from far away, and carried on through and past the spot it aimed at;
-  tuning `lunge`, `longLunge` in `src/rules/combat.ts`, `src/rules/longLunge.test.ts`): measured first (`node tools/balance/lunges.mjs`, `--set "lunge.on=0"` for before), wind-ups already began 12 to 19 m off, but at her the creature sprinted in as it wound up (`dodge.a.surge`) and let go 2.5 to 9 m away, its lunge stopping where it aimed.
+  tuning `lunge`, `longLunge` in `src/rules/combat/reach.ts`, `src/rules/longLunge.test.ts`): measured first (`node tools/balance/lunges.mjs`, `--set "lunge.on=0"` for before), wind-ups already began 12 to 19 m off, but at her the creature sprinted in as it wound up (`dodge.a.surge`) and let go 2.5 to 9 m away, its lunge stopping where it aimed.
   Now a lunging attack (its own lunge at least `lunge.least`, 8 m: the bear's and big cats' swipes stay swipes) may begin its wind-up `lunge.from` dashes off (1.5: 22.5 m for the longest kinds, the stoat, the lynx and every youth's maul;
   a shorter kind its share, never under `lunge.shortest`), gathers itself where it is instead of sprinting in, and lunges `lunge.through` dashes (2: 22.5 to 30 m) along its line, through and past its target.
   Its blow lands as it meets its target on the way (its target only, as before, and once: a blink through it and it has missed), and from then, or once past, it keeps its line (`strikeTurn` bends it only on the way in).
@@ -521,7 +524,7 @@ Add to this file, not CLAUDE.md, when you change this area.
   all legends in them;
   "The route only cares about runestones";
   islands grow): on an island by roster, every kind a night could deal there (the roster's but the island's own kind and placeholders: one each, chosen by the island's own seed, so its shape, land, coast and chart outline are the same every night) gets an area of its own grown out of the island's frontier beside one of its kind's areas, its **pair**: the roomiest such (the biggest circle it holds, up to its legend's need), never beside home, a lake or another legend area;
-  it takes its pair's kind and look (`rules/map.ts`, `map.legendAreas`, `map.isLegendArea`).
+  it takes its pair's kind and look (`rules/map/legendAreas.ts`, `map.legendAreas`, `map.isLegendArea`).
   It's in the buffer (`inBuffer`: no runestone, soundsystem, arena, route stop, creatures or finds of its own), and the island's land and coast grow round it.
   Its legend's circle stands at its heart, every site 50 m off it (`siteGap`: docs/notes/world-art.md **Site gaps**;
   a legend whose area has no room for it moves to another of its kind's areas), sized to fit up to `legendClearing.fit.areaMax` (55 m: the elephant, 83 m asleep, gets what its area holds), clear of the runestones round it;
@@ -600,12 +603,14 @@ The parity, movement ownership, 85 m priority and egg-threshold regressions are 
 
 **Route out and back** (Ed, 2026-11-13: "once it gets to the end of the route, it should turn around and walk back. Once it gets back to the dancefloor, it starts guarding the home area like the home legend"; "I mean the very end of the route, not where the pulse is"; `combat/legend.ts` `friendlyIdle`, `guardPost`; `Creature.journey`).
 A friendly route legend with nothing to fight walks the whole of tonight's route (every planned link, drawn yet or not;
-`frontMetres` no longer stops it) to its last point, turns round, walks it back to its start at home, then takes a guard post in the home area and stays: `guardsHome(c)` (`rules/creatures.ts`) is true for it as for the home legend, so a charging one takes only targets inside home and cannot charge out, spacing holds it, and the game's last boundary puts it back on its post if anything moves it out of home.
-Its stage is `c.journey` (unset: out; `back`; `guard` with the post), saved with the night, so a fight (defend her, then enraged or hunting creatures, both still first at every stage, guarding too) or a restored night picks up where it left off; one befriended near the far end still goes to the end first.
-Choices made by the builder, not Ed: posts are on rings round the home area's middle, the first 36 m out (past the speakers), 12 m a ring, the free slot nearest where it came in, at least 18 m from the home legend's spot and every other post (`GUARD_POSTS`);
-a returned guard, unlike the home legend, keeps its quest-legend standing (it still dances at the win if its quest is done, still takes the 100-letter party egg, and then is no longer a guard);
-a party legend is unchanged, off the route.
-Tests: `combat/friendlyLegend.test.ts`, `friendlyLegendRoute.test.ts`.
+`frontMetres` no longer stops it) to its last point, turns round, walks it back to its start at home, then takes its post in the home area and stays: `guardsHome(c)` (`rules/creatures.ts`) is true for it as for the home legend, so a charging one takes only targets inside home and cannot charge out, spacing holds it, and the game's last boundary puts it back on its post if anything moves it out of home.
+Its stage is `c.journey` (unset: out; `back`; `guard` with the post), saved with the night, so a fight (defend her, then enraged or hunting creatures, both first on the way out and back; guarding, only what is within its own reach, as the home legend) or a restored night picks up where it left off; one befriended near the far end still goes to the end first.
+**Exactly like the home legend** (Ed, 2026-11-15, asked whether the returned legend should keep its ring post, defend her first and take the party egg: "Exactly like the home legend"; and "Both home legends and returned route legends should be invitable in this way."; `rules/homeLegends.ts`, `rules/creatures.ts` `homePost`).
+Its post is where the home legend stands: the next spot the home legend's own seeded rule deals that is 18 m clear of the home legend's and of every other returned legend's (the very spot on the home island, which has no home legend); it no longer defends her first; once on its post it stands where a fight leaves it.
+Both kinds take the party egg's 100 letters, and a home legend let off her leash goes back to guarding (hat off, fighting again): that last, and the 18 m, are the builder's choices, not Ed's.
+Left as they were: a returned legend keeps its quest-legend standing (it still dances at the win if its quest is done, its island is found, its sigil is in its stone's stack).
+`?homelegends=old` (`legends.homeAlike` off) plays the rules before this: ring posts 36 m out and 12 m a ring (`GUARD_POSTS`), walking back to them, defending her first, and a home legend that takes no letters.
+Tests: `combat/friendlyLegend.test.ts`, `friendlyLegendRoute.test.ts`, `homeLegends.test.ts`, `homeGuard.test.ts`.
 
 31 Oct home legend (Ed, playtest item 10): one homeGuard spawns happy in the home area on each kind's island, using map.island.kind, none on the home island.
 It keeps the existing 85 m friendRange and species attacks, never targets kin, never walks the route and never leaves home (charge proposals are checked before movement, spacing holds it fixed, and the final game boundary catches other displacement).

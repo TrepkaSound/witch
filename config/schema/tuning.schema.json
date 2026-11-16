@@ -7660,6 +7660,10 @@
         "partyReach": {
           "type": "number",
           "minimum": 0
+        },
+        "homeAlike": {
+          "type": "boolean",
+          "description": "A friendly route legend back at the dancefloor guards exactly like the island's home legend, and both take the party egg's letters; false (?homelegends=old): as before, the returned one on a ring post 36 m or more out, defending her first, and the home legend taking no letters."
         }
       },
       "required": [
