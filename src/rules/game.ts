@@ -1277,7 +1277,7 @@ function scatterFriends(g: Game, key: string, at: { x: number; z: number }, time
   const free = (x: number, z: number) => !sigilBarred(g, x, z, t) && !looseAt(g.loose, x, z, t) && !looseAt(placed, x, z, t) && isInside(g.map.bounds, x, z, 2);
   // (its clearing: open ground, in its own area, where the trees thin out)
   const open = (x: number, z: number) => g.map.treeWeight(x, z) <= S.open * t.treeDensity && cellKey(g.map.areaOf(g.map.cellSafe(x, z).cell)) === key;
-  // A legend circle's baby's sigil lands in its circle (Ed, 2026-10-28), the rest scatter over the stone's clearing.
+  // A legend circle's baby's sigil lands at its circle's left or right edge (Ed, 2026-10-28, 2026-11-16), the rest scatter over the stone's clearing.
   const inCircle = friends.filter(f => f.c.circle && !f.c.boss), round = friends.filter(f => !inCircle.includes(f));
   const spots = scatterSpots(key, at.x, at.z, round.length, t, free, open);
   const drop = ({ c, slot }: { c: Creature; slot: number }, x: number, z: number, circle: boolean) => {
@@ -1288,16 +1288,16 @@ function scatterFriends(g: Game, key: string, at: { x: number; z: number }, time
   for (const f of inCircle) {
     const k = f.c.circle!, L = g.creatures.find(o => o.boss && !o.gone && Math.abs(o.x - k.legendX) < 1 && Math.abs(o.z - k.legendZ) < 1);
     const near = (x: number, z: number) => [...g.loose, ...placed].some(p => Math.hypot(p.x - x, p.z - z) < t.leash.spacing);
-    const s = circleSpot(k, (L ? bodyRadius(L) : 3) + 1, f.c.id, (x, z) => !sigilBarred(g, x, z, t) && !near(x, z));
+    const s = circleSpot(k, (L ? bodyRadius(L) : 3) + 1, f.c.id, (x, z) => !sigilBarred(g, x, z, t) && !near(x, z), t.legendClearing.sigilSide !== false);
     drop(f, s.x, s.z, true);
   }
   g.leashEvents.push({ kind: "converted", id: -1, key, x: at.x, z: at.z, at: time });
 }
 
 export function joinParty(g: Game, c: Creature, soundsystem: { x: number; z: number }, cell: Cell): void {
-  // A legend's circle's baby dances in its circle, on its open floor (Ed, 2026-10-06: "Happy Circle baby should stay in its
-  // circle, though it can dance there").
-  if (c.circle) { const k = c.circle; danceAt(c, { x: k.x, z: k.z + k.r * 0.3 }, k.r * 0.45); return; }
+  // A legend's circle's baby dances in its circle (Ed, 2026-10-06: "Happy Circle baby should stay in its circle, though it can dance
+  // there"): by its loose sigil at the circle's side (Ed, 2026-11-16: "it can stay near its sigil as normal"), else on its open floor.
+  if (c.circle) { const k = c.circle, s = g.tuning.legendClearing.sigilSide !== false && g.loose.find(p => p.id === c.id && p.to === "circle"); danceAt(c, s ? { x: s.x, z: s.z } : { x: k.x, z: k.z + k.r * 0.3 }, s ? k.r * 0.15 : k.r * 0.45); return; }
   const spot = guestSpot(c, soundsystem, partySpots(g.map, cell, g.tuning));
   if (spot.kind === "soundsystem") { danceAt(c, spot, spot.r); return; }
   // the guests already round this place, and their slots

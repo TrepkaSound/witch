@@ -55,6 +55,9 @@ function compareFights(params: URLSearchParams, tuning: typeof TUNING): void {
   // ?legendhits=old: a legend's attack hits creatures for 10, as before Ed's 2026-11-16 "50 a hit" (tuning legends.hardHits,
   // rules/combat/legendHits.ts), to compare.
   if (params.get("legendhits") === "old") tuning.legends = { ...tuning.legends, hardHits: false };
+  // ?circlesigil=old: a legend circle's baby's loose sigil lands by its dancing spot (the middle, a little south), as before Ed's
+  // 2026-11-16 "move it to the left or right edge" (tuning legendClearing.sigilSide, rules/stoneStacks.ts circleSpot), to compare.
+  if (params.get("circlesigil") === "old") tuning.legendClearing = { ...tuning.legendClearing, sigilSide: false };
   // ?treehousetakeoff=old (no fight, but a comparison of the same day's rulings): adults and legends in her stack ground her at the
   // treehouse too, as before Ed's 2026-11-16 "Let her take off from the treehouse" (tuning treehouse.freeTakeOff, rules/leashWeight.ts).
   if (params.get("treehousetakeoff") === "old") tuning.treehouse = { ...tuning.treehouse, freeTakeOff: false };

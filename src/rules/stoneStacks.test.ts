@@ -325,12 +325,14 @@ describe("a stone's conversion by its wave (Ed, 2026-10-28: the same rule as the
   });
 });
 
-describe("a legend circle's baby's sigil (Ed, 2026-10-28: it lands in its circle)", () => {
+describe("a legend circle's baby's sigil (Ed, 2026-10-28: it lands in its circle; 2026-11-16: at its left or right edge)", () => {
   /** Its circle's baby lies in its circle, clear of the legend, flagged for the view; the others by the stone, unflagged. */
   const check = (g: Game, key: string, stone: { x: number; z: number }) => {
     const b = own(g, key).find(c => c.circle && !c.boss && c.loose)!, k = b.circle!, p = g.loose.find(q => q.id === b.id)!;
     expect(p.to).toBe("circle");
     expect(Math.hypot(p.x - k.x, p.z - k.z)).toBeLessThan(k.r);
+    expect(Math.abs(p.x - k.x)).toBeGreaterThan(k.r * 0.6); // (at its left or right edge: Ed, 2026-11-16; circleSpot.test.ts)
+    expect(b.dancing).toBe(true); expect(Math.hypot(b.anchorX - p.x, b.anchorZ - p.z)).toBeLessThan(1e-6); expect(b.range).toBeLessThanOrEqual(k.r * 0.15 + 1e-6); // (its baby dances by it: Ed, 2026-11-16, "it can stay near its sigil as normal")
     expect(Math.hypot(p.x - k.legendX, p.z - k.legendZ)).toBeGreaterThan(2);
     const others = g.loose.filter(q => q.id !== b.id && own(g, key).some(c => c.id === q.id && !c.boss));
     expect(others.length).toBeGreaterThan(0);

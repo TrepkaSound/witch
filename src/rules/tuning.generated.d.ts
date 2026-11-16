@@ -375,6 +375,7 @@ export type SchemaTuning = {
       "max": number;
       "areaMax": number;
     };
+    "sigilSide"?: boolean;
     "species": {
       [key: string]: number;
     };
