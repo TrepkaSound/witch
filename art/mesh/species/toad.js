@@ -54,4 +54,4 @@ const toad = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. */
-export const MESH = { id: "toad", heights: [33, 50, 82, 232], gait: "bound", plans: toad };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "toad", heights: [33, 50, 82, 232], gait: "bound", plans: toad });

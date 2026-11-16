@@ -23,7 +23,7 @@ const digger = (C, o) => quad({ C, hind: { len: 0.24, thick: 2.0, ...o.hind }, f
  *  below) while the small foreleg under it does the planted stepping: riding the leg's own upper bone, as they first did, the
  *  claws stabbed down through the ground at every stride. */
 // (Ed, 2026-11-12: "the mole's hands can mostly be the same colour as its fur": the hand is its fur's paler shade, only the claws pale)
-const spades = (q, size, claw, clawLen = 1, skin = MOLE.belly) => { const lofts = [], cones = [], bones = [];
+const spades = (q, size, claw, clawLen = 1, skin = MOLE.belly) => { const lofts = /** @type {import("../types").Loft[]} */ ([]), cones = /** @type {import("../types").Cone[]} */ ([]), bones = /** @type {import("../types").Bone[]} */ ([]);
   for (const s of [1, -1]) { const r = q.R[4], rad = 0.07 * size, c = [(r.rx + rad * 0.75) * s, 0.03 * size + 0.01, r.at[2] + rad * 0.9], bone = s > 0 ? "spadeL" : "spadeR";
     bones.push([bone, [r.rx * 0.6 * s, c[1], r.at[2]], "chest"]);
     lofts.push(...ball(bone, c, { r: rad, squash: 0.32, colour: skin, sides: 8 }).lofts);
@@ -78,4 +78,4 @@ const asleep = make => () => { const p = make(); p.gait.lie = { fore: [-0.3, 0.1
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. */
-export const MESH = { id: "mole", heights: [45, 67, 95, 323], gait: "trot", plans: { baby: asleep(mole.baby), young: asleep(mole.young), adult: asleep(mole.adult), legend: asleep(mole.legend) } };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "mole", heights: [45, 67, 95, 323], gait: "trot", plans: { baby: asleep(mole.baby), young: asleep(mole.young), adult: asleep(mole.adult), legend: asleep(mole.legend) } });

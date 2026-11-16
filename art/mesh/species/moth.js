@@ -19,8 +19,8 @@ function mothOf(name, o) {
   const { fly = 0.3, k = 1, wing = 1, C = {}, bands = 2, eyes, veins, seconds = 0.5, chest = 1.1, skull = 0.9, fur = {}, plume = 1, feeler = 1 } = o;
   const coat = C.fur ?? FUR, pale = C.pale ?? CREAM, ground = C.ground ?? DUSK, band = C.band ?? BAND, dark = C.dark ?? DARK;
   const b = insect({ fly, k, chest, skull, C: { thorax: coat, head: C.head ?? coat, eye: C.eye ?? "#0c0a09", eyeGlow: !!o.eyeGlow, leg: dark, feeler: C.feeler ?? dark }, eye: { r: 0.8 }, abdomen: { len: 0.8, fat: 0.62, rings: 6, colour: i => (i % 2 ? coat : pale), ...o.abdomen }, legs: { len: 0.75 }, feelers: { len: feeler } }), { P } = b;
-  const wings = [], lofts = [], cones = [], bones = [];
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) {
+  const wings = [], lofts = /** @type {import("../types").Loft[]} */ ([]), cones = /** @type {import("../types").Cone[]} */ ([]), bones = /** @type {import("../types").Bone[]} */ ([]);
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) {
     const fore = `wingf${tag}`, hind = `wingh${tag}`, fr = P(0.035 * s, 0.12, 0.05), hr = P(0.035 * s, 0.115, -0.005);
     bones.push([fore, fr, "thorax"], [hind, hr, "thorax"]); wings.push({ bone: fore, s }, { bone: hind, s, phase: -0.3 });
     // (a moth's forewing: a long triangle, broadest near its tip; its hind wing short and round, mostly hidden under the fore one at rest)
@@ -41,8 +41,8 @@ function mothOf(name, o) {
     ...tufts(thorax(-0.06), "thorax", { n: Math.max(3, (fur.n ?? 4) - 1), a0: 0.3, a1: 2.4, long: (fur.long ?? 0.05) * k, sweep: 0.7, droop: 0.1, r: 0.028 * k, lock: true, colour: () => coat, tip: () => fur.tip ?? pale }));
   // (asleep: its wings laid back along its body and sloped down each side, the fore pair over the hind: a tent)
   const nap = ({ rots }) => { for (const w of wings) rots[w.bone] = /^wingf/.test(w.bone) ? [0, w.s * 1.25, -w.s * 0.62] : [0, w.s * 0.8, -w.s * 0.5]; };
-  return { name, bones: [...b.bones, ...bones], lofts: [...b.lofts, ...lofts], cones: [...b.cones, ...cones], armour: o.armour ?? [], hover: fly * k,
-    gait: hovers(wings, { beats: 2, mid: 0.2, amp: 0.55, seconds, bob: 0.025 * k, more: b.sways, sleep: "tent", nap }) };
+  return /** @satisfies {import("../types").Plan} */ ({ name, bones: [...b.bones, ...bones], lofts: [...b.lofts, ...lofts], cones: [...b.cones, ...cones], armour: o.armour ?? [], hover: fly * k,
+    gait: hovers(wings, { beats: 2, mid: 0.2, amp: 0.55, seconds, bob: 0.025 * k, more: b.sways, sleep: "tent", nap }) });
 }
 const moth = {
   baby: () => mothOf("moth-baby", { fly: 0.22, k: 0.9, wing: 0.6, bands: 0, chest: 1.25, skull: 1, C: { fur: "#cdbb9c", pale: "#efe6d2", ground: "#b7a58b", band: "#b7a58b", hind: "#cdbb9c", dark: "#5a4a3a" }, abdomen: { len: 0.55, fat: 0.7 }, feeler: 0.6, plume: 0.7, barbs: 3, fur: { n: 4, long: 0.06, tip: "#fbf6ea" }, seconds: 0.4 }),
@@ -58,4 +58,4 @@ const moth = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette as its plan draws it, wings out, turned towards us: its generated drawing's
  *  heights, Ed, 2026-11-12, "keep the sizes") (on the bench: src/rules/kinds.ts BENCH); plans, each level's build. */
-export const MESH = { id: "moth", heights: [29, 46, 69, 226], gait: "fly", plans: moth };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "moth", heights: [29, 46, 69, 226], gait: "fly", plans: moth });

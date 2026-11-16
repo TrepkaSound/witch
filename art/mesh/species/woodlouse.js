@@ -20,13 +20,13 @@ function woodlouse(name, o) {
   const skin = [{ at: [0, yc - RY * 0.2, -L / 2 - seg * 0.25], rx: RX * 0.16, ry: RY * 0.2, bone: name_(0), colour: C.coat }];
   for (let i = 0; i < n; i++) skin.push(plate(i, 0.04, 1.06), plate(i, 0.98, 0.95));
   const neck = skin.length - 1; skin.push({ at: [0, yc - RY * 0.25, L / 2 + seg * 0.2], rx: RX * 0.4, ry: RY * 0.42, bone: "head", colour: C.head ?? C.coat }, { at: [0, yc - RY * 0.4, L / 2 + seg * 0.55], rx: RX * 0.16, ry: RY * 0.2, bone: "head", colour: C.head ?? C.coat });
-  const lofts = [{ name: "skin", sides: 8, up: [0, 1, 0], rings: skin }], cones = [], hy = yc - RY * 0.2, hz = L / 2 + seg * 0.3;
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) {
+  const lofts = /** @type {import("../types").Loft[]} */ ([{ name: "skin", sides: 8, up: [0, 1, 0], rings: skin }]), cones = [], hy = yc - RY * 0.2, hz = L / 2 + seg * 0.3;
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) {
     cones.push({ at: [RX * 0.3 * s, hy + RY * 0.2, hz - seg * 0.1], rx: 0.012 * k, ry: 0.012 * k, tip: [RX * 0.42 * s, hy + RY * 0.3, hz], bone: "head", colour: o.eye ?? "#0c0a09", glow: !!o.eyeGlow, tag: "eye", up: [0, 1, 0], sides: 4, bulge: 0.8 });
     // feelers: out and forward, an elbow in them on the grown; a legend's long whips
     const a = [RX * 0.22 * s, hy, hz + seg * 0.15], F = 0.11 * k * feelers, e = [a[0] + s * F * 0.55, a[1] + F * 0.35, a[2] + F * 0.5], tip = [e[0] + s * F * 0.5, e[1] - F * (jointed ? 0.2 : -0.1), e[2] + F * 0.75];
     bones.push([`ant${tag}`, a, "head"]);
-    lofts.push({ sides: 3, up: [0, 1, 0], rings: [[a, 1], [e, jointed ? 1.1 : 0.8], [tip, 0.35], ...(o.whip ? [[[tip[0] + s * F * 0.5, tip[1] + F * 0.3, tip[2] + F * 0.1], 0.15]] : [])].map(([at, f]) => ({ at, rx: 0.008 * k * f, ry: 0.008 * k * f, bone: `ant${tag}`, colour: C.leg })) });
+    lofts.push({ sides: 3, up: [0, 1, 0], rings: /** @type {[number[], number][]} */ ([[a, 1], [e, jointed ? 1.1 : 0.8], [tip, 0.35], ...(o.whip ? [[[tip[0] + s * F * 0.5, tip[1] + F * 0.3, tip[2] + F * 0.1], 0.15]] : [])]).map(([at, f]) => ({ at, rx: 0.008 * k * f, ry: 0.008 * k * f, bone: `ant${tag}`, colour: C.leg })) });
     if (spikes) cones.push({ at: [RX * 0.14 * s, yc - RY * 0.2, -L / 2 - seg * 0.1], rx: 0.012 * k, ry: 0.01 * k, tip: [RX * 0.3 * s, yc - RY * 0.1, -L / 2 - seg * (0.3 + 0.9 * spikes)], bone: name_(0), colour: C.leg, up: [0, 1, 0], sides: 3 });
     // (a legend's shields: a spike standing off the lower edge of every plate)
     if (edge) for (let i = 0; i < n; i++) { const p = skin[1 + 2 * i], an = 1.75; cones.push({ at: [Math.sin(an) * p.rx * 0.95 * s, yc + Math.cos(an) * p.ry * 0.95, p.at[2] + seg * 0.3], rx: 0.016 * k, ry: 0.012 * k, tip: [Math.sin(an) * (p.rx + 0.05 * k * (edge.long ?? 1)) * s, yc + Math.cos(an) * p.ry - 0.012 * k, p.at[2] - seg * 0.1], bone: p.bone, colour: edge.colour ?? C.coat, tipColour: edge.tip, up: [0, 0, 1], sides: 3 }); }
@@ -66,4 +66,4 @@ const lice = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. It rolls into a ball to sleep at every level. */
-export const MESH = { id: "woodlouse", heights: [28, 45, 73, 219], gait: "walk", legs: [10, 14], plans: lice };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "woodlouse", heights: [28, 45, 73, 219], gait: "walk", legs: [10, 14], plans: lice });

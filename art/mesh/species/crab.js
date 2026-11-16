@@ -16,9 +16,9 @@ function crab(name, o) {
   // its shell: one skin from its one side to its other, widest and furthest forward in its middle
   const ring = (t, g, h) => ({ at: [RX * 0.35 * (1 - g), y0, W * t], rx: RX * g, ry: RY * h, bone: "body", colour: cy => (cy < -0.45 ? C.belly : cy > 0.8 ? C.top ?? C.shell : C.shell) });
   const skin = [ring(-1, 0.2, 0.25), ring(-0.9, 0.62, 0.7), ring(-0.55, 0.92, 0.95), ring(0, 1, 1), ring(0.55, 0.92, 0.95), ring(0.9, 0.62, 0.7), ring(1, 0.2, 0.25)];
-  const bones = [["body", [0, y0, 0], null], ["head", [-RX * 0.8, y0, 0], "body"]], lofts = [{ name: "skin", sides: 8, up: [0, 1, 0], rings: skin }], cones = [];
+  const bones = [["body", [0, y0, 0], null], ["head", [-RX * 0.8, y0, 0], "body"]], lofts = /** @type {import("../types").Loft[]} */ ([{ name: "skin", sides: 8, up: [0, 1, 0], rings: skin }]), cones = [];
   // its eyes on stalks at the front of its shell
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) { const a = [-RX * 0.8, y0 + RY * 0.55, W * 0.3 * s], H = 0.07 * k * stalk, b = `eye${tag}`, top = [a[0] - 0.006 * k, a[1] + H, a[2]];
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) { const a = [-RX * 0.8, y0 + RY * 0.55, W * 0.3 * s], H = 0.07 * k * stalk, b = `eye${tag}`, top = [a[0] - 0.006 * k, a[1] + H, a[2]];
     bones.push([b, a, "head"]);
     lofts.push({ sides: 4, up: [0, 0, 1], rings: [[0, 1], [0.6, 0.8], [0.85, 1.5], [1.1, 1.5], [1.25, 0.6]].map(([f, r], i) => ({ at: [a[0] - 0.006 * k * f, a[1] + H * f, a[2]], rx: 0.011 * k * r, ry: 0.011 * k * r, bone: b, colour: i < 2 ? C.shell : eyes.colour ?? "#0c0a09", glow: i >= 2 && !!eyes.glow })) });
     cones.push({ at: [top[0] - 0.006 * k, top[1], top[2]], rx: 0.012 * k, ry: 0.014 * k, tip: [top[0] - 0.02 * k, top[1], top[2]], bone: b, colour: eyes.colour ?? "#0c0a09", glow: !!eyes.glow, tag: "eye", up: [0, 1, 0], sides: 4, bulge: 0.8 }); }
@@ -63,4 +63,4 @@ const crabs = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. It goes sideways. It sleeps settled on its belly at every level, legs folded in, claws across its face. */
-export const MESH = { id: "crab", heights: [34, 50, 79, 228], gait: "trot", legs: [8], plans: crabs };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "crab", heights: [34, 50, 79, 228], gait: "trot", legs: [8], plans: crabs });

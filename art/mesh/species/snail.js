@@ -32,14 +32,14 @@ function shell(o) {
 /** A snail: body (its foot's length, its skin's colours), stalks (their length, the eyes' size and colour, lit or not), shell. */
 function snail(name, o) {
   const { len = 1, fat = 1, C, stalk = 1, eye = 1, frill = 0, shell: sh, gait = {} } = o, z = v => v * len;
-  const bones = [["root", [0, 0, 0], null], ["tailb", [0, 0.03, z(-0.2)], "root"], ["mid", [0, 0.04, z(0.0)], "root"], ["front", [0, 0.06, z(0.17)], "mid"], ["head", [0, 0.12 * fat, z(0.25)], "front"], ["shell", [0, 0.1 * fat, z(-0.03)], "mid"]];
-  const skin = cy => (cy < -0.5 ? C.sole : C.skin), foot = [[-0.36, 0.014, 0.008, 0.006, "tailb"], [-0.27, 0.03, 0.06, 0.024, "tailb"], [-0.1, 0.045, 0.1, 0.04, "tailb"], [0.07, 0.05, 0.098, 0.046, "mid"], [0.18, 0.075, 0.072, 0.052, "front"], [0.245, 0.125, 0.056, 0.05, "head"], [0.3, 0.14, 0.04, 0.036, "head"], [0.33, 0.14, 0.012, 0.012, "head"]]
+  const bones = /** @satisfies {import("../types").Bone[]} */ ([["root", [0, 0, 0], null], ["tailb", [0, 0.03, z(-0.2)], "root"], ["mid", [0, 0.04, z(0.0)], "root"], ["front", [0, 0.06, z(0.17)], "mid"], ["head", [0, 0.12 * fat, z(0.25)], "front"], ["shell", [0, 0.1 * fat, z(-0.03)], "mid"]]);
+  const skin = cy => (cy < -0.5 ? C.sole : C.skin), foot = /** @satisfies {[number, number, number, number, string][]} */ ([[-0.36, 0.014, 0.008, 0.006, "tailb"], [-0.27, 0.03, 0.06, 0.024, "tailb"], [-0.1, 0.045, 0.1, 0.04, "tailb"], [0.07, 0.05, 0.098, 0.046, "mid"], [0.18, 0.075, 0.072, 0.052, "front"], [0.245, 0.125, 0.056, 0.05, "head"], [0.3, 0.14, 0.04, 0.036, "head"], [0.33, 0.14, 0.012, 0.012, "head"]])
     .map(([zz, y, rx, ry, bone]) => ({ at: [0, y * fat, z(zz)], rx: rx * fat, ry: ry * fat, bone, colour: skin }));
   const lofts = [{ sides: 8, up: [0, 1, 0], rings: foot }], cones = [], H = [0, 0.15 * fat, z(0.265)];
   // the mantle's frill: flat lobes standing out along its sides
   for (let i = 0; i < frill; i++) for (const s of [1, -1]) { const t = -0.22 + (i / Math.max(1, frill - 1)) * 0.36; cones.push({ at: [0.08 * fat * s, 0.035 * fat, z(t)], rx: 0.03 * fat, ry: 0.01 * fat, tip: [0.125 * fat * s, 0.012, z(t - 0.015)], bone: t < -0.05 ? "tailb" : "mid", colour: C.skin, tipColour: C.frill ?? C.sole, split: 0.93, up: [0, 0, 1], sides: 4 }); }
   // the eye stalks, two bones each so they sway, an eye on each tip; and the two feelers under them
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) {
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) {
     const b0 = [0.028 * fat * s, H[1] + 0.02 * fat, H[2]], L = 0.14 * stalk, mid = [b0[0] + 0.02 * s * stalk, b0[1] + L * 0.55, b0[2] + L * 0.12], tip = [b0[0] + 0.045 * s * stalk, b0[1] + L, b0[2] + L * 0.18];
     bones.push([`stalk${tag}1`, b0, "head"], [`stalk${tag}2`, mid, `stalk${tag}1`]);
     lofts.push({ sides: 5, up: [0, 0, 1], rings: [{ at: b0, rx: 0.016 * fat, ry: 0.016 * fat, bone: `stalk${tag}1`, colour: C.skin }, { at: mid, rx: 0.012 * fat, ry: 0.012 * fat, bone: `stalk${tag}1`, colour: C.skin }, { at: tip, rx: 0.011 * fat, ry: 0.011 * fat, bone: `stalk${tag}2`, colour: C.skin }] });
@@ -48,12 +48,12 @@ function snail(name, o) {
   }
   const S = shell({ at: [0, (0.1 + sh.lift) * fat, z(-0.04)], ...sh });
   const sway = (o.sway ?? 0.12), T = Math.PI * 2;
-  return { name, bones, lofts: [...lofts, ...S.lofts, ...(o.lofts ?? [])], cones: [...cones, ...S.cones, ...(o.cones ?? [])], armour: o.armour ?? [], anchors: { neck: 4, skull: 5 }, // (its collar round its neck, a hat on its head: art/mesh/gear.js)
+  return /** @satisfies {import("../types").Plan} */ ({ name, bones, lofts: [...lofts, ...S.lofts, ...(o.lofts ?? [])], cones: [...cones, ...S.cones, ...(o.cones ?? [])], armour: o.armour ?? [], anchors: { neck: 4, skull: 5 }, // (its collar round its neck, a hat on its head: art/mesh/gear.js)
     // it glides: a ripple runs up its foot, its shell rocks behind it, its stalks feel about
     gait: { type: "glide", seconds: 1.6, root: "root", bob: 0, legs: [], sleep: "shell", ...gait, extra: [
       { bone: "tailb", pos: u => [0, 0.004 * Math.sin(T * 2 * u), 0.012 * len * Math.sin(T * 2 * u)] }, { bone: "mid", pos: u => [0, 0.004 * Math.sin(T * 2 * u + 1.5), 0.01 * len * Math.sin(T * 2 * u + 1.5)] }, { bone: "front", pos: u => [0, 0.004 * Math.sin(T * 2 * u + 3), 0.012 * len * Math.sin(T * 2 * u + 3)] },
       { bone: "shell", rot: u => [0.035 * Math.sin(T * 2 * u + 2), 0, 0.05 * Math.sin(T * u)] }, { bone: "head", rot: u => [0.05 * Math.sin(T * u + 1), 0.08 * Math.sin(T * u), 0] },
-      ...["L", "R"].flatMap((tag, n) => [{ bone: `stalk${tag}1`, rot: u => [sway * Math.sin(T * u + n * 2.2), 0, sway * 0.8 * Math.sin(T * u * 2 + n * 1.3)] }, { bone: `stalk${tag}2`, rot: u => [sway * 1.3 * Math.sin(T * u + n * 2.2 + 0.9), 0, sway * Math.sin(T * u * 2 + n * 1.3 + 0.8)] }])] } };
+      ...["L", "R"].flatMap((tag, n) => [{ bone: `stalk${tag}1`, rot: u => [sway * Math.sin(T * u + n * 2.2), 0, sway * 0.8 * Math.sin(T * u * 2 + n * 1.3)] }, { bone: `stalk${tag}2`, rot: u => [sway * 1.3 * Math.sin(T * u + n * 2.2 + 0.9), 0, sway * Math.sin(T * u * 2 + n * 1.3 + 0.8)] }])] } });
 }
 
 const SKIN = { skin: "#9c8a78", sole: "#c9b9a4", eye: "#17120f" }, band2 = (a, b, every = 2) => (t, i) => (Math.floor(i / every) % 2 ? a : b);
@@ -77,4 +77,4 @@ const snails = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (its whole silhouette, standing still, turned towards us: the sizes Ed passed, 2026-11-12, "keep the
  *  sizes"); plans, each level's build. */
-export const MESH = { id: "snail", heights: [35, 54, 73, 222], gait: "glide", plans: snails };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "snail", heights: [35, 54, 73, 222], gait: "glide", plans: snails });

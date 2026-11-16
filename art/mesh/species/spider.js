@@ -15,11 +15,11 @@ function spider(name, o) {
   const A = (t, r) => ({ at: [0, y0 + (0.02 + tilt * AL * (1 - t) * 3) * k, (-0.07 - 0.3 * AL * (1 - t)) * k], rx: 0.13 * fat * r * k, ry: 0.12 * fat * r * k, bone: "abd", colour: cy => (cy < -0.6 ? C.belly : C.abdomen ?? C.coat) });
   const B = (z, rx, ry, bone, dy = 0) => ({ at: [0, y0 + dy * k, z * k], rx: rx * k, ry: ry * k, bone, colour: cy => (cy < -0.6 ? C.belly : C.coat) });
   const skin = [A(0, 0.12), A(0.14, 0.62), A(0.4, 1), A(0.68, 0.97), A(0.9, 0.6), A(1, 0.4), B(-0.055, 0.07, 0.05, "body"), B(0, 0.105, 0.066, "body"), B(0.06, 0.092, 0.06, "body"), B(0.1, 0.064, 0.048, "head", -0.004), B(0.135, 0.03, 0.026, "head", -0.01)];
-  const bones = [["body", [0, y0, 0], null], ["abd", [0, y0 + 0.02 * k, -0.07 * k], "body"], ["head", [0, y0, 0.085 * k], "body"]], lofts = [{ name: "skin", sides: 8, up: [0, 1, 0], rings: skin }], cones = [];
+  const bones = [["body", [0, y0, 0], null], ["abd", [0, y0 + 0.02 * k, -0.07 * k], "body"], ["head", [0, y0, 0.085 * k], "body"]], lofts = /** @type {import("../types").Loft[]} */ ([{ name: "skin", sides: 8, up: [0, 1, 0], rings: skin }]), cones = [];
   // (fur standing off its abdomen)
   if (fur) for (const i of [1, 2, 3]) cones.push(...tufts(skin[i], "abd", { n: fur.n ?? 4, a0: 0.25, a1: 2.3, long: (fur.long ?? 0.06) * k, sweep: 0.55, droop: 0, r: 0.026 * k * fat, lock: true, colour: () => C.abdomen ?? C.coat, tip: () => fur.tip }));
   const hy = y0 - 0.006 * k;
-  for (const [s, tag] of [[1, "L"], [-1, "R"]]) {
+  for (const [s, tag] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) {
     // its eyes: a big pair in front (what shuts asleep), small ones beside them
     cones.push({ at: [0.022 * k * s, hy + 0.03 * k, 0.115 * k], rx: 0.013 * k * (eyes.size ?? 1), ry: 0.013 * k * (eyes.size ?? 1), tip: [0.026 * k * s, hy + 0.036 * k, 0.133 * k], bone: "head", colour: eyes.colour ?? "#0c0a09", glow: !!eyes.glow, tag: "eye", up: [0, 1, 0], sides: 5, bulge: 0.8 });
     for (const [dx, dz] of [[0.045, 0.1], [0.05, 0.08]]) cones.push({ at: [dx * k * s, hy + 0.034 * k, dz * k], rx: 0.008 * k, ry: 0.008 * k, tip: [(dx + 0.012) * k * s, hy + 0.044 * k, (dz + 0.006) * k], bone: "head", colour: eyes.colour ?? "#0c0a09", glow: !!eyes.glow, up: [0, 1, 0], sides: 4, bulge: 0.8 });
@@ -58,4 +58,4 @@ const spiders = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. It sleeps on its belly with its legs drawn in, knees up, at every level: it can't curl. */
-export const MESH = { id: "spider", heights: [33, 50, 78, 426], gait: "trot", legs: [8], plans: spiders };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "spider", heights: [33, 50, 78, 426], gait: "trot", legs: [8], plans: spiders });

@@ -7,7 +7,7 @@ import * as MESH_SPECIES from "./species/index.js"; // (every kind by name; a mo
 export const MESH_LEVELS = ["baby", "young", "adult", "legend"];
 /** A kind's four plans, baby to legend. One that curls up to sleep its own way says so with `curl` (art/mesh/gear.js `napping` reads
  *  gait.curl), given to each of its plans here. */
-export const MESH_PLANS = Object.fromEntries(Object.entries(MESH_SPECIES).map(([species, m]) => [species, MESH_LEVELS.map(l => (m.curl ? () => { const p = m.plans[l](); p.gait.curl = m.curl; return p; } : m.plans[l]))]));
+export const MESH_PLANS = Object.fromEntries(/** @type {[string, import("./types").MeshSpecies][]} */ (Object.entries(MESH_SPECIES)).map(([species, m]) => [species, MESH_LEVELS.map(l => (m.curl ? () => { const p = m.plans[l](); p.gait.curl = m.curl; return p; } : m.plans[l]))]));
 /** How tall each stands, baby to legend, in art pixels: its whole silhouette, standing still, turned towards us (Ed, 2026-11-12:
  *  "keep the sizes": today's drawn height of the kind at each level, which `node tools/creature-mesh/sizes.mjs <kind>` measures).
  *  Home's are the sizes Ed looked at the ladders at and passed ("Ok these are good", 2026-11-12). */

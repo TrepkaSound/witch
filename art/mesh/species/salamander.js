@@ -54,4 +54,4 @@ const salamander = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build; curl, how it curls up to sleep (art/mesh/gear.js `napping` reads gait.curl): long, it turns further so its ring closes. */
-export const MESH = { id: "salamander", heights: [33, 51, 74, 260], gait: "trot", curl: { turn: 4.4 }, plans: salamander };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "salamander", heights: [33, 51, 74, 260], gait: "trot", curl: { turn: 4.4 }, plans: salamander });

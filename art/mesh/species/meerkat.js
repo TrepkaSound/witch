@@ -57,4 +57,4 @@ const meerkat = {
 /** This kind's mesh (art/mesh/species/index.js lists them, made by tools/creature-mesh/index.mjs): heights, how tall it stands, baby
  *  to legend, in art pixels (today's drawing's, from tools/creature-mesh/sizes.mjs: Ed, 2026-11-12, "keep the sizes"); plans, each
  *  level's build. */
-export const MESH = { id: "meerkat", heights: [40, 62, 88, 234], gait: "bound", plans: meerkat };
+export const MESH = /** @satisfies {import("../types").MeshSpecies} */ ({ id: "meerkat", heights: [40, 62, 88, 234], gait: "bound", plans: meerkat });
