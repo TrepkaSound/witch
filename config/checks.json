@@ -16,6 +16,16 @@
       "note": "docs/notes/testing.md"
     },
     {
+      "id": "art-types",
+      "command": "npm run typecheck:art",
+      "what": "TypeScript over art/'s JavaScript (tsconfig.art.json: checkJs, strict off; art/mesh/types.d.ts), failing on errors outside the left-out files (tools/checks/art-types.mjs LEFT_OUT); about 10 seconds.",
+      "paths": ["art/**/*.js", "art/**/*.mjs", "art/**/*.d.ts", "tsconfig.art.json", "tools/checks/art-types.mjs"],
+      "runner": "builder",
+      "ci": "every PR (check-work: Art type check)",
+      "from": "Ed's go, 2026-11-15 (quality plan item f: \"Type-check the art code\")",
+      "note": "docs/notes/art-checks.md"
+    },
+    {
       "id": "lint",
       "command": "npx eslint --no-warn-ignored --no-error-on-unmatched-pattern {files}",
       "what": "ESLint on the files you changed (eslint.config.js: unhandled promises, eqeqeq, dead else-ifs and a few more); npm run lint is the whole of src/ and tools/, about a minute.",

@@ -46,5 +46,5 @@ export function featherwing(tag, s, shoulder, o = {}) {
   const fly = ({ K = turnOf(0, 0, 0), mid = 0.64, amp = 0.4, lag = 0.35, beats = 1, phase = 0, sweep = 0 } = {}) => { const Kt = flipped(K), T = Math.PI * 2;
     const G = (i, u) => times(times(turnOf(0, s * sweep * i, 0), turnOf(0, 0, s * (mid + amp * Math.sin(T * beats * u + phase - lag * i)))), flipped(W[i]));
     return names.map((bone, i) => ({ bone, rot: u => eulerOf(i ? times(flipped(G(i - 1, u)), G(i, u)) : times(Kt, G(0, u))) })); };
-  return { bones: names.map((n, i) => [n, Jf[i], i ? names[i - 1] : parent]), lofts, cones, names, fly };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: names.map((n, i) => [n, Jf[i], i ? names[i - 1] : parent]), lofts, cones, names, fly });
 }

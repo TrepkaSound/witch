@@ -26,5 +26,5 @@ export function backPlates(stations, o = {}) {
     const prof = chipped ? [[0, 0.5, rim], [0.5, 1, colour], [0.86, 0.85, colour], [1, 0.5, rim]] : [[0, 0.5, rim], [0.4, 1, colour], [0.76, 0.66, colour], [1, 0.06, tip]];
     lofts.push({ sides, up, rings: prof.map(([f, wd, c]) => ({ at: p(f), rx: L * wd, ry: w, bone: st.bone, colour: c, plain: true, up })) });
     if (vein) for (const d of [1, -1]) cones.push({ at: p(0.1, d * w * 1.05), rx: L * 0.2, ry: w * 0.35, tip: p(chipped ? 0.95 : 0.84, d * w * 0.8), bone: st.bone, colour: vein, glow: true, up, sides: 3 }); });
-  return { bones: [], lofts, cones };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones: [], lofts, cones });
 }

@@ -14,8 +14,8 @@ export function trunk(P, o = {}) {
   const { len = 0.3, r = 0.036, tip = 0.4, p0 = 1.25, curl = 0.9, at = [-0.015, 0.2], colour, crease, lip, bones: nb = 4, n = 12, sides = 6, floor = 0.03, name = "trunk", parent = "head" } = o, k = P(1, 0, 0)[0];
   const fat = t => r * k * (1 - (1 - tip) * t ** 0.8);
   const pts = path(P(0, at[0], at[1]), len * k, n, t => { const p = p0 - curl * t * t; return [0, -Math.sin(p), Math.cos(p)]; }).map((p, i) => [p[0], Math.max(p[1], floor + fat(i / n)), p[2]]);
-  const bt = Array.from({ length: nb }, (_, i) => i / nb), bones = bt.map((t, i) => [`${name}${i + 1}`, pts[Math.round(t * n)], i ? `${name}${i}` : parent]);
+  const bt = Array.from({ length: nb }, (_, i) => i / nb), bones = /** @satisfies {import("../types").Bone[]} */ (bt.map((t, i) => [`${name}${i + 1}`, pts[Math.round(t * n)], i ? `${name}${i}` : parent]));
   const bone = t => `${name}${Math.min(nb, Math.max(1, Math.floor(t * nb + 0.5)))}`;
   const rings = pts.map((p, i) => { const t = i / n, proud = !!crease && i % 2 === 1 && i < n; return { at: p, rx: fat(t) * (proud ? 1.07 : 1), ry: fat(t) * (proud ? 1.07 : 1), bone: i ? bone(t) : parent, colour: i >= n - 1 && lip ? lip : proud ? crease : colour, plain: true, up: [1, 0, 0] }; });
-  return { bones, cones: [], lofts: [{ sides, up: [1, 0, 0], rings }], chain: bones.map(b => b[0]), end: pts[n] };
+  return /** @satisfies {import("../types").Pieces} */ ({ bones, cones: [], lofts: [{ sides, up: [1, 0, 0], rings }], chain: bones.map(b => b[0]), end: pts[n] });
 }

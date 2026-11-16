@@ -48,7 +48,7 @@ export function bird(name, o) {
     cones.push({ at: [Tb[0] + Math.sin(a) * tw * 0.6, Tb[1] + (j % 2 ? 0.004 : 0), Tb[2]], rx: tw * 0.55, ry: 0.006, tip: Tb.map((v, i) => v + d[i] * L), bone: "tail1", colour: Tl.colour ?? C.tail ?? C.back, tipColour: Tl.tip ?? Tl.colour ?? C.tail ?? C.back, glow: Tl.lit ? "tip" : false, split: 0.62, bulge: 0.92, up: dorsal, sides: 4 }); }
   const bones = [["root", [0, 0, 0], null], ["pelvis", [0, hip, 0], "root"], ["chest", B(0, 0, Z(0.2)), "pelvis"], ["neck", P0, "chest"], ...(two ? [["neck2", P1, "neck"]] : []), ["head", P2, two ? "neck2" : "neck"], ["tail1", Tb, "pelvis"]];
   const legs = birdlegs({ len: hip, colours: { thigh: C.thigh ?? C.belly ?? C.back, shank: C.shank ?? "#2a2420", toe: C.toe, claw: C.claw }, ...Lg }, Lg.out ?? 0.45 * f, Lg.z ?? 0);
-  const wings = o.wings?.({ B, Z, f }) ?? [[1, "L"], [-1, "R"]].map(([s, tag]) => featherwing(tag, s, B(s * (Wg.out ?? 0.9) * f, (Wg.up ?? 0.12) * f, Z(Wg.z ?? 0.3)), { span: 1.2 * len, chord: 0.42 * len, tilt, colours: { coat: C.wing ?? C.back, flight: C.flight ?? C.wing ?? C.back, tip: C.wingTip, under: C.under }, ...Wg }));
+  const wings = o.wings?.({ B, Z, f }) ?? /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]]).map(([s, tag]) => featherwing(tag, s, B(s * (Wg.out ?? 0.9) * f, (Wg.up ?? 0.12) * f, Z(Wg.z ?? 0.3)), { span: 1.2 * len, chord: 0.42 * len, tilt, colours: { coat: C.wing ?? C.back, flight: C.flight ?? C.wing ?? C.back, tip: C.wingTip, under: C.under }, ...Wg }));
   const parts = [...legs, ...wings], more = o.more?.({ B, Z, Hp, f, hr, rings, wings, legs, tall: P2[1] + hr }) ?? {};
   // ---- how it goes
   const body = { bob: 0.03, pitch: 0.02, roll: 0.03, sway: 0.03, yaw: 0.05, head: 0.9, tail: 0.5, lag: 0.09, wag: 0.04 }, hops = Wk.type === "bound";
@@ -66,7 +66,7 @@ export function bird(name, o) {
   const nap = ({ rots, poss }) => { rots.pelvis = [Rs.lean ?? tilt * 0.3, 0, 0]; const [a, b, c] = Rs.legs ?? [-1.1, 2.2, -1.2];
     for (const l of legs) { rots[l.names[0]] = [a, 0, 0]; rots[l.names[1]] = [b, 0, 0]; rots[l.names[2]] = [c, 0, 0]; }
     rots.neck = Rs.neck ?? [0.2, 0, 0]; if (two) rots.neck2 = Rs.neck2 ?? [0, 0, 0]; rots.head = Rs.head ?? [0.3, 2.4, 0.3]; rots.tail1 = Rs.tail ?? [0, 0, 0]; Rs.more?.(rots, poss); };
-  return { name, bones: [...bones, ...parts.flatMap(p => p.bones), ...(more.bones ?? [])], lofts: [{ sides: 8, up: [0, 1, 0], rings }, ...lofts, ...parts.flatMap(p => p.lofts), ...(more.lofts ?? [])], cones: [...cones, ...parts.flatMap(p => p.cones), ...(more.cones ?? [])], armour: more.armour ?? [],
+  return /** @satisfies {import("../types").Plan} */ ({ name, bones: [...bones, ...parts.flatMap(p => p.bones), ...(more.bones ?? [])], lofts: [{ sides: 8, up: [0, 1, 0], rings }, ...lofts, ...parts.flatMap(p => p.lofts), ...(more.lofts ?? [])], cones: [...cones, ...parts.flatMap(p => p.cones), ...(more.cones ?? [])], armour: more.armour ?? [],
     gait: { type: walk.type, seconds: walk.seconds, root: "pelvis", hips: "pelvis", chest: "chest", neck: "neck", head: "head", legs: [], tails: [["tail1"]], lively, sleep: "roost", nap, paces: { walk, run } },
-    anchors: { neck: 5, skull: 8 } };
+    anchors: { neck: 5, skull: 8 } });
 }

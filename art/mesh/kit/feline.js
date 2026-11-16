@@ -15,7 +15,7 @@ import { tail } from "./tail.js";
 /** A cat's build: kit/quad.js with a cat's head, legs and back to start from; o.body, o.hind, o.fore, o.head and o.ear change
  *  them. Returns quad's { body, skull, legs, root, R, P } and earTip(s): where that side's ear ends (a lynx's tuft stands on it). */
 export function feline({ C, body = {}, hind = {}, fore, head = {}, ear = {} }) {
-  const H = { size: 1.05, muzzle: 0.5, muzzleWide: 1.4, muzzleDeep: 1.25, wide: 1.1, dome: 1.02, cheek: 0, eye: 1.25, nose: 0.9, ...head }, E = { shape: "round", tall: 0.8, wide: 0.95, at: [0.014, -0.008, -0.012], back: C.ear ?? C.coat, inner: C.inner ?? "#d9b7a3", ...ear };
+  const H = { size: 1.05, muzzle: 0.5, muzzleWide: 1.4, muzzleDeep: 1.25, wide: 1.1, dome: 1.02, cheek: 0, eye: 1.25, nose: 0.9, ...head }, E = /** @type {import("../types").Ear} */ ({ shape: "round", tall: 0.8, wide: 0.95, at: [0.014, -0.008, -0.012], back: C.ear ?? C.coat, inner: C.inner ?? "#d9b7a3", ...ear });
   const q = quad({ C, hind: { len: 0.95, thick: 1.2, ...hind }, fore: { len: 0.95, thick: 1.25, ...(fore ?? hind) }, body: { len: 1, girth: 1, deep: 1, tuck: 0.85, neck: [0.12, 0.13], neckThick: 1.15, white: 0.35, ...body }, head: { ...H, ear: E } });
   const [ex = 0, ey = 0, ez = 0] = E.at, t = E.tall;
   return { ...q, earTip: s => q.P((0.048 * H.wide + ex + (0.026 + (E.splay ?? 0) * 0.1) * t) * s, 0.07 * H.dome + ey + 0.16 * t, 0.025 + ez - 0.015) };

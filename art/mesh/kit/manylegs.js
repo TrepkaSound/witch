@@ -12,7 +12,7 @@ import { about, eulerOf } from "./turns.js";
  *  its pair and side, which the timings below read. */
 export function legPairs(spots, o = {}) {
   const out = [], z = o.across === "z";
-  spots.forEach((sp, i) => { for (const [s, side] of [[1, "L"], [-1, "R"]]) { const { at, yaw = 0, ...own } = sp;
+  spots.forEach((sp, i) => { for (const [s, side] of /** @type {[number, string][]} */ ([[1, "L"], [-1, "R"]])) { const { at, yaw = 0, ...own } = sp;
     out.push({ ...jointLeg(`${i}${side}`, z ? [at[0], at[1], at[2] * s] : [at[0] * s, at[1], at[2]], { ...o, ...own, dir: z ? [Math.sin(yaw), Math.cos(yaw) * s] : [Math.cos(yaw) * s, Math.sin(yaw)] }), pair: i, side: s }); } });
   return out;
 }
@@ -41,7 +41,7 @@ const SCUTTLE = { type: "trot", seconds: 0.36, duty: 0.42, reach: 2.6, step: 0.4
 export function scuttles(legs, o = {}) {
   const { walk: w = {}, run: r = {}, timing = sets, type = "trot", fold, ...rest } = o, timed = timing(legs), high = legs.map(l => l.bones[0][1][1] - l.bones[3][1][1]), mean = high.reduce((s, v) => s + v, 0) / high.length, most = Math.min(...legs.map(room));
   const mk = (base, own) => { const p = { ...base, type, ...own, legs: timed, body: { ...base.body, ...own.body } }; p.reach = Math.min(p.reach * mean, most) / mean; return p; }, run = mk(SCUTTLE, r);
-  return { type: run.type, seconds: run.seconds, legs: timed, sleep: "sphinx", nap: folds(fold), give: 0.1, ...rest, paces: { walk: mk(CRAWL, w), run } };
+  return /** @satisfies {import("../types").Gait} */ ({ type: run.type, seconds: run.seconds, legs: timed, sleep: "sphinx", nap: folds(fold), give: 0.1, ...rest, paces: { walk: mk(CRAWL, w), run } });
 }
 
 /** Asleep (a gait's `nap`, which art/mesh/gear.js `napping` calls with the pose it has made): a jointed leg can't go under its
