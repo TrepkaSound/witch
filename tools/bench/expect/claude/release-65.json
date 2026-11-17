@@ -1,0 +1,6 @@
+{
+  "reason": "Release 65: #2117 (claude/skill-commands-prototype): Ed turned the prototypes on by default (2026-11-17: \"Put the switches on by default and then publish\"): tuning skill.on and commands.on are true, ?skill=0 and ?commands=0 turn each off. In the quick bench only openings change the state, and only one creature a seed; commands change nothing there (no command is pressed and nothing is fed), and no picture differs",
+  "rules": {
+    "creatures": "openings on: seed 123's youth hare and seed 165272's youth badger carry poise state and sit after attacking (the badger's sit, the hare's place and hop after it); a probe of the same runs shows turning skill off changes only that one creature, and turning commands off changes nothing"
+  }
+}
