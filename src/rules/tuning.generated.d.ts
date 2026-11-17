@@ -1172,6 +1172,12 @@ export type SchemaTuning = {
     "throw": number;
     "stagger": number;
   };
+  "skill": {
+    "on": boolean;
+  };
+  "commands": {
+    "on": boolean;
+  };
   "creatureMomentum": {
     "on": boolean;
     "turn": number;
