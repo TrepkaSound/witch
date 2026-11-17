@@ -114,9 +114,9 @@ Each level has a stronger action and more charges (Ed, 2026-11-17).
 
 | Action size | Examples | Youth (holds / per berry) | Adult | Legend |
 |---|---|---|---|---|
-| small, quick | Bonk, Snipe, Buzz, Spit | 8 / 4 | small | 16 |
-| ordinary | most Strikes, Snares, Daze | big | ordinary | 12 |
-| big, long | the Guards that throw, Pack call, Lift, Mend, Whirlpool | 4 / 3 | big | 9 |
+| small, quick | Bonk, Snipe, Buzz, Spit | 8 / 4 | 12 / 6 | 16 |
+| ordinary | most Strikes, Snares, Daze | 6 / 3 | 9 / 4 | 12 |
+| big, long | the Guards that throw, Pack call, Lift, Mend, Whirlpool | 4 / 3 | 6 / 3 | 9 |
 
 Legends never eat (`src/rules/berries.ts#feedRoom`; Ed, 2026-10-04: legends are never grown). How a legend's charges come back is question 6.
 
