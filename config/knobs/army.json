@@ -838,6 +838,56 @@
         "docs/plans/follower-buffs-and-challenge-areas.md"
       ],
       "notes": "groups: each group's retreats (a kind's art/creatures/<id>/creature.js retreat decides its group). legend: the stacks a leashed legend gives (no berries needed). pips: max an adult holds, life seconds each (draining one at a time while it follows her; parked ones keep theirs), warn seconds before one fades it twinkles in her stack, start pips a new adult has before it has eaten (1). Per stack: climbers.dash more dash charges; darters.speed her speed times 1 + it; stalkers.speed and stalkers.range her 💌s' speed and range times 1 + each; heavies.shots more ways her shots go round her, clockwise, her fire rate times the ways (1 stack: a second shot opposite between each, 2: three at 120° at 3×); packHunters.rate her fire rate times 1 + it and packHunters.spread degrees more inaccuracy; shells.chain more chain hops, on top of the bag's. icons: blue, a redundant icon's colour (another of its kind gives the buff); pink, an unfed adult's, twinkling once a twinkle s."
+    },
+    "skill": {
+      "what": "Openings and poise, a prototype (off with ?skill=0): creatures sit after attacking and stagger when enough letters break their poise.",
+      "notes": "After it attacks a creature sits still for a moment; enough letters break its poise (a wind-up cancelled, a stagger, then a daze that slows it); an amber outline shows when it is open. For the hare, badger and dormouse; their numbers are config/combat-skill.json. On by default; off, the game as it was, with ?skill=0 (src/app/linkParams.ts). A letter is always one hit; poise is counted beside the meter, never in it. The design: docs/plans/combat-skill-and-commands.md, section 5.",
+      "decisions": [
+        {
+          "by": "Ed",
+          "date": "2026-11-17",
+          "quote": "go for the prototype",
+          "rest": "the first slice of docs/plans/combat-skill-and-commands.md behind two switches, each off by default at first"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-17",
+          "quote": "Put the switches on by default and then publish",
+          "rest": "on by default; ?skill=0 turns it off"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-17",
+          "quote": "I don't think one letter should ever count for more than one hit. A hit is a letter."
+        }
+      ]
+    },
+    "commands": {
+      "what": "Creature commands, a prototype (off with ?commands=0): square makes the bottom creature of her stack act, spending a berry charge.",
+      "notes": "Square (F, the mouse's middle button) commands the bottom of her stack, or feeds it near a berry; circle picks up and puts down; only L2 dodges. Berries give charges (pips) that don't drain; each command spends one, then that creature cools down. Fox, squirrel, badger and bee have an action; their numbers are config/combat-skill.json. On by default; off with ?commands=0, which also puts the old bindings back: square uses, circle dodges, E feeds, no cmd button (src/app/linkParams.ts; the layout follows this knob: src/app/keys.ts commandLayout, config/bindings.json commandLayout). Under it a youth's growth dots are its charge bar, and a berry on a full bar evolves it; only a buff-giver's use gives her its buff, for its buffTime. The design: docs/plans/combat-skill-and-commands.md, sections 3 and 5.",
+      "decisions": [
+        {
+          "by": "Ed",
+          "date": "2026-11-17",
+          "quote": "square as command, and circle as pickup/place. When you're near a berry, square becomes eat."
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-17",
+          "quote": "Put the switches on by default and then publish",
+          "rest": "on by default; ?commands=0 turns it off"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-17",
+          "quote": "I don't think we need to enforce this gap; zero gap gives a higher skill ceiling which is good I think?"
+        },
+        {
+          "by": "Ed",
+          "date": "2026-11-17",
+          "quote": "not all adults give buffs; of the ones that do, using a charge gives you that buff for a period"
+        }
+      ]
     }
   }
 }

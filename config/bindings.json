@@ -11,6 +11,7 @@
     "game.aimRight": { "context": "game", "name": "Aim right", "about": "Aim the 💌 right.", "keys": [], "mouse": [], "pad": ["rsRight"] },
     "game.rise": { "context": "game", "name": "Rise / land", "about": "Rise to the treetops, or land. Nothing else (Ed: \"rising is not quite a free action\").", "keys": ["Space"], "mouse": [], "pad": ["cross"] },
     "game.use": { "context": "game", "name": "Use", "about": "Use what's here: open a station, take a rune, put down or pick up a sigil; at her decks once the party's on, the party start again. Held: a run, picking up or putting down as she goes.", "keys": ["KeyE"], "mouse": [], "pad": ["square"] },
+    "game.command": { "context": "game", "name": "Command", "about": "The bottom creature of her stack acts, or eats near a berry. Under the command layout (below; tuning commands.on) the pad's square; off (?commands=0) it does nothing and the controls list leaves it out.", "keys": ["KeyF"], "mouse": ["middle"], "pad": [], "dev": true },
     "game.invite": { "context": "game", "name": "Invite 💌", "about": "Throw 💌 invites where she aims (held: keep throwing).", "keys": ["Digit1"], "mouse": ["left"], "pad": ["R2"] },
     "game.dodge": { "context": "game", "name": "Dodge", "about": "Blink the way she's going.", "keys": [], "mouse": ["right"], "pad": ["L2", "circle"] },
     "game.cycleNext": { "context": "game", "name": "Next sigil", "about": "Cycle the stack: the bottom sigil (the next put down) to the top.", "keys": ["KeyQ"], "mouse": [], "pad": ["R1"] },
@@ -39,5 +40,11 @@
     "menu.tabNext": { "context": "menu", "name": "Next tab", "about": "The tab to the right.", "keys": [], "mouse": [], "pad": ["R1"] },
     "menu.zoomIn": { "context": "menu", "name": "Menu zoom in", "about": "Zoom the sea chart or the telescope in.", "keys": [], "mouse": [], "pad": ["R2"] },
     "menu.zoomOut": { "context": "menu", "name": "Menu zoom out", "about": "Zoom the sea chart or the telescope out.", "keys": [], "mouse": [], "pad": ["L2"] }
+  },
+  "commandLayout": {
+    "_": "The command layout's defaults over the table's, on while tuning commands.on is (the default: Ed, 2026-11-17, \"Put the switches on by default and then publish\"; \"square as command, and circle as pickup/place\"); ?commands=0 leaves the table as written: square uses, circle dodges, nothing commands.",
+    "game.use": { "pad": ["circle"] },
+    "game.command": { "pad": ["square"], "dev": false },
+    "game.dodge": { "pad": ["L2"] }
   }
 }

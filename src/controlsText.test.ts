@@ -2,7 +2,7 @@
 // describes (coordinator, 2026-10-19, for Ed: stale lines in it misled new players).
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { bindings, padName } from "./platform/bindings";
+import { Bindings, bindings, padName } from "./platform/bindings";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const raw = html.slice(html.indexOf('<div class="keys">'), html.indexOf("</div>", html.indexOf('<div class="keys">')));
@@ -14,10 +14,18 @@ describe("the controls text", () => {
     expect(keys).toContain("T turns auto-talk on or off (off, she talks while Shift is held)");
     expect(bindings.keys("game.talk")).toContain("ShiftLeft");
     expect([bindings.keys("game.use"), bindings.keys("game.cycleNext"), bindings.keys("game.boost"), bindings.keys("game.rise")]).toEqual([["KeyE"], ["KeyQ"], ["KeyR"], ["Space"]]);
-    // The pad (Ed's layout, 2026-10-28): each span's default text is what the bindings fill it with.
-    for (const m of raw.matchAll(/<span data-pad="([^"]+)">([^<]*)<\/span>/g)) expect(m[2], m[1]).toBe(padName(m[1] as never));
+    // The pad (Ed's layout, 2026-10-28, under the command layout, the default: Ed, 2026-11-17, "square as command, and circle as
+    // pickup/place"): each span's default text is what the bindings fill it with.
+    const B = new Bindings(); B.setCommandLayout(true);
+    for (const m of raw.matchAll(/<span data-pad="([^"]+)">([^<]*)<\/span>/g)) expect(m[2], m[1]).toBe(padName(m[1] as never, B));
     expect(keys).toContain("✕ rises or lands, and nothing else");
-    expect(keys).toContain("□ uses what's here");
+    expect(keys).toContain("○ uses what's here");
+    expect(keys).toContain("L2 dodges");
+    expect(keys).toContain("□ commands the bottom creature of her stack, or feeds it near a berry");
+    expect(keys).toContain("F (or a middle click) commands the bottom creature of her stack");
+    // (?commands=0: ui/controlsText.ts hides the command's lines, each marked, and fills use and the dodge from the table: □, L2 or ○)
+    expect(raw.match(/<span data-layout="commands">/g)).toHaveLength(3);
+    expect([padName("game.use"), padName("game.dodge"), padName("game.command")]).toEqual(["□", "L2 or ○", "none"]);
     expect(keys).toContain("△ puts her hat down or picks it up · R1 and L1 cycle the stack");
   });
   it("covers the treehouse: the map's sea chart, the stations, the bed held", () => {

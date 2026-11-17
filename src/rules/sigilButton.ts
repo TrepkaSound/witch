@@ -34,6 +34,8 @@ import { isInside } from "./mapShape";
 import { cellKey, clearArea } from "./party";
 import { castOn, castingStone, looseAt, looseNear, stepCast, stoneNear } from "./stoneStacks";
 import { chainLength } from "./chains";
+import { pressCommand } from "./commands/command";
+import { commandsOn } from "./skill/profile";
 import { atDecks } from "./wakeUp";
 import { challengeCastAt, clearChallenge, lockedFind } from "./challenge";
 
@@ -164,10 +166,12 @@ export function stepSigilButton(g: Game, c: Controls, W: Witch, t: Tuning, ht: n
     else if (!held) { delete W.leash.feedHold; feedBottom(g, W, t, ht, relicEvents); }
     else if (ht - W.leash.feedHold >= F.hold - 1e-9) { heldSince = W.leash.feedHold; delete W.leash.feedHold; placeOnly = true; } // (a run's leash.runAfter counts from the press)
     if (!placeOnly) { sigil = false; place = false; } else { sigil = false; place = true; }
-  } else if ((sigil || place) && onFoot && !run && feedOffer(g, W, t)) {
+  } else if ((sigil || place) && onFoot && !run && !commandsOn(t) && feedOffer(g, W, t)) { // (?commands=1: use never feeds; square does, below)
     if (held && F.hold > 0) W.leash.feedHold = ht; else feedBottom(g, W, t, ht, relicEvents);
     sigil = false; place = false;
   }
+  // The command button (?commands=1, rules/commands/command.ts): the bottom creature acts, or eats near a berry (a tap: no hold to place).
+  if (pressCommand(g, W, c, t, ht, relicEvents) === "feed") feedBottom(g, W, t, ht, relicEvents);
   // A sigil pulled out of her stack by its taut chain (Ed, 2026-11-12: "only if you keep pulling it plops onto the ground as if placed";
   // rules/tautChain.ts stepPop): put down this step by the ordinary put-down, as the button would put down the bottom one. Not with a
   // press of her own this step (hers first: it's tried again next step), nor where nothing may go down (it's tried again as she moves).
@@ -219,6 +223,7 @@ export function feedOffer(g: Game, W: Witch, t: Tuning = g.tuning): { id: number
   if (bt?.kind !== "creature") return null;
   const berry = feedTarget(g.berries, g.creatures[bt.id], b.x, b.z, t);
   if (!berry) return null;
+  if (commandsOn(t)) { const q = g.berries.bushes[berry.bush]; return { id: bt.id, berry: berry.id, x: q.x, z: q.z }; } // (?commands=1: square feeds, whatever use would do: rules/commands/command.ts)
   if (!g.cauldron && (basketNear(g, W) || mushroomNear(g, W))) return null;
   if (g.map.zoo?.layout && atZooExit(g.map, b)) return null;
   if (hatWithin(W.hat, b.x, b.z, t.leash.runeRadius)) return null;

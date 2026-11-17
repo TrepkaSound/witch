@@ -10,8 +10,8 @@ A videogame by Ed Saperia: a witch throws a rave in a magical forest. **How the 
 
 Fly the witch round a generated forest at night, on a laptop or a phone. Add `?seed=123` to the link to play a given map (the seed shows bottom left). Add `&tilt=before`, `&tilt=after` or `&tilt=off` to compare the tilt-shift variants, `&bloom=off` to drop the glow, `&debug` to open the debug overlay.
 
-- **Keyboard and mouse**: WASD or arrows fly · the mouse aims, left click throws 💌 invites · right click dodges · Space rises to the treetops or lands · E puts down a sigil, Q cycles them · R spell · the mouse wheel, Z/X or −/+ zoom · `~` debug overlay
-- **Gamepad** (PlayStation names; `config/bindings.json`): left stick flies · the right stick aims · right trigger throws 💌s · left trigger or circle dodges · cross rises or lands · square uses things, puts down or picks up a sigil and casts at a stump · R1 / L1 cycle the stack · triangle her hat · L3 the broom spell · d-pad up / down zoom
+- **Keyboard and mouse**: WASD or arrows fly · the mouse aims, left click throws 💌 invites · right click dodges · Space rises to the treetops or lands · E puts down a sigil, F commands the bottom creature of the stack (or feeds it near a berry), Q cycles them · R spell · the mouse wheel, Z/X or −/+ zoom · `~` debug overlay
+- **Gamepad** (PlayStation names; `config/bindings.json`): left stick flies · the right stick aims · right trigger throws 💌s · left trigger dodges · cross rises or lands · circle uses things, puts down or picks up a sigil and casts at a stump · square commands the bottom creature of the stack, or feeds it near a berry (`?commands=0`: the old layout, square uses and circle dodges too) · R1 / L1 cycle the stack · triangle her hat · L3 the broom spell · d-pad up / down zoom
 - **Phone**: a joystick where your left thumb lands flies · hold the 💌 button to throw · the round button rises or descends · the sigil, spell and dash buttons · +/− zoom · three-finger tap for debug
 
 Change how it plays in `config/tuning.json`, and how it looks in `config/style.json` (paste a style saved in the Witch Art Lab).

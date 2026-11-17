@@ -274,7 +274,7 @@ export class SettingsMenu {
         { id: "device", kind: "choice", label: "Show", options: ["keys", "pad"] },
         { id: "glyphs", kind: "choice", label: "Pad buttons", sub: "their names", options: ["auto", "ps", "xbox"], hidden: this.device !== "pad", note: "Auto names them from your pad: Xbox's letters, else PlayStation's shapes." },
         { id: "aiming", kind: "choice", label: "Aiming", options: ["twin", "single"] },
-        ...ACTIONS.filter(a => !a.dev).map((a, i, all): Row => ({ id: a.id, kind: "bind", label: a.name, group: i === 0 || (all[i - 1].context === "menu") !== (a.context === "menu") ? (a.context === "menu" ? "menu" : "play") : undefined })),
+        ...bindings.list().filter(a => !a.dev).map((a, i, all): Row => ({ id: a.id, kind: "bind", label: a.name, group: i === 0 || (all[i - 1].context === "menu") !== (a.context === "menu") ? (a.context === "menu" ? "menu" : "play") : undefined })),
       ],
       [
         { id: "master", kind: "slider", label: "Master", sub: "everything" },

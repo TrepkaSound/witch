@@ -86,6 +86,10 @@
         ],
         "additionalProperties": false
       }
+    },
+    "commandLayout": {
+      "type": "object",
+      "description": "The command layout's defaults over the actions' (tuning commands.on): per action, the pad inputs and whether it is left off the controls list."
     }
   },
   "required": [

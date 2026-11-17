@@ -439,7 +439,7 @@ Every kind gets an action from one of **five verbs**. That keeps the code small 
 
 ## 5. A first prototype slice
 
-Two switches, each off by default and each alone testable:
+Two switches, each alone testable. Both are on by default since Ed's word of 2026-11-17, "Put the switches on by default and then publish"; `?skill=0` and `?commands=0` turn each off (`?commands=0` also puts the old bindings back).
 
 - `?skill=1`: sit, poise, stagger, daze slow and the open cue, for **hare, badger, dormouse**: the hopper, the bruiser and the sniper. Others are as today.
 - `?commands=1`: Ed's bindings, pips as charges with no drain (by level and action size; a youth's bar replacing its growth dots), the blinking cooldown, and commands for **fox (Strike), squirrel (Snare: Bonk), badger (Guard: Barge + taunt), bee (Surge: Buzz)**. That is one per role.
@@ -477,7 +477,7 @@ Intent marks, pressure and the other 60 commands come after Ed has played this.
 - `bindings`: square/circle mapping.
 - Plus `npm run typecheck`, lint, `size.mjs`, `loops.mjs`, `moduleState.mjs`.
 
-**What Ed looks at in play** (the preview with `?skill=1&commands=1`):
+**What Ed looks at in play** (the preview; both are on by default now):
 
 1. Fight a hare: after its stamp it sits still with an amber outline, and nearly every letter thrown then lands.
 2. Fight a badger: three or four letters during its crouch break its poise. It wobbles in place, and the barge never comes.

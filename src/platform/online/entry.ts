@@ -5,6 +5,8 @@ import { wakeInBedroom } from "../../rules/opening";
 import { bareBroom } from "../../rules/broomParts";
 import { setParts } from "../../rules/spells";
 import { Input } from "../input";
+import { bindings } from "../bindings";
+import { commandsOn } from "../../rules/skill/profile";
 import { View } from "../../render/view";
 import { prewarmArtWorkers } from "../../render/assets";
 import { gameStyle, styleFromLink, viewFromLink } from "../../app/viewParams";
@@ -150,7 +152,7 @@ const connection = connectRelay({ endpoint, room, token: guest ? token : undefin
   },
 });
 reportProgress = () => { connection.sendProgress(loadingProgress); };
-const input = new Input();
+const input = new Input(); bindings.setCommandLayout(commandsOn(TUNING)); // (the command layout follows the tuning: app/keys.ts commandLayout)
 let cleaned = false;
 const cleanup = () => {
   if (cleaned) return; cleaned = true;

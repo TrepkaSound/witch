@@ -14,7 +14,8 @@ const plainStrength = () => { for (const k of Object.keys(COMBAT.strength!.speci
 const restoreStrength = () => Object.assign(COMBAT.strength!.species, SAVED_STRENGTH);
 
 // Retain the full population for area-distribution ratios, patch coverage and the separated berry-index fixtures.
-const map = generateMap(123, TUNING), t = TUNING;
+// (commands off, ?commands=0: E feeds; with them on, the default since Ed's 2026-11-17 "Put the switches on by default and then publish", the command button does: rules/commands/command.test.ts)
+const map = generateMap(123, TUNING), t = withTuning({ commands: { on: false } });
 const mechanicsMap = () => generateMap(123, smallWorldTuning(TUNING, "Evolution counters and one creature's leash pace do not depend on world size."));
 const bushesOk = (s: BerryState) => {
   const seen = new Set<number>();

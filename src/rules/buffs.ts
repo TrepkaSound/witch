@@ -16,6 +16,8 @@ import type { Tuning } from "./tuning";
 import type { BerryState } from "./berries";
 import { speedMultiplier, type SpellState } from "./spells";
 import { stepInvites, type Affection, type InviteControls, type Invites } from "./invites";
+import { buffNow, tickCommands } from "./commands/charges";
+import { commandProfile, commandsOn } from "./skill/profile";
 
 export const BUFF_GROUPS = ["climbers", "darters", "stalkers", "heavies", "packHunters", "shells"] as const;
 export type BuffGroup = (typeof BUFF_GROUPS)[number];
@@ -70,6 +72,7 @@ export function addPip(s: Pick<BerryState, "pips">, id: number, t: Tuning): void
 }
 /** Her following adults' pips drain, one at a time, while they follow her (parked ones keep theirs). */
 export function drainPips(s: Pick<BerryState, "pips">, stack: readonly number[], creatures: readonly Creature[], dt: number, t: Tuning): void {
+  if (commandsOn(t)) { tickCommands(stack, creatures, dt); return; } // (?commands=1: no drain, Ed 2026-11-17; their cooldowns and buffs run down instead)
   if (!buffKnobs(t)) return;
   for (const id of stack) {
     const c = creatures[id];
@@ -110,13 +113,15 @@ export function buffsOf(stack: readonly number[], creatures: readonly Creature[]
   const B = buffKnobs(t), stacks = noBuffs(), givers = new Map<number, BuffGroup>(), icons = new Set<number>(), iconCount = new Map<number, number>(), iconState = new Map<number, IconState>(), iconGroup = new Map<number, BuffGroup>();
   const out = { stacks, givers, icons, iconCount, iconState, iconGroup };
   if (!B) return out;
-  const kinds = new Map<string, { group: BuffGroup; n: number; id: number }>();
+  const kinds = new Map<string, { group: BuffGroup; n: number; id: number }>(), cmd = commandsOn(t);
   for (const id of stack) {
     const c = creatures[id];
-    if (!c || c.gone || (c.level !== ADULT && c.level !== LEGEND)) continue;
+    // (?commands=1, Ed 2026-11-17: "not all adults give buffs; of the ones that do, using a charge gives you that buff for a period":
+    // only a buff-giver (its profile's buff), while its use's period runs; a legend as ever)
+    if (!c || c.gone || (cmd ? c.level !== LEGEND && !(c.level >= 1 && commandProfile(c.species, c.level).buff) : c.level !== ADULT && c.level !== LEGEND)) continue;
     const group = groupOf(c.species, t);
     if (!group) continue;
-    const legend = c.level === LEGEND, n = legend ? B.legend : pipFuel(berries, id, t) > 0 ? 1 : 0;
+    const legend = c.level === LEGEND, n = legend ? B.legend : cmd ? buffNow(c) : pipFuel(berries, id, t) > 0 ? 1 : 0;
     icons.add(id); iconGroup.set(id, group); iconCount.set(id, legend ? Math.max(1, Math.round(B.legend)) : 1);
     iconState.set(id, n > 0 ? "redundant" : "unfed");
     if (n <= 0) continue;

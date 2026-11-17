@@ -1,0 +1,11 @@
+{
+ "name": "commands",
+ "values": [
+  "0",
+  "1"
+ ],
+ "does": "Creature commands, a prototype, on by default: square (F, the mouse's middle button, touch's cmd button) commands the bottom of her stack, or feeds it near a berry; circle (E) picks up and puts down; only L2 dodges. Berries give charges that don't drain; a youth's dots are its charge bar. Fox Strike, squirrel Bonk, badger Barge, bee Buzz. ?commands=0 turns it off and puts the old bindings back: square uses, circle dodges, E feeds, no cmd button; =1 is on. Sets tuning commands.on.",
+ "group": "run",
+ "since": "2026-11-17",
+ "decision": "Ed, 2026-11-17: \"Put the switches on by default and then publish\"; earlier that day: \"go for the prototype\"; \"square as command, and circle as pickup/place. When you're near a berry, square becomes eat.\""
+}

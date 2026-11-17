@@ -2,7 +2,7 @@
 // the pad over.
 import { describe, expect, it } from "vitest";
 import { padControls } from "./input";
-import { PAD_BUTTONS } from "./bindings";
+import { Bindings, PAD_BUTTONS } from "./bindings";
 
 const pressed = (...names: string[]) => { const b = Array(17).fill(false); for (const n of names) b[PAD_BUTTONS[n]] = true; return b; };
 const none = Array(17).fill(false), still = [0, 0, 0, 0];
@@ -46,10 +46,32 @@ describe("padControls with a menu open (Ed's playtest, 2026-10-23: the bottom fa
     for (let i = 0; i < 17; i++) {
       const b = Array(17).fill(false); b[i] = true;
       const c = padControls(b, still, none, false, true);
-      expect(c, `button ${i}`).toEqual({ moveX: 0, moveZ: 0, zoom: i === PAD_BUTTONS.R2 ? -1 : i === PAD_BUTTONS.L2 ? 1 : 0, toggleMode: false, debug: false, sigil: i === PAD_BUTTONS.circle, sigilHeld: false, hat: false, spell: false, cycle: false, cycleBack: false, dash: false, fire: false, aim: null,
+      expect(c, `button ${i}`).toEqual({ moveX: 0, moveZ: 0, zoom: i === PAD_BUTTONS.R2 ? -1 : i === PAD_BUTTONS.L2 ? 1 : 0, toggleMode: false, debug: false, sigil: i === PAD_BUTTONS.circle, sigilHeld: false, hat: false, spell: false, cycle: false, cycleBack: false, command: false, dash: false, fire: false, aim: null,
         talkHeld: false, talkPressed: false, toggleAutoTalk: false, nextWave: false, pauseWaves: false, cycleSpeakers: false, inviteNearest: false, feedNearest: false, happyNearest: false });
     }
     expect(padControls(none, [1, 1, 1, 1], none, false, true).aim).toBeNull();
     expect(padControls(none, [1, 0, 0, 0], none, false, true).moveX).toBe(0);
+  });
+});
+
+describe("padControls with the command layout (tuning commands.on, the default; Ed, 2026-11-17: \"square as command, and circle as pickup/place\")", () => {
+  const layout = () => { const B = new Bindings(); B.setCommandLayout(true); return B; };
+  const cmd = (...names: string[]) => padControls(pressed(...names), still, none, false, false, [], layout());
+  it("square commands (and no longer uses or runs); circle uses (held: a run) and no longer dodges; L2 still dodges", () => {
+    expect([cmd("square").command, cmd("square").sigil, cmd("square").sigilHeld]).toEqual([true, false, false]);
+    expect([cmd("circle").sigil, cmd("circle").sigilHeld, cmd("circle").dash, cmd("circle").command]).toEqual([true, true, false, false]);
+    expect(cmd("L2").dash).toBe(true);
+    expect(padControls(pressed("circle"), still, pressed("circle"), false, false, [], layout()).sigil).toBe(false); // (held, not pressed again)
+  });
+  it("a menu still takes the pad: circle is its back, square commands nothing", () => {
+    expect(padControls(pressed("square"), still, none, false, true, [], layout()).command).toBe(false);
+    expect(padControls(pressed("circle"), still, none, false, true, [], layout()).sigil).toBe(true);
+  });
+  it("without it (?commands=0), the old bindings exactly: square uses, circle dodges, nothing on the pad commands", () => {
+    const off = (...names: string[]) => { const B = layout(); B.setCommandLayout(false); return padControls(pressed(...names), still, none, false, false, [], B); };
+    for (const of of [play, off]) {
+      expect([of("square").sigil, of("square").sigilHeld, of("square").command, of("circle").dash, of("circle").sigil, of("L2").dash]).toEqual([true, true, false, true, false, true]);
+      for (const b of Object.keys(PAD_BUTTONS)) expect(of(b).command, b).toBe(false);
+    }
   });
 });
