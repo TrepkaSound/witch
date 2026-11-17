@@ -305,7 +305,7 @@ export function frameBody(pageHost: PageHost, now: number): void {
   if (!held) drew(performance.now());
   fightFrame((x, y, z) => pageHost.view.screenOf(x, y, z)); // (the Fight Arena's telegraph timings, if it's on)
   pageHost.frameStats.endGpu();
-  pageHost.aimHud.update(game, game.herTime, pageHost.input.cursor, pageHost.input.lastAim, pageHost.startedNights.has(game) && !pageHost.bot);
+  pageHost.aimHud.update(game, game.herTime, pageHost.input.cursor, pageHost.input.lastAim, pageHost.startedNights.has(game) && !pageHost.bot, pageHost.input.aiming === "single");
   pageHost.frameStats.work(performance.now() - work0);
   pageHost.perfHud?.frame(now, dt * 1000, stepMs, !game.clock.paused && !pageHost.freeze.frozen);
   pageHost.shake.apply();

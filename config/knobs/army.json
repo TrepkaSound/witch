@@ -341,6 +341,16 @@
     "invites.hard": {
       "what": "the hard homing of the 💌s her Sentry and Slingshot hats throw: homing degrees a second, cone degrees either side it looks in, range metres it looks out to (was the legend buffs' charm, 420, 80 and 18)."
     },
+    "invites.singleStick": {
+      "what": "the homing of her own 💌s with Aiming set to Single stick on the Settings page (they fly the way she moves, or faces when still, so they home harder to make up for the lost fine aim): homing degrees a second, cone degrees either side it looks in, range metres it looks out to. Starts at invites.hard's numbers; twin stick keeps invites.homing, homingCone and homingRange.",
+      "decisions": [
+        {
+          "date": "2026-11-16",
+          "quote": "Single stick setting - yes, let's put a switch on the settings page for this",
+          "rest": "from a playtest: \"Hades is apparently single stick - you shoot in the direction you face - the playtester was much more familiar with this and found two sticks overwhelming - we could easily offer both with a toggle\""
+        }
+      ]
+    },
     "invite": {
       "what": "The old proximity chat, now replaced by the 💌 invite: she talked with the nearest creature in emoji.",
       "decisions": [

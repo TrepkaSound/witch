@@ -97,6 +97,7 @@ Add to this file, not CLAUDE.md, when you change this area.
 - **Talk / invite**: inviting is by 💌s (issue #87;
   `invites`, `src/rules/invites.ts`): on the ground she throws them at the cursor (left click or 1), one at a time (45 m/s for 42 m, homing within 14 m: **Letters' reach** below);
   each that lands fills the creature's meter (`invites.hits`, by level), and full, a wild one is happy (healed to full) and its sigil drops as a rune at its feet, which she picks up (E) to leash it.
+  **Single-stick aiming** (Ed, 2026-11-16: "Single stick setting - yes, let's put a switch on the settings page for this"): with the Settings page's Aiming on Single stick her controls carry no aim, so her 💌s fly the way she's going, or faces when still, and home by `invites.singleStick` (420°/s, 80°, 18 m, `invites.hard`'s numbers to start); how it travels: `docs/notes/run.md`, **Settings page**.
   Babies (including the circle baby) cannot be invited (Ed, 2026-10-31); legends accept only the existing optional 100-letter partyEgg exception (COORDINATOR #1552, 2026-10-31).
   Babies have no personal rune or 💌 meter: they turn happy only when their area gets a soundsystem, including the paired circle baby, whose conversion sigil lands in its circle.
   Quests still accept any level.
