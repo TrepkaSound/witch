@@ -28,7 +28,7 @@ The status index checks the requests below against prototype `ab06904b` and cite
 | Visual representation of how many came | **Partly built** | Stargazing witches themselves are visible; no separate retained best-party picture/count reward found. `rules/partyWitches.ts`; originating PR/version unverified. |
 | Afterparty mushroom collection and brewing | **Built** | `rules/mushrooms.ts`, legacy cauldron compatibility; #1472 v5764 preview, current nine-colour work #1523 (first live version unverified). |
 | Bed, wake, dress and voyage | **Partly built** | Bed/new night and waking are built (#986 onward, v4466 sail-in-bed); legend-carries-house sleep voyage was explicitly superseded by continuous sailing, not an unbuilt next step. |
-| Her proportions (head, torso, legs) with clothes generated to fit (Ed, 2026-11-04) | — | Not built: no head/torso/leg genome values in `art/witch.js`; the coordinator's sizing note below is a plan. |
+| Her proportions (head, torso, legs) with clothes generated to fit (Ed, 2026-11-04; Basin sliders decided 2026-11-16, parked) | — | Not built: no head/torso/leg genome values in `art/witch.js`; the coordinator's sizing note below is a plan. |
 
 
 Backlog (Ed, 2026-10-09). **Mixed implementation status; see the audit below. No unbuilt work is authorised by this page.** The treehouse's rooms (wardrobe, hat room, broom room, map room, studio, kitchen, DJ booth and the rest), the balcony shot and the octagon-for-now are in [journey.md](journey.md), section 3; this doc covers the character creator, the bedroom's objects and the end-of-night loop.
@@ -79,6 +79,13 @@ Backlog (Ed, 2026-10-09). **Mixed implementation status; see the audit below. No
 Ed: "change the proportions of the witch (e.g. head size, torso length / width / depth, leg length - whatever makes sense); ideally clothes etc are generated".
 
 What the coordinator found (4 Nov, not built): she is built in code (`art/witch.js`) from shapes placed at a few joints (hips, chest, head, knees, shoulders), and her clothes, hair, hat, nightie, cloak and bags are shapes placed from the same joints, so they mostly follow a resized body. The easy path is genome values (head size, torso length/width/depth, leg and arm length) through the same route as `hatHeight`, so saves, the wardrobe, the art cache and multiplayer carry them; scale the joints in `witchModel`, `fastModel` and `footModel`; one helper for things placed from the head (hair, eyes, headphones, hat brim) scaled by head size; the cloak's knee worked out from her legs; and the world's art scale (`witchPixelsPerUnit`) pinned to a constant, since most of the world's art is sized from her default height. Size: medium (2–4 days) for head, torso and legs over the main flying and walking poses; large if every pose must hold at extremes (broom grip, DJ hands on the decks, sitting, limbo, pair dances use fixed hand and foot spots).
+
+
+**Ed, 2026-11-16 (parked: "Park that for now (but put it in the backlog)"):** put it in the bedrooms' tooth-brushing station, the Basin (`config/house/rooms/bedroom*.json`, today `parts: ["skin"]`, no axes). Decided in multiple choice:
+- Controls: **Height** (about ×0.85–1.15), **Head size** (×0.85–1.25), **Leg length** (×0.85–1.2), **Build** (×0.85–1.25: shoulders, hips and limb thickness together), each a multiple of her current shape, starting at 1.
+- **Sliders** with a reset, saved with her look like the hat and broom sliders.
+- View: **face for skin, pulling back to her whole figure on the body row**.
+- Drawing only: her size in play, hits and flight height unchanged; every pose and garment follows, and the ends are limited to what keeps every pose right. A sheet of each slider at both ends in several poses for Ed. Builder: Opus.
 
 ## Open questions
 
