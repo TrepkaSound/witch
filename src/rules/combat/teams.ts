@@ -18,20 +18,7 @@ export interface TeamState { seed: number; round: number; phase: Phase; at: numb
   order?: number[] }
 export const rolePreferences = (species: string): RolePreferences => ({ ...SPACING.preferences.default, ...SPACING.preferences.species[species] });
 const damage = (c: Creature): number => c.leashed || c.state === "happy" ? c.drops ?? 0 : c.dazed ? 1 : c.affection ?? 0;
-// module-state: a pure index of each map of waiting teams (CombatState.waitingTeams) by member id, the first team in the map's order for
-// each (as find's), rebuilt at the end of stepTeams, the only writer of the teams and their members (the perf sweep, 2026-11: teamOf was
-// a scan of every team's members per fighter per step); a map it hasn't indexed (a loaded night's, a test's) is searched as before.
-const memberIndex = new WeakMap<Map<string, TeamState>, Map<number, TeamState>>();
-export function teamOf(state: CombatState, id: number): TeamState | undefined {
-  const teams = state.waitingTeams; if (!teams) return undefined;
-  const index = memberIndex.get(teams); if (index) return index.get(id);
-  for (const team of teams.values()) if (team.members.includes(id)) return team;
-  return undefined;
-}
-function indexMembers(teams: Map<string, TeamState>): void {
-  let index = memberIndex.get(teams); if (index) index.clear(); else memberIndex.set(teams, (index = new Map()));
-  for (const team of teams.values()) for (const id of team.members) if (!index.has(id)) index.set(id, team);
-}
+export function teamOf(state: CombatState, id: number): TeamState | undefined { return [...(state.waitingTeams?.values() ?? [])].find(team => team.members.includes(id)); }
 
 /** Seeded action choice: arbitrary repertoires, independent readiness, one total pressure budget. */
 export function chooseTeamActions(members: readonly Creature[], seed: number, round: number, ready: (c: Creature, action: CreatureAction) => boolean = () => true): Record<number, CreatureAction | undefined> {
@@ -126,8 +113,7 @@ export function stepTeams(state: CombatState, w: CombatWorld, data: PacksData, c
       for (let k = next.length + 1; k <= ahead; k++) { const by = w.time + nominal * k; next.push({ round: round + k, actions: chooseTeamActions(available, team.seed, round + k, (c, a) => (team!.ready[c.id]?.[a.id] ?? 0) <= by), readyBy: Infinity }); }
       if (!next.length) team.next = undefined;
     }
-    const availableSet = new Set(available); // (members x available was a scan each: a team can be 128)
-    for (const c of members) if (!availableSet.has(c) && !committed(c)) team.roles[c.id] = "hurt";
+    for (const c of members) if (!available.includes(c) && !committed(c)) team.roles[c.id] = "hurt";
     // Replace a withdrawn member from reserves without rerolling the whole team.
     const active = available.filter(c => team!.roles[c.id] && team!.roles[c.id] !== "hold" && team!.roles[c.id] !== "hurt");
     if (!active.length && !busy) draw();
@@ -168,5 +154,4 @@ export function stepTeams(state: CombatState, w: CombatWorld, data: PacksData, c
       team.next.forEach((n, k) => { n.readyBy = first + k * nominal; });
     }
   }
-  indexMembers(teams);
 }
