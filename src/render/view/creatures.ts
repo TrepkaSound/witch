@@ -41,6 +41,7 @@ import { creatureHeat } from '../thermalVision';
 import { cheerKind, cheerPose, type CheerPose } from "../cheer";
 import { legendSleep, newSleepTrack, type SleepPose } from "../legendSleep";
 import { potionStrength, stiltwalkerShape } from '../potionEffects';
+import { openGlow, staggerWobble } from "../openCue";
 /** How near her (m) a rattlesnake rattles its warning (config/character.json's "rattle" quirk). */
 const RATTLE_NEAR = 14;
 const SQ = { hop: 0, x: 0, sx: 1, sy: 1, turned: false }; // (a baked frame's idle quirk, filled each creature: no allocation)
@@ -292,7 +293,7 @@ export function drawCreatures(v: View, time = 0): void {
       if (e) { const a = aggroAmount(1 - (c.watchUntil! - g.clock.time) / Math.max(1e-6, WW.time), e.danger, WW.tint); const r = v.aggroLast.get(c.id); if (r) { r.a = a; r.at = time; } else v.aggroLast.set(c.id, { a, at: time }); glow = aggroGlow(a); }
       else { const l = v.aggroLast.get(c.id); if (l) { const a = aggroFadeOut(l.a, time - l.at, WW.fade); if (a > 0.005) glow = aggroGlow(a); else v.aggroLast.delete(c.id); } }
     }
-    const feel = attackFeel(c, time, g.tuning.attackFx, FEEL);
+    const feel = attackFeel(c, time, g.tuning.attackFx, FEEL); glow = openGlow(c, g, glow); cx += staggerWobble(c, g); // (the open cue, ?skill=1: render/openCue.ts)
     // A 💌 just landed on it (render/impact.ts): an instant's white flash and a little squash, springing back.
     const imp = impactOf(g.clock, c.id, g.tuning.invites.impact, IMPACT);
     if (imp.flash > 0) glow = Math.max(glow, imp.flash);
