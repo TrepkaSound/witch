@@ -26,5 +26,6 @@
 - [mushroom-sparkle-shift.md](mushroom-sparkle-shift.md) — **Unbuilt/context**: Unbuilt attribution investigation; accepted visual difference is not a diagnosed cause.
 - [potion-recipes.md](potion-recipes.md) — **Partly built**: 165 fixed recipe slots, with 35 implemented entries (18 on 1 Nov; 17 added 3 Nov, v7175/v7197); 130 remain Coming soon.
 
+- [ai-tools.md](ai-tools.md) — **Not built**: a reading list of 18 AI tools for solo game developers (Ed, 2026-11-17), with a first read of which might help (a three.js frame-drop checklist, a skill-shot effects sandbox, cross-skeleton animation).
 - [art-check-shards.md](art-check-shards.md) — **Partly built**: nightly/manual scheduling and, since 5 Nov, three-shard sharding (#1834, released with v7564) are in source; real nightly speed unverified; no cold-run authority.
 - [patterned-lighting.md](patterned-lighting.md) — **Partly built**: patterns on by default for live testing: soundsystem colour spokes with a 0–4 strength slider (#1542, v7527); the cost reduction and measurement plan are not built.
