@@ -1082,7 +1082,7 @@ function coarseMarchers(g: Game, active: Creature[], t: Tuning, dt: number): Set
   const near: { x: number; z: number; r: number }[] = [];
   for (const w of g.witches) near.push({ x: w.body.x, z: w.body.z, r: fullRadius(t, w.body.mode) });
   for (const h of S.sounds.values()) if (h.hp > 0) near.push({ x: h.x, z: h.z, r: L.action });
-  for (const w of g.witches) for (const id of [...w.leash.stack, ...w.leash.placed.map(p => p.id)]) { const c = g.creatures[id]; if (c && !c.gone) near.push({ x: c.x, z: c.z, r: L.action }); }
+  const putLeashed = (id: number) => { const c = g.creatures[id]; if (c && !c.gone) near.push({ x: c.x, z: c.z, r: L.action }); }; for (const w of g.witches) { for (const id of w.leash.stack) putLeashed(id); for (const p of w.leash.placed) putLeashed(p.id); } // (her stack then her placed, as the spread was, without the two lists a step)
   for (const id of g.legendIds ?? []) { const c = g.creatures[id]; if (c && !c.gone && c.legendState === "happy" && !c.partyLegend) near.push({ x: c.x, z: c.z, r: L.action + t.wildLegends.guard }); }
   const counts = g.lod;
   for (const c of active) {
