@@ -97,6 +97,13 @@ Checked against the code on 2026-11-15. If code and this page disagree, the code
 2. Hare: its pack actions are the stamp and the call only; the moon-dust bolt is gone. Code: `config/creature-actions.json#species.hare`. Ruling: Ed, 2026-11-13: "Stamp, then sit 0.8 s".
 3. Badger: its own shoulder-barge lunge's blow at her throws her 20 m, not held to the 14 m cap, and staggers her 0.5 s (PR #2072), in the real game and not only while a tool observes attacks. Its dug-in bite, its pack's stone shard and a pack's knockback ram throw her as any blow does. Code: `src/rules/combat/hits.ts#const barge`, `src/rules/combat/hits.ts#its context kept, watched or not`, `src/rules/knock.ts#far?: boolean`, `config/tuning.json#badgerBarge.throw`, `config/tuning.json#badgerBarge.stagger`. Ruling: Ed, 2026-11-13: "20m".
 
+## Prototypes behind switches (off by default)
+
+Checked against the code on 2026-11-17 (PR #2117). Off, the game is as above.
+
+1. `?skill=1`: the hare, badger and dormouse sit after each attack (after its lunge, a melee one), have poise that her letters wear (more during a wind-up), stagger when it breaks (a wind-up and its cast called off), then are slowed by a daze; an amber outline on the sprite while open. A letter is still one hit. Code: `src/rules/skill/poise.ts`, `config/combat-skill.json`, `src/render/openCue.ts`. Ruling: Ed, 2026-11-17: "go for the prototype"; "A hit is a letter."
+2. `?commands=1`: square (F, the mouse's middle button) commands the bottom of her stack, or feeds it within 15 m of a berry when it has room; circle uses; only L2 dodges. Berries give charges that never drain, each command spends one and starts that creature's own cooldown (no shared gap); a youth's bar is its growth. Fox Strike, squirrel Bonk (Snare), badger Barge (Guard), bee Buzz (Surge). Code: `src/rules/commands/command.ts`, `src/rules/commands/actions.ts`, `src/rules/commands/charges.ts`, `src/platform/input.ts#padControls`. Ruling: Ed, 2026-11-17: "square as command, and circle as pickup/place. When you're near a berry, square becomes eat."; "zero gap gives a higher skill ceiling".
+
 ## Where code and the latest ruling disagree
 
 None found. One thing is close to it and worth knowing:
