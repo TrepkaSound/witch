@@ -15,6 +15,7 @@ import { stepChartFlight } from "./flightClock";
 import { islandPoints } from "../../../art/islands.js";
 import { sigilColour } from "../../../art/sigils.js";
 import { islandTop } from "./chartPinPlace";
+import { freeGeometries } from "../free";
 import { sigilDetail } from "../../../art/sigilDetail.js";
 import { Post, type PostTuning } from "../post";
 import { CHART_SCALE, K, SIGIL_TIERS } from "./chartScale";
@@ -28,7 +29,6 @@ const TYPICAL_REACH = 11;
 /** The camera's nearest (units): one island filling the screen and more (Ed, 2026-10-12: "the islands should be larger at full
  *  zoom"), its fine grid made for it (app/chartOutlines.worker.ts `detail`). */
 const CLOSEST = TYPICAL_REACH * 2.3;
-
 // The moon (Ed, 2026-10-12: "islands casting shadows from the moon orbiting the map screen"; #746: "have the moon rise over the
 // North West edge of the map as you open the map screen"): as the chart opens the moon rises over its north-west edge, then goes
 // slowly round it, low, and every island's real relief throws its shadow across the sea, away from it, and into its own valleys;
@@ -472,8 +472,8 @@ export class SeaChart {
   /** Every island and her voyages: the scene rebuilt (on load, and after a start over). */
   set(islands: ChartIsland[], voyages: ChartVoyage[]): void {
     for (const i of this.isles.values()) this.unheight(i.group);
-    for (const i of this.isles.values()) this.scene.remove(i.group);
-    for (const l of this.lines) this.scene.remove(l);
+    for (const i of this.isles.values()) { this.scene.remove(i.group); freeGeometries([i.group], [i.tileU?.uTile.value]); } // (its buffers and heights tile freed; its materials left, their programs kept: reset)
+    for (const l of this.lines) { this.scene.remove(l); freeGeometries([l]); }
     this.isles.clear(); this.lines = [];
     for (const d of islands) this.isles.set(d.id, this.island(d));
     this.voyages = voyages;
@@ -485,11 +485,11 @@ export class SeaChart {
   reshape(id: string, outline: ChartOutline): void {
     const old = this.isles.get(id); if (!old) return;
     const fresh = !old.pick; // (its land's first coming: it rises out of the sea; a finer grid later swaps in where it stands. By the isle, not its record: the page writes the outline on the record before it calls)
-    this.unheight(old.group); this.scene.remove(old.group);
+    this.unheight(old.group); this.scene.remove(old.group); freeGeometries([old.group], [old.tileU?.uTile.value]); // (as set: buffers and tile freed, materials left)
     const isle = this.island({ ...old.d, outline });
     if (fresh) isle.rose = this.now;
     this.isles.set(id, isle);
-    for (const l of this.lines) this.scene.remove(l);
+    for (const l of this.lines) { this.scene.remove(l); freeGeometries([l]); }
     this.lines = this.voyages.flatMap(v => { const a = this.isles.get(v.from), b = this.isles.get(v.to); return a && b ? [this.voyage(a, b)] : []; });
   }
 

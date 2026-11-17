@@ -1274,7 +1274,7 @@ export class View {
     // (the look she has already, the boot's say (her nightie on a first morning, main.ts): nothing to redraw, her hat-off frames kept)
     if (JSON.stringify(genome ?? null) === JSON.stringify(this.assets.witchGenome ?? null)) { if (morning?.hatOff) this.assets.askHatOff(); return; }
     this.assets.rebakeWitch(genome, !!morning); // (drawn by an art worker: her batch takes the new frames when they arrive, swapHomeArt below)
-    if (this.bareBatch) { this.scene.remove(...this.bareBatch.meshes); this.bareBatch = null; this.bareAsked = false; }
+    if (this.bareBatch) { this.scene.remove(...this.bareBatch.meshes); this.bareBatch.release(); this.bareBatch = null; this.bareAsked = false; } // (released: its buffers, materials and fade entries freed; the atlas stays the library's)
     if (morning?.hatOff) this.assets.askHatOff();
   }
   /** The game's own camera as it will be on the next frame drawn without the flight's (render/view/camera.ts gameAim: her pose's aim,
