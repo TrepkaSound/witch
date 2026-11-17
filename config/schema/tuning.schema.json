@@ -6055,7 +6055,7 @@
         "on"
       ],
       "additionalProperties": false,
-      "description": "Openings and poise (?skill=1, a prototype): after it attacks a creature sits still for a moment, enough letters break its poise (a wind-up cancelled, a stagger, then a daze that slows it), and an amber outline shows when it is open."
+      "description": "Openings and poise, a prototype (?skill=1): creatures sit after attacking and stagger when enough letters break their poise."
     },
     "commands": {
       "type": "object",
@@ -6068,7 +6068,7 @@
         "on"
       ],
       "additionalProperties": false,
-      "description": "Creature commands (?commands=1, a prototype): square (F, the mouse's middle button) commands the bottom of her stack, or feeds it near a berry; circle picks up and puts down; only L2 dodges."
+      "description": "Creature commands, a prototype (?commands=1): square makes the bottom creature of her stack act, spending a berry charge."
     },
     "creatureMomentum": {
       "type": "object",

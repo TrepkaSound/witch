@@ -840,8 +840,8 @@
       "notes": "groups: each group's retreats (a kind's art/creatures/<id>/creature.js retreat decides its group). legend: the stacks a leashed legend gives (no berries needed). pips: max an adult holds, life seconds each (draining one at a time while it follows her; parked ones keep theirs), warn seconds before one fades it twinkles in her stack, start pips a new adult has before it has eaten (1). Per stack: climbers.dash more dash charges; darters.speed her speed times 1 + it; stalkers.speed and stalkers.range her 💌s' speed and range times 1 + each; heavies.shots more ways her shots go round her, clockwise, her fire rate times the ways (1 stack: a second shot opposite between each, 2: three at 120° at 3×); packHunters.rate her fire rate times 1 + it and packHunters.spread degrees more inaccuracy; shells.chain more chain hops, on top of the bag's. icons: blue, a redundant icon's colour (another of its kind gives the buff); pink, an unfed adult's, twinkling once a twinkle s."
     },
     "skill": {
-      "what": "Openings and poise (?skill=1, a prototype): after it attacks a creature sits still for a moment, enough letters break its poise (a wind-up cancelled, a stagger, then a daze that slows it), and an amber outline shows when it is open. For the hare, badger and dormouse; their numbers are config/combat-skill.json.",
-      "notes": "Off by default: on with ?skill=1 (src/app/linkParams.ts). A letter is always one hit; poise is counted beside the meter, never in it. The design: docs/plans/combat-skill-and-commands.md, section 5.",
+      "what": "Openings and poise, a prototype (?skill=1): creatures sit after attacking and stagger when enough letters break their poise.",
+      "notes": "After it attacks a creature sits still for a moment; enough letters break its poise (a wind-up cancelled, a stagger, then a daze that slows it); an amber outline shows when it is open. For the hare, badger and dormouse; their numbers are config/combat-skill.json. Off by default: on with ?skill=1 (src/app/linkParams.ts). A letter is always one hit; poise is counted beside the meter, never in it. The design: docs/plans/combat-skill-and-commands.md, section 5.",
       "decisions": [
         {
           "by": "Ed",
@@ -857,8 +857,8 @@
       ]
     },
     "commands": {
-      "what": "Creature commands (?commands=1, a prototype): square (F, the mouse's middle button) commands the bottom of her stack, or feeds it near a berry; circle picks up and puts down; only L2 dodges. Berries give charges (pips) that don't drain; each command spends one, then that creature cools down. Fox, squirrel, badger and bee have an action; their numbers are config/combat-skill.json.",
-      "notes": "Off by default: on with ?commands=1 (src/app/linkParams.ts; the pad's layout: src/platform/input.ts). Under it a youth's growth dots are its charge bar, and a berry on a full bar evolves it; only a buff-giver's use gives her its buff, for its buffTime. The design: docs/plans/combat-skill-and-commands.md, sections 3 and 5.",
+      "what": "Creature commands, a prototype (?commands=1): square makes the bottom creature of her stack act, spending a berry charge.",
+      "notes": "Square (F, the mouse's middle button) commands the bottom of her stack, or feeds it near a berry; circle picks up and puts down; only L2 dodges. Berries give charges (pips) that don't drain; each command spends one, then that creature cools down. Fox, squirrel, badger and bee have an action; their numbers are config/combat-skill.json. Off by default: on with ?commands=1 (src/app/linkParams.ts; the pad's layout: src/platform/input.ts). Under it a youth's growth dots are its charge bar, and a berry on a full bar evolves it; only a buff-giver's use gives her its buff, for its buffTime. The design: docs/plans/combat-skill-and-commands.md, sections 3 and 5.",
       "decisions": [
         {
           "by": "Ed",
