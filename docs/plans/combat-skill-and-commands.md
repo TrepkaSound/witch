@@ -22,7 +22,8 @@ Design note, 2026-11-17. Nothing here is built. It is for Ed to read and answer 
 9. **More charges** (2026-11-17): "I think creatures should hold more, up to ~12, and Berries could give 3-6 charges each, all depending on how big/long/strong the action is."
 10. **Every level acts** (2026-11-17): "both youths and adults and legends should have actions; each level has a stronger action and more charges. If you fill a youth's charge bar and then give it another berry, it evolves to an adult."
 11. **Levels change actions and charges, not always upward** (2026-11-17): "not necessarily more charges; let's say the actions and their charge numbers change with each level, and we can explore this in design and balancing. Some adults might have the same effect as a youth but many more charges; some adults might have much stronger effect but fewer or the same number of charges."
-12. **Ed's answers to the first questions** (2026-11-17). They are written into the sections below:
+12. **No gap between commands; parameters, not caps** (2026-11-17): "I don't think we need to enforce this gap; zero gap gives a higher skill ceiling which is good I think? We should aim for a lot of distinct parameters and maximum expressiveness, and then we can have 'what creatures have what settings' as design and balancing. e.g. 'up to 12 charges' doesn't need to be strict; we may find it's fun for some creatures to have more."
+13. **Ed's answers to the first questions** (2026-11-17). They are written into the sections below (5 included a 1 s shared gap, which item 12 removes):
     1. What makes a creature open: all three (sit, stagger, daze), "can vary by creature".
     2. Bigger targets: no.
     3. Buffs: "not all adults give buffs; of the ones that do, using a charge gives you that buff for a period".
@@ -58,91 +59,134 @@ Design note, 2026-11-17. Nothing here is built. It is for Ed to read and answer 
 
 ## 1. The parameter model
 
-One idea: **every creature's attack is a loop of four phases**. Approach, wind-up, release, recovery, read from the `Fight` fields above. Four families of numbers act on that loop.
+**Aim (Ed, 2026-11-17): many distinct parameters and as much expressiveness as possible.** Ed: "We should aim for a lot of distinct parameters and maximum expressiveness, and then we can have 'what creatures have what settings' as design and balancing."
 
-Each number has a **global dial** in tuning. A species changes only what makes it itself, in a small profile. Nine global dials.
+So the model is a broad **catalogue of parameters**:
 
-**No dial changes what a letter is worth: a hit is a letter** (Ed, 2026-11-17). Every dial either makes a creature easier to hit for a moment, or makes her land more letters. Then `invites.hits` (7 and 14) and `invites.cooldown` (0.55 s) can be rebalanced around the new hit rate.
+- **Every parameter has a global default.**
+- **Any species may override any parameter, separately for each level** (youth, adult, legend).
+- **The ranges below are starting points, not limits.** Ed: "'up to 12 charges' doesn't need to be strict; we may find it's fun for some creatures to have more." The code clamps only what would break it (negative times, zero divisors).
+- Which creature gets which settings is design and balance work, done in data, never in code.
+
+The frame is unchanged: **every creature's attack is a loop of four phases** (approach, wind-up, release, recovery), read from the `Fight` fields above (`src/rules/combat/data.ts#Fight`). The parameters act on that loop, and on her commands.
+
+**No parameter changes what a letter is worth: a hit is a letter** (Ed, 2026-11-17). Every parameter either makes a creature easier or harder to hit for a moment, or changes how many letters she lands. Then `invites.hits` (7 and 14) and `invites.cooldown` (0.55 s) can be rebalanced around the new hit rate.
+
+Names below are the profile's keys (section "A species profile"). "Starting default" is the global default.
 
 ### Openings: when a creature is easier to hit
 
-| # | Dial (`skill.*`) | Meaning | Range | Default | Shown as |
-|---|---|---|---|---|---|
-| 1 | `recover.sit` | Seconds a creature holds still after it attacks: its punish window | 0–1.5 | 0.5 | it visibly settles (pose), plus the open cue |
-| 2 | `poise.share` | Poise as a share of its meter: letters to break it (youth 7 × 0.4 ≈ 3, adult ≈ 6). Each of those letters still counts one hit on the meter as usual. | 0–1 | 0.4 | a thin arc on its ring, emptying |
-| 3 | `poise.stagger` | Seconds it is staggered when poise breaks: it stands still. A break during a wind-up cancels the attack. | 0–2 | 1.0 | a wobble, plus the cue at full |
-| 4 | `open.slow` | Its speed while dazed, after a stagger and after a Daze command, as a share of normal | 0–1 | 0.5 for 2 s | the cue, fading |
+| Parameter | Meaning | Starting default | Shown as |
+|---|---|---|---|
+| `sit.time` | Seconds it holds after it attacks: its punish window (generalises `config/tuning.json#hareStamp.sit`) | 0.5 | it settles (pose), plus the open cue |
+| `sit.move` | Its speed while sitting, as a share of normal (0 = stock still) | 0 | — |
+| `sit.after` | Which attacks it sits after: `all`, `melee`, `ranged`, `area`, or a list of its moves | `all` | — |
+| `poise.letters` | Letters to break its poise. Each still counts one hit on the meter as usual. | 40% of its meter (youth ≈ 3, adult ≈ 6) | a thin arc on its ring, emptying |
+| `poise.windup` | Poise worn per letter during its wind-up (poise is not the meter, so this is allowed) | 1 | — |
+| `poise.regenDelay` | Seconds after its last hit before poise refills | 1 | — |
+| `poise.regenTime` | Seconds to refill from empty | 2 | the arc refilling |
+| `stagger.time` | Seconds it stands still when poise breaks | 1 | a wobble, plus the cue at full |
+| `stagger.cancels` | Whether a break during a wind-up cancels the attack | true | the tell snaps off |
+| `stagger.immune` | Seconds after a stagger before poise can break again | 3 | — |
+| `daze.time` | Seconds it is slowed after a stagger | 2 | the cue, fading |
+| `daze.speed` | Its speed while dazed, as a share of normal | 0.5 | — |
+| `dodge.letters` | Chance per letter aimed at it that it side-steps (an evasive kind; 0 = never) | 0 | a hop aside |
+| `homing.resist` | Multiplier on letter homing toward it (below 1: a slippery kind) | 1 | — |
 
-- Poise refills 1 s after the last hit, at its full value over 2 s. That is fixed, and not a dial until a playtest says so.
 - Holding still and moving slowly make the next letters land; nothing makes them count more.
-- **`recover.sit` generalises `hareStamp.sit`.** The hare's 0.8 becomes its species override, and `src/rules/combat/release.ts#c.sitUntil` sets the sit for every species.
-- No bigger targets: a letter still lands only within 0.5 m (`config/tuning.json#invites.radius`; Ed, 2026-11-17, answer 2).
-- Which of the three openings a species has, and how long each lasts, varies by creature (Ed, answer 1): its profile can set any of them to 0.
+- No bigger targets: a letter lands only within 0.5 m (`config/tuning.json#invites.radius`; Ed, 2026-11-17, answer 2).
+- Which openings a species has, and how strong each is, varies by creature (Ed, answer 1). Any of them can be 0. `dodge.letters` and `homing.resist` work the other way, making a kind harder to hit, so the same catalogue describes evasive creatures too.
 
 ### Intent: telegraphing movement
 
-| # | Dial | Meaning | Range | Default | Shown as |
-|---|---|---|---|---|---|
-| 6 | `intent.lead` | How many seconds ahead a creature's next move is shown | 0–1.2 | 0.6 | a small mark where it will be |
-| 7 | `intent.moves` | Which moves are shown: `bound` (hare's hop: landing known at take-off, `src/rules/combat/approach.ts#boundIn`), `lunge` (already shown), `pass` (a waiter's close pass, `src/rules/combatSpacing.ts#waitingDrive`), `dash` (a darting step) | list | `["bound","pass"]` | the same mark |
+| Parameter | Meaning | Starting default | Shown as |
+|---|---|---|---|
+| `intent.lead` | Seconds ahead a move is shown | 0.6 | a small mark where it will be |
+| `intent.moves` | Which moves are shown: `bound` (`src/rules/combat/approach.ts#boundIn`), `pass` (a waiter's close pass, `src/rules/combatSpacing.ts#waitingDrive`), `dash`, `lunge` (already shown), `charge`, `flee` | all of them (Ed, answer 9) | the same mark |
+| `intent.who` | Which creatures show marks: `engaging` (target is her or hers), `near` (within `intent.near`), `both` | `engaging` | — |
+| `intent.near` | Metres for `near` | 30 (`config/tuning.json#combat.defendRadius`) | — |
+| `intent.max` | Most marks shown at once | 4 | — |
 
-- **Which creatures** (Ed, answer 9): only those engaging her, or maybe near her, not all; "not certain about which and when". The first build shows marks for creatures whose target is her or one of hers within 30 m (`config/tuning.json#combat.defendRadius`), behind a switch with a "near her" alternative to compare in play.
-- Ed chose every move whose end the rules know, so `intent.moves` defaults to `["bound","pass","dash","lunge"]`.
-- A move is shown only when the rules already know where it will end: a bound, a lunge, or a waiter's goal along its path.
-- It is never a guess drawn from velocity alone. So it is honest, and it costs nothing to compute.
+- Ed (answer 9): only those engaging her, "or maybe near you, not all of them (not certain about which and when)". `intent.who` lets both be tried in play.
+- A move is shown only when the rules already know where it will end. It is never a guess from velocity alone, so it is honest and costs nothing to compute.
 
 ### Precision: hitting well, not lucky homing
 
-| # | Dial | Meaning | Range | Default | Shown as |
-|---|---|---|---|---|---|
-| 7 | `aim.help` | One multiplier on homing rate, cone and range, per aiming mode (twin-stick reads `invites.homing*`, single-stick `invites.singleStick`) | 0–1.5 | 1 for both | nothing (feel) |
+| Parameter | Meaning | Starting default | Shown as |
+|---|---|---|---|
+| `aim.help` | Multiplier on homing rate, cone and range, one per aiming mode (twin-stick reads `invites.homing*`, single-stick `invites.singleStick`) | 1 for both | (feel) |
+| `aim.rate`, `aim.cone`, `aim.range` | The three separately, for when one multiplier is too blunt | 1 each | — |
+| `aim.lead` | How much homing aims where the creature will be, not where it is (today it leads: `src/rules/invites.ts#const homing`) | 1 | — |
 
-- Homing picks the nearest invitable creature in its cone (`src/rules/invites.ts#const homing`).
-- Bonuses for clean or long hits were in the first draft. They are dropped, because a letter is one hit (Ed, 2026-11-17).
-- In single-stick mode homing does the aiming, so openings and commands carry the skill. That fits single-stick being the easier mode.
+- Bonuses for clean or long hits are dropped: a letter is one hit (Ed, 2026-11-17).
+- In single-stick mode homing does the aiming, so openings and commands carry the skill.
 
 ### Pressure: making "keep moving" not enough
 
-| # | Dial | Meaning | Range | Default | Shown as |
-|---|---|---|---|---|---|
-| 8 | `pressure.cutoff` | Share of a team's waiters that set their waiting place ahead of her heading, not round her | 0–1 | 0.3 | (their movement) |
-| 9 | `pressure.lead` | Scales how far attacks lead her (`config/tuning.json#dodge.a.lead`, `#ranged.lead`, both 1 today) | 0.5–1.5 | 1 | (their aim) |
-
-Reused, not new: `dodge.a.tokens` (how many strike at once) and `dodge.a.width` (lane widths) stay as they are.
-
-### Commands (section 3): per species and level
-
-Commands add `command.gap` (1 s between any two commands) and `command.power` (1, a multiplier on every command's numbers). Everything else is per species and per level, because "different creatures have different cooldowns depending on the ability (some are machine guns, some are powerful spells), cycling between animals and using abilities during fights is the skill" (Ed, 2026-11-17).
-
-**Each level has its own action, charges and cooldown.** A level's entry sets:
-
-- `max`: charges held, up to about 12 (Ed: "up to ~12");
-- `perBerry`: 3 to 6 (Ed: "Berries could give 3-6 charges each");
-- `cooldown`: seconds between its own uses;
-- the action's numbers.
-
-Levels need not go up evenly. Ed: "Some adults might have the same effect as a youth but many more charges; some adults might have much stronger effect but fewer or the same number of charges." Three patterns, as starting points for design and balance:
-
-| Pattern | Youth | Adult | Example |
+| Parameter | Meaning | Starting default | Shown as |
 |---|---|---|---|
-| **machine gun** | small effect, 6 charges, 4 per berry, 1 s cooldown | the same effect, 12 charges, 6 per berry, 0.7 s | dormouse Snipe, bee Buzz, squirrel Bonk |
+| `pressure.cutoff` | Share of a team's waiters that wait ahead of her heading, not round her | 0.3 | (their movement) |
+| `pressure.lead` | Scales how far attacks lead her (`config/tuning.json#dodge.a.lead`, `#ranged.lead`) | 1 | (their aim) |
+| `pressure.commit` | Seconds before release its aim locks (`config/tuning.json#dodge.a.commit` 0.18, `#ranged.commit` 0.2), per species | as today | — |
+| `pressure.surge` | Speed of its wind-up surge toward her (`config/tuning.json#dodge.a.surge`) | as today | — |
+
+Per-species versions of `dodge.a.tokens` and `dodge.a.width` can join later. They stay global for now.
+
+### Commands (section 3): every number per species and level
+
+Ed: "different creatures have different cooldowns depending on the ability (some are machine guns, some are powerful spells), cycling between animals and using abilities during fights is the skill" (2026-11-17).
+
+**No enforced gap between commands** (Ed, 2026-11-17: "zero gap gives a higher skill ceiling"). Cycling fast and firing ready creatures one after another is part of the skill. A `command.gap` parameter exists at 0, for testing only.
+
+**Each level of each species sets its own:**
+
+| Parameter | Meaning | Starting default |
+|---|---|---|
+| `verb` | Strike, Daze, Snare, Guard, Surge (section 3), or a named special | by species (the command table) |
+| `max` | Charges held: no cap (Ed: "doesn't need to be strict") | youth 6, adult 9 |
+| `perBerry` | Charges a berry gives | youth 3, adult 4 |
+| `start` | Charges when it joins her or grows up | 1 (today's `config/tuning.json#buffs.pips.start`) |
+| `cooldown` | Seconds before it can act again | 5 |
+| `cast` | Seconds from the press to the action (0 = instant; a spell can wind up) | 0 |
+| `castMove` | Whether she can move while it casts | true |
+| `target` | `aim`, `lastHit`, `nearest`, `self`, `allies`, `area`, in order of preference (section 3, Targeting) | by verb |
+| `reach` | Metres it can act at | 20 |
+| `power` | Damage multiplier on its attack (Strike, Daze) | 1.5 |
+| `count` | Projectiles, hits or bounces | its attack's own |
+| `radius` | Area of effect, metres | its attack's own |
+| `slow`, `slowTime`, `stun`, `root`, `knock`, `pull` | Effect numbers | its attack's own, doubled (Snare) |
+| `daze` | Seconds it leaves the target dazed | 0 (Daze: 3) |
+| `taunt`, `tauntRadius` | Guard's taunt seconds and metres (reuses `config/tuning.json#combat.taunt`) | 4, 10 |
+| `shield`, `shieldTime` | Blows the shield on her stops, and how long it waits | 1, 6 |
+| `buff` | Whether a use gives her its group's buff (`src/rules/buffs.ts#groupOf`) | false; true for buff-givers |
+| `buffTime`, `buffStacks` | How long, and how strong | 20 s, 1 |
+| `heal` | Hits back for her | 0 |
+| `party` | Whether her other followers join (Pack call) | false |
+
+**Levels change actions and charges, not always upward** (Ed, 2026-11-17): "Some adults might have the same effect as a youth but many more charges; some adults might have much stronger effect but fewer or the same number of charges." Three shapes, as examples of what the parameters allow, not a scheme to fit:
+
+| Shape | Youth | Adult | Example |
+|---|---|---|---|
+| **machine gun** | small effect, 6 charges, 4 per berry, cooldown 1 s | same effect, 16 charges, 6 per berry, 0.7 s | dormouse Snipe, bee Buzz, squirrel Bonk |
 | **ordinary** | 6 charges, 3 per berry, 5 s | stronger (the grammar's adult, `src/rules/attacks/species.ts#adultOf`), 8 charges, 4 per berry, 5 s | fox Foxfire, hare Stamp |
-| **spell** | 3 charges, 3 per berry, 15 s | much stronger, 3 charges, 3 per berry, 20 s | badger Barge, wolf Pack call, griffin Lift |
+| **spell** | 3 charges, 3 per berry, 15 s, cast 0.5 s | much stronger, 3 charges, 3 per berry, 20 s | badger Barge, wolf Pack call, griffin Lift |
 
 - **The charge bar replaces growth for youths** (Ed, 2026-11-17). Feeding a youth fills its bar, and one more berry on a full bar makes it an adult.
-  - So growing up costs ceil(youth max / per berry) + 1 berries: 3 for the machine gun above, 3 for ordinary, 2 for a spell. Today it is about 4 for a youth of normal strength (`src/rules/berries.ts#toEvolve`, `config/tuning.json#berries.cost`).
+  - So growing up costs ceil(youth `max` / `perBerry`) + 1 berries: 3 for the machine gun and ordinary shapes above, 2 for the spell. Today it is about 4 for a youth of normal strength (`src/rules/berries.ts#toEvolve`, `config/tuning.json#berries.cost`).
   - So `berries.cost` stops deciding growth. Each species' youth `max` and `perBerry` decide it.
-- **Legends:** unlimited charges, on a longer cooldown (Ed, answer 6), with the strongest version (`src/rules/attacks/species.ts#legendOf`). They never eat (`src/rules/berries.ts#feedRoom`).
+- **Legends:** unlimited charges, on a longer cooldown (Ed, answer 6; starting at 3 times the adult's), with the strongest version (`src/rules/attacks/species.ts#legendOf`). They never eat (`src/rules/berries.ts#feedRoom`). Their entry sets the same parameters, `max` aside.
+
+**Global display parameters:** dots per row (`config/tuning.json#leash.ranks.dotsPerRow`, 6 for charges), blink rate (2 Hz), the shortest cooldown that blinks (1.5 s), and the flash when a creature is ready again.
 
 ### What it replaces, reuses, extends
 
 | Existing | Becomes |
 |---|---|
-| `config/tuning.json#hareStamp.sit` | the hare's `recover.sit` override (0.8) |
+| `config/tuning.json#hareStamp.sit` | the hare's `sit.time` (0.8) |
 | `src/rules/invites.ts#love` (`I.amount`) | unchanged: a letter is one hit (Ed, 2026-11-17) |
-| `config/tuning.json#buffs.pips.max`, `#buffs.pips.life` | replaced by each level's `max` and `perBerry`; `life` becomes the buff period a charge gives (below) |
+| `config/tuning.json#buffs.pips.max`, `#buffs.pips.life` | replaced by each level's `max` and `perBerry`; `life` is retired; the buff a charge gives lasts its `buffTime` |
 | `src/rules/buffs.ts#buffsOf` (buff while fed) | buff only for a while after a buff-giver uses a charge |
-| `config/tuning.json#invites.homing`, `#homingCone`, `#homingRange`, `#invites.singleStick` | kept, scaled by `aim.help` |
+| `config/tuning.json#invites.homing`, `#homingCone`, `#homingRange`, `#invites.singleStick` | kept, scaled by `aim.*` and each creature's `homing.resist` |
 | `config/tuning.json#dodge.a.lead`, `#ranged.lead` | kept, scaled by `pressure.lead` |
 | `src/rules/combatSpacing.ts#waitingSlot` | extended: cutoff places for `pressure.cutoff` of waiters |
 | `src/rules/buffs.ts#drainPips` | removed: pips are spent by commands only (Ed, 2026-11-17) |
@@ -151,23 +195,30 @@ Levels need not go up evenly. Ed: "Some adults might have the same effect as a y
 
 ### A species profile
 
-Profiles live in a new `config/combat-skill.json`, next to `config/species-attacks.json`: one sparse entry per species, with only what differs from the globals.
+Profiles live in a new `config/combat-skill.json`, next to `config/species-attacks.json`. Each species has one sparse entry: any parameter from the catalogue above, at the species level or under a level (`youth`, `adult`, `legend`). A value under a level wins over the species value, which wins over the global default.
 
 ```json
 {
-  "global": { "recover": { "sit": 0.5 }, "poise": { "share": 0.4, "stagger": 1 }, "open": { "slow": 0.5, "slowTime": 2 },
-              "intent": { "lead": 0.6, "moves": ["bound", "pass"] } },
+  "global": { "sit": { "time": 0.5, "move": 0 }, "poise": { "letters": "40%", "windup": 1 }, "stagger": { "time": 1, "cancels": true },
+              "daze": { "time": 2, "speed": 0.5 }, "intent": { "lead": 0.6, "who": "engaging" },
+              "command": { "youth": { "max": 6, "perBerry": 3, "cooldown": 5 }, "adult": { "max": 9, "perBerry": 4, "cooldown": 5 }, "legendCooldown": 3 } },
   "species": {
-    "hare":     { "recover": { "sit": 0.8 }, "intent": { "moves": ["bound"] }, "command": "stamp", "pattern": "ordinary" },
-    "badger":   { "poise": { "share": 0.6 }, "recover": { "sit": 0.9 }, "command": "barge", "pattern": "spell" },
-    "dormouse": { "recover": { "sit": 0.2 }, "poise": { "share": 0.25 }, "command": "snipe", "pattern": "machineGun" }
+    "hare": { "sit": { "time": 0.8 }, "dodge": { "letters": 0.15 },
+              "command": { "verb": "Snare", "name": "Stamp", "radius": 4, "slowTime": 2,
+                           "adult": { "radius": 6, "max": 8 } } },
+    "badger": { "poise": { "letters": "60%", "windup": 2 }, "sit": { "time": 0.9 },
+                "command": { "verb": "Guard", "name": "Barge", "knock": 10, "taunt": 3, "cast": 0.5,
+                             "youth": { "max": 3, "perBerry": 3, "cooldown": 15 }, "adult": { "knock": 16, "max": 3, "perBerry": 3, "cooldown": 20 } } },
+    "dormouse": { "sit": { "time": 0.2 }, "poise": { "letters": "25%" }, "homing": { "resist": 0.7 },
+                  "command": { "verb": "Daze", "name": "Snipe", "daze": 1.5,
+                               "youth": { "max": 6, "perBerry": 4, "cooldown": 1 }, "adult": { "max": 16, "perBerry": 6, "cooldown": 0.7 } } }
   }
 }
 ```
 
 Home island profiles (the home kinds are `src/rules/rosters.ts#homeKinds`: hedgehog, squirrel, hare, fox, bee, stoat, mole, snail, dormouse, badger):
 
-| Species | Its character | Sit after attacking | Poise | Intent | Pattern |
+| Species | Its character | Sit after attacking | Poise | Intent | Command shape |
 |---|---|---|---|---|---|
 | hedgehog | slow, prickly | 1.0 (curled, rolling back) | 0.6 | none | spell |
 | squirrel | lobber, darts in trees | 0.3 | 0.3 | pass | machine gun |
@@ -235,18 +286,18 @@ Ed's pad: **square = command (eat when near a berry), circle = pick up / place.*
 
 ### Charges: the berry pips
 
-- **Charges are pips.** Today a berry gives an adult one pip, up to 5 (`src/rules/buffs.ts#addPip`). Under this plan a berry gives `perBerry` pips (3 to 6), up to the species' `max` (6 to 12; see section 1). A command spends one.
+- **Charges are pips.** Today a berry gives an adult one pip, up to 5 (`src/rules/buffs.ts#addPip`). Under this plan a berry gives the level's `perBerry` pips, up to its `max`; neither is capped (section 1). A command spends one.
   - So feeding is a reload of several shots, and the queued-berry glint lights that many empty pips.
-  - Up to 12 pips: today's row is 4 dots a row (`config/tuning.json#leash.ranks.dotsPerRow`). At 6 a row, 12 make two rows, the same height as a youth's dots (Ed, answer 10).
-  - A fresh adult starts with 1 pip, as today (`config/tuning.json#buffs.pips.start`).
+  - Dots in rows (Ed, answer 10): today's row is 4 dots (`config/tuning.json#leash.ranks.dotsPerRow`). At 6 a row, 12 make two rows, the height of a youth's dots today. A creature with many more charges gets more rows, or smaller dots past a set count; that is a display parameter.
+  - A creature starts with its level's `start` charges (1 by default, as today's `config/tuning.json#buffs.pips.start`).
 - **Pips do not drain** (Ed, 2026-11-17). `drainPips` goes, and `buffs.pips.life` stops meaning time.
 - **Buffs come from using a charge** (Ed, answer 3): "not all adults give buffs; of the ones that do, using a charge gives you that buff for a period".
   - A species' profile marks whether its adult is a buff-giver. Which ones is a design choice still open.
-  - For a buff-giver, each charge used gives her its group's buff (`src/rules/buffs.ts#groupOf`) for `buffs.period` seconds. A new use restarts the period.
+  - For a buff-giver, each charge used gives her its group's buff (`src/rules/buffs.ts#groupOf`) for its `buffTime`, at its `buffStacks`. A new use restarts the period.
   - Buffs of different kinds still stack as today (`src/rules/buffs.ts#buffsOf`). The buff icon shows amber while its period runs.
   - A buff-giver's action can be the buff itself (the Surge verb), or another action that also brings the buff.
   - So there are no more passive buffs from feeding. `buffsOf` counts the creatures whose period is running, not those with pips.
-- **Cooldowns.** Each creature has its own cooldown, set by its action and level (a machine gun about 1 s, a spell 15–20 s), plus the shared `command.gap` (1 s) between any two commands (Ed, answer 5).
+- **Cooldowns.** Each creature has its own cooldown, set by its action and level: a machine gun about 1 s, a spell 15–20 s (Ed, answer 5). There is no shared gap (Ed, 2026-11-17: "zero gap gives a higher skill ceiling").
   - Cycling with Q, R1 and L1 to a ready creature and using it is the skill: "cycling between animals and using abilities during fights is the skill".
 - **Shown on the same pips, with no new ring:**
   - **ready**: lit pips steady and bright, as today;
@@ -270,7 +321,7 @@ Ed's pad: **square = command (eat when near a berry), circle = pick up / place.*
 Every kind gets an action from one of **five verbs**. That keeps the code small and the actions readable:
 
 - **Strike** (attack): its own grammar attack, cast now at the target with `command.power` × 1.5 damage. It ignores its attack cooldown and the strike token. The blow fills the target's ring as hearts. **Reuses** `src/rules/attacks/combatWorld.ts#speciesSpell`.
-- **Daze** (attack/setup): a Strike that also leaves the target slowed (`open.slow`) and showing the open cue for 3 s, so her letters land. It never makes a letter count more (Ed, 2026-11-17).
+- **Daze** (attack/setup): a Strike that also leaves the target slowed (its `daze` seconds at the target's `daze.speed`) and showing the open cue for 3 s, so her letters land. It never makes a letter count more (Ed, 2026-11-17).
 - **Snare** (control): its attack's own effect (slow, root, stun, throw) on the target, doubled and lengthened. **Reuses** the grammar's effects (`src/rules/attacks/combatWorld.ts`).
 - **Guard** (defend): it taunts every wild creature within 10 m for 4 s, or puts a one-blow shield on her for 6 s.
   - The taunt **reuses** `combat.taunt` (`src/rules/combat/hits.ts`).
@@ -380,8 +431,8 @@ Every kind gets an action from one of **five verbs**. That keeps the code small 
 
 **Tune first, in this order:**
 
-1. `skill.recover.sit` (0.5): the size of the window.
-2. `skill.poise.share` (0.4) and `poise.stagger` (1 s): how often staggers happen, and how long they last.
+1. `sit.time` (0.5): the size of the window.
+2. `poise.letters` (40%) and `stagger.time` (1 s): how often staggers happen, and how long they last.
 3. Each prototype species' cooldown, `perBerry` and `max`: the command rhythm, and how often she must feed.
 4. `skill.aim.help` (1) for twin-stick: how much luck is left.
 5. `invites.hits` (7, 14): rebalanced last, against the new hit rate.
@@ -403,7 +454,7 @@ Intent marks, pressure and the other 60 commands come after Ed has played this.
 | `config/combat-skill.json` (new) | the 3 + 4 species profiles |
 | `src/rules/skill/phase.ts` (new) | a creature's phase (approach, wind-up, release, recovery, stagger) from `Fight` and `sitUntil` |
 | `src/rules/skill/poise.ts` (new) | poise, stagger and daze; poise kept on the creature as an optional field (`src/rules/creatures.ts`, 748 lines: room for one line). Letters stay one hit; `src/rules/invites.ts#love` only reports the hit to poise, through an optional hook so `game.ts` needn't grow. |
-| `src/rules/combat/` (where speed is set) | a staggered creature holds still; a dazed one moves at `open.slow` (the exact file not checked) |
+| `src/rules/combat/` (where speed is set) | a staggered creature holds still; a dazed one moves at `daze.speed` (the exact file not checked) |
 | `src/rules/combat/release.ts` | sit after release from the profile, in place of the hare-only sit |
 | `src/rules/commands/command.ts`, `actions.ts` (new) | the press, target choice, pip spend, cooldowns; the four actions |
 | `src/rules/leash.ts#LeashControls` | `command?: boolean` (Controls extends it, so `src/rules/game.ts`, over 800 lines, is not touched there) |
@@ -437,9 +488,9 @@ Intent marks, pressure and the other 60 commands come after Ed has played this.
 
 ## 6. Still open (Ed, 2026-11-17: "we can explore this in design and balancing")
 
-Ed answered the first ten questions on 2026-11-17; they are in **Already decided**, items 11 and 12. What is left to explore in design and play, not to ask as questions yet:
+Ed answered the first ten questions on 2026-11-17; they are in **Already decided**, items 11 to 13. What is left to explore in design and play, not to ask as questions yet:
 
-1. Which adults give buffs, and how long a charge's buff lasts (`buffs.period`; 120 s, today's `buffs.pips.life`, as a first number?).
-2. Each species' pattern (machine gun, ordinary, spell), and how its action changes from youth to adult.
+1. Which creatures give buffs, and each one's `buffTime` and `buffStacks`.
+2. Every species' settings across the catalogue: its openings, its command at each level, its charges and cooldowns. This is design and balance in data (Ed, 2026-11-17).
 3. Which creatures show intent marks: engaging her, or near her, and when.
 4. How the outline cue reads on every sprite and at night.
