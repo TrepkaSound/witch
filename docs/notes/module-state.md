@@ -72,6 +72,7 @@ On 2026-11-16, release 61's base and this change both gave "same as alone" in ev
 | `combat/data.ts:281` | `maker` | let | who makes a made attack asked for by name | setAttackMaker (combat/packs.ts, at load) | **c** |  |
 | `combat/hits.ts:15` | `D` | let | the combat data `land` reads | useData: each fight step; now also each game step (fightFor) | **d** | **moved**: put back per game at every step (rules/fightSettings.ts); in a game it is always COMBAT |
 | `combat/legend.ts:68` | `routeLines` | written | tonight's friendly route, by game, checked against the ley key | friendlyLegendRoute | **a** |  |
+| `combat/teams.ts:24` | `memberIndex` | written | each map of waiting teams by member id (teamOf), rebuilt by stepTeams, the only writer; a map not indexed is searched | stepTeams | **a** | new in the perf sweep (2026-11), marked |
 | `combat/strikes.ts:19` | `THROWN` | written | an attack spec's thrown form | its own module | **a** |  |
 | `combatSpacing.ts:75` | `radiiData` | let | the spacing data the radii map was made from | radiiOf | **a** |  |
 | `combatSpacing.ts:75` | `radiiMap` | let | calibrated radii by species | radiiOf, remade when the data object changes | **a** |  |
