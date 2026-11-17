@@ -243,7 +243,7 @@ Home island profiles (the home kinds are `src/rules/rosters.ts#homeKinds`: hedge
 - Colour grammar (Ed, 2026-11-03: "the forest is cold, the party is warm"):
   - warnings are the attacker's element colour (the trial, `src/render/leash/attackLook.ts#danger`) or red;
   - what's hers is warm.
-  - An opening is an opportunity for her, so it is warm and never red. It also stays clear of the element colours, which mean "danger to you".
+  - An opening is an opportunity for her, so it is warm and not red. It also stays clear of the element colours, which mean "danger to you".
 - The poise arc rides on the creature's existing meter ring as a thin outer band, so there is no new object. A break flashes it white.
 - **No stars for a creature's stagger:** three circling stars mean she is slowed (`src/render/herEffects.ts#HER_EFFECTS`). A staggered creature wobbles, with its outline at full.
 
