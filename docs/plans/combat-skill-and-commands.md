@@ -21,6 +21,18 @@ Design note, 2026-11-17. Nothing here is built. It is for Ed to read and answer 
 8. **A letter is always one hit** (2026-11-17): "I don't think one letter should ever count for more than one hit. A hit is a letter. But e.g. a buff could make you shoot twice as fast, or slow or daze a creature down so that it's easier to hit. We can rebalance around this (number of hits a creature can take, attack speed, etc) if we need to." So skill must raise how many letters land, never what one letter is worth.
 9. **More charges** (2026-11-17): "I think creatures should hold more, up to ~12, and Berries could give 3-6 charges each, all depending on how big/long/strong the action is."
 10. **Every level acts** (2026-11-17): "both youths and adults and legends should have actions; each level has a stronger action and more charges. If you fill a youth's charge bar and then give it another berry, it evolves to an adult."
+11. **Levels change actions and charges, not always upward** (2026-11-17): "not necessarily more charges; let's say the actions and their charge numbers change with each level, and we can explore this in design and balancing. Some adults might have the same effect as a youth but many more charges; some adults might have much stronger effect but fewer or the same number of charges."
+12. **Ed's answers to the first questions** (2026-11-17). They are written into the sections below:
+    1. What makes a creature open: all three (sit, stagger, daze), "can vary by creature".
+    2. Bigger targets: no.
+    3. Buffs: "not all adults give buffs; of the ones that do, using a charge gives you that buff for a period".
+    4. Eating: square eats within today's 15 m, if the bottom creature has room.
+    5. Cooldowns: per creature, plus the short shared gap. "different creatures have different cooldowns depending on the ability (some are machine guns, some are powerful spells), cycling between animals and using abilities during fights is the skill".
+    6. Legends: unlimited charges, on a longer cooldown.
+    7. Square in the treetops: nothing. (Ed: "I don't think square cycles in the treetops currently, R1 and L1 do". The code does cycle on the pad's square in the air today, `src/rules/leash.ts` line 275, `(c.sigil && !onGround) || c.cycle`; the answer is the same either way.)
+    8. The open cue: a glint or outline on the creature's sprite.
+    9. Intent marks: every move whose end the rules know, "but only the ones who are engaging you, or maybe near you, not all of them (not certain about which and when)".
+    10. Up to 12 charges: dots in two rows.
 
 ## Today, in brief (checked)
 
@@ -48,7 +60,7 @@ Design note, 2026-11-17. Nothing here is built. It is for Ed to read and answer 
 
 One idea: **every creature's attack is a loop of four phases**. Approach, wind-up, release, recovery, read from the `Fight` fields above. Four families of numbers act on that loop.
 
-Each number has a **global dial** in tuning. A species changes only what makes it itself, in a small profile. Ten global dials.
+Each number has a **global dial** in tuning. A species changes only what makes it itself, in a small profile. Nine global dials.
 
 **No dial changes what a letter is worth: a hit is a letter** (Ed, 2026-11-17). Every dial either makes a creature easier to hit for a moment, or makes her land more letters. Then `invites.hits` (7 and 14) and `invites.cooldown` (0.55 s) can be rebalanced around the new hit rate.
 
@@ -60,12 +72,12 @@ Each number has a **global dial** in tuning. A species changes only what makes i
 | 2 | `poise.share` | Poise as a share of its meter: letters to break it (youth 7 × 0.4 ≈ 3, adult ≈ 6). Each of those letters still counts one hit on the meter as usual. | 0–1 | 0.4 | a thin arc on its ring, emptying |
 | 3 | `poise.stagger` | Seconds it is staggered when poise breaks: it stands still. A break during a wind-up cancels the attack. | 0–2 | 1.0 | a wobble, plus the cue at full |
 | 4 | `open.slow` | Its speed while dazed, after a stagger and after a Daze command, as a share of normal | 0–1 | 0.5 for 2 s | the cue, fading |
-| 5 | `open.reach` | Extra letter reach on an open creature (today a letter lands within 0.5 m: `config/tuning.json#invites.radius`) | 0–1 m | 0 (off) | none |
 
 - Poise refills 1 s after the last hit, at its full value over 2 s. That is fixed, and not a dial until a playtest says so.
 - Holding still and moving slowly make the next letters land; nothing makes them count more.
 - **`recover.sit` generalises `hareStamp.sit`.** The hare's 0.8 becomes its species override, and `src/rules/combat/release.ts#c.sitUntil` sets the sit for every species.
-- `open.reach` is the one "bigger target" lever. It starts off; question 2 asks whether to have it at all.
+- No bigger targets: a letter still lands only within 0.5 m (`config/tuning.json#invites.radius`; Ed, 2026-11-17, answer 2).
+- Which of the three openings a species has, and how long each lasts, varies by creature (Ed, answer 1): its profile can set any of them to 0.
 
 ### Intent: telegraphing movement
 
@@ -74,6 +86,8 @@ Each number has a **global dial** in tuning. A species changes only what makes i
 | 6 | `intent.lead` | How many seconds ahead a creature's next move is shown | 0–1.2 | 0.6 | a small mark where it will be |
 | 7 | `intent.moves` | Which moves are shown: `bound` (hare's hop: landing known at take-off, `src/rules/combat/approach.ts#boundIn`), `lunge` (already shown), `pass` (a waiter's close pass, `src/rules/combatSpacing.ts#waitingDrive`), `dash` (a darting step) | list | `["bound","pass"]` | the same mark |
 
+- **Which creatures** (Ed, answer 9): only those engaging her, or maybe near her, not all; "not certain about which and when". The first build shows marks for creatures whose target is her or one of hers within 30 m (`config/tuning.json#combat.defendRadius`), behind a switch with a "near her" alternative to compare in play.
+- Ed chose every move whose end the rules know, so `intent.moves` defaults to `["bound","pass","dash","lunge"]`.
 - A move is shown only when the rules already know where it will end: a bound, a lunge, or a waiter's goal along its path.
 - It is never a guess drawn from velocity alone. So it is honest, and it costs nothing to compute.
 
@@ -81,7 +95,7 @@ Each number has a **global dial** in tuning. A species changes only what makes i
 
 | # | Dial | Meaning | Range | Default | Shown as |
 |---|---|---|---|---|---|
-| 8 | `aim.help` | One multiplier on homing rate, cone and range, per aiming mode (twin-stick reads `invites.homing*`, single-stick `invites.singleStick`) | 0–1.5 | 1 for both | nothing (feel) |
+| 7 | `aim.help` | One multiplier on homing rate, cone and range, per aiming mode (twin-stick reads `invites.homing*`, single-stick `invites.singleStick`) | 0–1.5 | 1 for both | nothing (feel) |
 
 - Homing picks the nearest invitable creature in its cone (`src/rules/invites.ts#const homing`).
 - Bonuses for clean or long hits were in the first draft. They are dropped, because a letter is one hit (Ed, 2026-11-17).
@@ -91,34 +105,34 @@ Each number has a **global dial** in tuning. A species changes only what makes i
 
 | # | Dial | Meaning | Range | Default | Shown as |
 |---|---|---|---|---|---|
-| 9 | `pressure.cutoff` | Share of a team's waiters that set their waiting place ahead of her heading, not round her | 0–1 | 0.3 | (their movement) |
-| 10 | `pressure.lead` | Scales how far attacks lead her (`config/tuning.json#dodge.a.lead`, `#ranged.lead`, both 1 today) | 0.5–1.5 | 1 | (their aim) |
+| 8 | `pressure.cutoff` | Share of a team's waiters that set their waiting place ahead of her heading, not round her | 0–1 | 0.3 | (their movement) |
+| 9 | `pressure.lead` | Scales how far attacks lead her (`config/tuning.json#dodge.a.lead`, `#ranged.lead`, both 1 today) | 0.5–1.5 | 1 | (their aim) |
 
 Reused, not new: `dodge.a.tokens` (how many strike at once) and `dodge.a.width` (lane widths) stay as they are.
 
-### Commands (section 3) add three dials
+### Commands (section 3): per species and level
 
-`command.cooldown` (6 s per creature), `command.gap` (1 s between any two commands) and `command.power` (1, a multiplier on every command's numbers).
+Commands add `command.gap` (1 s between any two commands) and `command.power` (1, a multiplier on every command's numbers). Everything else is per species and per level, because "different creatures have different cooldowns depending on the ability (some are machine guns, some are powerful spells), cycling between animals and using abilities during fights is the skill" (Ed, 2026-11-17).
 
-Per species, the profile sets its action's size (small, ordinary or big), and that gives two numbers per level, by how big, long or strong the action is (Ed, 2026-11-17: "up to ~12, and Berries could give 3-6 charges each, all depending on how big/long/strong the action is"):
+**Each level has its own action, charges and cooldown.** A level's entry sets:
 
-- `command.max`: the most charges it holds. It replaces `buffs.pips.max` (5).
-- `command.perBerry`: how many charges one berry gives, 3 to 6.
+- `max`: charges held, up to about 12 (Ed: "up to ~12");
+- `perBerry`: 3 to 6 (Ed: "Berries could give 3-6 charges each");
+- `cooldown`: seconds between its own uses;
+- the action's numbers.
 
-Each level has a stronger action and more charges (Ed, 2026-11-17).
+Levels need not go up evenly. Ed: "Some adults might have the same effect as a youth but many more charges; some adults might have much stronger effect but fewer or the same number of charges." Three patterns, as starting points for design and balance:
 
-- **Strength by level** reuses the grammar's own growth: the adult's attack is the young one grown (`src/rules/attacks/species.ts#adultOf`), and the legend's is exaggerated (`#legendOf`).
-- **The charge bar replaces growth for youths.** Feeding a youth fills its bar. One more berry on a full bar makes it an adult.
-  - Berries to grow up become about ceil(youth max / per berry) + 1: 3 in every row below. Today it is about 4 for a youth of normal strength (`src/rules/berries.ts#toEvolve`, `config/tuning.json#berries.cost`).
-  - So `berries.cost` stops deciding growth.
+| Pattern | Youth | Adult | Example |
+|---|---|---|---|
+| **machine gun** | small effect, 6 charges, 4 per berry, 1 s cooldown | the same effect, 12 charges, 6 per berry, 0.7 s | dormouse Snipe, bee Buzz, squirrel Bonk |
+| **ordinary** | 6 charges, 3 per berry, 5 s | stronger (the grammar's adult, `src/rules/attacks/species.ts#adultOf`), 8 charges, 4 per berry, 5 s | fox Foxfire, hare Stamp |
+| **spell** | 3 charges, 3 per berry, 15 s | much stronger, 3 charges, 3 per berry, 20 s | badger Barge, wolf Pack call, griffin Lift |
 
-| Action size | Examples | Youth (holds / per berry) | Adult | Legend |
-|---|---|---|---|---|
-| small, quick | Bonk, Snipe, Buzz, Spit | 8 / 4 | 12 / 6 | 16 |
-| ordinary | most Strikes, Snares, Daze | 6 / 3 | 9 / 4 | 12 |
-| big, long | the Guards that throw, Pack call, Lift, Mend, Whirlpool | 4 / 3 | 6 / 3 | 9 |
-
-Legends never eat (`src/rules/berries.ts#feedRoom`; Ed, 2026-10-04: legends are never grown). How a legend's charges come back is question 6.
+- **The charge bar replaces growth for youths** (Ed, 2026-11-17). Feeding a youth fills its bar, and one more berry on a full bar makes it an adult.
+  - So growing up costs ceil(youth max / per berry) + 1 berries: 3 for the machine gun above, 3 for ordinary, 2 for a spell. Today it is about 4 for a youth of normal strength (`src/rules/berries.ts#toEvolve`, `config/tuning.json#berries.cost`).
+  - So `berries.cost` stops deciding growth. Each species' youth `max` and `perBerry` decide it.
+- **Legends:** unlimited charges, on a longer cooldown (Ed, answer 6), with the strongest version (`src/rules/attacks/species.ts#legendOf`). They never eat (`src/rules/berries.ts#feedRoom`).
 
 ### What it replaces, reuses, extends
 
@@ -126,8 +140,8 @@ Legends never eat (`src/rules/berries.ts#feedRoom`; Ed, 2026-10-04: legends are 
 |---|---|
 | `config/tuning.json#hareStamp.sit` | the hare's `recover.sit` override (0.8) |
 | `src/rules/invites.ts#love` (`I.amount`) | unchanged: a letter is one hit (Ed, 2026-11-17) |
-| `config/tuning.json#invites.radius` | kept, plus `open.reach` on an open creature (off at first) |
-| `config/tuning.json#buffs.pips.max`, `#buffs.pips.life` | replaced by each species' `command.max` and `perBerry`; life no longer used |
+| `config/tuning.json#buffs.pips.max`, `#buffs.pips.life` | replaced by each level's `max` and `perBerry`; `life` becomes the buff period a charge gives (below) |
+| `src/rules/buffs.ts#buffsOf` (buff while fed) | buff only for a while after a buff-giver uses a charge |
 | `config/tuning.json#invites.homing`, `#homingCone`, `#homingRange`, `#invites.singleStick` | kept, scaled by `aim.help` |
 | `config/tuning.json#dodge.a.lead`, `#ranged.lead` | kept, scaled by `pressure.lead` |
 | `src/rules/combatSpacing.ts#waitingSlot` | extended: cutoff places for `pressure.cutoff` of waiters |
@@ -141,42 +155,46 @@ Profiles live in a new `config/combat-skill.json`, next to `config/species-attac
 
 ```json
 {
-  "global": { "recover": { "sit": 0.5 }, "poise": { "share": 0.4, "stagger": 1 }, "open": { "slow": 0.5, "slowTime": 2, "reach": 0 },
+  "global": { "recover": { "sit": 0.5 }, "poise": { "share": 0.4, "stagger": 1 }, "open": { "slow": 0.5, "slowTime": 2 },
               "intent": { "lead": 0.6, "moves": ["bound", "pass"] } },
   "species": {
-    "hare":     { "recover": { "sit": 0.8 }, "intent": { "moves": ["bound"] }, "command": "stamp", "size": "ordinary" },
-    "badger":   { "poise": { "share": 0.6 }, "recover": { "sit": 0.9 }, "command": "barge", "size": "big" },
-    "dormouse": { "recover": { "sit": 0.2 }, "poise": { "share": 0.25 }, "command": "snipe", "size": "small" }
+    "hare":     { "recover": { "sit": 0.8 }, "intent": { "moves": ["bound"] }, "command": "stamp", "pattern": "ordinary" },
+    "badger":   { "poise": { "share": 0.6 }, "recover": { "sit": 0.9 }, "command": "barge", "pattern": "spell" },
+    "dormouse": { "recover": { "sit": 0.2 }, "poise": { "share": 0.25 }, "command": "snipe", "pattern": "machineGun" }
   }
 }
 ```
 
 Home island profiles (the home kinds are `src/rules/rosters.ts#homeKinds`: hedgehog, squirrel, hare, fox, bee, stoat, mole, snail, dormouse, badger):
 
-| Species | Its character | Sit after attacking | Poise | Intent | Action size |
+| Species | Its character | Sit after attacking | Poise | Intent | Pattern |
 |---|---|---|---|---|---|
-| hedgehog | slow, prickly | 1.0 (curled, rolling back) | 0.6 | none | big |
-| squirrel | lobber, darts in trees | 0.3 | 0.3 | pass | small |
+| hedgehog | slow, prickly | 1.0 (curled, rolling back) | 0.6 | none | spell |
+| squirrel | lobber, darts in trees | 0.3 | 0.3 | pass | machine gun |
 | hare | fast hopper | 0.8 (today's) | 0.3 | bound | ordinary |
 | fox | curving wisp | 0.5 | 0.4 | pass | ordinary |
-| bee | quick double sting | 0.3 | 0.2 | dash | small |
+| bee | quick double sting | 0.3 | 0.2 | dash | machine gun |
 | stoat | longest lunge | 1.0 (it overshoots) | 0.4 | lunge (already shown) | ordinary |
 | mole | heave from below | 0.8 (surfaced) | 0.5 | none | ordinary |
-| snail | slime zone | 0 (it's slow anyway) | 0.8 | none | big |
-| dormouse | fast seed | 0.2 | 0.25 | pass | small |
-| badger | shoulder-barge | 0.9 | 0.6 | lunge | big |
+| snail | slime zone | 0 (it's slow anyway) | 0.8 | none | spell |
+| dormouse | fast seed | 0.2 | 0.25 | pass | machine gun |
+| badger | shoulder-barge | 0.9 | 0.6 | lunge | spell |
 
 ## 2. Readability
 
 **The open cue: one look for every species.**
 
-- A thin ring of her magic's warm amber on the ground under the creature, the same amber as the active buff icon (`src/render/leash/stack.ts`, `AMBER`). It is faint during a wind-up, where enough letters can break its poise. It is bright while the creature sits still or is staggered, and fades while it's dazed.
+- **A glint outline on the creature's own sprite** (Ed, 2026-11-17, answer 8), in her magic's warm amber, the same as the active buff icon (`src/render/leash/stack.ts`, `AMBER`).
+  - Faint during a wind-up, where enough letters can break its poise.
+  - Bright while it sits still or is staggered.
+  - Fading while it's dazed.
+  - Not checked: whether the sprite batch can draw an outline cheaply, or needs a second, slightly larger tinted draw behind the sprite.
 - Colour grammar (Ed, 2026-11-03: "the forest is cold, the party is warm"):
   - warnings are the attacker's element colour (the trial, `src/render/leash/attackLook.ts#danger`) or red;
   - what's hers is warm.
   - An opening is an opportunity for her, so it is warm and never red. It also stays clear of the element colours, which mean "danger to you".
 - The poise arc rides on the creature's existing meter ring as a thin outer band, so there is no new object. A break flashes it white.
-- **No stars for a creature's stagger:** three circling stars mean she is slowed (`src/render/herEffects.ts#HER_EFFECTS`). A staggered creature wobbles, with its amber ring at full.
+- **No stars for a creature's stagger:** three circling stars mean she is slowed (`src/render/herEffects.ts#HER_EFFECTS`). A staggered creature wobbles, with its outline at full.
 
 **The intent mark.**
 
@@ -210,30 +228,32 @@ Ed's pad: **square = command (eat when near a berry), circle = pick up / place.*
 
 1. **Circle loses dodge.** L2 keeps it. Anyone used to circle-dodging must move to L2: worth a line in What's new.
 2. **Feeding leaves E.** The feed-or-place hold (`config/tuning.json#berries.feed.hold`) is no longer needed on any input, because feed and place are now on different buttons. A tap of circle or E always places, which is simpler.
-3. **The treetop cycle on square goes.** R1/L1 cover it on the pad, and touch keeps it on Sigil. Followers travel quietly while she's aloft (`config/travel.json#posse`), so a command there would have no one to act. Square in the treetops does nothing; that's question 7.
-4. **"Near a berry" needs a smaller reach than 15 m.** Areas have 10–16 berries (`config/tuning.json#berries.perArea`). At 15 m, square would turn into eat in a large part of every fight, and the command would be unreliable.
-   - The proposal is a separate `command.eatReach` of 5 m: she must stand by the bush.
-   - Square eats only when the bottom creature has room (`src/rules/berries.ts#hasRoom`). A full creature always commands.
-   - The existing feed tag over the berry (`src/render/feedTag.ts`) keeps showing exactly what the press will do. Question 4.
+3. **The treetop cycle on square goes.** R1/L1 cover it on the pad, and touch keeps it on Sigil. Followers travel quietly while she's aloft (`config/travel.json#posse`), so a command there would have no one to act. Square in the treetops does nothing (Ed, 2026-11-17, answer 7).
+4. **"Near a berry" is today's 15 m** (Ed, answer 4: `config/tuning.json#berries.feed.reach`), when the bottom creature has room (`src/rules/berries.ts#hasRoom`).
+   - A creature at its max always commands, and the existing feed tag over the berry (`src/render/feedTag.ts`) shows what the press will do.
+   - Worth watching in play: areas have 10–16 berries (`config/tuning.json#berries.perArea`). In a fight near bushes, square will often be eat for a creature that isn't full. Playing as a reload rhythm, that may be right.
 
 ### Charges: the berry pips
 
 - **Charges are pips.** Today a berry gives an adult one pip, up to 5 (`src/rules/buffs.ts#addPip`). Under this plan a berry gives `perBerry` pips (3 to 6), up to the species' `max` (6 to 12; see section 1). A command spends one.
   - So feeding is a reload of several shots, and the queued-berry glint lights that many empty pips.
-  - Up to 12 pips need more room: today's row is 4 dots a row (`config/tuning.json#leash.ranks.dotsPerRow`). At 6 a row, 12 make two rows, the same height as a youth's dots. Question 10 offers a number instead.
+  - Up to 12 pips: today's row is 4 dots a row (`config/tuning.json#leash.ranks.dotsPerRow`). At 6 a row, 12 make two rows, the same height as a youth's dots (Ed, answer 10).
   - A fresh adult starts with 1 pip, as today (`config/tuning.json#buffs.pips.start`).
 - **Pips do not drain** (Ed, 2026-11-17). `drainPips` goes, and `buffs.pips.life` stops meaning time.
-- **Buffs.** An adult's group buff stays on while it has at least one pip (as today, `src/rules/buffs.ts#buffsOf`: `pipFuel > 0`).
-  - Spending its last charge switches its passive buff off until she feeds it again.
-  - So every press is a choice: spend now for a tactical action, or keep one pip to hold the buff. Question 3 offers the alternative, buffs always on.
-- **Cooldown.** Each creature has its own `command.cooldown` (6 s), plus a short shared `command.gap` (1 s).
-  - The shared gap stops cycling-and-pressing from emptying the whole stack in a second. The per-creature cooldown makes Q mid-fight a real choice.
-  - Ed's "a cooldown on how quickly you can use a charge" fits either; question 5 asks which.
+- **Buffs come from using a charge** (Ed, answer 3): "not all adults give buffs; of the ones that do, using a charge gives you that buff for a period".
+  - A species' profile marks whether its adult is a buff-giver. Which ones is a design choice still open.
+  - For a buff-giver, each charge used gives her its group's buff (`src/rules/buffs.ts#groupOf`) for `buffs.period` seconds. A new use restarts the period.
+  - Buffs of different kinds still stack as today (`src/rules/buffs.ts#buffsOf`). The buff icon shows amber while its period runs.
+  - A buff-giver's action can be the buff itself (the Surge verb), or another action that also brings the buff.
+  - So there are no more passive buffs from feeding. `buffsOf` counts the creatures whose period is running, not those with pips.
+- **Cooldowns.** Each creature has its own cooldown, set by its action and level (a machine gun about 1 s, a spell 15–20 s), plus the shared `command.gap` (1 s) between any two commands (Ed, answer 5).
+  - Cycling with Q, R1 and L1 to a ready creature and using it is the skill: "cycling between animals and using abilities during fights is the skill".
 - **Shown on the same pips, with no new ring:**
   - **ready**: lit pips steady and bright, as today;
   - **cooling down**: lit pips dimmed to about 45%, and the pip that will be spent next blinks slowly (about 2 Hz, on/off);
   - **ready again**: one bright flash across its lit pips, plus a soft tick sound;
-  - **no charges**: all pips dark; its buff icon goes to the existing "unfed" pink twinkle (`src/rules/buffs.ts#IconState`), which already means "feed me".
+  - **no charges**: all pips dark, and its sigil's dots show the existing dim "unlit" look; the feed tag over a nearby berry says square will feed it.
+  - A machine gun's cooldown is too short to blink. Below about 1.5 s, the next pip only dims and brightens, with no on/off blink.
   - Today's drain twinkle (fast, 9 rad/s, on the last pip) disappears with draining, so there is no clash.
   - The queued-berry glint (`src/render/leash/ranks.ts#queuedDot`) stays: it fills the next empty pip, never a lit one.
 - **Youths command too** (Ed, 2026-11-17). Their growth dots (`src/render/leash/ranks.ts#youthDots`) become their charge bar.
@@ -241,9 +261,8 @@ Ed's pad: **square = command (eat when near a berry), circle = pick up / place.*
   - **Spending a youth's charges puts off its growing up.** That is a real choice in a fight: use the action now, or save the charges and grow the youth.
   - A flask's growth spurt still makes every follower an adult at once (`src/rules/berries.ts#growthSpurt`). The new adult keeps its charges, up to the adult's max.
 - **Babies** have no action: they never fight (`src/rules/combat/targeting.ts#targetable`), so they never command. Square near a berry feeds a baby as before.
-- **Legends** (leashed) have the most charges and the strongest action, legend-sized by the grammar (`src/rules/attacks/species.ts#legendOf`).
-  - They never eat. Recommended: one charge comes back every 20 s while it follows her (question 6).
-  - Their charges show as pips like everyone's. The three buff icons stay as they are.
+- **Legends** (leashed) have unlimited charges and the strongest action, on a longer cooldown (Ed, answer 6): about 3 times its adult's.
+  - With no pips to count, its cooldown blinks on its three buff icons (`src/rules/buffs.ts#iconCount`), or, for a kind with no buff, on a single dot.
 - **Party legends** don't follow and fight nobody (`src/rules/partyLegend.ts#pinWitch`; Ed, 2026-10-06: "totally useless"). They don't command.
 
 ### The command table
@@ -256,7 +275,7 @@ Every kind gets an action from one of **five verbs**. That keeps the code small 
 - **Guard** (defend): it taunts every wild creature within 10 m for 4 s, or puts a one-blow shield on her for 6 s.
   - The taunt **reuses** `combat.taunt` (`src/rules/combat/hits.ts`).
   - The shield is new: one boolean on her that `src/rules/game.ts#hitWitch` checks.
-- **Surge** (buff): its group's buff at 3 stacks for 6 s, or an instant (a dash charge back, one hit healed). **Reuses** `src/rules/buffs.ts` with a timed extra stack.
+- **Surge** (buff): its group's buff, stronger, for a period, or an instant (a dash charge back, one hit healed). **Reuses** `src/rules/buffs.ts` with a timed stack. Any buff-giver's use also brings its normal buff (above).
 
 | Kind | Group | Its attack (`config/species-attacks.json`) | Role | Command |
 |---|---|---|---|---|
@@ -357,13 +376,13 @@ Every kind gets an action from one of **five verbs**. That keeps the code small 
   A balance-study run before and after would show the change (`docs/notes/balance-study.md`, not run here).
 - **The invite meter is unchanged.** Drain (2%/s after 4 s) and the stun work as today.
 - **Fight length** falls for skilled play and stays the same for unskilled play. That is the point: hitting becomes the skill. Pressure (cutoffs) stops "just circle" from being safe while the player waits for openings.
-- **Berry economy.** Without draining, pips last until spent. A berry gives 3–6 charges on a 6 s cooldown, so one berry covers about 18–36 s of commanding. A creature full at 12 lasts a long fight. Feeding becomes "reloading", which ties berries to fights as Ed wanted ("something she does deliberately and accurately under time pressure", 2026-11-03).
+- **Berry economy.** Without draining, pips last until spent. A berry gives 3–6 charges. A machine gun empties a berry's worth in a few seconds; a spell's three charges last a minute. Feeding becomes "reloading", which ties berries to fights as Ed wanted ("something she does deliberately and accurately under time pressure", 2026-11-03).
 
 **Tune first, in this order:**
 
 1. `skill.recover.sit` (0.5): the size of the window.
 2. `skill.poise.share` (0.4) and `poise.stagger` (1 s): how often staggers happen, and how long they last.
-3. `command.cooldown` (6 s) with `perBerry` and `max`: the command rhythm, and how often she must feed.
+3. Each prototype species' cooldown, `perBerry` and `max`: the command rhythm, and how often she must feed.
 4. `skill.aim.help` (1) for twin-stick: how much luck is left.
 5. `invites.hits` (7, 14): rebalanced last, against the new hit rate.
 
@@ -374,7 +393,7 @@ Two switches, each off by default and each alone testable:
 - `?skill=1`: sit, poise, stagger, daze slow and the open cue, for **hare, badger, dormouse**: the hopper, the bruiser and the sniper. Others are as today.
 - `?commands=1`: Ed's bindings, pips as charges with no drain (by level and action size; a youth's bar replacing its growth dots), the blinking cooldown, and commands for **fox (Strike), squirrel (Snare: Bonk), badger (Guard: Barge + taunt), bee (Surge: Buzz)**. That is one per role.
 
-Intent marks, `open.reach`, pressure and the other 60 commands come after Ed has played this.
+Intent marks, pressure and the other 60 commands come after Ed has played this.
 
 **Files** (all new files are small; nothing grows past the guardrails):
 
@@ -391,7 +410,7 @@ Intent marks, `open.reach`, pressure and the other 60 commands come after Ed has
 | `src/rules/buffs.ts` | drain off behind the switch; `addPip` gives perBerry up to the species' max; `cooldownOf` for the view |
 | `config/bindings.json`, `src/platform/input.ts`, `src/ui/touch.ts` (+ its HTML) | square/F/middle = command; circle = use; circle no longer dodges |
 | `src/render/leash/pipCharges.ts` (new) | the pips' brightness and blink from cooldown state, called from one line in `src/render/leash/stack.ts` |
-| `src/render/openCue.ts` (new) | the amber ring and poise arc |
+| `src/render/openCue.ts` (new) | the amber outline and poise arc |
 
 **One builder-session risk:**
 
@@ -402,61 +421,25 @@ Intent marks, `open.reach`, pressure and the other 60 commands come after Ed has
 **Tests:**
 
 - `skill/poise.test.ts`: every letter is still exactly one hit; a poise break cancels a wind-up and staggers; sit and stagger hold still; daze slows.
-- `commands/command.test.ts`: a berry gives perBerry charges, capped at the level's max; a berry on a full youth evolves it; a legend's charge returns over time; spends one pip; cooldown and gap; youth fizzles; berry within 5 m eats instead; targeting order in both modes.
+- `commands/command.test.ts`: a berry gives perBerry charges, capped at the level's max; a berry on a full youth evolves it; a legend never runs out but waits its longer cooldown; a buff-giver's use starts its buff period; cooldowns differ by species; spends one pip; cooldown and gap; youth fizzles; berry within 5 m eats instead; targeting order in both modes.
 - `buffs.test.ts`: no drain under the switch; buff off at 0 pips.
 - `bindings`: square/circle mapping.
 - Plus `npm run typecheck`, lint, `size.mjs`, `loops.mjs`, `moduleState.mjs`.
 
 **What Ed looks at in play** (the preview with `?skill=1&commands=1`):
 
-1. Fight a hare: after its stamp it sits still and glows amber, and nearly every letter thrown then lands.
+1. Fight a hare: after its stamp it sits still with an amber outline, and nearly every letter thrown then lands.
 2. Fight a badger: three or four letters during its crouch break its poise. It wobbles in place, and the barge never comes.
-3. Put a fed adult fox at the bottom of the stack and press square at a dormouse. Wisps fly, one pip goes out, and the pip that will be spent next blinks for 6 s.
-4. Bring the bee to the bottom with R1 and press square: a speed burst.
-5. Stand by a berry with a creature that has room: square eats. Step away: square commands.
+3. Put a fed adult fox at the bottom of the stack and press square at a dormouse. Wisps fly, one pip goes out, and the pip that will be spent next blinks through its cooldown.
+4. Bring the bee to the bottom with R1 and press square several times: a machine gun of quick speed bursts, each a pip. Then cycle to the badger for one big barge.
+5. Within 15 m of a berry, with a creature that has room, square eats. Further away, or with a full creature, square commands.
 6. Circle places; L2 dodges; circle no longer dodges.
 
-## 6. Open questions for Ed
+## 6. Still open (Ed, 2026-11-17: "we can explore this in design and balancing")
 
-Each has a recommended answer first.
+Ed answered the first ten questions on 2026-11-17; they are in **Already decided**, items 11 and 12. What is left to explore in design and play, not to ask as questions yet:
 
-1. **What makes a creature open** (easier to hit)?
-   a. All three: it sits still after attacking, it staggers when poise breaks, and it's slowed (dazed) after a stagger or a Daze command (recommended).
-   b. Only the sit after attacking.
-   c. Only commands (Daze, Snare) make creatures open.
-2. **Bigger targets:** should an open creature also be easier to hit by having a wider letter reach (`open.reach`)?
-   a. No; holding still and slowing are enough (recommended).
-   b. Yes, a little (0.5 m to 1 m) while open.
-   c. Try it behind a switch and decide in play.
-3. **Buffs and charges:** with draining gone, how should the passive buff relate to the pips?
-   a. On while it has at least 1 pip, so spending the last turns it off (recommended: every press is a choice).
-   b. Always on for a fed adult, whatever its pips.
-   c. Buffs removed; commands replace them.
-4. **When square eats:** how close must a berry be for square to eat instead of command?
-   a. Within 5 m, and only if the bottom creature has room (recommended).
-   b. Within today's 15 m, if it has room.
-   c. Never automatically: hold square to eat, tap to command.
-5. **Cooldown:** per creature or shared?
-   a. Per creature 6 s, plus a 1 s gap between any two commands (recommended: cycling with Q becomes tactical).
-   b. One shared cooldown for every command.
-   c. Per creature only, no shared gap.
-6. **Legends' charges:** legends never eat berries, so how do their charges come back?
-   a. One charge every 20 s while it follows her, up to its max (recommended).
-   b. Unlimited charges, on a longer cooldown (3 × an adult's).
-   c. They come back only when she sleeps; a legend's charges are a night's supply.
-7. **Square in the treetops:** what should it do now that it no longer cycles?
-   a. Nothing (recommended: R1/L1 cycle, and followers don't fight while she's aloft).
-   b. Cycle the stack, as today.
-   c. Command anyway (followers would act from where they are).
-8. **The open cue's look:**
-   a. A warm amber ground ring under the creature, brighter while it's still or staggered (recommended: matches "hers is warm").
-   b. A glint or outline on the creature's sprite.
-   c. A small mark over its head.
-9. **Movement intent marks:** for which moves?
-   a. Hops and waiters' close passes only, first (recommended).
-   b. Every move whose end the rules know (hops, passes, dashes, charges).
-   c. None yet; try openings and commands first.
-10. **Showing up to 12 charges** in the sigil bar:
-    a. Dots, 6 or 8 a row in two rows, the same height as a youth's dots today; a legend's 16 in two rows of 8 (recommended).
-    b. A small number beside the sigil, with one dot that blinks for the cooldown.
-    c. Dots in a ring round the sigil.
+1. Which adults give buffs, and how long a charge's buff lasts (`buffs.period`; 120 s, today's `buffs.pips.life`, as a first number?).
+2. Each species' pattern (machine gun, ordinary, spell), and how its action changes from youth to adult.
+3. Which creatures show intent marks: engaging her, or near her, and when.
+4. How the outline cue reads on every sprite and at night.
