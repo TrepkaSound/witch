@@ -61,6 +61,7 @@ export class SettingsPage {
     applySettings(s, this.host.tuning());
     this.host.shake.shake.on = s.shake;
     this.host.input.talkMode = s.talk;
+    this.host.input.aiming = s.aiming;
     comfort.reduceFlashing = s.reduceFlashing;
     this.style.textContent = s.textSize === 1 ? "" : `${TEXT.join(", ")} { zoom: ${s.textSize}; } #station-panel { font-size: calc(${STATION_TYPE} * ${s.textSize}); }`; // (the station panel's type, not its size: it's the screen's left half, ui/stationPanel.ts)
     const q = ladderChoice(s.quality, RUNGS.length - 1);

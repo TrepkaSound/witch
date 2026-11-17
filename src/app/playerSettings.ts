@@ -10,6 +10,7 @@ import { fallbackStorage } from "./storageFallback";
 export type Quality = "auto" | "high" | "medium" | "low";
 export type HoldMode = "hold" | "toggle";
 export type Glyphs = "auto" | "ps" | "xbox";
+export type Aiming = "twin" | "single";
 export interface PlayerSettings {
   /** volumes, 0 to 1: everything, the music, the sound effects, the voices (the witch's and the animals' babble) */
   master: number; music: number; effects: number; voices: number;
@@ -31,9 +32,12 @@ export interface PlayerSettings {
   glyphs: Glyphs;
   /** short event feedback on gamepads that support vibration */
   rumble: boolean;
+  /** her 💌s' aiming (Ed, 2026-11-16: "Single stick setting - yes, let's put a switch on the settings page for this"): twin stick,
+   *  the right stick or the cursor; single stick, the way she's going (platform/input.ts aiming) */
+  aiming: Aiming;
 }
 
-export const DEFAULTS: PlayerSettings = { master: 1, music: 0.5, effects: 1, voices: 1, muteBackground: true, quality: "auto", shake: true, screen: "", reduceFlashing: false, talk: "hold", textSize: 1, glyphs: "auto", rumble: true };
+export const DEFAULTS: PlayerSettings = { master: 1, music: 0.5, effects: 1, voices: 1, muteBackground: true, quality: "auto", shake: true, screen: "", reduceFlashing: false, talk: "hold", textSize: 1, glyphs: "auto", rumble: true, aiming: "twin" };
 export const KEY = "witch.player";
 /** (the pause page's saved volumes and the start screen's shake: carried over the first time) */
 const OLD_VOLUMES = "witch.settings", OLD_SHAKE = "witch.shake";
@@ -50,7 +54,7 @@ export function clean(raw: unknown): PlayerSettings {
   const one = <T>(k: keyof PlayerSettings, opts: readonly T[]) => { if (opts.includes(r[k] as T)) (out as Record<string, unknown>)[k] = r[k]; };
   num("master"); num("music"); num("effects"); num("voices");
   bool("muteBackground"); bool("shake"); bool("reduceFlashing"); bool("rumble");
-  one("quality", ["auto", "high", "medium", "low"]); one("talk", ["hold", "toggle"]); one("textSize", [1, 1.25, 1.5]); one("glyphs", ["auto", "ps", "xbox"]);
+  one("quality", ["auto", "high", "medium", "low"]); one("talk", ["hold", "toggle"]); one("textSize", [1, 1.25, 1.5]); one("glyphs", ["auto", "ps", "xbox"]); one("aiming", ["twin", "single"]);
   if (typeof r.screen === "string") out.screen = r.screen.slice(0, 80);
   return out;
 }

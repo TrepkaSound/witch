@@ -273,6 +273,7 @@ export class SettingsMenu {
       [
         { id: "device", kind: "choice", label: "Show", options: ["keys", "pad"] },
         { id: "glyphs", kind: "choice", label: "Pad buttons", sub: "their names", options: ["auto", "ps", "xbox"], hidden: this.device !== "pad", note: "Auto names them from your pad: Xbox's letters, else PlayStation's shapes." },
+        { id: "aiming", kind: "choice", label: "Aiming", options: ["twin", "single"] },
         ...ACTIONS.filter(a => !a.dev).map((a, i, all): Row => ({ id: a.id, kind: "bind", label: a.name, group: i === 0 || (all[i - 1].context === "menu") !== (a.context === "menu") ? (a.context === "menu" ? "menu" : "play") : undefined })),
       ],
       [
@@ -312,6 +313,7 @@ export class SettingsMenu {
     if (id === "screen") return o || "This one";
     if (id === "device") return o === "keys" ? "Keyboard & mouse" : "Pad";
     if (id === "glyphs") return o === "auto" ? `Auto (${padGlyphs("auto", this.host.pad()?.id) === "xbox" ? "Xbox" : "PlayStation"})` : o === "ps" ? "PlayStation" : "Xbox";
+    if (id === "aiming") return o === "twin" ? "Twin stick" : "Single stick";
     if (id === "textSize") return `${Math.round(Number(o) * 100)}%`;
     return o.charAt(0).toUpperCase() + o.slice(1);
   }

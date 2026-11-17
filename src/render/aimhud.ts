@@ -43,15 +43,16 @@ export class AimHud {
   }
 
   /** `pointer`: the mouse in client pixels (null: no mouse yet); `aim`: the ground under it from her
-   *  (metres, null off the ground plane); `on`: the game is being played (not the start screen). */
-  update(g: Game, time: number, pointer: { x: number; y: number } | null, aim: { x: number; z: number } | null, on: boolean): void {
+   *  (metres, null off the ground plane); `on`: the game is being played (not the start screen); `single`: single-stick aiming
+   *  (platform/input.ts aiming), the cursor aiming nothing: just the dot, as where she can't throw. */
+  update(g: Game, time: number, pointer: { x: number; y: number } | null, aim: { x: number; z: number } | null, on: boolean, single = false): void {
     const show = on && this.over && !!pointer;
     this.canvas.style.cursor = on ? "none" : "";
     if (!show) { this.root.style.display = "none"; return; }
     this.root.style.display = "block";
     this.root.style.transform = `translate(${Math.round(pointer.x - C)}px, ${Math.round(pointer.y - C)}px)`;
     const W = g.witches[0], b = W.body, t = g.tuning;
-    const canThrow = b.mode === "ground" && !b.seated && !W.ko && t.invites.on;
+    const canThrow = b.mode === "ground" && !b.seated && !W.ko && t.invites.on && !single;
     const inRange = canThrow && !!aim && Math.hypot(aim.x, aim.z) <= bagTuning(t, W.spells.bag).invites.range; // (her bag's reach: rules/bags.ts)
     const ink = inRange ? "rgba(255,150,210,.95)" : canThrow ? "rgba(232,226,244,.55)" : "rgba(232,226,244,.8)";
     this.ring.setAttribute("stroke", ink);

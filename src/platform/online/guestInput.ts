@@ -3,7 +3,7 @@ import { ONLINE_TIMING } from "./inputLease";
 
 const edges = ["toggleMode", "sigil", "place", "hat", "cycle", "cycleBack", "spell", "castParty", "dash"] as const;
 export const INPUT_EDGES = edges;
-const held = ["fire", "sigilHeld", "hatHold", "held", "autoTalk", "talkHeld", "pausePage"] as const;
+const held = ["fire", "sigilHeld", "hatHold", "held", "autoTalk", "talkHeld", "pausePage", "singleStick"] as const;
 const axes = ["moveX", "moveZ"] as const;
 const neutral = (): Controls => ({ moveX: 0, moveZ: 0, toggleMode: false, zoom: 0, autoTalk: false });
 
