@@ -46,10 +46,23 @@ describe("padControls with a menu open (Ed's playtest, 2026-10-23: the bottom fa
     for (let i = 0; i < 17; i++) {
       const b = Array(17).fill(false); b[i] = true;
       const c = padControls(b, still, none, false, true);
-      expect(c, `button ${i}`).toEqual({ moveX: 0, moveZ: 0, zoom: i === PAD_BUTTONS.R2 ? -1 : i === PAD_BUTTONS.L2 ? 1 : 0, toggleMode: false, debug: false, sigil: i === PAD_BUTTONS.circle, sigilHeld: false, hat: false, spell: false, cycle: false, cycleBack: false, dash: false, fire: false, aim: null,
+      expect(c, `button ${i}`).toEqual({ moveX: 0, moveZ: 0, zoom: i === PAD_BUTTONS.R2 ? -1 : i === PAD_BUTTONS.L2 ? 1 : 0, toggleMode: false, debug: false, sigil: i === PAD_BUTTONS.circle, sigilHeld: false, hat: false, spell: false, cycle: false, cycleBack: false, command: false, dash: false, fire: false, aim: null,
         talkHeld: false, talkPressed: false, toggleAutoTalk: false, nextWave: false, pauseWaves: false, cycleSpeakers: false, inviteNearest: false, feedNearest: false, happyNearest: false });
     }
     expect(padControls(none, [1, 1, 1, 1], none, false, true).aim).toBeNull();
     expect(padControls(none, [1, 0, 0, 0], none, false, true).moveX).toBe(0);
+  });
+});
+
+describe("padControls with the command layout (?commands=1; Ed, 2026-11-17: \"square as command, and circle as pickup/place\")", () => {
+  const cmd = (...names: string[]) => padControls(pressed(...names), still, none, false, false, [], undefined, true);
+  it("square commands (and no longer uses or runs); circle uses (held: a run) and no longer dodges; L2 still dodges", () => {
+    expect([cmd("square").command, cmd("square").sigil, cmd("square").sigilHeld]).toEqual([true, false, false]);
+    expect([cmd("circle").sigil, cmd("circle").sigilHeld, cmd("circle").dash, cmd("circle").command]).toEqual([true, true, false, false]);
+    expect(cmd("L2").dash).toBe(true);
+    expect(padControls(pressed("circle"), still, pressed("circle"), false, false, [], undefined, true).sigil).toBe(false); // (held, not pressed again)
+  });
+  it("without it, as ever: square uses, circle dodges, nothing commands", () => {
+    expect([play("square").sigil, play("square").command, play("circle").dash, play("circle").sigil]).toEqual([true, false, true, false]);
   });
 });

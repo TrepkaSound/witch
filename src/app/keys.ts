@@ -8,6 +8,8 @@ export function setupDebugKeys(view: View, input: Input, params: URLSearchParams
   document.getElementById("next-wave")!.addEventListener("pointerdown", e => { e.preventDefault(); input.touch.nextWave = true; });
   document.getElementById("pause-waves")!.addEventListener("pointerdown", e => { e.preventDefault(); input.touch.pauseWaves = true; });
   setupTouch(document.body, input.touch);
+  // The command layout (?commands=1, Ed 2026-11-17: "square as command, and circle as pickup/place"): the pad's, and touch's cmd button.
+  if (params.get("commands") === "1") { input.commandLayout = true; const cm = document.getElementById("command"); if (cm) cm.style.display = ""; }
 
   // Metre rulers and a ground grid: G, the debug button, or on with ?debug.
   view.rulers.on = params.has("debug");
