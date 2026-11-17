@@ -258,8 +258,8 @@ export type SchemaTuning = {
     "clear": number;
     "lightReach": number;
     "lightStrength": number;
-    "freeTakeOff"?: boolean;
     "landCooldown": number;
+    "freeTakeOff": boolean;
     "deck": {
       "on": boolean;
       "radius": number;
@@ -375,7 +375,7 @@ export type SchemaTuning = {
       "max": number;
       "areaMax": number;
     };
-    "sigilSide"?: boolean;
+    "sigilSide": boolean;
     "species": {
       [key: string]: number;
     };
@@ -869,6 +869,11 @@ export type SchemaTuning = {
       "height": number;
     };
     "hard": {
+      "homing": number;
+      "cone": number;
+      "range": number;
+    };
+    "singleStick": {
       "homing": number;
       "cone": number;
       "range": number;
@@ -1496,8 +1501,8 @@ export type SchemaTuning = {
     "partyHits": number;
     "partyDrain": number;
     "partyReach": number;
-    "homeAlike"?: boolean;
-    "hardHits"?: boolean;
+    "homeAlike": boolean;
+    "hardHits": boolean;
   };
   "wildLegends": {
     "wake": number;

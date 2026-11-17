@@ -1354,14 +1354,14 @@
           "type": "number",
           "minimum": 0
         },
-        "freeTakeOff": {
-          "type": "boolean",
-          "description": "Adults and legends in her stack never stop her taking off while she is at the treehouse (its floors, rooms and balcony: her followers count as placed there); false (?treehousetakeoff=old): they ground her there as everywhere else, as before."
-        },
         "landCooldown": {
           "type": "number",
           "minimum": 0,
           "description": "Seconds after she leaves a treehouse floor (rising or stepping off) before she can land on one, and after she lands before she can leave: meanwhile she flies on over its floors, and its open edges keep her in."
+        },
+        "freeTakeOff": {
+          "type": "boolean",
+          "description": "Adults and legends in her stack never stop her taking off while she is at the treehouse (its floors, rooms and balcony: her followers count as placed there); false (?treehousetakeoff=old): they ground her there as everywhere else, as before."
         },
         "deck": {
           "type": "object",
@@ -1655,6 +1655,7 @@
         "lightReach",
         "lightStrength",
         "landCooldown",
+        "freeTakeOff",
         "deck",
         "house"
       ],
@@ -1953,6 +1954,7 @@
         "rim",
         "grove",
         "fit",
+        "sigilSide",
         "species"
       ],
       "additionalProperties": false,
@@ -4457,6 +4459,30 @@
           "additionalProperties": false,
           "description": "the hard homing of the 💌s her Sentry and Slingshot hats throw: homing degrees a second, cone degrees either side it looks in, range metres it looks out to (was the legend buffs' charm, 420, 80 and 18)."
         },
+        "singleStick": {
+          "type": "object",
+          "properties": {
+            "homing": {
+              "type": "number",
+              "minimum": 0
+            },
+            "cone": {
+              "type": "number",
+              "minimum": 0
+            },
+            "range": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "homing",
+            "cone",
+            "range"
+          ],
+          "additionalProperties": false,
+          "description": "the homing of her own 💌s with Aiming set to Single stick on the Settings page: homing degrees a second, cone degrees either side it looks in, range metres it looks out to."
+        },
         "wonAway": {
           "type": "object",
           "properties": {
@@ -4509,6 +4535,7 @@
         "cheer",
         "orbit",
         "hard",
+        "singleStick",
         "wonAway"
       ],
       "additionalProperties": false,
@@ -7696,7 +7723,9 @@
         "partyEgg",
         "partyHits",
         "partyDrain",
-        "partyReach"
+        "partyReach",
+        "homeAlike",
+        "hardHits"
       ],
       "additionalProperties": false,
       "description": "Which areas have a legend (a happy one's reach is legends.friendRange)."

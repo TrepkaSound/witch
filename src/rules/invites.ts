@@ -40,6 +40,8 @@ export interface Letter {
   range: number;
   /** Homes hard (invites.hard): one thrown or flung by a hat. */
   home: boolean;
+  /** Thrown with single-stick aiming (invites.singleStick's homing). */
+  single?: true;
   /** The animals it has landed on (it passes them by). */
   hit: number[];
   /** Caught by the Slingshot hat: when it flies on, and its place round the hat. */
@@ -95,6 +97,8 @@ export interface Invites {
   /** The bloom: degrees her aim has spread from firing on (invites.bloomPer), and when it was last brought up to date. */
   bloom?: number;
   bloomAt?: number;
+  /** Her aiming is single stick (InviteControls.singleStick, as her controls last said): her 💌s home by invites.singleStick. */
+  single?: true;
   /** When the Sentry hat may throw its next 💌. */
   sentryAt?: number;
   /** The Heavies buff (rules/buffs.ts stepInvitesBuffed): bursts fired round her since she began holding fire. */
@@ -125,6 +129,15 @@ export interface InviteControls {
   /** Where she aims (world x/z direction; need not be unit; 0,0 keeps the last aim). */
   aimX?: number;
   aimZ?: number;
+  /** Her Aiming setting (Ed, 2026-11-16: "Single stick setting - yes, let's put a switch on the settings page for this"): true,
+   *  single stick: her controls carry no aim (platform/input.ts), so her 💌s fly the way she's going, or faces when still, and they
+   *  home harder (invites.singleStick); false, twin stick; unset (a hat's cast, an older recording), as her controls last said. */
+  singleStick?: boolean;
+}
+
+/** A 💌's homing: a hat's or a hop's hard (invites.hard), her own with single-stick aiming (invites.singleStick), else the plain one. */
+function homingOf(L: Letter, I: Tuning["invites"]): { homing: number; cone: number; range: number } {
+  return L.home ? I.hard : L.single ? I.singleStick ?? I.hard : { homing: I.homing, cone: I.homingCone, range: I.homingRange };
 }
 
 /** A letter launched from (x, z) at angle a. */
@@ -152,6 +165,7 @@ export function aimOff(s: Invites, time: number, I: Tuning["invites"]): number {
 export function queueInviteBurst(s: Invites, c: InviteControls, witch: { facing: number; vx?: number; vz?: number }, canFire: boolean, time: number, t: Tuning): void {
   const I = t.invites;
   const ax = c.aimX ?? 0, az = c.aimZ ?? 0, al = Math.hypot(ax, az);
+  if (c.singleStick) s.single = true; else if (c.singleStick === false) delete s.single;
   if (al > 1e-3 && s.queue.length === 0) { s.ax = ax / al; s.az = az / al; }
   /** Aim with nothing to aim by (touch): the way she's going, or facing. */
   const aimOwn = () => { const vx = witch.vx ?? 0, vz = witch.vz ?? 0, v = Math.hypot(vx, vz); if (v > 0.5) { s.ax = vx / v; s.az = vz / v; } else { s.ax = witch.facing; s.az = 0; } };
@@ -175,7 +189,7 @@ export function stepInvites(s: Invites, c: InviteControls, witch: { x: number; z
     const q = s.queue.shift()!;
     const n = Math.max(1, Math.round(I.multiShot)), base = Math.atan2(q.az, q.ax), fan = (I.spread * Math.PI) / 180;
     const off = (aimOff(s, q.at, I) * Math.PI) / 180;
-    for (let k = 0; k < n; k++) { const a = base + (n > 1 ? (k / (n - 1) - 0.5) * fan : 0) + (off > 0 ? (hash2(s.next, 7, 1) * 2 - 1) * off : 0); letter(s, witch.x + Math.cos(a) * 0.6, witch.z + Math.sin(a) * 0.6, a, time, t, q.claimCast === undefined ? {} : { claimCast: q.claimCast, claimShot: q.claimFirst! + k }); }
+    for (let k = 0; k < n; k++) { const a = base + (n > 1 ? (k / (n - 1) - 0.5) * fan : 0) + (off > 0 ? (hash2(s.next, 7, 1) * 2 - 1) * off : 0); letter(s, witch.x + Math.cos(a) * 0.6, witch.z + Math.sin(a) * 0.6, a, time, t, { ...(s.single ? { single: true } : {}), ...(q.claimCast === undefined ? {} : { claimCast: q.claimCast, claimShot: q.claimFirst! + k }) }); }
     s.events.push({ kind: "shot", x: witch.x, z: witch.z, at: time, n: s.next - 1 });
   }
   s.burstLeft = s.queue.length;
@@ -184,7 +198,7 @@ export function stepInvites(s: Invites, c: InviteControls, witch: { x: number; z
   let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
   const sentries = hat?.sentry ?? [], slings = hat?.sling ?? [];
   for (const p of [...s.letters, ...sentries, ...slings]) { x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); z0 = Math.min(z0, p.z); z1 = Math.max(z1, p.z); }
-  const pad = Math.max(HARD.range, I.homingRange, I.chainRange ?? 0, ...sentries.map(q => q.range), ...slings.map(q => q.fire)) + 4;
+  const pad = Math.max(HARD.range, I.singleStick?.range ?? 0, I.homingRange, I.chainRange ?? 0, ...sentries.map(q => q.range), ...slings.map(q => q.fire)) + 4;
   const near = x0 <= x1 ? creatures.filter(k => !k.gone && k.x > x0 - pad && k.x < x1 + pad && k.z > z0 - pad && k.z < z1 + pad) : [];
   /** The nearest invitable animal to (x, z) within r. */
   const nearest = (x: number, z: number, r: number, skip?: (k: Creature) => boolean): Creature | null => {
@@ -234,8 +248,8 @@ export function stepInvites(s: Invites, c: InviteControls, witch: { x: number; z
       Object.assign(L, { kind: undefined, home: true, range: SL.fire * 1.5, flown: 0, vx: I.speed, vz: 0 }); aimAt(L, k);
       s.events.push({ kind: "shot", x: L.x, z: L.z, at: time, n: L.n });
     }
-    // Homing: toward the nearest invitable creature ahead, within the cone (a hat's: hard, wide and far, invites.hard).
-    const homing = ((L.home ? HARD.homing : I.homing) * Math.PI) / 180, cone = Math.cos(((L.home ? HARD.cone : I.homingCone) * Math.PI) / 180), hr = L.home ? HARD.range : I.homingRange;
+    // Homing: toward the nearest invitable creature ahead, within the cone (a hat's: hard, wide and far, invites.hard; single stick's: homingOf).
+    const H = homingOf(L, I), homing = (H.homing * Math.PI) / 180, cone = Math.cos((H.cone * Math.PI) / 180), hr = H.range;
     const sp = Math.hypot(L.vx, L.vz);
     if (homing > 0 && sp > 0) {
       const ux = L.vx / sp, uz = L.vz / sp;

@@ -47,6 +47,10 @@ export class Input {
   /** Talk held (as ever) or toggled, a press to start and another to stop (the Settings page: app/playerSettings.ts talk). */
   talkMode: "hold" | "toggle" = "hold";
   private talkOn = false;
+  /** The 💌's aiming (the Settings page: app/playerSettings.ts aiming; Ed, 2026-11-16: "Hades is apparently single stick - you shoot
+   *  in the direction you face ... we could easily offer both with a toggle"): twin stick, the right stick or the cursor aims; single
+   *  stick, neither does, so her 💌s fly the way she's going (rules/invites.ts aimOwn) and home harder. Touch is as ever either way. */
+  aiming: "twin" | "single" = "twin";
 
   constructor(target: Window = window) {
     target.addEventListener("keydown", e => {
@@ -175,6 +179,9 @@ export class Input {
     if (t.invite) { fire = true; if (!cursorAim) { aimX = 0; aimZ = 0; } }
     t.toggle = false; t.zoom = 0; t.debug = false; t.sigil = false; t.spell = false; t.dash = false;
 
+    // Single stick (keys or a pad; touch as ever): no aim from the cursor or the right stick, and the rules told so.
+    const singleStick = this.aiming === "single" && this.device !== "touch";
+    if (singleStick) { aimX = 0; aimZ = 0; this.lastAim = null; }
     const len = Math.hypot(moveX, moveZ);
     if (len > 1) { moveX /= len; moveZ /= len; }
     if (this.talkMode === "toggle" && talkPressed) this.talkOn = !this.talkOn; else if (this.talkMode === "hold") this.talkOn = false;
@@ -182,7 +189,7 @@ export class Input {
     // Every action must read the same edges before any are consumed (including Talk and Auto-talk).
     this.pressed.clear(); this.mousePressed.clear();
     this.touch.autoTalk = false;
-    return { moveX, moveZ, toggleMode, zoom: Math.sign(zoom), place, cycle, cycleBack, debug, nextWave, pauseWaves, cycleSpeakers, sigil, sigilHeld, hatHold, hat, inviteNearest, happyNearest, spell, feedNearest, dash, toggleAutoTalk, talkHeld, fire, aimX, aimZ };
+    return { moveX, moveZ, toggleMode, zoom: Math.sign(zoom), place, cycle, cycleBack, debug, nextWave, pauseWaves, cycleSpeakers, sigil, sigilHeld, hatHold, hat, inviteNearest, happyNearest, spell, feedNearest, dash, toggleAutoTalk, talkHeld, fire, aimX, aimZ, singleStick };
   }
 }
 
