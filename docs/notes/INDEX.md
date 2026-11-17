@@ -27,6 +27,7 @@ that; `tools/docs/glossary.test.ts` fails while this is out of date. Read an are
 - [The music](music.md): The music engine, its style, sections and arc, the singer, the labs and studio, samples.
 - [Two-browser prototype](online-prototype.md): The separate two-browser prototype: local relay, host authority, joining, checks and current limits.
 - [The page](page.md): How the game's page is put together: src/main.ts's start-up and wiring, the src/app/page*.ts modules by job, and the page's host (pageHost) they share.
+- [Performance sweep, November 2026](perf-sweep-2026-11.md): The sweep of the game against five frame-drop patterns (lookups in per-frame loops, per-frame allocations, GPU resources not disposed, draw calls, pooling): what was measured, what was fixed and proven unchanged, and the ranked proposals left.
 - [Performance](performance.md): The View's build in slices, the start's shaders, the stall hunt.
 - [The run](run.md): The phases of a run, the opening and the party spell, the clock, her controls and the camera, waves, knockouts and the party's end.
 - [Save slots](save-slots.md): Independent progress and settings storage, legacy migration and save-format guards.
@@ -354,6 +355,13 @@ glossary; these are the prototype's), by note.
 - Why not narrower everywhere:
 - Narrowed so far:
 - Next, if wanted:
+
+### [Performance sweep, November 2026](perf-sweep-2026-11.md)
+
+- Proof.
+- The combat team index
+- The creatures' marks
+- The sea chart's islands
 
 ### [Performance](performance.md)
 

@@ -50,6 +50,7 @@ export function setupTouch(root: HTMLElement, touch: TouchInput): void {
   const sg = root.querySelector<HTMLElement>("#sigil");
   if (sg) { sg.addEventListener("pointerdown", () => (touch.sigilHeld = true)); for (const ev of ["pointerup", "pointerleave", "pointercancel"]) sg.addEventListener(ev, () => (touch.sigilHeld = false)); }
   button("#spell", () => (touch.spell = true));
+  if (root.querySelector("#command")) button("#command", () => (touch.command = true)); // (shown while commands are on: app/keys.ts commandLayout)
   button("#dash", () => (touch.dash = true));
   // The 💌 fires while it's held, the way she's going.
   const inv = root.querySelector<HTMLElement>("#invite");

@@ -1,0 +1,8 @@
+{
+  "version": null,
+  "items": [
+    "Two fight prototypes are now on for everyone. Openings: hares, badgers and dormice sit still after attacking, glow amber when open, and enough letters during a wind-up stagger them. Commands: your creatures act when you tell them to (fox, squirrel, badger and bee for now), and berries give them charges",
+    "New buttons: square or F commands the bottom creature of your stack (near a berry it eats instead), circle or E picks up and puts down, and only L2 dodges",
+    "To turn either off, add ?skill=0 or ?commands=0 to the link; ?commands=0 also brings the old buttons back"
+  ]
+}

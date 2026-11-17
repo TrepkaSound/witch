@@ -18,6 +18,7 @@ import { chainKnobs, dotAt, drawEmbers, legendShine, queuedDot, rankKnobs, rankO
 import { queuedFor } from "../../rules/berries";
 import { meterHits } from "../../rules/game";
 import { riseInStack, sigilFeelOn } from "./sigilFeel";
+import { chargeDots } from "./pipCharges";
 
 /** A 💧's blue, for its dots in her stack. */
 const DROP_RGB: [number, number, number] = [0.42, 0.68, 1];
@@ -91,18 +92,20 @@ export function drawStack(lv: LeashView, time: number, hatTop: number, dot: numb
       const drops = c.drops ? meterHits(t)[Math.min(3, c.level)] ?? 4 : 0;
       // (an adult's berry pips the same way, Ed 2026-11-03: "shown in the sigil bar the same way as a youth growing up"; the draining
       // one twinkling in its last buffs.pips.warn seconds: rules/buffs.ts)
-      const fuel = c.level === 2 && t.buffs ? pipFuel(g.berries, c.id, t) : 0, pips = c.level === 2 && t.buffs ? { n: t.buffs.pips.max, lit: pipCount(fuel, t) } : null;
-      const fading = !!pips && pipFading(fuel, t), twinkle = 0.35 + 0.65 * Math.abs(Math.sin(time * 9));
+      // (?commands=1: its charges on the same pips, a youth's its bar, blinking through its cooldown: render/leash/pipCharges.ts)
+      const CP = chargeDots(c, t, time), per = CP?.perRow ?? RK.dotsPerRow;
+      const fuel = !CP && c.level === 2 && t.buffs ? pipFuel(g.berries, c.id, t) : 0, pips = CP ?? (c.level === 2 && t.buffs ? { n: t.buffs.pips.max, lit: pipCount(fuel, t) } : null);
+      const fading = !CP && !!pips && pipFading(fuel, t), twinkle = 0.35 + 0.65 * Math.abs(Math.sin(time * 9));
       const dotSets: [{ n: number; lit: number }, number, [number, number, number]][] = [
-        [shownDots(pips ?? youthDots(c, g.berries.fed.get(c.id) ?? 0, t), RK.dotsPerRow), 1, lv.berryRgb],
+        [shownDots(pips ?? youthDots(c, g.berries.fed.get(c.id) ?? 0, t), per), 1, lv.berryRgb],
         [shownDots({ n: drops, lit: Math.ceil((c.drops ?? 0) * drops - 1e-6) }, RK.dotsPerRow), -1, DROP_RGB],
       ];
       // (a berry queued for it, Ed 2026-11-03: the dot it will fill twinkles, bright, till it's eaten: ranks.ts queuedDot)
       const next = queuedDot(dotSets[0][0], queuedFor(g.berries, c.id)), glint = 0.5 + 0.9 * Math.abs(Math.sin(time * 7));
       for (const [D, side, rgb] of dotSets) if (D.n > 0) {
-        const ready = side > 0 && !pips && D.lit >= D.n, beat = ready ? 0.65 + 0.35 * Math.sin(time * 6) : 1, ds = size * 0.24;
+        const ready = side > 0 && (CP ? CP.ready : !pips) && D.lit >= D.n, beat = ready ? 0.65 + 0.35 * Math.sin(time * 6) : 1, ds = size * 0.24;
         for (let i = 0; i < D.n; i++) {
-          const q = dotAt(i, D.n, RK.dotsPerRow), qx = q.x * side, on = i < D.lit, k = (on ? (ready ? 1.25 * beat : 1) : side > 0 && i === next ? glint : 0.42) * (side > 0 && fading && i === D.lit - 1 ? twinkle : 1);
+          const q = dotAt(i, D.n, side > 0 ? per : RK.dotsPerRow), qx = q.x * side, on = i < D.lit, k = (on ? (ready ? 1.25 * beat : 1) : side > 0 && i === next ? glint : 0.42) * (side > 0 && fading && i === D.lit - 1 ? twinkle : 1) * (side > 0 && CP ? CP.k(i) : 1);
           if (back > 0) lv.stackBack.add(pos.x + qx * size, pos.y + q.y * size, pos.z, ds * 1.5, dot, 0.02, 0.02, 0.035, back);
           const lit = on ? 0.3 : 0; // (lit ones toward white a little, so they read over the dim)
           batch.add(pos.x + qx * size, pos.y + q.y * size, pos.z + 0.02, ds, dot, (rgb[0] + (1 - rgb[0]) * lit) * k, (rgb[1] + (1 - rgb[1]) * lit) * k, (rgb[2] + (1 - rgb[2]) * lit) * k, on ? 1 : 0.85);
@@ -116,7 +119,7 @@ export function drawStack(lv: LeashView, time: number, hatTop: number, dot: numb
       // each a little smaller and closer, so the row stays beside its bigger sigil, level with it, clear of the sigils above and below.
       const group = buffs.iconGroup.get(it.id);
       if (group) {
-        const D = dotSets[0][0], m = buffs.iconCount.get(it.id) ?? 1, ix = (D.n > 0 ? dotAt(D.n - 1, D.n, RK.dotsPerRow).x + 0.42 : 0.72) * size;
+        const D = dotSets[0][0], m = buffs.iconCount.get(it.id) ?? 1, ix = (D.n > 0 ? dotAt(D.n - 1, D.n, per).x + 0.42 : 0.72) * size;
         const is = size * (m > 1 ? 0.42 : 0.5), gap = is * 0.92, state = buffs.iconState.get(it.id), I = t.buffs?.icons;
         const rgb = state === "redundant" ? I?.blue ?? ICON_BLUE : state === "unfed" ? I?.pink ?? ICON_PINK : [AMBER[0] * 1.2, AMBER[1] * 1.2, AMBER[2] * 1.2];
         const k = state === "unfed" ? iconTwinkle(time, I?.twinkle ?? 0.8, it.id) : 1;

@@ -6,6 +6,7 @@
 // round it, one slot a hit its meter needs, the gaps the hits still to come; full, the envelopes
 // vanish and leave their ❤️s rising; left alone, they fall out of orbit one by one as the meter
 // drains and lie on the ground a moment. DOM, like the talk bubbles, drawn as pixel art.
+import { PoiseArcs } from "./openCue";
 import * as THREE from "three";
 import type { Game } from "../rules/game";
 import { affectionOf, meterHits } from "../rules/game";
@@ -103,6 +104,8 @@ export class InviteView {
   /** Where she's drawn less the rules' place, in the house (the view's: render/view/witch.ts); its letters drawn by it. */
   herOffset?: HerOffset;
   private root = document.createElement("div");
+  /** Each worn creature's poise arc (?skill=1, render/openCue.ts). */
+  private poise = new PoiseArcs(this.root);
   private letters: HTMLImageElement[] = [];
   /** The rings (render/inviteRing.ts): what each holds, and its envelopes and gap marks by creature. */
   private ringModel = new RingModel();
@@ -155,7 +158,7 @@ export class InviteView {
   setGame(game: Game): void {
     this.game = game;
     this.root.replaceChildren();
-    this.letters = []; this.ringModel = new RingModel(); this.rings.clear(); this.falling = []; this.hearts = [];
+    this.letters = []; this.ringModel = new RingModel(); this.rings.clear(); this.falling = []; this.hearts = []; this.poise.clear();
     this.replies.clear(); this.lastHers = -Infinity; this.pops = []; this.crumples = []; this.lastTime = -1; this.resting = [];
     this.spins.clear(); this.restImgs = []; this.seen.clear();
     this.hers = this.bubble(-1);
@@ -228,7 +231,7 @@ export class InviteView {
       el.style.opacity = (base * k).toFixed(3);
       if (k < 0.03) el.style.visibility = "hidden";
     };
-    const head = (id: number) => (tops.get(id) ?? 1.2 + g.creatures[id].level * 0.8) + 0.3;
+    const head = (id: number) => (tops.get(id) ?? 1.2 + g.creatures[id].level * 0.8) + 0.3; this.poise.update(g, (el, x, y, z) => place(el, x, y, z, false), tops, kp); // (poise arcs, ?skill=1: render/openCue.ts)
     const pick = (list: string[], a: number, b: number) => list[Math.floor(hash2(a, b, 17) * list.length) % list.length];
 
     // The bubbles: hers on a shot (at most one every bubbleEvery seconds, replacing the last); a

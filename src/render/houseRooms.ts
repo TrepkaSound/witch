@@ -366,7 +366,7 @@ export class HouseRoomsView {
   }
   /** Off the page (an island whose treehouse has no rooms): its meshes' geometry and material let go, its labels taken off. */
   dispose(): void {
-    this.loadingFloor.geometry.dispose(); this.loadingFloor.material.dispose();
+    this.loadingFloor.geometry.dispose(); this.loadingFloor.material.dispose(); this.floor.geometry.dispose(); for (const m of [this.floor.material, this.terraceFloor.material] as THREE.MeshBasicMaterial[]) { m.map?.dispose(); m.dispose(); } // (the floors' painted textures are made here: makeFloor)
     for (const p of this.parts) p.geo.dispose();
     this.mat.dispose(); this.box.remove();
     for (const { art, mesh } of this.pieces.values()) { art.tex.dispose(); mesh.geometry.dispose(); (mesh.material as THREE.Material).dispose(); }

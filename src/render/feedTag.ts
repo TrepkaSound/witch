@@ -7,6 +7,8 @@
 import { keycapCanvas } from "../ui/keyHint";
 import { useGlyph } from "./houseRooms";
 import { feedOffer } from "../rules/sigilButton";
+import { commandsOn } from "../rules/skill/profile";
+import { glyphOf } from "../ui/keyHint";
 import type { View } from "./view";
 
 /** How high above the berry (m) the arrow's tip points from: just over its glow. */
@@ -44,7 +46,7 @@ export class FeedTag {
   update(v: View): void {
     const g = v.game, W = g.witches?.[0], offer = W ? feedOffer(g, W) : null;
     if (!offer) { this.el.style.display = "none"; this.tap = null; return; }
-    const cv = v.canvas.getBoundingClientRect(), px = Math.max(2, Math.round(cv.width / Math.max(1, v.width))), glyph = useGlyph(v.useDevice), key = `${glyph}|${px}`;
+    const cv = v.canvas.getBoundingClientRect(), px = Math.max(2, Math.round(cv.width / Math.max(1, v.width))), cmd = commandsOn(g.tuning), glyph = cmd && v.useDevice !== "touch" ? glyphOf("game.command", v.useDevice) : useGlyph(v.useDevice), key = `${glyph}|${px}`;
     if (key !== this.key) {
       this.key = key;
       const arrow = document.createElement("div");
@@ -52,7 +54,7 @@ export class FeedTag {
       arrow.style.cssText = "display:block;line-height:0";
       this.el.replaceChildren(keycapCanvas(glyph, px), arrow);
     }
-    this.tap = v.useDevice === "touch" ? v.onUse : null;
+    this.tap = v.useDevice === "touch" && !cmd ? v.onUse : null; // (commands on: square, F or touch's cmd button feeds, so the key shown is the command's as bound)
     this.el.style.pointerEvents = this.tap ? "auto" : "none";
     const [qx, qy] = v.screenOf(offer.x, ARROW_TIP, offer.z);
     this.el.style.display = "flex";

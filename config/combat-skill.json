@@ -1,0 +1,47 @@
+{
+  "_": "Openings, poise and creature commands, per species (docs/plans/combat-skill-and-commands.md, sections 1 and 5; Ed, 2026-11-17: \"go for the prototype\"). Read by src/rules/skill/profile.ts. A value under a level (youth, adult, legend) wins over the species' value, which wins over global's. Openings (sit, poise, stagger, daze) only for species that list sit or poise, and only with ?skill=1; commands only for species with a verb, and only with ?commands=1. Times are seconds; poise.letters is a share of its meter (invites.hits for its level) or a count.",
+  "global": {
+    "sit": { "time": 0.5 },
+    "poise": { "letters": "40%", "windup": 1, "regenDelay": 1, "regenTime": 2 },
+    "stagger": { "time": 1, "cancels": true, "immune": 3 },
+    "daze": { "time": 2, "speed": 0.5 },
+    "command": {
+      "start": 1, "reach": 20, "power": 1.5, "cast": 0, "buff": false, "buffTime": 20, "buffStacks": 1, "legendCooldown": 3,
+      "youth": { "max": 6, "perBerry": 3, "cooldown": 5 },
+      "adult": { "max": 9, "perBerry": 4, "cooldown": 5 }
+    }
+  },
+  "species": {
+    "hare": { "sit": { "time": 0.8 }, "poise": { "letters": "30%" } },
+    "badger": {
+      "sit": { "time": 0.9 }, "poise": { "letters": "60%", "windup": 2 },
+      "command": {
+        "verb": "Guard", "name": "Barge", "knock": 10, "taunt": 3, "tauntRadius": 10, "cast": 0.5,
+        "youth": { "max": 3, "perBerry": 3, "cooldown": 15 },
+        "adult": { "knock": 16, "max": 3, "perBerry": 3, "cooldown": 20 }
+      }
+    },
+    "dormouse": { "sit": { "time": 0.2 }, "poise": { "letters": "25%" } },
+    "fox": {
+      "command": {
+        "verb": "Strike", "name": "Foxfire", "power": 1.5,
+        "youth": { "max": 6, "perBerry": 3, "cooldown": 5 },
+        "adult": { "max": 8, "perBerry": 4, "cooldown": 5 }
+      }
+    },
+    "squirrel": {
+      "command": {
+        "verb": "Snare", "name": "Bonk", "stun": 0.6,
+        "youth": { "max": 6, "perBerry": 4, "cooldown": 1 },
+        "adult": { "max": 16, "perBerry": 6, "cooldown": 0.7 }
+      }
+    },
+    "bee": {
+      "command": {
+        "verb": "Surge", "name": "Buzz", "buff": true, "buffTime": 1.5, "buffStacks": 3,
+        "youth": { "max": 6, "perBerry": 4, "cooldown": 1 },
+        "adult": { "max": 16, "perBerry": 6, "cooldown": 0.7 }
+      }
+    }
+  }
+}

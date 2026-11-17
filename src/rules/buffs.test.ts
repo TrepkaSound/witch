@@ -2,7 +2,10 @@
 // distinct leashed adult kinds of that group with berry pips; a leashed legend three, no berries, counted once with an adult of its
 // kind; pips drain one at a time and gate the buff; each group's effect; the Heavies' shots round her at 1, 2 and 3 stacks.
 import { describe, expect, it } from "vitest";
-import { TUNING, withTuning } from "./tuning";
+import { withTuning } from "./tuning";
+// The passive buffs and their draining pips are the game with commands off (?commands=0): commands are on by default (Ed, 2026-11-17:
+// "Put the switches on by default and then publish"), so this file's tuning sets the switch off; the last block is commands on.
+const TUNING = withTuning({ commands: { on: false } });
 import { addPip, buffsOf, dashBuff, drainPips, groupOf, heavyWays, invitesBuffed, noBuffs, pipCount, pipFading, pipFuel, setBuffs, speedBuff, speedMultiplierBuffed, stepInvitesBuffed, wantsPip, type BuffStacks } from "./buffs";
 import { canEat, feed, feedRoom, type BerryState } from "./berries";
 import { bagTuning } from "./bags";
@@ -237,5 +240,22 @@ describe("in play", () => {
     for (let i = 0; i < 1.5 / STEP; i++) stepGame(g, idle, STEP);
     expect(pipFuel(g.berries, c.id, TUNING)).toBe(0);
     expect(buffsOf(W.leash.stack, g.creatures, g.berries, TUNING).stacks.darters).toBe(0);
+  });
+});
+
+describe("with commands on (?commands=1; Ed, 2026-11-17: \"the current buff 'draining' system will be superseded by more deliberate charge uses\")", () => {
+  const ON = withTuning({ commands: { on: true } });
+  it("no drain: drainPips leaves an adult's pips alone and runs its cooldown and buff down instead", () => {
+    const c = crit(0, "bee", 2, { cmd: { charges: 5, cool: 1, buff: 1, buffStacks: 3 } }), s = fed([0]);
+    drainPips(s, [0], [c], 0.5, ON);
+    expect(s.pips!.get(0)).toBe(LIFE);
+    expect([c.cmd!.charges, c.cmd!.cool, c.cmd!.buff]).toEqual([5, 0.5, 0.5]);
+  });
+  it("no passive buff from berries: a fed adult buffs only while its use's period runs, and only a buff-giver", () => {
+    const bee = crit(0, "bee", 2, { cmd: { charges: 5, cool: 0, buff: 0 } }), fox = crit(1, "fox", 2, { cmd: { charges: 5, cool: 0, buff: 2 } });
+    expect(buffsOf([0, 1], [bee, fox], fed([0, 1]), ON).stacks).toEqual(noBuffs());
+    bee.cmd!.buff = 1; bee.cmd!.buffStacks = 3;
+    expect(buffsOf([0, 1], [bee, fox], fed([]), ON).stacks).toEqual(stacks({ darters: 3 }));
+    expect(buffsOf([0, 1], [bee, fox], fed([]), ON).icons.has(1)).toBe(false); // (the fox gives no buff: no icon)
   });
 });

@@ -129,6 +129,8 @@ export interface LeashControls {
   cycle?: boolean;
   /** Cycle back (the pad's L1, Ed 2026-10-28): the top sigil to the bottom. */
   cycleBack?: boolean;
+  /** The command button (?commands=1; the pad's square, F, the mouse's middle button): the bottom creature acts, or eats near a berry (rules/commands/command.ts). */
+  command?: boolean;
   /** The sigil button is held on this frame (E, the pad's square, touch): since a press that picked up or put down, a run
    *  (LeashState.run, Ed 2026-10-15): picking up any sigil she runs over, or putting one down in each empty hex she enters. */
   held?: boolean;
