@@ -1756,8 +1756,9 @@ The 💌 invite [1], replacing the proximity chat when on: on the ground she sho
   3. Ed's playtest, 2026-10-29: "damage orbits are too wide, bring them in by around 30%" (scale 2 to 1.4, gap 1 to 0.7, min 2 to 1.4, height 0.9 to 0.63 (all x0.7); the soundsystem's 💥 ring 1.5 to 1.05 m outside it)
   A soundsystem's 💥 ring sits 1.5 gaps outside its radius.
 - **`invites.hard`**: the hard homing of the 💌s her Sentry and Slingshot hats throw: homing degrees a second, cone degrees either side it looks in, range metres it looks out to (was the legend buffs' charm, 420, 80 and 18).
-- **`invites.singleStick`**: the homing of her own 💌s with Aiming set to Single stick on the Settings page (they fly the way she moves, or faces when still, so they home harder to make up for the lost fine aim): homing degrees a second, cone degrees either side it looks in, range metres it looks out to. Starts at invites.hard's numbers; twin stick keeps invites.homing, homingCone and homingRange.
+- **`invites.singleStick`**: the homing of her own 💌s with Aiming set to Single stick on the Settings page: homing degrees a second, cone degrees either side it looks in, range metres it looks out to.
   1. 2026-11-16: "Single stick setting - yes, let's put a switch on the settings page for this" (from a playtest: "Hades is apparently single stick - you shoot in the direction you face - the playtester was much more familiar with this and found two sticks overwhelming - we could easily offer both with a toggle")
+  Single stick: her 💌s fly the way she moves, or faces when still, so they home harder to make up for the lost fine aim. Starts at invites.hard's numbers (420, 80, 18); twin stick keeps invites.homing, homingCone and homingRange.
 
 | knob | type | range |
 |---|---|---|

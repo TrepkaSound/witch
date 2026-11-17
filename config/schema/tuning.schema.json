@@ -4481,7 +4481,7 @@
             "range"
           ],
           "additionalProperties": false,
-          "description": "the homing of her own 💌s with Aiming set to Single stick on the Settings page (they fly the way she moves, or faces when still, so they home harder to make up for the lost fine aim): homing degrees a second, cone degrees either side it looks in, range metres it looks out to."
+          "description": "the homing of her own 💌s with Aiming set to Single stick on the Settings page: homing degrees a second, cone degrees either side it looks in, range metres it looks out to."
         },
         "wonAway": {
           "type": "object",

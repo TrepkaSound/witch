@@ -342,7 +342,8 @@
       "what": "the hard homing of the 💌s her Sentry and Slingshot hats throw: homing degrees a second, cone degrees either side it looks in, range metres it looks out to (was the legend buffs' charm, 420, 80 and 18)."
     },
     "invites.singleStick": {
-      "what": "the homing of her own 💌s with Aiming set to Single stick on the Settings page (they fly the way she moves, or faces when still, so they home harder to make up for the lost fine aim): homing degrees a second, cone degrees either side it looks in, range metres it looks out to. Starts at invites.hard's numbers; twin stick keeps invites.homing, homingCone and homingRange.",
+      "what": "the homing of her own 💌s with Aiming set to Single stick on the Settings page: homing degrees a second, cone degrees either side it looks in, range metres it looks out to.",
+      "notes": "Single stick: her 💌s fly the way she moves, or faces when still, so they home harder to make up for the lost fine aim. Starts at invites.hard's numbers (420, 80, 18); twin stick keeps invites.homing, homingCone and homingRange.",
       "decisions": [
         {
           "date": "2026-11-16",
