@@ -2117,11 +2117,12 @@ Code: `rules/buffs.ts`, `docs/plans/follower-buffs-and-challenge-areas.md`
 
 ### `skill`
 
-Openings and poise, a prototype (?skill=1): creatures sit after attacking and stagger when enough letters break their poise.
+Openings and poise, a prototype (off with ?skill=0): creatures sit after attacking and stagger when enough letters break their poise.
 
-1. Ed, 2026-11-17: "go for the prototype" (the first slice of docs/plans/combat-skill-and-commands.md behind two switches, each off by default)
-2. Ed, 2026-11-17: "I don't think one letter should ever count for more than one hit. A hit is a letter."
-After it attacks a creature sits still for a moment; enough letters break its poise (a wind-up cancelled, a stagger, then a daze that slows it); an amber outline shows when it is open. For the hare, badger and dormouse; their numbers are config/combat-skill.json. Off by default: on with ?skill=1 (src/app/linkParams.ts). A letter is always one hit; poise is counted beside the meter, never in it. The design: docs/plans/combat-skill-and-commands.md, section 5.
+1. Ed, 2026-11-17: "go for the prototype" (the first slice of docs/plans/combat-skill-and-commands.md behind two switches, each off by default at first)
+2. Ed, 2026-11-17: "Put the switches on by default and then publish" (on by default; ?skill=0 turns it off)
+3. Ed, 2026-11-17: "I don't think one letter should ever count for more than one hit. A hit is a letter."
+After it attacks a creature sits still for a moment; enough letters break its poise (a wind-up cancelled, a stagger, then a daze that slows it); an amber outline shows when it is open. For the hare, badger and dormouse; their numbers are config/combat-skill.json. On by default; off, the game as it was, with ?skill=0 (src/app/linkParams.ts). A letter is always one hit; poise is counted beside the meter, never in it. The design: docs/plans/combat-skill-and-commands.md, section 5.
 
 | knob | type | range |
 |---|---|---|
@@ -2129,12 +2130,13 @@ After it attacks a creature sits still for a moment; enough letters break its po
 
 ### `commands`
 
-Creature commands, a prototype (?commands=1): square makes the bottom creature of her stack act, spending a berry charge.
+Creature commands, a prototype (off with ?commands=0): square makes the bottom creature of her stack act, spending a berry charge.
 
 1. Ed, 2026-11-17: "square as command, and circle as pickup/place. When you're near a berry, square becomes eat."
-2. Ed, 2026-11-17: "I don't think we need to enforce this gap; zero gap gives a higher skill ceiling which is good I think?"
-3. Ed, 2026-11-17: "not all adults give buffs; of the ones that do, using a charge gives you that buff for a period"
-Square (F, the mouse's middle button) commands the bottom of her stack, or feeds it near a berry; circle picks up and puts down; only L2 dodges. Berries give charges (pips) that don't drain; each command spends one, then that creature cools down. Fox, squirrel, badger and bee have an action; their numbers are config/combat-skill.json. Off by default: on with ?commands=1 (src/app/linkParams.ts; the pad's layout: src/platform/input.ts). Under it a youth's growth dots are its charge bar, and a berry on a full bar evolves it; only a buff-giver's use gives her its buff, for its buffTime. The design: docs/plans/combat-skill-and-commands.md, sections 3 and 5.
+2. Ed, 2026-11-17: "Put the switches on by default and then publish" (on by default; ?commands=0 turns it off)
+3. Ed, 2026-11-17: "I don't think we need to enforce this gap; zero gap gives a higher skill ceiling which is good I think?"
+4. Ed, 2026-11-17: "not all adults give buffs; of the ones that do, using a charge gives you that buff for a period"
+Square (F, the mouse's middle button) commands the bottom of her stack, or feeds it near a berry; circle picks up and puts down; only L2 dodges. Berries give charges (pips) that don't drain; each command spends one, then that creature cools down. Fox, squirrel, badger and bee have an action; their numbers are config/combat-skill.json. On by default; off with ?commands=0, which also puts the old bindings back: square uses, circle dodges, E feeds, no cmd button (src/app/linkParams.ts; the layout follows this knob: src/app/keys.ts commandLayout, config/bindings.json commandLayout). Under it a youth's growth dots are its charge bar, and a berry on a full bar evolves it; only a buff-giver's use gives her its buff, for its buffTime. The design: docs/plans/combat-skill-and-commands.md, sections 3 and 5.
 
 | knob | type | range |
 |---|---|---|

@@ -491,7 +491,7 @@ if (params.get("pixels") === "keep") keepAtlasPixels(true); // (the atlases keep
 const input = new Input();
 input.aimFrom = (x, y) => view.aimAt(x, y);
 const aimHud = new AimHud(canvas); // the reticle where the mouse aims: 💌 range and the dodge's recharge
-setupDebugKeys(view, input, params); // (app/keys.ts)
+setupDebugKeys(view, input, params, bootTuning); // (app/keys.ts)
 // The playtest log (Ed, 2026-10-04): a sample every 10 s of play, kept on this browser, a run a night (app/night.ts); the pause
 // page's Download log (Ed, 2026-10-29: "rather than a key": the L key is gone), or opening the game with ?playtest=download, saves
 // the last few runs as JSON.

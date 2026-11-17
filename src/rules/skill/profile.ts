@@ -34,9 +34,9 @@ const over = (a: Obj, b: Obj | undefined): Obj => {
   return out;
 };
 
-/** Openings on (?skill=1). */
+/** Openings on (the default; off with ?skill=0). */
 export const skillOn = (t: Tuning): boolean => !!t.skill?.on;
-/** Commands on (?commands=1). */
+/** Commands on (the default; off with ?commands=0). */
 export const commandsOn = (t: Tuning): boolean => !!t.commands?.on;
 
 // module-state: a cache keyed by all its inputs (species, level) over the static config file

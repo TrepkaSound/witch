@@ -17,7 +17,8 @@ import { replayGuest, replayStart } from "../platform/online/replay";
 import { preppedGame } from "../test/preppedGame"; // (games on a map made once a file from its prep)
 
 const idle: Controls = { moveX: 0, moveZ: 0, toggleMode: false, zoom: 0, autoTalk: false };
-const T = withTuning({ witchHealth: { ...TUNING.witchHealth, hits: 1e6 }, invites: { ...TUNING.invites, on: false } });
+// (commands off, ?commands=0: E feeds; with them on, the default since Ed's 2026-11-17 "Put the switches on by default and then publish", the command button does: rules/commands/command.test.ts)
+const T = withTuning({ witchHealth: { ...TUNING.witchHealth, hits: 1e6 }, invites: { ...TUNING.invites, on: false }, commands: { on: false } });
 const F = T.berries.feed!;
 const run = (g: Game, secs: number, c: Controls = idle, each?: () => void) => { for (let i = 0; i < Math.round(secs / STEP); i++) { stepGame(g, c, STEP); each?.(); } };
 const tap = (g: Game) => stepGame(g, { ...idle, place: true }, STEP); // (a press with nothing holding it: a tap)

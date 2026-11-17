@@ -4,7 +4,7 @@
 // `touch`. The 💌 (issue #87) is aimed twin-stick: the cursor (a click fires) or the right stick (a trigger fires); 1 fires toward
 // the cursor; on touch, its button fires the way she's going.
 import type { Controls } from "../rules/game";
-import { bindings, inputValue, type ActionId, type Bindings } from "./bindings";
+import { bindings, type ActionId, type Bindings } from "./bindings";
 
 /** The keys the game takes from the page (no scrolling, no browser shortcut): every game action's (Esc is the pause's, platform/freeze.ts). */
 let gameKeys = new Set<string>(), gameKeysAt = -1;
@@ -51,8 +51,6 @@ export class Input {
    *  in the direction you face ... we could easily offer both with a toggle"): twin stick, the right stick or the cursor aims; single
    *  stick, neither does, so her 💌s fly the way she's going (rules/invites.ts aimOwn) and home harder. Touch is as ever either way. */
   aiming: "twin" | "single" = "twin";
-  /** The command layout (?commands=1, app/keys.ts): the pad's square commands, circle uses and no longer dodges (padControls). */
-  commandLayout = false;
 
   constructor(target: Window = window) {
     target.addEventListener("keydown", e => {
@@ -149,7 +147,7 @@ export class Input {
       const fresh = buttons.some((b, i) => b && !this.padPrev[i]);
       if (fresh || pad.axes.some(a => Math.abs(a) > 0.5)) this.device = "pad";
       const consumed = fresh && !!this.onAny?.();
-      const P = padControls(buttons, pad.axes, this.padPrev, consumed, this.dpadMenu, this.padPrevAxes, bindings, this.commandLayout);
+      const P = padControls(buttons, pad.axes, this.padPrev, consumed, this.dpadMenu, this.padPrevAxes, bindings);
       moveX += P.moveX; moveZ += P.moveZ; zoom += P.zoom;
       if (P.toggleMode) toggleMode = true;
       if (P.debug) debug = true;
@@ -203,7 +201,7 @@ export class Input {
  *  2026-10-23: the bottom face button, meaning to choose, flew her off from the bedroom) only its back (`sigil`: main.ts closes it),
  *  and its zoom (the telescope's) reach the game; choosing and moving the highlight (the d-pad, the left stick) are the menu's own
  *  (ui/stationLines.ts panelPad, the telescope's look), she standing still (main.ts stillControls). */
-export function padControls(buttons: readonly boolean[], axes: readonly number[], prev: readonly boolean[], consumed: boolean, menu: boolean, prevAxes: readonly number[] = [], B: Bindings = bindings, commands = false) {
+export function padControls(buttons: readonly boolean[], axes: readonly number[], prev: readonly boolean[], consumed: boolean, menu: boolean, prevAxes: readonly number[] = [], B: Bindings = bindings) {
   const pressed = (id: ActionId) => !consumed && B.padPressed(id, buttons, axes, prev, prevAxes), v = (id: ActionId) => B.padValue(id, buttons, axes);
   const out = { moveX: 0, moveZ: 0, zoom: 0, toggleMode: false, debug: false, sigil: false, sigilHeld: false, hat: false, spell: false, cycle: false, cycleBack: false, command: false, dash: false, fire: false, aim: null as { x: number; z: number } | null,
     talkHeld: false, talkPressed: false, toggleAutoTalk: false, nextWave: false, pauseWaves: false, cycleSpeakers: false, inviteNearest: false, feedNearest: false, happyNearest: false };
@@ -219,13 +217,9 @@ export function padControls(buttons: readonly boolean[], axes: readonly number[]
   out.sigil = pressed("game.use");
   out.sigilHeld = B.padHeld("game.use", buttons, axes);
   out.hat = pressed("game.hat"); out.spell = pressed("game.boost"); out.cycle = pressed("game.cycleNext"); out.cycleBack = pressed("game.cyclePrev"); out.dash = pressed("game.dodge");
-  // The command layout (?commands=1; Ed, 2026-11-17: "square as command, and circle as pickup/place"): use's button (square) commands,
-  // circle uses (held, a run), and only the dodge's other buttons (L2) dodge.
-  if (commands) {
-    const edge = (p: string) => !consumed && inputValue(p, buttons, axes) >= 0.5 && inputValue(p, prev, prevAxes) < 0.5;
-    out.command = out.sigil; out.sigil = edge("circle"); out.sigilHeld = inputValue("circle", buttons, axes) >= 0.5;
-    out.dash = B.pad("game.dodge").some(p => p !== "circle" && edge(p));
-  }
+  // The command button (Ed, 2026-11-17: "square as command, and circle as pickup/place"): the pad's square under the command layout
+  // (the bindings' defaults while tuning commands.on is: Bindings.setCommandLayout), circle then using and only L2 dodging; none without.
+  out.command = pressed("game.command");
   // Twin-stick: the aim stick aims (screen right is east, down is south), the invite's buttons fire.
   const rx = v("game.aimRight") - v("game.aimLeft"), rz = v("game.aimDown") - v("game.aimUp"), l = Math.hypot(rx, rz);
   if (l > 0.15) { const s = Math.min(1, l) / l; out.aim = { x: rx * s * 20, z: rz * s * 20 }; } // (as a point 20 m out that way: the dash reads a cursor's ground point)

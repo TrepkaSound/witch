@@ -15,4 +15,6 @@ export function fillControls(root: ParentNode): void {
   for (const el of root.querySelectorAll<HTMLElement>("[data-key]")) { const k = bindings.keys(el.dataset.key as ActionId)[0]; el.textContent = k ? keyName(k) : "(none)"; }
   for (const el of root.querySelectorAll<HTMLElement>("[data-pad]")) el.textContent = padName(el.dataset.pad as ActionId);
   for (const el of root.querySelectorAll<HTMLElement>("[data-pad-move]")) el.textContent = padMoveName(el.dataset.padMove!);
+  // (the command's lines only under the command layout, tuning commands.on; the old ones only without: ?commands=0)
+  for (const el of root.querySelectorAll<HTMLElement>("[data-layout]")) el.hidden = (el.dataset.layout === "commands") !== bindings.commandLayout;
 }

@@ -3,7 +3,7 @@
 // gap shared between creatures, a buff-giver's period, a legend's endless charges on its longer cooldown, a berry in reach eating
 // instead, fizzles, the targeting order in both aiming modes, and the four actions carried out in the fight.
 import { describe, expect, it } from "vitest";
-import { TUNING, withTuning } from "../tuning";
+import { withTuning } from "../tuning";
 import { newGame as fullGame, stepGame, STEP, type Controls, type Game } from "../game";
 import { smallWorld } from "../../test/worlds";
 import type { Creature } from "../creatures";
@@ -129,7 +129,7 @@ describe("the press", () => {
     g.witches[0].body.mode = "treetop";
     expect(pressNow(g).r).toBe(null);
     g.witches[0].body.mode = "ground";
-    expect(pressNow(g, press, TUNING).r).toBe(null);
+    expect(pressNow(g, press, withTuning({ commands: { on: false } })).r).toBe(null); // (?commands=0)
   });
 });
 

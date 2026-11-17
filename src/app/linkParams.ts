@@ -67,12 +67,14 @@ function compareFights(params: URLSearchParams, tuning: typeof TUNING): void {
   prototypeFights(params, tuning);
 }
 
-/** The fights' prototype switches (Ed, 2026-11-17: "go for the prototype"; docs/plans/combat-skill-and-commands.md, section 5): each off
- *  by default, each testable alone. ?skill=1: openings and poise (rules/skill/poise.ts). ?commands=1: creature commands and the pad's
- *  command layout (rules/commands/command.ts, platform/input.ts). */
+/** The fights' prototype switches (Ed, 2026-11-17: "go for the prototype"; docs/plans/combat-skill-and-commands.md, section 5): each on
+ *  by default (Ed, 2026-11-17: "Put the switches on by default and then publish"), each turned off alone. ?skill=0: no openings or
+ *  poise (rules/skill/poise.ts). ?commands=0: no creature commands, and the old bindings (rules/commands/command.ts; the command
+ *  layout follows tuning commands.on: app/keys.ts commandLayout). =1 still means on, whatever the tuning file says. */
 function prototypeFights(params: URLSearchParams, tuning: typeof TUNING): void {
-  if (params.get("skill") === "1") tuning.skill = { on: true };
-  if (params.get("commands") === "1") tuning.commands = { on: true };
+  const skill = params.get("skill"), commands = params.get("commands");
+  if (skill === "0" || skill === "1") tuning.skill = { on: skill === "1" };
+  if (commands === "0" || commands === "1") tuning.commands = { on: commands === "1" };
 }
 
 /** The world's shape and travel speed for this load: the tuning's, unless the link says otherwise (?areaSize= or ?areaScale=,

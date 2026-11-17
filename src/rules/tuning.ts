@@ -189,9 +189,9 @@ export interface Tuning {
    *  perceive the effects!"): its lunge's blow throws her `throw` metres (past witch.knock.max, which holds every other throw) and
    *  staggers her `stagger` seconds, about the throw's own length, so she has her feet as she lands (rules/combat/hits.ts, rules/knock.ts). */
   badgerBarge?: { throw: number; stagger: number };
-  /** Openings and poise (?skill=1, Ed 2026-11-17 "go for the prototype"; rules/skill/poise.ts): off, the game as it was. */
+  /** Openings and poise (Ed 2026-11-17 "go for the prototype"; on by default, "Put the switches on by default and then publish"; rules/skill/poise.ts): off (?skill=0), the game as it was. */
   skill?: { on: boolean };
-  /** Creature commands (?commands=1; rules/commands/command.ts): off, the game as it was. */
+  /** Creature commands (on by default, as openings are; rules/commands/command.ts): off (?commands=0), the game as it was. */
   commands?: { on: boolean };
   /** How attacks feel on screen (render/attackFeel.ts): the wind-up's crouch, the lunge's stretch, a hit's squash and bounce, a knock-back's tumble. */
   /** The effects shown on her (render/herEffects.ts; Ed, 2026-11-13: "Mark + tint + sound"): on; tint, how far her sprite goes toward the attacker's element's colour while slowed, confused or thrown; size, the marks' size; slow, its circling stars and her steps' drag marks (one every dragEvery metres, fading over dragLife seconds); thrown, the least throw that leaves a dust skid (metres) and its puffs (one every dustEvery metres, each dustLife seconds); calm, the tint's share with Reduce flashing. */

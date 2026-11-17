@@ -2,7 +2,10 @@
 // distinct leashed adult kinds of that group with berry pips; a leashed legend three, no berries, counted once with an adult of its
 // kind; pips drain one at a time and gate the buff; each group's effect; the Heavies' shots round her at 1, 2 and 3 stacks.
 import { describe, expect, it } from "vitest";
-import { TUNING, withTuning } from "./tuning";
+import { withTuning } from "./tuning";
+// The passive buffs and their draining pips are the game with commands off (?commands=0): commands are on by default (Ed, 2026-11-17:
+// "Put the switches on by default and then publish"), so this file's tuning sets the switch off; the last block is commands on.
+const TUNING = withTuning({ commands: { on: false } });
 import { addPip, buffsOf, dashBuff, drainPips, groupOf, heavyWays, invitesBuffed, noBuffs, pipCount, pipFading, pipFuel, setBuffs, speedBuff, speedMultiplierBuffed, stepInvitesBuffed, wantsPip, type BuffStacks } from "./buffs";
 import { canEat, feed, feedRoom, type BerryState } from "./berries";
 import { bagTuning } from "./bags";

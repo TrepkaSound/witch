@@ -9,7 +9,7 @@ import type { Creature } from "../creatures";
 import { dazeSpeed, noteLetter, openness, poiseShare, sitAfter, staggered, stepSkill } from "./poise";
 import { poiseLetters, skillProfile } from "./profile";
 
-const ON = withTuning({ skill: { on: true } });
+const ON = withTuning({ skill: { on: true } }), OFF = withTuning({ skill: { on: false } }); // (on is the default, Ed 2026-11-17; off is ?skill=0)
 const wild = (species: string, level = 1, more: Partial<Creature> = {}) => ({ id: 0, species, level, x: 8, z: 0, leashed: false, gone: false, ...more }) as Creature;
 const winding = (c: Creature, until = 10) => { c.fight = { target: { kind: "witch", id: 0 }, readyAt: 0, windupUntil: until, windupAt: 0, aimX: 0, aimZ: 0, spellCast: 7 }; };
 
@@ -22,7 +22,7 @@ describe("a letter is one hit (Ed, 2026-11-17: \"A hit is a letter\")", () => {
       for (let i = 0, time = 0; i < 0.6 / STEP; i++, time += STEP) { s.events = []; stepInvites(s, { fire: i === 0, aimX: 1, aimZ: 0 }, { x: 0, z: 0, facing: 1 }, true, [c], A, time, STEP, T); }
       return { counted, c };
     };
-    const on = hits(ON), off = hits(TUNING);
+    const on = hits(ON), off = hits(OFF);
     expect(on.counted).toEqual([1, 1, 1, 1, 1]);
     expect(off.counted).toEqual(on.counted);
     expect(on.c.skill?.letters).toBe(5); // (noted beside the meter, worn at its next turn)
@@ -79,12 +79,12 @@ describe("poise, stagger and daze", () => {
     stepSkill(badger, 5.3, STEP, ON);
     expect(badger.sitUntil).toBeCloseTo(6.2);
   });
-  it("with the switch off nothing changes: no state, no sit of its own (the hare's own sit stays tuning hareStamp.sit's)", () => {
+  it("with the switch off (?skill=0) nothing changes: no state, no sit of its own (the hare's own sit stays tuning hareStamp.sit's)", () => {
     const c = wild("badger");
-    noteLetter(c, TUNING);
+    noteLetter(c, OFF);
     expect(c.skill).toBeUndefined();
-    expect(sitAfter(c, false, 1, TUNING)).toBe(false);
-    expect(openness(c, 1, TUNING)).toBe(0);
+    expect(sitAfter(c, false, 1, OFF)).toBe(false);
+    expect(openness(c, 1, OFF)).toBe(0);
   });
   it("hers never stagger", () => {
     const c = wild("hare", 1, { leashed: true });

@@ -116,6 +116,32 @@ describe("a player's own bindings", () => {
   });
 });
 
+describe("the command layout (config/bindings.json commandLayout; tuning commands.on, the default: Ed, 2026-11-17, \"square as command, and circle as pickup/place\")", () => {
+  it("on: square commands, circle uses, only L2 dodges, and Command is listed; no conflicts", () => {
+    const B = new Bindings(); B.setCommandLayout(true);
+    expect([B.pad("game.command"), B.pad("game.use"), B.pad("game.dodge")]).toEqual([["square"], ["circle"], ["L2"]]);
+    expect([B.keys("game.command"), B.mouse("game.command"), B.keys("game.use")]).toEqual([["KeyF"], ["middle"], ["KeyE"]]);
+    expect(B.list().find(a => a.id === "game.command")?.dev).toBe(false);
+    expect(B.pad("menu.back")).toEqual(["circle"]); // (menus as ever)
+    expect(B.conflicts()).toEqual([]);
+  });
+  it("off (?commands=0): the table as written, the old bindings exactly, Command left off the lists", () => {
+    const fresh = new Bindings(), B = new Bindings(); B.setCommandLayout(true); B.setCommandLayout(false);
+    expect(B.list()).toEqual(fresh.list());
+    expect([B.pad("game.command"), B.pad("game.use"), B.pad("game.dodge")]).toEqual([[], ["square"], ["L2", "circle"]]);
+    expect(B.list().find(a => a.id === "game.command")?.dev).toBe(true);
+  });
+  it("a player's own bindings stay over either layout, and a change of layout tells the readers and saves nothing", () => {
+    const s = memory(), B = new Bindings(s);
+    B.set("game.use", { pad: ["triangle"] });
+    const saved = s.getItem("witch.bindings"); let told = 0; B.onChange(() => told++);
+    B.setCommandLayout(true);
+    expect([B.pad("game.use"), B.pad("game.command"), told, s.getItem("witch.bindings")]).toEqual([["triangle"], ["square"], 1, saved]);
+    B.reset("game.use"); expect(B.pad("game.use")).toEqual(["circle"]); // (the layout's default, not the table's)
+    B.setCommandLayout(true); expect(told).toBe(2); // (no change, nobody told again: the reset was the second)
+  });
+});
+
 describe("a stick's direction", () => {
   it("reads past its dead zone, scaled, along the whole stick", () => {
     expect(inputValue("lsRight", [], [0.1, 0, 0, 0])).toBe(0);

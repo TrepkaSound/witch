@@ -25,6 +25,10 @@ const DEAD = 0.18, PRESS = 0.5;
 /** The defaults, as config/bindings.json has them. */
 export const DEFAULTS: readonly Action[] = Object.entries(table.actions).map(([id, a]) => ({ ...(a as Omit<Action, "id">), id: id as ActionId, context: a.context as Context }));
 const BY_ID = new Map(DEFAULTS.map(a => [a.id, a]));
+/** The command layout's defaults (config/bindings.json commandLayout; Ed, 2026-11-17: "square as command, and circle as pickup/place"):
+ *  the table's with the pad's use on circle, command on square (and listed) and the dodge on L2 alone. */
+const LAYOUT = table.commandLayout as Partial<Record<ActionId, { pad?: string[]; dev?: boolean }>>;
+const COMMAND_DEFAULTS: readonly Action[] = DEFAULTS.map(a => { const o = LAYOUT[a.id]; return o && typeof o === "object" ? { ...a, ...o } : a; });
 
 /** Two or more actions in one context on one input: `input` as "key:KeyE", "mouse:left" or "pad:cross". */
 export interface Conflict { context: Context; input: string; actions: ActionId[] }
@@ -42,6 +46,8 @@ export class Bindings {
   private own: Partial<Record<ActionId, Partial<Binding>>> = {};
   private live = new Map<ActionId, Binding>();
   private listeners = new Set<() => void>();
+  private defs: readonly Action[] = DEFAULTS;
+  private byId = BY_ID;
   /** Bumped at each change, for readers that cache what they built from the bindings. */
   version = 0;
 
@@ -54,13 +60,13 @@ export class Bindings {
   }
 
   /** Every action, its binding now and whether it's the default's: what the settings menu lists (dev ones too: it may leave them off). */
-  list(): (Action & { isDefault: boolean })[] { return DEFAULTS.map(a => ({ ...a, ...this.get(a.id), isDefault: !this.own[a.id] })); }
+  list(): (Action & { isDefault: boolean })[] { return this.defs.map(a => ({ ...a, ...this.get(a.id), isDefault: !this.own[a.id] })); }
   /** An action's binding now (the player's over the default). */
   get(id: ActionId): Binding { const b = this.live.get(id); if (!b) throw new Error(`no action ${id}`); return b; }
   /** An action's binding set (any of keys, mouse, pad; the rest kept), saved; returns the conflicts it leaves (all of them, not only
    *  this action's), which don't stop it: the menu shows them. Unknown mouse or pad names are an error. */
   set(id: ActionId, b: Partial<Binding>): Conflict[] {
-    const def = BY_ID.get(id); if (!def) throw new Error(`no action ${id}`);
+    const def = this.byId.get(id); if (!def) throw new Error(`no action ${id}`);
     const bad = [...(b.mouse ?? []).filter(m => !(MOUSE_INPUTS as readonly string[]).includes(m)), ...(b.pad ?? []).filter(p => !(p in PAD_BUTTONS) && !(p in PAD_STICKS))];
     if (bad.length) throw new Error(`not a mouse or pad input: ${bad.join(", ")}`);
     const next = { ...this.get(id), ...clean(b) };
@@ -70,6 +76,16 @@ export class Bindings {
     if (Object.keys(own).length) this.own[id] = own; else delete this.own[id];
     this.changed();
     return this.conflicts();
+  }
+  /** Whether the command layout's defaults are the ones under the player's own. */
+  get commandLayout(): boolean { return this.defs === COMMAND_DEFAULTS; }
+  /** The defaults under the player's own: the command layout's while tuning commands.on is (the default; app/keys.ts sets it at the
+   *  boot), else the table's as written (?commands=0: square uses, circle dodges, nothing on the pad commands). Saves nothing. */
+  setCommandLayout(on: boolean): void {
+    if (on === this.commandLayout) return;
+    this.defs = on ? COMMAND_DEFAULTS : DEFAULTS; this.byId = new Map(this.defs.map(a => [a.id, a]));
+    this.build(); this.version++;
+    for (const f of this.listeners) f();
   }
   /** An action back to its default. */
   reset(id: ActionId): void { delete this.own[id]; this.changed(); }
@@ -110,7 +126,7 @@ export class Bindings {
 
   private build(): void {
     this.live.clear();
-    for (const a of DEFAULTS) { const o = this.own[a.id] ?? {}; this.live.set(a.id, { keys: [...(o.keys ?? a.keys)], mouse: [...(o.mouse ?? a.mouse)], pad: [...(o.pad ?? a.pad)] }); }
+    for (const a of this.defs) { const o = this.own[a.id] ?? {}; this.live.set(a.id, { keys: [...(o.keys ?? a.keys)], mouse: [...(o.mouse ?? a.mouse)], pad: [...(o.pad ?? a.pad)] }); }
   }
   private changed(): void {
     this.build(); this.version++;

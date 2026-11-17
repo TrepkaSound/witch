@@ -75,6 +75,21 @@ describe("the link's world (src/app/linkParams.ts)", () => {
   });
 });
 
+describe("the fights' prototype switches (Ed, 2026-11-17: \"Put the switches on by default and then publish\")", () => {
+  it("are on by default, each turned off alone with =0; =1 is still on", () => {
+    vi.stubGlobal("localStorage", fakeStorage({}).store);
+    const on = (q: string) => { const t = tuningFromLink(new URLSearchParams(q)).tuning; return [t.skill?.on, t.commands?.on]; };
+    expect([TUNING.skill?.on, TUNING.commands?.on]).toEqual([true, true]);
+    expect(on("")).toEqual([true, true]);
+    expect(on("skill=0")).toEqual([false, true]);
+    expect(on("commands=0")).toEqual([true, false]);
+    expect(on("skill=0&commands=0")).toEqual([false, false]);
+    expect(on("skill=1&commands=1")).toEqual([true, true]);
+    expect(on("skill=off&commands=")).toEqual([true, true]); // (only 0 and 1 are read)
+    expect([TUNING.skill?.on, TUNING.commands?.on]).toEqual([true, true]); // (the file's own untouched)
+  });
+});
+
 describe("each load's tuning is its own (docs/plans/sail-without-reload.md)", () => {
   it("a whole copy: what one night's knobs change, deep in it, reaches neither the file nor the next night's", () => {
     vi.stubGlobal("localStorage", fakeStorage({}).store);
