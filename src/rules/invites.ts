@@ -13,6 +13,7 @@ import { type Creature } from "./creatures";
 import { bodyRadius } from "./spacing";
 import { hash2 } from "./random";
 import type { Tuning } from "./tuning";
+import { noteLetter } from "./skill/poise";
 
 /** The letters' flight before Ed's 2026-11-09 change ("it feels like animals move faster than invitations so it's hard to land a
  *  hit. And ranges feel small"; now 45 m/s, 42 m, homing within 14 m), kept for `?invites=old` to A/B (app/linkParams.ts). The
@@ -213,6 +214,7 @@ export function stepInvites(s: Invites, c: InviteControls, witch: { x: number; z
     const event = { kind: "hit" as const, x, z, at: time, id: k.id, n, spent: false };
     s.events.push(event);
     A.hit(k, I.amount, time, automatic, projectile);
+    noteLetter(k, t); // (and its poise worn, with ?skill=1: a letter is still one hit, rules/skill/poise.ts)
   };
 
   // The Sentry hats: each a 💌 at the nearest invitable creature in its reach, every few seconds, homing hard.

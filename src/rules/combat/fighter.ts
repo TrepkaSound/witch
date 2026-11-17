@@ -2,6 +2,7 @@
 // how far it wants to stand, its momentum, its pace; and the old pack bolt's aim at her. The phases of its turn (rules/combat/
 // lunge.ts, packWait.ts, moves.ts, approach.ts, release.ts) read it. Split from stepCombat's loop (rules/combat.ts): the same sums
 // in the same order.
+import { dazeSpeed } from "../skill/poise"; // (dazed after a stagger, ?skill=1: slowed)
 import { LEGEND, type Creature } from "../creatures";
 import { FIGHT, landSwoop, profileOf } from "../movement";
 import type { Attack, CombatData, Target } from "./data";
@@ -100,7 +101,7 @@ export function turnOf(k: CombatStep, c: Creature, f: Fighting, pd: Directive | 
  *  Closing in from afar (Ed: "the creatures in it should be onto me in a few seconds"), it sprints at combat.pursuitRun. */
 export function paceOf(T: Turn): void {
   const { k, c, f, A, d } = T, { C, time, DA } = k, S = FIGHT.scale;
-  const slow = c.slowUntil && time < c.slowUntil ? A.slowMult ?? 0.5 : 1, own = c.level === LEGEND ? C.legendRun : profileOf(c.species)?.speed ?? C.fightRun;
+  const slow = (c.slowUntil && time < c.slowUntil ? A.slowMult ?? 0.5 : 1) * dazeSpeed(c, time), own = c.level === LEGEND ? C.legendRun : profileOf(c.species)?.speed ?? C.fightRun;
   // (Committed strikes, dodge.a: at her it closes at dodge.a.chase times its sprint wherever she is, so a fast kind can't be outwalked; a slow one still can.)
   const sprint = profileOf(c.species)?.pursuit ?? C.pursuitRun, chasing = !!DA && f.target.kind === "witch" && c.level !== LEGEND;
   const heavy = chasing && DA!.heavy.species.includes(c.species); // (a heavy: its top speed, built up at its slow acceleration in steer)

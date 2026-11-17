@@ -13,6 +13,7 @@ import { stepLegendAttack } from "./legend";
 import { getUp } from "../orbit";
 import { advanceMotion } from "../locomotion";
 import type { CombatStep } from "./step";
+import { stepSkill, staggered } from "../skill/poise";
 
 /** A wild flyer that swoops (its profile's move; hostile: wild or enraged, never hers or happy). */
 export const swoops = (c: Creature): boolean => !c.leashed && profileOf(c.species)?.move?.kind === "swoop" && (stateOf(c) === "wild" || stateOf(c) === "enraged");
@@ -24,6 +25,7 @@ export function standby(k: CombatStep, c: Creature): boolean | undefined {
   if (c.cheerUntil !== undefined && time >= c.cheerUntil) c.cheerUntil = undefined; // (its celebration over: back in the fight, rules/affection.ts)
   stepKnock(c, dt);
   if (c.gone) return undefined;
+  stepSkill(c, time, dt, t); // (openings, ?skill=1: its sit after a lunge, its poise worn and refilled: rules/skill/poise.ts)
   // A leap under way flies on whatever holds it this step (a stun, a daze, its pack's turn): its arc goes by the time, so steps
   // missed would put it the rest of the way at once (Ed's playtest, 2026-10-29: "some animals seem to teleport"). It lands as ever.
   if (c.leap && c.fight) advanceMotion(c, { route: c.leap }, time, 0);
@@ -57,6 +59,8 @@ export function standby(k: CombatStep, c: Creature): boolean | undefined {
   if (!fighting(c) || w.asleep(c) || (c.leashed && w.busy(c.id))) { c.fight = undefined; return undefined; }
   // Stunned (an armoured one knocked over): it does nothing for a moment.
   if (c.stunUntil !== undefined && time < c.stunUntil) { c.moving = false; c.vx = 0; c.vz = 0; return undefined; }
+  // Staggered, its poise broken (?skill=1, rules/skill/poise.ts): it stands still, its wind-up called off.
+  if (staggered(c, time)) { c.moving = false; c.vx = 0; c.vz = 0; return undefined; }
   // Sitting after its own stamp (the hare's: tuning hareStamp.sit; Ed, 2026-11-13, "Stamp, then sit 0.8 s": "its own stamp attack,
   // then a shown sit you can punish"): it stays where it is, no bound, no dodge, no new strike, till its sit is over.
   if (c.sitUntil !== undefined) { if (time < c.sitUntil) { c.moving = false; c.vx = 0; c.vz = 0; return undefined; } c.sitUntil = undefined; }

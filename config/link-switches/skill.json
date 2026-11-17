@@ -1,0 +1,10 @@
+{
+ "name": "skill",
+ "values": [
+  "1"
+ ],
+ "does": "Openings and poise, a prototype: after it attacks a hare, badger or dormouse sits still for a moment, enough letters during its wind-up break its poise (the attack cancelled, a stagger, then a slowing daze), and an amber outline shows while it is open. A letter is still one hit. Sets tuning skill.on.",
+ "group": "run",
+ "since": "2026-11-17",
+ "decision": "Ed, 2026-11-17: \"go for the prototype\" (docs/plans/combat-skill-and-commands.md, section 5)"
+}

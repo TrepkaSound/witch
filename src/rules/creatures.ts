@@ -129,6 +129,8 @@ export interface Creature {
   /** Sitting still till then after its own stamp (the hare's: tuning hareStamp.sit; Ed, 2026-11-13, "Stamp, then sit 0.8 s"): it
    *  doesn't move, hop, dodge or strike (rules/combat.ts); the view draws its sitting pose (render/view/creatures.ts). */
   sitUntil?: number;
+  /** Openings (?skill=1, rules/skill/poise.ts): its poise, stagger and daze. Commands (?commands=1, rules/commands/charges.ts): its charges, cooldown, buff and order. */
+  skill?: import("./skill/poise").SkillState;
   /** Turned on her by a wild owl's or unicorn's mind control (rules/combat/packs.ts): one of her animals goes for witch `of` till then. */
   mind?: { until: number; of: number };
   /** A party animal travelling (rules/travel.ts: far from her on the ground or its sigil, quiet both
@@ -391,6 +393,7 @@ export function makeCreature(map: ForestMap, cell: [number, number], level: Leve
     packSync: undefined,
     packThrow: undefined,
     sitUntil: undefined,
+    skill: undefined,
     mind: undefined,
     spell: undefined,
     hop: undefined,

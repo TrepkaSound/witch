@@ -1,6 +1,7 @@
 // A creature winding up its strike and letting it go (rules/combat/turn.ts): it telegraphs (gliding to a stop, with momentum; a
 // committed melee strike at her surging on), its aim at her followed till it locks; then the blow lands (a lunge), the shot or lob
 // flies, the beam burns, or the ground quakes. Split from stepCombat's loop (rules/combat.ts): the same sums in the same order.
+import { sitAfter } from "../skill/poise";
 import { LEGEND } from "../creatures";
 import { foes } from "../creatureStates";
 import { FIGHT } from "../movement";
@@ -53,7 +54,8 @@ export function release(T: Turn, aimed: AimTrack | undefined): void {
   const { k, c, f, pd, p, A, spell, atk, mo, long } = T, { s, w, t, time, grid, DA, DB, RG } = k;
   f.windupUntil = 0; f.readyAt = time + A.cooldown;
   // (the hare's own stamp let go: it sits, tuning hareStamp.sit, as above)
-  if (spell && A.delivery === "pulse" && c.species === "hare" && spell.name === "species:hare" && (t.hareStamp?.sit ?? 0) > 0) { c.sitUntil = time + t.hareStamp!.sit; c.vx = 0; c.vz = 0; c.moving = false; }
+  if (sitAfter(c, A.delivery === "melee", time, t)) { /* (openings on, ?skill=1: its profile's sit, after its lunge a melee one: rules/skill/poise.ts) */ }
+  else if (spell && A.delivery === "pulse" && c.species === "hare" && spell.name === "species:hare" && (t.hareStamp?.sit ?? 0) > 0) { c.sitUntil = time + t.hareStamp!.sit; c.vx = 0; c.vz = 0; c.moving = false; }
   if (spell && A.delivery !== "melee") return; // (released by the engine as its windup ends: rules/attacks/engine.ts; a melee one is the lunge below)
   const dmg = atk.damage;
   if (A.delivery === "melee") {

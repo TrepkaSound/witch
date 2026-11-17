@@ -64,6 +64,15 @@ function compareFights(params: URLSearchParams, tuning: typeof TUNING): void {
   // ?lunge=old: lunges as before Ed's 2026-11-13 change (tuning lunge, rules/combat.ts longLunge): wound up close, sprinting in, and
   // stopping where they aimed, to compare with the long ones (wound up from about 1.5 dashes off, carrying through to about 2).
   if (params.get("lunge") === "old" && tuning.lunge) tuning.lunge = { ...tuning.lunge, on: false };
+  prototypeFights(params, tuning);
+}
+
+/** The fights' prototype switches (Ed, 2026-11-17: "go for the prototype"; docs/plans/combat-skill-and-commands.md, section 5): each off
+ *  by default, each testable alone. ?skill=1: openings and poise (rules/skill/poise.ts). ?commands=1: creature commands and the pad's
+ *  command layout (rules/commands/command.ts, platform/input.ts). */
+function prototypeFights(params: URLSearchParams, tuning: typeof TUNING): void {
+  if (params.get("skill") === "1") tuning.skill = { on: true };
+  if (params.get("commands") === "1") tuning.commands = { on: true };
 }
 
 /** The world's shape and travel speed for this load: the tuning's, unless the link says otherwise (?areaSize= or ?areaScale=,

@@ -6044,6 +6044,32 @@
       "additionalProperties": false,
       "description": "The badger's shoulder-barge throws her `throw` metres and staggers her `stagger` seconds."
     },
+    "skill": {
+      "type": "object",
+      "properties": {
+        "on": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "on"
+      ],
+      "additionalProperties": false,
+      "description": "Openings and poise (?skill=1, a prototype): after it attacks a creature sits still for a moment, enough letters break its poise (a wind-up cancelled, a stagger, then a daze that slows it), and an amber outline shows when it is open."
+    },
+    "commands": {
+      "type": "object",
+      "properties": {
+        "on": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "on"
+      ],
+      "additionalProperties": false,
+      "description": "Creature commands (?commands=1, a prototype): square (F, the mouse's middle button) commands the bottom of her stack, or feeds it near a berry; circle picks up and puts down; only L2 dodges."
+    },
     "creatureMomentum": {
       "type": "object",
       "properties": {
@@ -15890,6 +15916,8 @@
     "teamRounds",
     "hareStamp",
     "badgerBarge",
+    "skill",
+    "commands",
     "creatureMomentum",
     "attackFx",
     "effectMarks",
