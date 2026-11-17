@@ -18,6 +18,8 @@ import { stumpClearance, type ForestMap } from "./map";
 import { rng } from "./random";
 import type { Tuning } from "./tuning";
 import { addPip, pipCount, pipFuel, wantsPip } from "./buffs";
+import { chargeRoom, feedCharges } from "./commands/charges";
+import { commandsOn } from "./skill/profile";
 import { chainLength } from "./chains";
 
 /** A berry bush: where it stands, and its area's type (it's one of that area's own bushes). */
@@ -95,6 +97,7 @@ export const feedKnobs = (t: Tuning): { reach: number; speed: number; hold: numb
 export function feedRoom(c: Creature, s: BerryState, t: Tuning): number {
   if (!c || c.gone || !c.leashed || c.boss || c.partyLegend || c.level >= LEGEND || s.evolving.has(c.id)) return 0;
   const hurt = hurtNow(c) ? 1 : 0;
+  if (commandsOn(t) && c.level >= 1) return hurt + chargeRoom(c); // (?commands=1: berries are charges, a youth's bar its growth: rules/commands/charges.ts)
   if (c.level < TOP_LEVEL) return hurt + Math.max(0, Math.ceil(toEvolve(c.level, t, c.species) - (s.fed.get(c.id) ?? 0)));
   const P = t.buffs?.pips;
   return hurt + (P && wantsPip(c, s, t) ? Math.max(0, P.max - pipCount(pipFuel(s, c.id, t), t)) : 0);
@@ -280,9 +283,12 @@ export function feed(s: BerryState, c: Creature, time: number, t: Tuning, clock?
   // A berry heals a party animal to full (Ed, 2026-10-04), as well as counting toward evolving.
   // (Ed, 2026-10-28: one berry takes all its 💧s, and counts toward growing up only when it had none)
   if (c.leashed && hurtNow(c)) { heal(c, time); return; }
-  if (c.level === TOP_LEVEL && !c.boss) { addPip(s, c.id, t); s.ateAt.set(c.id, time); return; } // (an adult's berry: a buff pip, rules/buffs.ts)
+  // (?commands=1: its level's perBerry charges, up to its max; a youth's full bar, the berry that evolves it: rules/commands/charges.ts)
+  const ch = commandsOn(t) && c.level >= 1 && c.level <= TOP_LEVEL && !c.boss && !s.evolving.has(c.id) ? feedCharges(c) : null;
+  if (ch === "charged") { s.ateAt.set(c.id, time); return; }
+  if (!ch && c.level === TOP_LEVEL && !c.boss) { addPip(s, c.id, t); s.ateAt.set(c.id, time); return; } // (an adult's berry: a buff pip, rules/buffs.ts)
   if (c.level >= TOP_LEVEL || s.evolving.has(c.id)) return;
-  const n = (s.fed.get(c.id) ?? 0) + 1;
+  const n = ch === "evolve" ? Infinity : (s.fed.get(c.id) ?? 0) + 1;
   s.ateAt.set(c.id, time);
   if (n >= toEvolve(c.level, t, c.species)) {
     s.fed.set(c.id, 0);

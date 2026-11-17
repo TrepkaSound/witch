@@ -79,6 +79,8 @@ export type InviteEvent =
   | (InviteEventAt & { kind: "happy"; id: number; n?: undefined; spent?: undefined });
 
 export interface Invites {
+  /** The creature her last letter landed on, and when on her clock (a command's target, rules/commands/target.ts). */
+  lastHit?: { id: number; at: number };
   /** Online hit receipts also cover an admitted projectile whose first host step has not run yet. */
   claimed?: Record<string, { ids: number[]; spent: boolean; at: number }>;
   letters: Letter[];
@@ -214,6 +216,7 @@ export function stepInvites(s: Invites, c: InviteControls, witch: { x: number; z
     const event = { kind: "hit" as const, x, z, at: time, id: k.id, n, spent: false };
     s.events.push(event);
     A.hit(k, I.amount, time, automatic, projectile);
+    if (t.commands?.on) s.lastHit = { id: k.id, at: time }; // (a command's target, ?commands=1)
     noteLetter(k, t); // (and its poise worn, with ?skill=1: a letter is still one hit, rules/skill/poise.ts)
   };
 

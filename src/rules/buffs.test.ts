@@ -239,3 +239,20 @@ describe("in play", () => {
     expect(buffsOf(W.leash.stack, g.creatures, g.berries, TUNING).stacks.darters).toBe(0);
   });
 });
+
+describe("with commands on (?commands=1; Ed, 2026-11-17: \"the current buff 'draining' system will be superseded by more deliberate charge uses\")", () => {
+  const ON = withTuning({ commands: { on: true } });
+  it("no drain: drainPips leaves an adult's pips alone and runs its cooldown and buff down instead", () => {
+    const c = crit(0, "bee", 2, { cmd: { charges: 5, cool: 1, buff: 1, buffStacks: 3 } }), s = fed([0]);
+    drainPips(s, [0], [c], 0.5, ON);
+    expect(s.pips!.get(0)).toBe(LIFE);
+    expect([c.cmd!.charges, c.cmd!.cool, c.cmd!.buff]).toEqual([5, 0.5, 0.5]);
+  });
+  it("no passive buff from berries: a fed adult buffs only while its use's period runs, and only a buff-giver", () => {
+    const bee = crit(0, "bee", 2, { cmd: { charges: 5, cool: 0, buff: 0 } }), fox = crit(1, "fox", 2, { cmd: { charges: 5, cool: 0, buff: 2 } });
+    expect(buffsOf([0, 1], [bee, fox], fed([0, 1]), ON).stacks).toEqual(noBuffs());
+    bee.cmd!.buff = 1; bee.cmd!.buffStacks = 3;
+    expect(buffsOf([0, 1], [bee, fox], fed([]), ON).stacks).toEqual(stacks({ darters: 3 }));
+    expect(buffsOf([0, 1], [bee, fox], fed([]), ON).icons.has(1)).toBe(false); // (the fox gives no buff: no icon)
+  });
+});

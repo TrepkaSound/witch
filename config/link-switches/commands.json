@@ -1,0 +1,10 @@
+{
+ "name": "commands",
+ "values": [
+  "1"
+ ],
+ "does": "Creature commands, a prototype: square (F, the mouse's middle button, touch's cmd button) commands the bottom of her stack, or feeds it near a berry; circle picks up and puts down; only L2 dodges. Berries give charges that don't drain; a youth's dots are its charge bar. Fox Strike, squirrel Bonk, badger Barge, bee Buzz. Sets tuning commands.on.",
+ "group": "run",
+ "since": "2026-11-17",
+ "decision": "Ed, 2026-11-17: \"go for the prototype\"; \"square as command, and circle as pickup/place. When you're near a berry, square becomes eat.\""
+}

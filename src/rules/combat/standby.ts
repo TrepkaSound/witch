@@ -14,6 +14,7 @@ import { getUp } from "../orbit";
 import { advanceMotion } from "../locomotion";
 import type { CombatStep } from "./step";
 import { stepSkill, staggered } from "../skill/poise";
+import { runOrder } from "../commands/actions";
 
 /** A wild flyer that swoops (its profile's move; hostile: wild or enraged, never hers or happy). */
 export const swoops = (c: Creature): boolean => !c.leashed && profileOf(c.species)?.move?.kind === "swoop" && (stateOf(c) === "wild" || stateOf(c) === "enraged");
@@ -26,6 +27,7 @@ export function standby(k: CombatStep, c: Creature): boolean | undefined {
   stepKnock(c, dt);
   if (c.gone) return undefined;
   stepSkill(c, time, dt, t); // (openings, ?skill=1: its sit after a lunge, its poise worn and refilled: rules/skill/poise.ts)
+  if (c.cmd?.order) runOrder(k, c); // (a command of hers, ?commands=1: rules/commands/actions.ts)
   // A leap under way flies on whatever holds it this step (a stun, a daze, its pack's turn): its arc goes by the time, so steps
   // missed would put it the rest of the way at once (Ed's playtest, 2026-10-29: "some animals seem to teleport"). It lands as ever.
   if (c.leap && c.fight) advanceMotion(c, { route: c.leap }, time, 0);
